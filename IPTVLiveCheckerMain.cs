@@ -5858,20 +5858,53 @@ namespace IPTVLiveChecker
         
         
         /// <summary>
+        /// 启动前显示免责声明对话框（在主窗口显示之前调用）
+        /// </summary>
+        /// <returns>用户是否同意条款</returns>
+        public bool ShowDisclaimerBeforeStart()
+        {
+            if (!this.IsHandleCreated)
+                this.CreateHandle();
+
+            using (Graphics g = this.CreateGraphics())
+                dpiScale = g.DpiX / 96f;
+
+            config.Initialize(dpiScale);
+            DarkMessageBox.DpiScale = dpiScale;
+
+            LoadConfig();
+
+            if (disclaimerAgreed && skipDisclaimerPrompt)
+                return true;
+
+            return ShowDisclaimerDialog();
+        }
+
+        /// <summary>
         /// 显示首次启动免责声明弹窗（强制同意方可进入）
         /// </summary>
-        private void ShowDisclaimerDialog()
+        /// <returns>用户是否同意条款</returns>
+        private bool ShowDisclaimerDialog()
         {
+            bool dialogResult = false;
+
             bool isDark = theme != null && theme.Name == "深色";
-            Color bgColor = isDark ? Color.FromArgb(28, 32, 42) : Color.White;
-            Color textColor = isDark ? Color.FromArgb(220, 225, 235) : Color.FromArgb(35, 40, 50);
-            Color subTextColor = isDark ? Color.FromArgb(160, 168, 185) : Color.FromArgb(100, 110, 125);
-            Color accentColor = Color.FromArgb(64, 158, 255);
+            Color bgColor = isDark ? Color.FromArgb(24, 27, 36) : Color.FromArgb(250, 251, 253);
+            Color textColor = isDark ? Color.FromArgb(220, 226, 238) : Color.FromArgb(28, 32, 44);
+            Color subTextColor = isDark ? Color.FromArgb(148, 156, 172) : Color.FromArgb(120, 128, 145);
+            Color accentColor = isDark ? Color.FromArgb(82, 160, 250) : Color.FromArgb(46, 135, 245);
             Color btnEnabledBg = accentColor;
-            Color btnDisabledBg = isDark ? Color.FromArgb(60, 60, 70) : Color.FromArgb(200, 200, 210);
+            Color btnDisabledBg = isDark ? Color.FromArgb(50, 54, 66) : Color.FromArgb(225, 228, 234);
             Color btnEnabledText = Color.White;
-            Color btnDisabledText = isDark ? Color.FromArgb(120, 120, 130) : Color.FromArgb(150, 150, 160);
-            Color cbColor = isDark ? Color.FromArgb(42, 48, 60) : Color.FromArgb(245, 247, 250);
+            Color btnDisabledText = isDark ? Color.FromArgb(115, 118, 132) : Color.FromArgb(170, 175, 185);
+            Color dividerColor = isDark ? Color.FromArgb(48, 52, 64) : Color.FromArgb(230, 233, 238);
+            Color contentBg = isDark ? Color.FromArgb(32, 36, 46) : Color.FromArgb(255, 255, 255);
+            Color hintColor = isDark ? Color.FromArgb(120, 128, 145) : Color.FromArgb(140, 148, 165);
+            Color successColor = isDark ? Color.FromArgb(56, 196, 106) : Color.FromArgb(36, 176, 86);
+            Color warningColor = isDark ? Color.FromArgb(252, 176, 54) : Color.FromArgb(235, 145, 18);
+
+            int padX = SX(36);
+            int contentW = SX(688);
 
             using (Form dlg = new Form())
             {
@@ -5880,115 +5913,227 @@ namespace IPTVLiveChecker
                 dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
                 dlg.MaximizeBox = false;
                 dlg.MinimizeBox = false;
-                dlg.ControlBox = false;
+                dlg.ControlBox = true;
                 dlg.ShowInTaskbar = true;
                 dlg.TopMost = true;
                 dlg.BackColor = bgColor;
                 dlg.ForeColor = textColor;
                 dlg.Font = GetFont(SF(9f));
-                dlg.ClientSize = new Size(SX(560), SY(540));
+                dlg.ClientSize = new Size(SX(760), SY(720));
 
-                // 标题
+                int y = SY(36);
+
                 Label lblTitle = new Label
                 {
-                    Text = "重要免责告知",
+                    Text = "免责声明",
                     Font = GetFont(SF(14f), FontStyle.Bold),
-                    Location = new Point(SX(20), SY(16)),
+                    Location = new Point(padX, y-20),
                     AutoSize = true,
                     ForeColor = textColor,
                     BackColor = Color.Transparent
                 };
                 dlg.Controls.Add(lblTitle);
 
-                // 免责内容（带滚动）
+                y += SY(32);
+                Label lblSubtitle = new Label
+                {
+                    Text = "使用本软件前请仔细阅读以下条款",
+                    Font = GetFont(SF(9f)),
+                    Location = new Point(padX, y),
+                    AutoSize = true,
+                    ForeColor = subTextColor,
+                    BackColor = Color.Transparent
+                };
+                dlg.Controls.Add(lblSubtitle);
+
+                y += SY(24);
+
+                Panel dividerTop = new Panel
+                {
+                    Location = new Point(padX, y),
+                    Size = new Size(contentW, 1),
+                    BackColor = dividerColor
+                };
+                dlg.Controls.Add(dividerTop);
+                y += SY(18);
+
                 string disclaimerText =
-@"1. 本软件仅为【流媒体链接技术检测工具】，仅提供链接连通性、媒体编码、网络延迟检测功能。
-   软件本身不生产、不存储、不提供任何IPTV直播源、影视播放地址、电视节目资源。
+@"第一条  软件性质
+本软件仅为「流媒体链接技术检测工具」，仅提供链接连通性、媒体编码、网络延迟检测功能。软件本身不生产、不存储、不提供任何 IPTV 直播源、影视播放地址、电视节目资源。
 
-2. 所有待检测流媒体链接、频道地址均由使用者自行导入、自行获取。
-   用户访问、检测第三方流媒体地址产生的一切著作权纠纷、行政处罚、法律责任，全部由使用者独立承担，与软件开发者无关。
+第二条  责任归属
+所有待检测流媒体链接、频道地址均由使用者自行导入、自行获取。用户访问、检测第三方流媒体地址产生的一切著作权纠纷、行政处罚、法律责任，全部由使用者独立承担，与软件开发者无关。
 
-3. 严禁使用本软件从事以下行为：
-   • 窃取、破解运营商专网IPTV组播信号；
-   • 爬取、售卖、分发无版权直播源；
-   • 搭建商用非法视听、直播服务；
-   • 绕过版权保护收看付费影视、有线电视节目。
+第三条  禁止行为
+严禁使用本软件从事以下行为：
+  1. 窃取、破解运营商专网 IPTV 组播信号
+  2. 爬取、售卖、分发无版权直播源
+  3. 搭建商用非法视听、直播服务
+  4. 绕过版权保护收看付费影视、有线电视节目
 
-4. 使用者应当严格遵守《中华人民共和国网络安全法》《中华人民共和国著作权法》《互联网视听节目服务管理规定》等法律法规，仅检测自身拥有合法授权的流媒体链接。
+第四条  合规使用
+使用者应当严格遵守《中华人民共和国网络安全法》《中华人民共和国著作权法》《互联网视听节目服务管理规定》等法律法规，仅检测自身拥有合法授权的流媒体链接。
 
-5. 本程序按现状免费提供，不提供任何明示或隐含担保。
-   因使用本软件造成IP封禁、网络限制、设备故障等损失，开发者不承担任何赔偿责任。";
+第五条  免责条款
+本程序按现状免费提供，不提供任何明示或隐含担保。因使用本软件造成 IP 封禁、网络限制、设备故障等损失，开发者不承担任何赔偿责任。";
 
-                TextBox txtDisclaimer = new TextBox
+                Panel contentPanel = new Panel
+                {
+                    Location = new Point(padX, y),
+                    Size = new Size(contentW, SY(420)),
+                    BackColor = contentBg,
+                    BorderStyle = BorderStyle.FixedSingle
+                };
+
+                RichTextBox txtDisclaimer = new RichTextBox
                 {
                     Text = disclaimerText,
                     Multiline = true,
                     ReadOnly = true,
-                    ScrollBars = ScrollBars.Vertical,
-                    Location = new Point(SX(20), SY(50)),
-                    Size = new Size(SX(520), SY(340)),
+                    ScrollBars = RichTextBoxScrollBars.Vertical,
+                    Location = new Point(SX(10), SY(10)),
+                    Size = new Size(contentW - SX(20), SY(400)),
                     Font = GetFont(SF(9f)),
-                    BackColor = isDark ? Color.FromArgb(38, 42, 52) : Color.FromArgb(248, 248, 252),
+                    BackColor = contentBg,
                     ForeColor = textColor,
-                    BorderStyle = BorderStyle.FixedSingle
+                    BorderStyle = BorderStyle.None,
+                    WordWrap = true,
+                    DetectUrls = false
                 };
-                dlg.Controls.Add(txtDisclaimer);
+                contentPanel.Controls.Add(txtDisclaimer);
+                dlg.Controls.Add(contentPanel);
 
-                // 同意复选框
+                y += SY(436);
+
+                Label lblHint = new Label
+                {
+                    Text = "请滚动阅读至底部并等待倒计时结束",
+                    Font = GetFont(SF(8.5f)),
+                    Location = new Point(padX, y),
+                    AutoSize = true,
+                    ForeColor = hintColor,
+                    BackColor = Color.Transparent
+                };
+                dlg.Controls.Add(lblHint);
+
+                y += SY(26);
+
                 CheckBox cbAgree = new CheckBox
                 {
-                    Text = "我已阅读并同意以上免责条款",
-                    Location = new Point(SX(20), SY(400)),
-                    AutoSize = true,
+                    Text = "我已仔细阅读并同意以上全部条款",
+                    Location = new Point(padX, y),
+                    Size = new Size(contentW, SY(26)),
                     ForeColor = textColor,
                     BackColor = Color.Transparent,
-                    Font = GetFont(SF(9.5f))
+                    Font = GetFont(SF(9.5f)),
+                    Enabled = false
                 };
                 dlg.Controls.Add(cbAgree);
 
-                // 进入软件按钮
+                y += SY(32);
+
                 Button btnEnter = new Button
                 {
                     Text = "进入软件",
-                    Location = new Point(SX(20), SY(440)),
-                    Size = new Size(SX(520), SY(42)),
-                    Font = GetFont(SF(11f), FontStyle.Bold),
+                    Location = new Point(padX, y),
+                    Size = new Size(contentW, SY(40)),
+                    Font = GetFont(SF(10f), FontStyle.Regular),
                     FlatStyle = FlatStyle.Flat,
                     Enabled = false,
                     BackColor = btnDisabledBg,
                     ForeColor = btnDisabledText,
-                    Cursor = Cursors.No
+                    Cursor = Cursors.No,
+                    UseVisualStyleBackColor = false
                 };
                 btnEnter.FlatAppearance.BorderSize = 0;
+                btnEnter.FlatAppearance.MouseOverBackColor = isDark ? Color.FromArgb(68, 145, 238) : Color.FromArgb(36, 118, 225);
                 dlg.Controls.Add(btnEnter);
 
-                // 复选框变化时切换按钮状态
+                bool canAgree = false;
+                bool hasScrolledToBottom = false;
+                bool timerStarted = false;
+                int countdownSeconds = 8;
+
+                System.Windows.Forms.Timer countdownTimer = new System.Windows.Forms.Timer { Interval = 1000 };
+                countdownTimer.Tick += (s, e) =>
+                {
+                    countdownSeconds--;
+                    if (countdownSeconds <= 0)
+                    {
+                        countdownSeconds = 0;
+                        countdownTimer.Stop();
+                        lblHint.Text = "✓ 阅读时间已满足，请勾选同意条款后进入软件";
+                        lblHint.ForeColor = successColor;
+                        UpdateAgreeState();
+                    }
+                    else
+                    {
+                        lblHint.Text = $"⏳ 阅读倒计时 {countdownSeconds} 秒 · 请滚动至底部";
+                    }
+                };
+
+                txtDisclaimer.VScroll += (s, e) =>
+                {
+                    if (!timerStarted)
+                    {
+                        timerStarted = true;
+                        countdownTimer.Start();
+                        lblHint.Text = $"⏳ 阅读倒计时 {countdownSeconds} 秒 · 请滚动至底部";
+                        lblHint.ForeColor = warningColor;
+                    }
+
+                    var scrollInfo = new SCROLLINFO();
+                    scrollInfo.cbSize = (uint)Marshal.SizeOf(typeof(SCROLLINFO));
+                    scrollInfo.fMask = 7;
+                    GetScrollInfo(txtDisclaimer.Handle, 1, ref scrollInfo);
+
+                    bool atBottom = scrollInfo.nPos + (int)scrollInfo.nPage >= scrollInfo.nMax - 2;
+                    if (atBottom && !hasScrolledToBottom)
+                    {
+                        hasScrolledToBottom = true;
+                        UpdateAgreeState();
+                    }
+                };
+
+                void UpdateAgreeState()
+                {
+                    canAgree = hasScrolledToBottom && countdownSeconds <= 0;
+                    cbAgree.Enabled = canAgree;
+                    if (!canAgree && cbAgree.Checked)
+                        cbAgree.Checked = false;
+                }
+
                 cbAgree.CheckedChanged += (s, e) =>
                 {
-                    btnEnter.Enabled = cbAgree.Checked;
-                    btnEnter.BackColor = cbAgree.Checked ? btnEnabledBg : btnDisabledBg;
-                    btnEnter.ForeColor = cbAgree.Checked ? btnEnabledText : btnDisabledText;
-                    btnEnter.Cursor = cbAgree.Checked ? Cursors.Hand : Cursors.No;
+                    bool ready = cbAgree.Checked && canAgree;
+                    btnEnter.Enabled = ready;
+                    btnEnter.BackColor = ready ? btnEnabledBg : btnDisabledBg;
+                    btnEnter.ForeColor = ready ? btnEnabledText : btnDisabledText;
+                    btnEnter.Cursor = ready ? Cursors.Hand : Cursors.No;
                 };
 
                 btnEnter.Click += (s, e) =>
                 {
+                    dialogResult = true;
                     disclaimerAgreed = true;
+                    countdownTimer.Stop();
                     SaveConfig();
                     dlg.DialogResult = DialogResult.OK;
                     dlg.Close();
                 };
 
-                // 防止通过 Alt+F4 关闭
                 dlg.FormClosing += (s, e) =>
                 {
-                    if (!disclaimerAgreed)
+                    countdownTimer.Stop();
+                    if (!dialogResult)
                     {
-                        Application.Exit();
+                        dlg.DialogResult = DialogResult.Cancel;
                     }
                 };
 
                 dlg.ShowDialog(this);
+
+                return dialogResult;
             }
         }
 
@@ -6464,16 +6609,6 @@ namespace IPTVLiveChecker
 
         private void IPTVLiveCheckerMain_Load(object sender, EventArgs e)
         {
-            LoadConfig();
-            // 首次启动显示免责声明
-            if (!disclaimerAgreed || !skipDisclaimerPrompt)
-            {
-                this.BeginInvoke(new Action(() =>
-                {
-                    ShowDisclaimerDialog();
-                }));
-            }
-
             if (persistList) LoadChannelList();
             try
             {
@@ -7484,6 +7619,24 @@ namespace IPTVLiveChecker
         [DllImport("gdi32.dll")]
         private static extern bool DeleteObject(IntPtr hObject);
 
+
+        [DllImport("user32.dll")]
+        private static extern int GetScrollPos(IntPtr hWnd, int nBar);
+
+        [DllImport("user32.dll")]
+        private static extern int GetScrollInfo(IntPtr hWnd, int nBar, ref SCROLLINFO lpsi);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct SCROLLINFO
+        {
+            public uint cbSize;
+            public uint fMask;
+            public int nMin;
+            public int nMax;
+            public uint nPage;
+            public int nPos;
+            public int nTrackPos;
+        }
         private void StartMouseHook()
         {
             if (_mouseHook != IntPtr.Zero) return;
