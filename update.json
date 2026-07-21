@@ -19,10 +19,11 @@
     "disclaimerUrl":  "https://github.com/281761526/IPTVLiveChecker/blob/master/DISCLAIMER.md",
     "feedbackEmail":  "xiaomiren0510@gmail.com",
     "developer":  "半步沧桑",
-    "md5Checksum":  "",
+    "md5Checksum":  "78D9FCB146E3678FE46AB5AC90E7C2E3",
     "supportOS":  [
                       "Windows 10",
                       "Windows 11"
                   ],
     "dependence":  "FFmpeg运行库（程序内置，无需手动安装）"
 }
+

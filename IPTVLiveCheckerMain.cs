@@ -5048,6 +5048,22 @@ namespace IPTVLiveChecker
                 };
                 topCard.Controls.Add(lblVersion);
                 
+                // 检查更新链接
+                Label lblCheckUpdate = new Label
+                {
+                    Text = "检查更新",
+                    Font = GetFont(SF(8f), FontStyle.Underline),
+                    Location = new Point(textStartX + topTitleSize.Width - versionSizeSmall.Width + versionSizeSmall.Width + SX(6), titleY + topTitleSize.Height + SY(3)),
+                    AutoSize = true,
+                    ForeColor = accentColor,
+                    BackColor = Color.Transparent,
+                    Cursor = Cursors.Hand
+                };
+                lblCheckUpdate.MouseEnter += (s, e) => { lblCheckUpdate.Font = GetFont(SF(8f), FontStyle.Underline | FontStyle.Bold); };
+                lblCheckUpdate.MouseLeave += (s, e) => { lblCheckUpdate.Font = GetFont(SF(8f), FontStyle.Underline); };
+                lblCheckUpdate.Click += (s, e) => { dlg.Close(); CheckForUpdate(); };
+                topCard.Controls.Add(lblCheckUpdate);
+                
                 // ========== 功能概述区域参数 ==========
                 y += topCardH + cardGap;           // 更新Y坐标到下一个卡片位置
                 int featCardH = SY(150);          // 功能概述卡片高度
@@ -20175,3 +20191,5 @@ else { exit 1 }
         }
     }
 }
+
+
