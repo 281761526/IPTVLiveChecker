@@ -371,3 +371,7 @@ wechat_promo_base64.txt
 form1_diff2.txt
 .trae-html-share-packages/
 file-inventory-report/
+# Additional project ignores
+*.zip
+.uploads/
+

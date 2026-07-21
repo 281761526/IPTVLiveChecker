@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,7 +19,7 @@ using System.Reflection;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 
-namespace WindowsFormsApp1
+namespace IPTVLiveChecker
 {
     public class AppTheme
     {
@@ -709,7 +709,7 @@ namespace WindowsFormsApp1
         }
     }
 
-    public partial class Form1 : Form
+    public partial class IPTVLiveCheckerMain : Form
     {
         private static System.Drawing.Drawing2D.GraphicsPath CreateRoundedRectPath(Rectangle rect, int radius)
         {
@@ -2046,7 +2046,7 @@ namespace WindowsFormsApp1
         private Color ColorNavNormal => theme.TextSecondary;
         private Color ColorBorder => theme.Border;
 
-        public Form1()
+        public IPTVLiveCheckerMain()
         {
             InitializeComponent();
             // 设置 DarkMessageBox 的主题提供者，使其能获取当前主题状态
@@ -2058,9 +2058,9 @@ namespace WindowsFormsApp1
             this.SetStyle(ControlStyles.ResizeRedraw, true);
             this.KeyPreview = true;
             this.AllowDrop = true;
-            this.DragEnter += Form1_DragEnter;
-            this.DragDrop += Form1_DragDrop;
-            this.KeyDown += Form1_KeyDown;
+            this.DragEnter += IPTVLiveCheckerMain_DragEnter;
+            this.DragDrop += IPTVLiveCheckerMain_DragDrop;
+            this.KeyDown += IPTVLiveCheckerMain_KeyDown;
             var handler = new System.Net.Http.HttpClientHandler
             {
                 MaxConnectionsPerServer = 32,
@@ -2086,7 +2086,7 @@ namespace WindowsFormsApp1
             FindFFplay();
         }
 
-        private void Form1_DragEnter(object sender, DragEventArgs e)
+        private void IPTVLiveCheckerMain_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
@@ -2094,7 +2094,7 @@ namespace WindowsFormsApp1
             }
         }
 
-        private async void Form1_DragDrop(object sender, DragEventArgs e)
+        private async void IPTVLiveCheckerMain_DragDrop(object sender, DragEventArgs e)
         {
             string[] files = e.Data.GetData(DataFormats.FileDrop) as string[];
             if (files == null || files.Length == 0) return;
@@ -6266,7 +6266,7 @@ namespace WindowsFormsApp1
             public ToggleChangingEventArgs(bool newValue) { NewValue = newValue; }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void IPTVLiveCheckerMain_Load(object sender, EventArgs e)
         {
             LoadConfig();
             if (persistList) LoadChannelList();
@@ -6507,15 +6507,34 @@ namespace WindowsFormsApp1
             // 导航按钮固定在左侧，控制按钮右对齐
             void UpdateTitleAndNav()
             {
+                RefreshNavButtonSizes();
+                
                 int w = titleBarPanel.ClientSize.Width;
-                int btnW = btnNavDetect != null ? btnNavDetect.Width : navBtnWidth + 20;
-                int btnGap = btnNavDetect != null && btnNavSearch != null ? btnNavSearch.Left - btnNavDetect.Right : navBtnGap;
-                // 重新定位导航按钮（左侧对齐）
-                if (btnNavDetect != null) btnNavDetect.Left = SX(20);
-                if (btnNavSearch != null) btnNavSearch.Left = SX(20) + btnW + btnGap;
-                if (btnNavSettings != null) btnNavSettings.Left = SX(20) + btnW * 2 + btnGap * 2;
-                if (btnNavAbout != null) btnNavAbout.Left = SX(20) + btnW * 3 + btnGap * 3;
-                // 重新定位控制按钮（右侧对齐，4个按钮共160px）
+                int btnGap = navBtnGap;
+                if (btnNavDetect != null && btnNavSearch != null && btnNavSearch.Visible)
+                    btnGap = btnNavSearch.Left - btnNavDetect.Right;
+                
+                int currentX = SX(20);
+                if (btnNavDetect != null)
+                {
+                    btnNavDetect.Left = currentX;
+                    currentX = btnNavDetect.Right + btnGap;
+                }
+                if (btnNavSearch != null && btnNavSearch.Visible)
+                {
+                    btnNavSearch.Left = currentX;
+                    currentX = btnNavSearch.Right + btnGap;
+                }
+                if (btnNavSettings != null)
+                {
+                    btnNavSettings.Left = currentX;
+                    currentX = btnNavSettings.Right + btnGap;
+                }
+                if (btnNavAbout != null)
+                {
+                    btnNavAbout.Left = currentX;
+                }
+                
                 int totalBtnsWidth = btnSize * 4;
                 int startX = w - totalBtnsWidth;
                 btnThemeToggle.Left = startX;
@@ -6871,92 +6890,23 @@ namespace WindowsFormsApp1
         {
             try
             {
-                Assembly assembly = Assembly.GetExecutingAssembly();
-                string[] resourceNames = assembly.GetManifestResourceNames();
-                
-                string expectedName = "WindowsFormsApp1.wechat_promo.png";
-                
-                foreach (string name in resourceNames)
+                // 从内嵌的Base64字符串加载图片，无需外部文件
+                byte[] imageBytes = Convert.FromBase64String(IPTVLiveChecker.Resources.WechatPromoResource.Base64Data);
+                using (MemoryStream ms = new MemoryStream(imageBytes))
                 {
-                    if (name.Equals(expectedName, StringComparison.OrdinalIgnoreCase))
+                    Bitmap original = new Bitmap(ms);
+                    int targetW = original.Width <= maxWidth ? original.Width : maxWidth;
+                    int targetH = (int)((double)original.Height * targetW / original.Width);
+                    Bitmap copy = new Bitmap(targetW, targetH);
+                    using (Graphics g = Graphics.FromImage(copy))
                     {
-                        using (Stream stream = assembly.GetManifestResourceStream(name))
-                        {
-                            if (stream != null)
-                            {
-                                Bitmap original = new Bitmap(stream);
-                                int targetW = original.Width <= maxWidth ? original.Width : maxWidth;
-                                int targetH = (int)((double)original.Height * targetW / original.Width);
-                                Bitmap copy = new Bitmap(targetW, targetH);
-                                using (Graphics g = Graphics.FromImage(copy))
-                                {
-                                    g.SmoothingMode = SmoothingMode.HighQuality;
-                                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                                    g.DrawImage(original, 0, 0, targetW, targetH);
-                                }
-                                original.Dispose();
-                                return copy;
-                            }
-                        }
+                        g.SmoothingMode = SmoothingMode.HighQuality;
+                        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                        g.DrawImage(original, 0, 0, targetW, targetH);
                     }
-                }
-                
-                foreach (string name in resourceNames)
-                {
-                    if (name.IndexOf("wechat_promo", StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        using (Stream stream = assembly.GetManifestResourceStream(name))
-                        {
-                            if (stream != null)
-                            {
-                                Bitmap original = new Bitmap(stream);
-                                int targetW = original.Width <= maxWidth ? original.Width : maxWidth;
-                                int targetH = (int)((double)original.Height * targetW / original.Width);
-                                Bitmap copy = new Bitmap(targetW, targetH);
-                                using (Graphics g = Graphics.FromImage(copy))
-                                {
-                                    g.SmoothingMode = SmoothingMode.HighQuality;
-                                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                                    g.DrawImage(original, 0, 0, targetW, targetH);
-                                }
-                                original.Dispose();
-                                return copy;
-                            }
-                        }
-                    }
-                }
-                
-                foreach (string name in resourceNames)
-                {
-                    if (name.IndexOf("promo", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        name.IndexOf("wechat", StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        using (Stream stream = assembly.GetManifestResourceStream(name))
-                        {
-                            if (stream != null)
-                            {
-                                try
-                                {
-                                    Bitmap original = new Bitmap(stream);
-                                    int targetW = original.Width <= maxWidth ? original.Width : maxWidth;
-                                    int targetH = (int)((double)original.Height * targetW / original.Width);
-                                    Bitmap copy = new Bitmap(targetW, targetH);
-                                    using (Graphics g = Graphics.FromImage(copy))
-                                    {
-                                        g.SmoothingMode = SmoothingMode.HighQuality;
-                                        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                                        g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                                        g.DrawImage(original, 0, 0, targetW, targetH);
-                                    }
-                                    original.Dispose();
-                                    return copy;
-                                }
-                                catch { }
-                            }
-                        }
-                    }
+                    original.Dispose();
+                    return copy;
                 }
             }
             catch { }
@@ -8956,7 +8906,7 @@ namespace WindowsFormsApp1
             SwitchView(name);
         }
 
-        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        private void IPTVLiveCheckerMain_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control)
             {
@@ -18161,7 +18111,7 @@ else { exit 1 }
                     if (initCompletedEvent != null)
                     {
                         var handlerType = initCompletedEvent.EventHandlerType;
-                        Delegate handler = Delegate.CreateDelegate(handlerType, this, typeof(Form1).GetMethod("WebView2InitCompletedHandler", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
+                        Delegate handler = Delegate.CreateDelegate(handlerType, this, typeof(IPTVLiveCheckerMain).GetMethod("WebView2InitCompletedHandler", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
                         initCompletedEvent.AddEventHandler(webView2, handler);
                     }
 
@@ -18169,7 +18119,7 @@ else { exit 1 }
                     if (navCompletedEvent != null)
                     {
                         var handlerType = navCompletedEvent.EventHandlerType;
-                        Delegate handler = Delegate.CreateDelegate(handlerType, this, typeof(Form1).GetMethod("WebView2NavCompletedHandler", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
+                        Delegate handler = Delegate.CreateDelegate(handlerType, this, typeof(IPTVLiveCheckerMain).GetMethod("WebView2NavCompletedHandler", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
                         navCompletedEvent.AddEventHandler(webView2, handler);
                     }
 
@@ -18178,7 +18128,7 @@ else { exit 1 }
                     if (msgEvent != null)
                     {
                         var handlerType = msgEvent.EventHandlerType;
-                        Delegate handler = Delegate.CreateDelegate(handlerType, this, typeof(Form1).GetMethod("WebView2WebMessageReceivedHandler", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
+                        Delegate handler = Delegate.CreateDelegate(handlerType, this, typeof(IPTVLiveCheckerMain).GetMethod("WebView2WebMessageReceivedHandler", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
                         msgEvent.AddEventHandler(webView2, handler);
                     }
                 }
