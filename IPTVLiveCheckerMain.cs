@@ -944,6 +944,8 @@ namespace IPTVLiveChecker
         
         private string configPath = Path.Combine(Application.StartupPath, "config.ini");
         private string channelListPath = Path.Combine(Application.StartupPath, "channellist.txt");
+        private bool disclaimerAgreed = false;
+        private bool skipDisclaimerPrompt = false;
         
         private void SaveConfig()
         {
@@ -962,6 +964,10 @@ namespace IPTVLiveChecker
             sb.AppendLine($"AutoExtractIpPort={autoExtractIpPort}");
             sb.AppendLine($"AutoParseLink={autoParseLink}");
             sb.AppendLine($"IptvHistoryIps={string.Join("|", iptvHistoryIps)}");
+
+            sb.AppendLine($"DisclaimerAgreed={disclaimerAgreed}");
+
+            sb.AppendLine($"SkipDisclaimerPrompt={skipDisclaimerPrompt}");
             File.WriteAllText(configPath, sb.ToString(), Encoding.UTF8);
         }
 
@@ -1084,6 +1090,12 @@ namespace IPTVLiveChecker
                             {
                                 iptvHistoryIps = value.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                             }
+                            break;
+                        case "DisclaimerAgreed":
+                            bool.TryParse(value, out disclaimerAgreed);
+                            break;
+                        case "SkipDisclaimerPrompt":
+                            bool.TryParse(value, out skipDisclaimerPrompt);
                             break;
                     }
                 }
@@ -4242,7 +4254,7 @@ namespace IPTVLiveChecker
             int cardStartY = SY(15);          // 第一个卡片的起始Y坐标
             int engineCardH = SY(105);        // 检测引擎卡片
             int perfCardH = SY(125);          // 性能设置卡片（2行布局）
-            int funcCardH = SY(232);          // 功能开关卡片（增加了搜索功能开关）
+            int funcCardH = SY(270);          // 功能开关卡片（增加了搜索功能开关）
             int customCardH = SY(130);        // 个性化卡片（减少底部留白）
             int cardGap = SY(12);             // 卡片间距
             int btnPanelH = SY(65);           // 底部按钮面板（减少高度）
@@ -4524,6 +4536,20 @@ namespace IPTVLiveChecker
             ToggleSwitch toggleSearchBtn = new ToggleSwitch { Checked = showSearchButton, Size = new Size(SY(80), SY(30)), Location = new Point(cardWidth - SY(110), SY(195)) };
             funcCard.Controls.Add(toggleSearchBtn);
 
+            // 下次不再提示免责声明（隐藏在高级功能中）
+            Label skipDisclaimerLabel = new Label
+            {
+                Text = "下次启动不再提示免责声明",
+                Font = GetFont(9.5f),
+                ForeColor = textColor,
+                Size = new Size(SY(240), 24),
+                Location = new Point(SY(15), SY(233))
+            };
+            funcCard.Controls.Add(skipDisclaimerLabel);
+
+            ToggleSwitch toggleSkipDisclaimer = new ToggleSwitch { Checked = skipDisclaimerPrompt, Size = new Size(SY(80), SY(30)), Location = new Point(cardWidth - SY(110), SY(232)) };
+            funcCard.Controls.Add(toggleSkipDisclaimer);
+
             funcCard.Size = new Size(cardWidth, funcCardH);
             scrollContainer.Controls.Add(funcCard);
             cardY += funcCardH + cardGap;
@@ -4758,6 +4784,7 @@ namespace IPTVLiveChecker
                 }
 
                 autoClearInvalid = toggleAutoClear.Checked;
+                        skipDisclaimerPrompt = toggleSkipDisclaimer.Checked;
                 persistList = togglePersist.Checked;
                 customPlayerPath = txtPlayerPath.Text;
                 watchSearchWindow = toggleWatch.Checked;
@@ -5623,6 +5650,23 @@ namespace IPTVLiveChecker
                 tgCard.Controls.Add(lblTgChannel);
                 tgWireUp(tgCard);
                 
+                
+                // 免责声明入口
+                Label lblDisclaimerLink = new Label
+                {
+                    Text = "免责声明",
+                    Font = GetFont(SF(8.5f), FontStyle.Underline),
+                    Location = new Point(SX(16), SY(14)),
+                    AutoSize = true,
+                    ForeColor = accentColor,
+                    BackColor = Color.Transparent,
+                    Cursor = Cursors.Hand
+                };
+                lblDisclaimerLink.MouseEnter += (s, e) => { lblDisclaimerLink.Font = GetFont(SF(8.5f), FontStyle.Underline | FontStyle.Bold); };
+                lblDisclaimerLink.MouseLeave += (s, e) => { lblDisclaimerLink.Font = GetFont(SF(8.5f), FontStyle.Underline); };
+                lblDisclaimerLink.Click += (s, e) => { dlg.Close(); ShowDisclaimerDialog(); };
+                fbCard.Controls.Add(lblDisclaimerLink);
+                
                 Font authorFont = GetFont(SF(8f));
                 var authorSize = TextRenderer.MeasureText("— Designed by 半步沧桑 —", authorFont);
                 int authorH = authorSize.Height + SY(4);
@@ -5812,6 +5856,142 @@ namespace IPTVLiveChecker
             }
         }
         
+        
+        /// <summary>
+        /// 显示首次启动免责声明弹窗（强制同意方可进入）
+        /// </summary>
+        private void ShowDisclaimerDialog()
+        {
+            bool isDark = theme != null && theme.Name == "深色";
+            Color bgColor = isDark ? Color.FromArgb(28, 32, 42) : Color.White;
+            Color textColor = isDark ? Color.FromArgb(220, 225, 235) : Color.FromArgb(35, 40, 50);
+            Color subTextColor = isDark ? Color.FromArgb(160, 168, 185) : Color.FromArgb(100, 110, 125);
+            Color accentColor = Color.FromArgb(64, 158, 255);
+            Color btnEnabledBg = accentColor;
+            Color btnDisabledBg = isDark ? Color.FromArgb(60, 60, 70) : Color.FromArgb(200, 200, 210);
+            Color btnEnabledText = Color.White;
+            Color btnDisabledText = isDark ? Color.FromArgb(120, 120, 130) : Color.FromArgb(150, 150, 160);
+            Color cbColor = isDark ? Color.FromArgb(42, 48, 60) : Color.FromArgb(245, 247, 250);
+
+            using (Form dlg = new Form())
+            {
+                dlg.Text = "免责声明";
+                dlg.StartPosition = FormStartPosition.CenterScreen;
+                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
+                dlg.MaximizeBox = false;
+                dlg.MinimizeBox = false;
+                dlg.ControlBox = false;
+                dlg.ShowInTaskbar = true;
+                dlg.TopMost = true;
+                dlg.BackColor = bgColor;
+                dlg.ForeColor = textColor;
+                dlg.Font = GetFont(SF(9f));
+                dlg.ClientSize = new Size(SX(560), SY(540));
+
+                // 标题
+                Label lblTitle = new Label
+                {
+                    Text = "重要免责告知",
+                    Font = GetFont(SF(14f), FontStyle.Bold),
+                    Location = new Point(SX(20), SY(16)),
+                    AutoSize = true,
+                    ForeColor = textColor,
+                    BackColor = Color.Transparent
+                };
+                dlg.Controls.Add(lblTitle);
+
+                // 免责内容（带滚动）
+                string disclaimerText =
+@"1. 本软件仅为【流媒体链接技术检测工具】，仅提供链接连通性、媒体编码、网络延迟检测功能。
+   软件本身不生产、不存储、不提供任何IPTV直播源、影视播放地址、电视节目资源。
+
+2. 所有待检测流媒体链接、频道地址均由使用者自行导入、自行获取。
+   用户访问、检测第三方流媒体地址产生的一切著作权纠纷、行政处罚、法律责任，全部由使用者独立承担，与软件开发者无关。
+
+3. 严禁使用本软件从事以下行为：
+   • 窃取、破解运营商专网IPTV组播信号；
+   • 爬取、售卖、分发无版权直播源；
+   • 搭建商用非法视听、直播服务；
+   • 绕过版权保护收看付费影视、有线电视节目。
+
+4. 使用者应当严格遵守《中华人民共和国网络安全法》《中华人民共和国著作权法》《互联网视听节目服务管理规定》等法律法规，仅检测自身拥有合法授权的流媒体链接。
+
+5. 本程序按现状免费提供，不提供任何明示或隐含担保。
+   因使用本软件造成IP封禁、网络限制、设备故障等损失，开发者不承担任何赔偿责任。";
+
+                TextBox txtDisclaimer = new TextBox
+                {
+                    Text = disclaimerText,
+                    Multiline = true,
+                    ReadOnly = true,
+                    ScrollBars = ScrollBars.Vertical,
+                    Location = new Point(SX(20), SY(50)),
+                    Size = new Size(SX(520), SY(340)),
+                    Font = GetFont(SF(9f)),
+                    BackColor = isDark ? Color.FromArgb(38, 42, 52) : Color.FromArgb(248, 248, 252),
+                    ForeColor = textColor,
+                    BorderStyle = BorderStyle.FixedSingle
+                };
+                dlg.Controls.Add(txtDisclaimer);
+
+                // 同意复选框
+                CheckBox cbAgree = new CheckBox
+                {
+                    Text = "我已阅读并同意以上免责条款",
+                    Location = new Point(SX(20), SY(400)),
+                    AutoSize = true,
+                    ForeColor = textColor,
+                    BackColor = Color.Transparent,
+                    Font = GetFont(SF(9.5f))
+                };
+                dlg.Controls.Add(cbAgree);
+
+                // 进入软件按钮
+                Button btnEnter = new Button
+                {
+                    Text = "进入软件",
+                    Location = new Point(SX(20), SY(440)),
+                    Size = new Size(SX(520), SY(42)),
+                    Font = GetFont(SF(11f), FontStyle.Bold),
+                    FlatStyle = FlatStyle.Flat,
+                    Enabled = false,
+                    BackColor = btnDisabledBg,
+                    ForeColor = btnDisabledText,
+                    Cursor = Cursors.No
+                };
+                btnEnter.FlatAppearance.BorderSize = 0;
+                dlg.Controls.Add(btnEnter);
+
+                // 复选框变化时切换按钮状态
+                cbAgree.CheckedChanged += (s, e) =>
+                {
+                    btnEnter.Enabled = cbAgree.Checked;
+                    btnEnter.BackColor = cbAgree.Checked ? btnEnabledBg : btnDisabledBg;
+                    btnEnter.ForeColor = cbAgree.Checked ? btnEnabledText : btnDisabledText;
+                    btnEnter.Cursor = cbAgree.Checked ? Cursors.Hand : Cursors.No;
+                };
+
+                btnEnter.Click += (s, e) =>
+                {
+                    disclaimerAgreed = true;
+                    SaveConfig();
+                    dlg.DialogResult = DialogResult.OK;
+                    dlg.Close();
+                };
+
+                // 防止通过 Alt+F4 关闭
+                dlg.FormClosing += (s, e) =>
+                {
+                    if (!disclaimerAgreed)
+                    {
+                        Application.Exit();
+                    }
+                };
+
+                dlg.ShowDialog(this);
+            }
+        }
+
         private void RefreshFontsImmediately()
         {
             this.Font = GetFont(SF(10.5f));
@@ -6285,6 +6465,15 @@ namespace IPTVLiveChecker
         private void IPTVLiveCheckerMain_Load(object sender, EventArgs e)
         {
             LoadConfig();
+            // 首次启动显示免责声明
+            if (!disclaimerAgreed || !skipDisclaimerPrompt)
+            {
+                this.BeginInvoke(new Action(() =>
+                {
+                    ShowDisclaimerDialog();
+                }));
+            }
+
             if (persistList) LoadChannelList();
             try
             {
