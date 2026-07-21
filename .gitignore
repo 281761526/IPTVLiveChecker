@@ -1,0 +1,12 @@
+# 编译产物
+bin/
+obj/
+*.exe
+*.dll
+# VS配置
+.vs/
+*.suo
+*.user
+# 临时文件
+*.log
+*.tmp
