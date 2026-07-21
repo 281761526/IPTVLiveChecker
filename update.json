@@ -1,28 +1,28 @@
 ﻿{
-  "appName": "IPTV直播源检测工具",
-  "appId": "IPTVLiveChecker",
-  "currentLocalVersion": "Beta 1.0",
-  "latestVersion": "Beta 1.0",
-  "versionCode": 100,
-  "updateType": "beta",
-  "updateTime": "2026-07-21",
-  "isForceUpdate": false,
-  "downloadUrl": "https://github.com/281761526/IPTVLiveChecker/releases/download/Beta1.0/IPTVLiveChecker_Beta1.0.exe",
-  "githubRepo": "https://github.com/281761526/IPTVLiveChecker",
-  "changelog": [
-    "Beta 1.0 首发测试版本",
-    "1. 批量检测IPTV直播源在线可用性",
-    "2. 内置ffprobe/ffmpeg/MediaInfo媒体解析内核",
-    "3. 自动识别视频分辨率、音视频编码格式",
-    "4. 链接解析、搜索、频道分组管理",
-    "5. 直播源批量生成、合并、M3U/TXT导出",
-    "6. IP归属地查询、链路响应速度测速"
-  ],
-  "updateNotice": "当前为Beta测试版，功能持续迭代，程序Bug可通过邮箱反馈",
-  "disclaimerUrl": "https://github.com/281761526/IPTVLiveChecker/blob/master/DISCLAIMER.md",
-  "feedbackEmail": "xiaomiren0510@gmail.com",
-  "developer": "半步沧桑",
-  "md5Checksum": "",
-  "supportOS": ["Windows 10", "Windows 11"],
-  "dependence": "FFmpeg运行库（程序内置，无需手动安装）"
+    "appName":  "IPTV直播源检测工具",
+    "appId":  "IPTVLiveChecker",
+    "currentLocalVersion":  "Beta 1.0",
+    "latestVersion":  "Beta 1.1",
+    "versionCode":  101,
+    "updateType":  "beta",
+    "updateTime":  "2026-07-21",
+    "isForceUpdate":  false,
+    "downloadUrl":  "https://github.com/281761526/IPTVLiveChecker/releases/download/Beta1.0/IPTVLiveChecker_Beta1.0.exe",
+    "githubRepo":  "https://github.com/281761526/IPTVLiveChecker",
+    "changelog":  [
+                      "Beta 1.1 测试更新",
+                      "- 新增免责声明",
+                      "- 修复CDN链接",
+                      "- 测试自动更新功能"
+                  ],
+    "updateNotice":  "当前为Beta测试版，功能持续迭代，程序Bug可通过邮箱反馈",
+    "disclaimerUrl":  "https://github.com/281761526/IPTVLiveChecker/blob/master/DISCLAIMER.md",
+    "feedbackEmail":  "xiaomiren0510@gmail.com",
+    "developer":  "半步沧桑",
+    "md5Checksum":  "",
+    "supportOS":  [
+                      "Windows 10",
+                      "Windows 11"
+                  ],
+    "dependence":  "FFmpeg运行库（程序内置，无需手动安装）"
 }
