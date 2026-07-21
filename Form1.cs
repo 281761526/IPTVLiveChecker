@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using Microsoft.Win32;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -147,11 +147,71 @@ namespace WindowsFormsApp1
         private Color _tabTextSelected = Color.White;
         private int _hoverIndex = -1;
 
+        public int[] TabWidths { get; set; }
+        private int _tabHeight = 0;
+        public int TabHeight
+        {
+            get { return _tabHeight; }
+            set
+            {
+                _tabHeight = value;
+                if (_tabHeight > 0 && this.IsHandleCreated)
+                {
+                    this.ItemSize = new Size(this.ItemSize.Width, _tabHeight + 2);
+                }
+            }
+        }
+        public int TabXOffset { get; set; } = 0;
+        public int TabSpacing { get; set; } = 0;
+
         public DarkTabControl()
         {
             this.DrawMode = TabDrawMode.OwnerDrawFixed;
+            this.SizeMode = TabSizeMode.Fixed;
             this.Padding = new Point(10, 4);
             this.SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            if (_tabHeight > 0)
+            {
+                this.ItemSize = new Size(this.ItemSize.Width, _tabHeight + 2);
+            }
+        }
+
+        private Rectangle GetCustomTabRect(int index)
+        {
+            if (TabHeight <= 0)
+            {
+                TabHeight = this.GetTabRect(0).Height;
+            }
+
+            int x = TabXOffset;
+            for (int i = 0; i < index; i++)
+            {
+                if (TabWidths != null && i < TabWidths.Length && TabWidths[i] > 0)
+                {
+                    x += TabWidths[i] + TabSpacing;
+                }
+                else
+                {
+                    x += this.GetTabRect(i).Width + TabSpacing;
+                }
+            }
+
+            int width;
+            if (TabWidths != null && index < TabWidths.Length && TabWidths[index] > 0)
+            {
+                width = TabWidths[index];
+            }
+            else
+            {
+                width = this.GetTabRect(index).Width;
+            }
+
+            return new Rectangle(x, 0, width, TabHeight);
         }
 
         // 根据主题设置配色
@@ -190,7 +250,7 @@ namespace WindowsFormsApp1
             // 填充整个标签头区域背景（含右侧空白）
             if (this.TabPages.Count > 0)
             {
-                int headerH = this.GetTabRect(0).Height + 4;
+                int headerH = (TabHeight > 0 ? TabHeight : this.GetTabRect(0).Height) + 4;
                 using (SolidBrush br = new SolidBrush(_headerBg))
                     e.Graphics.FillRectangle(br, 0, 0, this.Width, headerH);
             }
@@ -198,7 +258,7 @@ namespace WindowsFormsApp1
             // 绘制每个标签
             for (int i = 0; i < this.TabPages.Count; i++)
             {
-                Rectangle tabRect = this.GetTabRect(i);
+                Rectangle tabRect = GetCustomTabRect(i);
                 bool isSelected = (i == this.SelectedIndex);
                 bool isHover = (i == _hoverIndex);
                 Color tabBg;
@@ -230,7 +290,7 @@ namespace WindowsFormsApp1
             int newHover = -1;
             for (int i = 0; i < this.TabPages.Count; i++)
             {
-                if (this.GetTabRect(i).Contains(e.Location))
+                if (GetCustomTabRect(i).Contains(e.Location))
                 {
                     newHover = i;
                     break;
@@ -255,8 +315,14 @@ namespace WindowsFormsApp1
     }
 
     // 自定义深色 MessageBox，替代系统白色 MessageBox
+    // 支持深色/浅色主题切换，自动适配DPI缩放，可自定义弹窗大小、按钮样式、圆角等
     public static class DarkMessageBox
     {
+        /// <summary>
+        /// 创建圆角矩形路径
+        /// </summary>
+        /// <param name="rect">矩形区域</param>
+        /// <param name="radius">圆角半径（建议设置为按钮高度的一半，如6）</param>
         public static System.Drawing.Drawing2D.GraphicsPath CreateRoundedRectPath(Rectangle rect, int radius)
         {
             int diameter = radius * 2;
@@ -269,14 +335,22 @@ namespace WindowsFormsApp1
             return path;
         }
 
+        // Windows API：设置窗口属性（深色标题栏）
         [System.Runtime.InteropServices.DllImport("dwmapi.dll")]
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
         private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
         private const int DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_24H2 = 19;
 
+        /// <summary>主题提供器 - 返回当前是否为深色主题</summary>
         public static Func<bool> IsDarkProvider { get; set; } = () => false;
+        /// <summary>DPI缩放因子 - 用于自适应不同屏幕分辨率，默认1.0（96DPI）</summary>
         public static float DpiScale { get; set; } = 1f;
 
+        /// <summary>
+        /// 应用深色标题栏效果（Windows 10 1809+）
+        /// </summary>
+        /// <param name="hwnd">窗口句柄</param>
+        /// <param name="darkMode">是否启用深色模式（1=深色，0=浅色）</param>
         public static void ApplyDarkTitleBar(IntPtr hwnd, int darkMode)
         {
             int dm = darkMode;
@@ -284,47 +358,68 @@ namespace WindowsFormsApp1
             try { DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_24H2, ref dm, 4); } catch { }
         }
 
+        /// <summary>
+        /// 显示消息框（无所有者窗口）
+        /// </summary>
+        /// <param name="text">消息内容</param>
+        /// <param name="caption">窗口标题</param>
+        /// <param name="buttons">按钮类型（OK/YesNo/OKCancel）</param>
+        /// <param name="icon">图标类型（Information/Warning/Error/Question）</param>
         public static DialogResult Show(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
         {
             return Show(null, text, caption, buttons, icon);
         }
 
+        /// <summary>
+        /// 显示消息框（有所有者窗口，居中于所有者）
+        /// </summary>
+        /// <param name="owner">所有者窗口</param>
+        /// <param name="text">消息内容</param>
+        /// <param name="caption">窗口标题</param>
+        /// <param name="buttons">按钮类型（OK/YesNo/OKCancel）</param>
+        /// <param name="icon">图标类型（Information/Warning/Error/Question）</param>
         public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
         {
+            // ========== 颜色配置 ==========
             bool isDark = IsDarkProvider();
-            Color bgColor = isDark ? Color.FromArgb(40, 40, 50) : Color.White;
-            Color textColor = isDark ? Color.FromArgb(230, 230, 240) : Color.FromArgb(40, 40, 40);
-            Color accentColor = Color.FromArgb(66, 133, 244);
-            Color btnColor = isDark ? Color.FromArgb(60, 60, 75) : Color.FromArgb(240, 240, 245);
-            Color btnHoverColor = isDark ? Color.FromArgb(80, 80, 100) : Color.FromArgb(220, 220, 230);
-            Color btnBorderColor = isDark ? Color.FromArgb(90, 90, 110) : Color.FromArgb(200, 200, 205);
-            Color btnFg = isDark ? Color.White : Color.FromArgb(50, 50, 50);
+            Color bgColor = isDark ? Color.FromArgb(40, 40, 50) : Color.White;           // 窗口背景色（深色：深蓝灰 / 浅色：纯白）
+            Color textColor = isDark ? Color.FromArgb(230, 230, 240) : Color.FromArgb(40, 40, 40); // 文字颜色（深色：浅灰白 / 浅色：深灰）
+            Color accentColor = Color.FromArgb(66, 133, 244);                             // 强调色（蓝色，用于主按钮）
+            Color btnColor = isDark ? Color.FromArgb(60, 60, 75) : Color.FromArgb(240, 240, 245); // 次要按钮背景色
+            Color btnHoverColor = isDark ? Color.FromArgb(80, 80, 100) : Color.FromArgb(220, 220, 230); // 按钮悬停色
+            Color btnBorderColor = isDark ? Color.FromArgb(90, 90, 110) : Color.FromArgb(200, 200, 205); // 按钮边框色
+            Color btnFg = isDark ? Color.White : Color.FromArgb(50, 50, 50);               // 次要按钮文字色
 
-            Font msgFont = new Font("Microsoft YaHei UI", 10.5f);
+            Font msgFont = new Font("Microsoft YaHei UI", 10.5f);  // 消息文字字体（10.5pt）
 
             using (Form dlg = new Form())
             {
-                dlg.Text = caption;
-                dlg.StartPosition = FormStartPosition.Manual;
-                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
-                dlg.MaximizeBox = false;
-                dlg.MinimizeBox = false;
-                dlg.BackColor = bgColor;
-                dlg.ForeColor = textColor;
-                dlg.Font = msgFont;
-                dlg.ShowInTaskbar = false;
-                dlg.TopMost = true;
+                // ========== 弹窗基础属性 ==========
+                dlg.Text = caption;                                    // 窗口标题
+                dlg.StartPosition = FormStartPosition.Manual;           // 手动定位（后续计算居中位置）
+                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;      // 固定对话框样式，禁止调整大小
+                dlg.MaximizeBox = false;                               // 禁用最大化按钮
+                dlg.MinimizeBox = false;                               // 禁用最小化按钮
+                dlg.BackColor = bgColor;                               // 窗口背景色
+                dlg.ForeColor = textColor;                             // 默认文字颜色
+                dlg.Font = msgFont;                                    // 默认字体
+                dlg.ShowInTaskbar = false;                             // 不在任务栏显示
+                dlg.TopMost = true;                                    // 置顶显示
 
-                int paddingH = (int)(24 * DarkMessageBox.DpiScale);
-                int paddingV = (int)(20 * DarkMessageBox.DpiScale);
-                int iconSize = (int)(40 * DarkMessageBox.DpiScale);
-                int iconGap = (int)(16 * DarkMessageBox.DpiScale);
-                int btnGap = (int)(16 * DarkMessageBox.DpiScale);
-                int btnW = (int)(85 * DarkMessageBox.DpiScale);
-                int btnH = (int)(34 * DarkMessageBox.DpiScale);
-                int btnPadding = (int)(16 * DarkMessageBox.DpiScale);
-                int minWidth = (int)(320 * DarkMessageBox.DpiScale);
+                // ========== 尺寸参数配置（均已乘以DpiScale，自动适配高DPI） ==========
+                int paddingH = (int)(24 * DarkMessageBox.DpiScale);     // 水平内边距（24px * DPI缩放）
+                int paddingV = (int)(20 * DarkMessageBox.DpiScale);     // 垂直内边距（20px * DPI缩放）
+                int iconSize = (int)(40 * DarkMessageBox.DpiScale);     // 图标大小（40x40px * DPI缩放）
+                int iconGap = (int)(16 * DarkMessageBox.DpiScale);      // 图标与文字间距（16px * DPI缩放）
+                int btnGap = (int)(16 * DarkMessageBox.DpiScale);       // 按钮之间间距（16px * DPI缩放）
+                int btnW = (int)(85 * DarkMessageBox.DpiScale);         // 按钮宽度（85px * DPI缩放）
+                int btnH = (int)(34 * DarkMessageBox.DpiScale);         // 按钮高度（34px * DPI缩放）
+                int btnPadding = (int)(16 * DarkMessageBox.DpiScale);   // 按钮区域与内容间距（16px * DPI缩放）
+                int minWidth = (int)(320 * DarkMessageBox.DpiScale);    // 弹窗最小宽度（320px * DPI缩放）
 
+                // ========== 消息内容标签 ==========
+                // [位置] 图标右侧，水平内边距 + 图标宽 + 图标间距
+                // [大小] 根据文字内容自动计算，最小宽度 = minWidth - 2*paddingH - iconSize - iconGap
                 Label lblText = new Label
                 {
                     Text = text,
@@ -336,23 +431,28 @@ namespace WindowsFormsApp1
                 };
                 lblText.PerformLayout();
 
+                // 计算实际文本尺寸和弹窗总大小
                 int textW = Math.Max(lblText.PreferredWidth, minWidth - paddingH * 2 - iconSize - iconGap);
                 int textH = lblText.PreferredHeight;
-                int contentW = paddingH + iconSize + iconGap + textW + paddingH;
-                int contentH = paddingV + Math.Max(iconSize, textH) + btnPadding + btnH + paddingV;
+                int contentW = paddingH + iconSize + iconGap + textW + paddingH;       // 总宽度 = 左内边距 + 图标 + 间距 + 文字 + 右内边距
+                int contentH = paddingV + Math.Max(iconSize, textH) + btnPadding + btnH + paddingV; // 总高度 = 上内边距 + 图标/文字高度 + 按钮间距 + 按钮 + 下内边距
 
-                dlg.ClientSize = new Size(Math.Max(contentW, minWidth), contentH);
+                dlg.ClientSize = new Size(Math.Max(contentW, minWidth), contentH);     // 设置弹窗大小（不小于最小宽度）
 
-                int iconX = paddingH;
-                int iconY = paddingV;
-                int textX = paddingH + iconSize + iconGap;
-                int textY = paddingV;
-                int btnY = contentH - paddingV - btnH;
+                // 计算各元素位置
+                int iconX = paddingH;                            // 图标X = 左内边距
+                int iconY = paddingV;                            // 图标Y = 上内边距
+                int textX = paddingH + iconSize + iconGap;        // 文字X = 左内边距 + 图标宽 + 图标间距
+                int textY = paddingV;                            // 文字Y = 上内边距
+                int btnY = contentH - paddingV - btnH;            // 按钮Y = 总高度 - 下内边距 - 按钮高度
 
                 lblText.Location = new Point(textX, textY);
                 lblText.Size = new Size(textW, textH);
                 dlg.Controls.Add(lblText);
 
+                // ========== 图标图片框 ==========
+                // [位置] 左上角，水平/垂直内边距处
+                // [大小] iconSize x iconSize
                 PictureBox picIcon = new PictureBox
                 {
                     Size = new Size(iconSize, iconSize),
@@ -360,6 +460,7 @@ namespace WindowsFormsApp1
                     BackColor = bgColor,
                     SizeMode = PictureBoxSizeMode.AutoSize
                 };
+                // 根据图标类型设置对应系统图标
                 switch (icon)
                 {
                     case MessageBoxIcon.Information:
@@ -380,32 +481,37 @@ namespace WindowsFormsApp1
                 }
                 dlg.Controls.Add(picIcon);
 
+                // ========== 按钮创建（根据按钮类型） ==========
+                // 所有按钮统一样式：圆角6px，悬停高亮，无边框
+
+                // --- OK按钮 ---
                 if (buttons == MessageBoxButtons.OK)
                 {
-                    int btnX = (dlg.ClientSize.Width - btnW) / 2;
+                    int btnX = (dlg.ClientSize.Width - btnW) / 2;  // 水平居中
                     Button btnOK = new Button
                     {
                         Text = "确定",
                         DialogResult = DialogResult.OK,
                         Location = new Point(btnX, btnY),
                         Size = new Size(btnW, btnH),
-                        BackColor = accentColor,
+                        BackColor = accentColor,           // 蓝色主按钮
                         ForeColor = Color.White,
                         FlatStyle = FlatStyle.Flat,
                         FlatAppearance = { BorderSize = 0 },
                         Font = msgFont
                     };
                     btnOK.FlatAppearance.BorderSize = 0;
-                    btnOK.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, btnW, btnH), 6));
-                    btnOK.MouseEnter += (s, ev) => btnOK.BackColor = Color.FromArgb(86, 153, 254);
+                    btnOK.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, btnW, btnH), 6));  // 圆角6px
+                    btnOK.MouseEnter += (s, ev) => btnOK.BackColor = Color.FromArgb(86, 153, 254);         // 悬停高亮
                     btnOK.MouseLeave += (s, ev) => btnOK.BackColor = accentColor;
                     dlg.Controls.Add(btnOK);
-                    dlg.AcceptButton = btnOK;
+                    dlg.AcceptButton = btnOK;              // Enter键触发
                 }
+                // --- Yes/No按钮 ---
                 else if (buttons == MessageBoxButtons.YesNo)
                 {
-                    int btnGroupW = btnW * 2 + btnGap;
-                    int btnStartX = (dlg.ClientSize.Width - btnGroupW) / 2;
+                    int btnGroupW = btnW * 2 + btnGap;     // 按钮组总宽度 = 两个按钮 + 间距
+                    int btnStartX = (dlg.ClientSize.Width - btnGroupW) / 2;  // 按钮组水平居中
 
                     Button btnYes = new Button
                     {
@@ -413,7 +519,7 @@ namespace WindowsFormsApp1
                         DialogResult = DialogResult.Yes,
                         Location = new Point(btnStartX, btnY),
                         Size = new Size(btnW, btnH),
-                        BackColor = accentColor,
+                        BackColor = accentColor,           // 蓝色主按钮
                         ForeColor = Color.White,
                         FlatStyle = FlatStyle.Flat,
                         FlatAppearance = { BorderSize = 0 },
@@ -431,7 +537,7 @@ namespace WindowsFormsApp1
                         DialogResult = DialogResult.No,
                         Location = new Point(btnStartX + btnW + btnGap, btnY),
                         Size = new Size(btnW, btnH),
-                        BackColor = btnColor,
+                        BackColor = btnColor,              // 灰色次要按钮
                         ForeColor = btnFg,
                         FlatStyle = FlatStyle.Flat,
                         FlatAppearance = { BorderSize = 0 },
@@ -443,9 +549,10 @@ namespace WindowsFormsApp1
                     btnNo.MouseEnter += (s, ev) => btnNo.BackColor = btnHoverColor;
                     btnNo.MouseLeave += (s, ev) => btnNo.BackColor = btnColor;
                     dlg.Controls.Add(btnNo);
-                    dlg.AcceptButton = btnYes;
-                    dlg.CancelButton = btnNo;
+                    dlg.AcceptButton = btnYes;             // Enter键触发"是"
+                    dlg.CancelButton = btnNo;              // Escape键触发"否"
                 }
+                // --- OK/Cancel按钮 ---
                 else if (buttons == MessageBoxButtons.OKCancel)
                 {
                     int btnGroupW = btnW * 2 + btnGap;
@@ -487,10 +594,11 @@ namespace WindowsFormsApp1
                     btnCancel.MouseEnter += (s, ev) => btnCancel.BackColor = btnHoverColor;
                     btnCancel.MouseLeave += (s, ev) => btnCancel.BackColor = btnColor;
                     dlg.Controls.Add(btnCancel);
-                    dlg.AcceptButton = btnOK;
-                    dlg.CancelButton = btnCancel;
+                    dlg.AcceptButton = btnOK;              // Enter键触发"确定"
+                    dlg.CancelButton = btnCancel;          // Escape键触发"取消"
                 }
 
+                // ========== 深色标题栏适配（Windows 10+） ==========
                 if (isDark)
                 {
                     int dm = 1;
@@ -498,12 +606,13 @@ namespace WindowsFormsApp1
                     try { DwmSetWindowAttribute(dlg.Handle, DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_24H2, ref dm, 4); } catch { }
                 }
 
+                // ========== 弹窗位置计算（居中显示） ==========
                 Rectangle screen = Screen.PrimaryScreen.WorkingArea;
                 int winTotalW = dlg.Width;
                 int winTotalH = dlg.Height;
-                int centerX = screen.X + (screen.Width - winTotalW) / 2;
+                int centerX = screen.X + (screen.Width - winTotalW) / 2;       // 屏幕居中
                 int centerY = screen.Y + (screen.Height - winTotalH) / 2;
-                if (owner != null)
+                if (owner != null)                                              // 如果有所有者窗口，居中于所有者
                 {
                     Form ownerForm = owner as Form;
                     if (ownerForm != null)
@@ -512,12 +621,14 @@ namespace WindowsFormsApp1
                         centerY = ownerForm.Top + (ownerForm.Height - winTotalH) / 2;
                     }
                 }
+                // 确保弹窗不超出屏幕边界
                 if (centerX < screen.X) centerX = screen.X;
                 if (centerY < screen.Y) centerY = screen.Y;
                 if (centerX + winTotalW > screen.X + screen.Width) centerX = screen.X + screen.Width - winTotalW;
                 if (centerY + winTotalH > screen.Y + screen.Height) centerY = screen.Y + screen.Height - winTotalH;
                 dlg.Location = new Point(centerX, centerY);
 
+                // 显示弹窗并等待用户操作
                 DialogResult result;
                 if (owner != null)
                     result = dlg.ShowDialog(owner);
@@ -528,12 +639,17 @@ namespace WindowsFormsApp1
             }
         }
 
-        // 兼容旧签名的快捷方法
+        /// <summary>
+        /// 快捷方法：显示只有确定按钮的消息框（无图标）
+        /// </summary>
         public static DialogResult Show(string text, string caption)
         {
             return Show(null, text, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        /// <summary>
+        /// 快捷方法：显示只有确定按钮的消息框（无标题，无图标）
+        /// </summary>
         public static DialogResult Show(string text)
         {
             return Show(null, text, "", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -661,6 +777,7 @@ namespace WindowsFormsApp1
         private bool autoClearInvalid = false;
         private bool persistList = true;
         private bool watchSearchWindow = false;
+        private bool showSearchButton = false;
         private bool autoExtractIpPort = false;
         private string loginDataPath = "";
         private List<string> iptvHistoryIps = new List<string>();
@@ -840,6 +957,7 @@ namespace WindowsFormsApp1
             sb.AppendLine($"PersistList={persistList}");
             sb.AppendLine($"CustomPlayerPath={customPlayerPath}");
             sb.AppendLine($"WatchSearchWindow={watchSearchWindow}");
+            sb.AppendLine($"ShowSearchButton={showSearchButton}");
             sb.AppendLine($"ThemePreference={themePreference}");
             sb.AppendLine($"AutoExtractIpPort={autoExtractIpPort}");
             sb.AppendLine($"AutoParseLink={autoParseLink}");
@@ -949,6 +1067,9 @@ namespace WindowsFormsApp1
                         case "WatchSearchWindow":
                             bool.TryParse(value, out watchSearchWindow);
                             break;
+                        case "ShowSearchButton":
+                            bool.TryParse(value, out showSearchButton);
+                            break;
                         case "ThemePreference":
                             themePreference = value;
                             break;
@@ -984,6 +1105,7 @@ namespace WindowsFormsApp1
         private Panel statusBarRef;
         private Panel searchPanelRef;
         private Panel searchBoxHostRef;
+        private Button btnSearchRef;
         private Panel gridContainerRef;
         private Panel titleBarPanel;
         private Panel bottomBarRef;
@@ -2253,27 +2375,39 @@ namespace WindowsFormsApp1
             }
         }
 
+        /// <summary>
+        /// 创建下载进度对话框
+        /// 用于显示FFmpeg/MediaInfo组件下载进度和日志信息
+        /// </summary>
+        /// <returns>下载对话框窗体，Tag属性包含(lblStatus, progressBar, txtLog)三元组，供外部更新UI</returns>
         private Form CreateDownloadForm()
         {
+            // ========== 颜色配置（根据主题自动切换） ==========
             bool isDarkFF = IsDarkColor(theme.Bg);
-            Color ffBg = isDarkFF ? Color.FromArgb(45, 45, 55) : Color.White;
-            Color ffText = isDarkFF ? Color.FromArgb(220, 220, 230) : Color.FromArgb(50, 55, 65);
-            Color ffStatus = isDarkFF ? Color.FromArgb(160, 160, 175) : Color.FromArgb(100, 105, 115);
-            Color ffLogBg = isDarkFF ? Color.FromArgb(30, 30, 38) : Color.FromArgb(248, 249, 250);
-            Color ffLogFg = isDarkFF ? Color.FromArgb(180, 180, 190) : Color.FromArgb(50, 55, 65);
+            Color ffBg = isDarkFF ? Color.FromArgb(45, 45, 55) : Color.White;           // 窗口背景色（深色：深蓝灰 / 浅色：纯白）
+            Color ffText = isDarkFF ? Color.FromArgb(220, 220, 230) : Color.FromArgb(50, 55, 65); // 标题文字颜色
+            Color ffStatus = isDarkFF ? Color.FromArgb(160, 160, 175) : Color.FromArgb(100, 105, 115); // 状态文字颜色（比标题略暗）
+            Color ffLogBg = isDarkFF ? Color.FromArgb(30, 30, 38) : Color.FromArgb(248, 249, 250); // 日志区域背景色
+            Color ffLogFg = isDarkFF ? Color.FromArgb(180, 180, 190) : Color.FromArgb(50, 55, 65); // 日志文字颜色
+
+            // ========== 主窗口配置 ==========
+            // [位置] 屏幕居中 [大小] 580x280（已乘以DPI缩放）[样式] 固定对话框
             Form dlg = new Form
             {
-                Text = "正在安装 FFmpeg 组件",
-                Size = new Size(SX(580), SY(280)),
-                StartPosition = FormStartPosition.CenterScreen,
-                FormBorderStyle = FormBorderStyle.FixedDialog,
-                MaximizeBox = false,
-                MinimizeBox = false,
-                BackColor = ffBg,
-                ShowInTaskbar = false,
-                TopMost = true
+                Text = "正在安装 FFmpeg 组件",          // 窗口标题（调用方会根据下载内容修改）
+                Size = new Size(SX(580), SY(280)),       // 窗口大小（宽580px，高280px，已适配DPI）
+                StartPosition = FormStartPosition.CenterScreen,    // 居中显示
+                FormBorderStyle = FormBorderStyle.FixedDialog,     // 固定对话框样式，禁止调整大小
+                MaximizeBox = false,                               // 禁用最大化按钮
+                MinimizeBox = false,                               // 禁用最小化按钮
+                BackColor = ffBg,                                  // 窗口背景色
+                ShowInTaskbar = false,                             // 不在任务栏显示
+                TopMost = true                                     // 置顶显示
             };
-            SetFormDarkModeTitleBar(dlg, isDarkFF);
+            SetFormDarkModeTitleBar(dlg, isDarkFF);      // 应用深色标题栏
+
+            // ========== 标题标签 ==========
+            // [位置] (20, 18) [大小] 530x30 [字体] YaHei 11pt 加粗
             Label lblTitle = new Label
             {
                 Text = "⏳ 正在下载 FFmpeg 组件（播放和检测功能必需）",
@@ -2284,6 +2418,9 @@ namespace WindowsFormsApp1
                 TextAlign = ContentAlignment.TopLeft
             };
             dlg.Controls.Add(lblTitle);
+
+            // ========== 状态标签 ==========
+            // [位置] (20, 55) [大小] 530x22 [字体] YaHei 9.5pt [颜色] ffStatus（次要文字颜色）
             Label lblStatus = new Label
             {
                 Text = "正在准备下载...",
@@ -2294,17 +2431,24 @@ namespace WindowsFormsApp1
                 TextAlign = ContentAlignment.TopLeft
             };
             dlg.Controls.Add(lblStatus);
+
+            // ========== 进度条 ==========
+            // [位置] (20, 85) [大小] 525x24 [样式] 分段块式 [范围] 0-100
             ProgressBar progressBar = new ProgressBar
             {
                 Location = new Point(SX(20), SY(85)),
                 Width = SX(525),
                 Height = SY(24),
-                Style = ProgressBarStyle.Blocks,
+                Style = ProgressBarStyle.Blocks,      // 分段块式进度条
                 Minimum = 0,
                 Maximum = 100,
                 Value = 0
             };
             dlg.Controls.Add(progressBar);
+
+            // ========== 日志文本框 ==========
+            // [位置] (20, 120) [大小] 525x100 [字体] Consolas 8.5pt（等宽字体，便于日志阅读）
+            // [属性] 多行、只读、垂直滚动条
             TextBox txtLog = new TextBox
             {
                 Location = new Point(SX(20), SY(120)),
@@ -2319,6 +2463,8 @@ namespace WindowsFormsApp1
                 BorderStyle = BorderStyle.FixedSingle
             };
             dlg.Controls.Add(txtLog);
+
+            // 将三个控件打包存入Tag，供外部更新UI使用
             dlg.Tag = new Tuple<Label, ProgressBar, TextBox>(lblStatus, progressBar, txtLog);
             return dlg;
         }
@@ -4064,397 +4210,362 @@ namespace WindowsFormsApp1
         /// </summary>
         private void ShowSettingsDialog()
         {
-            // ========== 颜色配置 ==========
-            // 根据主题自动切换深色/浅色配色
             bool isDark = theme.Name == "深色";
-            Color bgColor = isDark ? Color.FromArgb(30, 30, 40) : Color.White;           // 窗口背景色
-            Color panelBg = isDark ? Color.FromArgb(40, 40, 50) : Color.White;          // 面板背景色
-            Color textColor = isDark ? Color.White : Color.FromArgb(30, 30, 40);         // 文字颜色
-            Color accentColor = theme.Primary;                                            // 主题主色（紫色）
-            Color borderColor = isDark ? Color.FromArgb(60, 60, 70) : Color.FromArgb(200, 200, 210); // 分隔线颜色
-            Color hoverColor = isDark ? Color.FromArgb(50, 50, 65) : Color.FromArgb(240, 240, 245); // 高亮背景色
+            Color bgColor = isDark ? Color.FromArgb(28, 32, 42) : Color.White;
+            Color textColor = isDark ? Color.FromArgb(220, 225, 235) : Color.FromArgb(35, 40, 50);
+            Color subTextColor = isDark ? Color.FromArgb(160, 168, 185) : Color.FromArgb(100, 110, 125);
+            Color accentColor = Color.FromArgb(64, 158, 255);
+            Color borderColor = isDark ? Color.FromArgb(50, 55, 70) : Color.FromArgb(230, 232, 238);
 
-            // ========== 屏幕分辨率适配 ==========
-            // 根据屏幕工作区大小自动调整窗口尺寸，最大不超过屏幕的80%
+            Color engineCardBg = isDark ? Color.FromArgb(30, 45, 60) : Color.FromArgb(235, 245, 255);
+            Color engineCardBorder = isDark ? Color.FromArgb(45, 70, 100) : Color.FromArgb(180, 210, 240);
+
+            Color perfCardBg = isDark ? Color.FromArgb(55, 45, 35) : Color.FromArgb(255, 245, 235);
+            Color perfCardBorder = isDark ? Color.FromArgb(100, 70, 45) : Color.FromArgb(240, 200, 160);
+
+            Color funcCardBg = isDark ? Color.FromArgb(35, 55, 45) : Color.FromArgb(240, 255, 245);
+            Color funcCardBorder = isDark ? Color.FromArgb(55, 90, 70) : Color.FromArgb(180, 230, 200);
+
+            Color customCardBg = isDark ? Color.FromArgb(50, 40, 60) : Color.FromArgb(250, 245, 255);
+            Color customCardBorder = isDark ? Color.FromArgb(90, 65, 110) : Color.FromArgb(220, 190, 240);
+
+            // ========== 屏幕分辨率自适应 ==========
+            // 根据屏幕工作区动态计算窗口大小，确保内容完整显示
             Rectangle screenWorkArea = Screen.GetWorkingArea(this);
             int screenWidth = screenWorkArea.Width;
             int screenHeight = screenWorkArea.Height;
-            
-            // 基础尺寸（1080p屏幕下的尺寸）
-            int baseWidth = 980;
-            int baseHeight = 950;
-            
-            // 最大尺寸限制为屏幕的80%
-            int maxWidth = (int)(screenWidth * 0.85);
-            int maxHeight = (int)(screenHeight * 0.85);
-            
-            // 最终窗口大小（取基础尺寸和最大尺寸的较小值）
-            int windowWidth = Math.Min(baseWidth, maxWidth);
-            int windowHeight = Math.Min(baseHeight, maxHeight);
 
-            // ========== 主窗口配置 ==========
-            // [位置] 居中 [大小] 根据屏幕分辨率自动调整 [样式] 固定对话框
+            // 卡片内容所需高度（DPI缩放后）
+            int scrollTopPad = SY(20);        // 滚动容器顶部内边距
+            int scrollBottomPad = SY(8);      // 滚动容器底部内边距（减少留白）
+            int scrollRightPad = SX(20);      // 滚动容器右侧内边距（补偿滚动条宽度，使卡片左右留白对称）
+            int cardStartY = SY(15);          // 第一个卡片的起始Y坐标
+            int engineCardH = SY(105);        // 检测引擎卡片
+            int perfCardH = SY(125);          // 性能设置卡片（2行布局）
+            int funcCardH = SY(232);          // 功能开关卡片（增加了搜索功能开关）
+            int customCardH = SY(130);        // 个性化卡片（减少底部留白）
+            int cardGap = SY(12);             // 卡片间距
+            int btnPanelH = SY(65);           // 底部按钮面板（减少高度）
+            // 默认功能开关卡片隐藏时的内容高度（3个卡片，2个间距）
+            int contentTotalH = cardStartY + engineCardH + perfCardH + customCardH + cardGap * 2 + scrollBottomPad;
+            int requiredHeight = scrollTopPad + contentTotalH + btnPanelH;
+
+            // 窗口大小：取所需高度和屏幕95%的较小值，但至少能容纳内容
+            int windowWidth = Math.Min(SX(820), (int)(screenWidth * 0.9));
+            int windowHeight = Math.Min(Math.Max(requiredHeight, SY(450)), (int)(screenHeight * 0.95));
+
             Form dlg = new Form
             {
-                Text = "设置",                                    // 窗口标题
-                Size = new Size(windowWidth, windowHeight),        // 窗口大小 (宽x高)，根据屏幕分辨率自动调整
-                StartPosition = FormStartPosition.CenterScreen,    // 居中显示
-                FormBorderStyle = FormBorderStyle.FixedDialog,     // 固定对话框样式，禁止拖动调整大小
-                MaximizeBox = false,                               // 禁止最大化按钮
-                MinimizeBox = false,                               // 禁止最小化按钮
-                BackColor = bgColor                                // 窗口背景色
+                Text = "设置",
+                Size = new Size(windowWidth, windowHeight),
+                StartPosition = FormStartPosition.CenterScreen,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false,
+                BackColor = bgColor
             };
             SetFormDarkModeTitleBar(dlg, isDark);
 
-            // ========== 布局常量 ==========
-            // 修改这些值可以整体调整布局，无需逐个修改控件
-            int btnPanelHeight = 100;                 // 底部按钮面板高度
-            int contentWidth = (int)(windowWidth * 0.88); // 内容区域宽度 = 窗口宽度的88%
-            int contentHeight = windowHeight - 100 - btnPanelHeight; // 内容区域高度 = 窗口高度 - 顶部边距 - 按钮面板高度
-            int labelWidth = 200;                     // 标签列宽度
-            int controlStartX = labelWidth + 60;      // 控件列起始X坐标（标签右侧60像素）
-            int rowHeight = 70;                       // 每行高度（标签+控件）
-            int tipGap = 35;                          // 红色提示标签与下一行之间的间距
-            int contentX = (windowWidth - contentWidth) / 2;  // 内容区域X坐标（水平居中）
-            int contentY = 50;                        // 内容区域Y坐标（顶部边距）
+            int cardHMargin = SX(30);            // 卡片左右边距
+            int cardWidth = windowWidth - cardHMargin * 2;
+            int cardX = cardHMargin;
+            int cardY = cardStartY;
 
-            // ========== 边框面板（居中显示） ==========
-            // [位置] 水平居中，顶部50像素 [大小] contentWidth x contentHeight [边框] 自定义灰色圆角边框
-            Panel borderPanel = new Panel
+            // ========== 内容滚动容器 ==========
+            // 当窗口高度不足时，自动显示滚动条
+            Panel scrollContainer = new Panel
             {
-                Size = new Size(contentWidth, contentHeight),      // 面板大小 = contentWidth x contentHeight
-                Location = new Point(contentX, contentY),          // 水平居中，顶部contentY像素
-                BackColor = panelBg,                               // 背景色
-                BorderStyle = BorderStyle.None                     // 禁用默认边框，使用自定义绘制
+                Dock = DockStyle.Fill,
+                AutoScroll = true,
+                BackColor = bgColor,
+                Padding = new Padding(0, scrollTopPad, scrollRightPad, scrollBottomPad)
             };
-            
-            // 自定义绘制圆角边框（使用主题适配颜色）
-            borderPanel.Paint += (s, pe) =>
+
+            Panel CreateCard(Color bg, Color border)
             {
-                pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                using (Pen pen = new Pen(borderColor, 2)) // 使用主题适配的边框颜色，线宽2像素
+                return new Panel
                 {
-                    Rectangle rect = new Rectangle(1, 1, borderPanel.Width - 3, borderPanel.Height - 3);
-                    using (GraphicsPath path = GetRoundedPath(rect, 12)) // 圆角半径12像素
-                    {
-                        pe.Graphics.DrawPath(pen, path);
-                    }
-                }
-            };
-            
-            dlg.Controls.Add(borderPanel);
-
-            // ========== 内容面板 ==========
-            // [位置] (10, 10) [大小] 780 x 740 [作用] 所有设置项控件的容器
-            Panel contentPanel = new Panel
-            {
-                Size = new Size(contentWidth - 20, contentHeight - 20), // 比边框面板小20像素（内边距）
-                Location = new Point(10, 10),                           // 距离边框面板边缘各10像素
-                BackColor = panelBg                                     // 背景色
-            };
-            borderPanel.Controls.Add(contentPanel);
-
-            int y = 20; // Y坐标追踪变量，用于依次定位控件
-
-            // ========== 添加行高亮面板的辅助方法 ==========
-            // 为每个设置项创建一个带鼠标悬停高亮效果的面板
-            // 使用计数器防止鼠标在子控件间移动时闪烁
-            Panel AddRowPanel(int currentY)
-            {
-                Panel rowPanel = new Panel
-                {
-                    Size = new Size(contentWidth - 20, rowHeight),    // [大小] 780 x 70
-                    Location = new Point(0, currentY),                 // [位置] (0, currentY)
-                    BackColor = Color.Transparent,                     // 默认透明背景
-                    Tag = 0                                            // 计数器，用于防止闪烁
+                    Size = new Size(cardWidth, 0),
+                    Location = new Point(cardX, cardY),
+                    BackColor = bg,
+                    BorderStyle = BorderStyle.None
                 };
+            }
 
-                // 鼠标进入：计数器+1，显示高亮
-                rowPanel.MouseEnter += (s, e) =>
+            void PaintCardBorder(Panel panel, Color border)
+            {
+                panel.Paint += (s, pe) =>
                 {
-                    rowPanel.Tag = (int)rowPanel.Tag + 1;
-                    rowPanel.BackColor = hoverColor;
-                    rowPanel.Invalidate();
-                    foreach (Control ctrl in rowPanel.Controls)
+                    pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                    using (Pen pen = new Pen(border, 2))
                     {
-                        ctrl.Invalidate();
-                    }
-                };
-
-                // 鼠标离开：计数器-1，只有计数器为0时才取消高亮
-                rowPanel.MouseLeave += (s, e) =>
-                {
-                    rowPanel.Tag = Math.Max(0, (int)rowPanel.Tag - 1);
-                    if ((int)rowPanel.Tag == 0)
-                    {
-                        rowPanel.BackColor = Color.Transparent;
-                        rowPanel.Invalidate();
-                        foreach (Control ctrl in rowPanel.Controls)
+                        Rectangle rect = new Rectangle(1, 1, panel.Width - 3, panel.Height - 3);
+                        using (GraphicsPath path = GetRoundedPath(rect, 8))
                         {
-                            ctrl.Invalidate();
+                            pe.Graphics.DrawPath(pen, path);
                         }
                     }
                 };
-
-                // 绘制高亮边框：计数器>0时绘制紫色圆角边框
-                rowPanel.Paint += (s, pe) =>
-                {
-                    if ((int)rowPanel.Tag > 0)
-                    {
-                        pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                        using (Pen pen = new Pen(accentColor, 2))     // 紫色画笔，线宽2像素
-                        {
-                            Rectangle rect = new Rectangle(2, 2, rowPanel.Width - 5, rowPanel.Height - 5);
-                            using (GraphicsPath path = GetRoundedPath(rect, 8)) // 圆角半径8像素
-                            {
-                                pe.Graphics.DrawPath(pen, path);
-                            }
-                        }
-                    }
-                };
-
-                return rowPanel;
             }
 
-            // ========== 为子控件添加鼠标事件（递归）- 排除Button控件 ==========
-            // 使标签、输入框、开关等子控件也能触发行高亮
-            // 排除Button控件，避免点击浏览按钮时触发高亮
-            void WireMouseEvents(Control parent, Panel rowPanel)
-            {
-                foreach (Control ctrl in parent.Controls)
-                {
-                    if (!(ctrl is Button)) // 排除按钮控件
-                    {
-                        ctrl.MouseEnter += (s, e) =>
-                        {
-                            rowPanel.Tag = (int)rowPanel.Tag + 1;
-                            rowPanel.BackColor = hoverColor;
-                            rowPanel.Invalidate();
-                            foreach (Control c in rowPanel.Controls)
-                            {
-                                c.Invalidate();
-                            }
-                        };
-                        ctrl.MouseLeave += (s, e) =>
-                        {
-                            rowPanel.Tag = Math.Max(0, (int)rowPanel.Tag - 1);
-                            if ((int)rowPanel.Tag == 0)
-                            {
-                                rowPanel.BackColor = Color.Transparent;
-                                rowPanel.Invalidate();
-                                foreach (Control c in rowPanel.Controls)
-                                {
-                                    c.Invalidate();
-                                }
-                            }
-                        };
-                        WireMouseEvents(ctrl, rowPanel); // 递归处理子控件的子控件
-                    }
-                }
-            }
+            // ========== 检测引擎卡片 ==========
+            Panel engineCard = CreateCard(engineCardBg, engineCardBorder);
+            PaintCardBorder(engineCard, engineCardBorder);
 
-            // ========== 切换检测引擎 ==========
-            Panel row1 = AddRowPanel(y);
-            contentPanel.Controls.Add(row1);
-
-            // 标签: [位置] (20, 20) [大小] 200 x 24 [字体] YaHei 10 Bold
-            Label detectEngineLabel = new Label
+            Label engineTitle = new Label
             {
-                Text = "切换检测引擎",
-                Font = GetFont(10, FontStyle.Bold),
-                ForeColor = textColor,
-                Size = new Size(labelWidth, 24),
-                Location = new Point(20, 20)
+                Text = "⚙️ 检测引擎",
+                Font = GetFont(11, FontStyle.Bold),
+                ForeColor = isDark ? Color.FromArgb(100, 180, 255) : Color.FromArgb(30, 100, 180),
+                Size = new Size(cardWidth - SY(30), 28),
+                Location = new Point(SY(15), SY(12))
             };
-            row1.Controls.Add(detectEngineLabel);
+            engineCard.Controls.Add(engineTitle);
 
-            // HTTP单选按钮: [位置] (350, 20) [字体] YaHei 9
             RadioButton rbHttp = new RadioButton
             {
                 Text = "HTTP",
-                Font = GetFont(9),
+                Font = GetFont(10),
                 ForeColor = textColor,
-                BackColor = Color.Transparent,
+                BackColor = engineCardBg,
                 Checked = detectEngine == "HTTP",
-                Location = new Point(420, 20)
+                Location = new Point(SX(40), SY(48))
             };
-            row1.Controls.Add(rbHttp);
+            engineCard.Controls.Add(rbHttp);
 
-            // FFMPEG单选按钮: [位置] (425, 20) [字体] YaHei 9
             RadioButton rbFfmpeg = new RadioButton
             {
                 Text = "FFMPEG",
-                Font = GetFont(9),
+                Font = GetFont(10),
                 ForeColor = textColor,
-                BackColor = Color.Transparent,
+                BackColor = engineCardBg,
                 Checked = detectEngine == "FFMPEG",
-                Location = new Point(controlStartX + 380, 20) // 与HTTP按钮间距75像素
+                Location = new Point(cardWidth - SX(120), SY(48))
             };
-            row1.Controls.Add(rbFfmpeg);
-            WireMouseEvents(row1, row1); // 绑定子控件鼠标事件
-            y += rowHeight; // 下移到下一行
+            engineCard.Controls.Add(rbFfmpeg);
 
-            // 红色提示: [位置] (20, y) [大小] contentWidth-40 x 24 [字体] YaHei 9 [颜色] Red
             Label engineTip = new Label
             {
-                Text = "友情提示：HTTP模式不支持分辨率检测",
-                Font = GetFont(9),
-                ForeColor = Color.Red,
-                Size = new Size(contentWidth - 40, 24),
-                Location = new Point(20, y + 0)
+                Text = "提示：HTTP模式不支持分辨率检测",
+                Font = GetFont(8.5f),
+                ForeColor = isDark ? Color.FromArgb(200, 100, 100) : Color.FromArgb(200, 80, 80),
+                Size = new Size(cardWidth - SY(30), 22),
+                Location = new Point(SY(15), SY(78))
             };
-            contentPanel.Controls.Add(engineTip);
-            y += tipGap + 0; // 下移tipGap像素
+            engineCard.Controls.Add(engineTip);
 
-            // ========== 极速模式并发检测数量 ==========
-            Panel row2 = AddRowPanel(y);
-            contentPanel.Controls.Add(row2);
+            engineCard.Size = new Size(cardWidth, engineCardH);
+            scrollContainer.Controls.Add(engineCard);
+            cardY += engineCardH + cardGap;
 
-            // 标签: [位置] (20, 20) [大小] 200 x 24 [字体] YaHei 10 Bold
+            // ========== 性能设置卡片 ==========
+            Panel perfCard = CreateCard(perfCardBg, perfCardBorder);
+            PaintCardBorder(perfCard, perfCardBorder);
+
+            Label perfTitle = new Label
+            {
+                Text = "🚀 性能设置",
+                Font = GetFont(11, FontStyle.Bold),
+                ForeColor = isDark ? Color.FromArgb(255, 160, 80) : Color.FromArgb(200, 100, 30),
+                Size = new Size(cardWidth - SY(30), 28),
+                Location = new Point(SY(15), SY(12))
+            };
+            perfCard.Controls.Add(perfTitle);
+
+            // 性能设置颜色：提示信息使用橙色高亮
+            Color perfTipColor = isDark ? Color.FromArgb(255, 180, 100) : Color.FromArgb(200, 100, 30);
+
             Label concurrencyLabel = new Label
             {
-                Text = "极速模式并发检测数量",
-                Font = GetFont(10, FontStyle.Bold),
+                Text = "并发检测数量",
+                Font = GetFont(9.5f),
                 ForeColor = textColor,
-                Size = new Size(labelWidth, 24),
-                Location = new Point(20, 20)
+                Size = new Size(SY(120), 24),
+                Location = new Point(SY(15), SY(48))
             };
-            row2.Controls.Add(concurrencyLabel);
+            perfCard.Controls.Add(concurrencyLabel);
 
-            // 输入框: [位置] (350, 18) [大小] 150 x 28 [字体] YaHei 10 [对齐] Right
+            Label concurrencyTip = new Label
+            {
+                Text = "（范围：1-20，过大可能导致检测不准确）",
+                Font = GetFont(8.5f),
+                ForeColor = perfTipColor,
+                AutoSize = true,
+                Location = new Point(SY(140), SY(50))
+            };
+            perfCard.Controls.Add(concurrencyTip);
+
             TextBox txtConcurrency = new TextBox
             {
                 Text = detectConcurrency.ToString(),
-                Font = GetFont(10),
+                Font = GetFont(9.5f),
                 ForeColor = textColor,
                 BackColor = bgColor,
                 BorderStyle = BorderStyle.FixedSingle,
                 TextAlign = HorizontalAlignment.Right,
-                Size = new Size(80, 28),    // 修改此值调整输入框大小
-                Location = new Point(controlStartX + 380, 18)
+                Size = new Size(SY(80), SY(28)),
+                Location = new Point(cardWidth - SY(110), SY(46))
             };
-            row2.Controls.Add(txtConcurrency);
-            WireMouseEvents(row2, row2);
-            y += rowHeight;
+            perfCard.Controls.Add(txtConcurrency);
 
-            // 红色提示: [位置] (20, y) [大小] contentWidth-40 x 24 [字体] YaHei 9 [颜色] Red
-            Label concurrencyTip = new Label
-            {
-                Text = "友情提示：最大数值20，超过可能造成检测不准确或电脑卡顿",
-                Font = GetFont(9),
-                ForeColor = Color.Red,
-                Size = new Size(contentWidth - 40, 24),
-                Location = new Point(20, y)
-            };
-            contentPanel.Controls.Add(concurrencyTip);
-            y += tipGap;
-
-            // ========== 超时时间设置（秒） ==========
-            Panel row3 = AddRowPanel(y);
-            contentPanel.Controls.Add(row3);
-
-            // 标签: [位置] (20, 20) [大小] 200 x 24 [字体] YaHei 10 Bold
             Label timeoutLabel = new Label
             {
-                Text = "超时时间设置（秒）",
-                Font = GetFont(10, FontStyle.Bold),
+                Text = "超时时间（秒）",
+                Font = GetFont(9.5f),
                 ForeColor = textColor,
-                Size = new Size(labelWidth, 24),
-                Location = new Point(20, 20)
+                Size = new Size(SY(120), 24),
+                Location = new Point(SY(15), SY(88))
             };
-            row3.Controls.Add(timeoutLabel);
+            perfCard.Controls.Add(timeoutLabel);
 
-            // 输入框: [位置] (350, 18) [大小] 150 x 28 [字体] YaHei 10 [对齐] Right
+            Label timeoutTip = new Label
+            {
+                Text = "（范围：1-60秒）",
+                Font = GetFont(8.5f),
+                ForeColor = perfTipColor,
+                AutoSize = true,
+                Location = new Point(SY(140), SY(90))
+            };
+            perfCard.Controls.Add(timeoutTip);
+
             TextBox txtTimeout = new TextBox
             {
                 Text = timeoutSeconds.ToString(),
-                Font = GetFont(10),
+                Font = GetFont(9.5f),
                 ForeColor = textColor,
                 BackColor = bgColor,
                 BorderStyle = BorderStyle.FixedSingle,
                 TextAlign = HorizontalAlignment.Right,
-                Size = new Size(80, 28),    // 修改此值调整输入框大小
-                Location = new Point(controlStartX + 380, 18)
+                Size = new Size(SY(80), SY(28)),
+                Location = new Point(cardWidth - SY(110), SY(86))
             };
-            row3.Controls.Add(txtTimeout);
-            WireMouseEvents(row3, row3);
-            y += rowHeight;
+            perfCard.Controls.Add(txtTimeout);
 
-            // ========== 自动清除无效源 ==========
-            Panel row4 = AddRowPanel(y);
-            contentPanel.Controls.Add(row4);
+            perfCard.Size = new Size(cardWidth, perfCardH);
+            scrollContainer.Controls.Add(perfCard);
+            cardY += perfCardH + cardGap;
 
-            // 标签: [位置] (20, 20) [大小] 200 x 24 [字体] YaHei 10 Bold
+            // ========== 功能开关卡片 ==========
+            Panel funcCard = CreateCard(funcCardBg, funcCardBorder);
+            PaintCardBorder(funcCard, funcCardBorder);
+
+            Label funcTitle = new Label
+            {
+                Text = "🎯 功能开关",
+                Font = GetFont(11, FontStyle.Bold),
+                ForeColor = isDark ? Color.FromArgb(120, 220, 150) : Color.FromArgb(40, 160, 80),
+                Size = new Size(cardWidth - SY(30), 28),
+                Location = new Point(SY(15), SY(12))
+            };
+            funcCard.Controls.Add(funcTitle);
+
             Label autoClearLabel = new Label
             {
                 Text = "自动清除无效源",
-                Font = GetFont(10, FontStyle.Bold),
+                Font = GetFont(9.5f),
                 ForeColor = textColor,
-                Size = new Size(labelWidth, 24),
-                Location = new Point(20, 20)
+                Size = new Size(SY(180), 24),
+                Location = new Point(SY(15), SY(48))
             };
-            row4.Controls.Add(autoClearLabel);
+            funcCard.Controls.Add(autoClearLabel);
 
-            // 开关: [位置] (350, 20) [大小] 80 x 32 [状态] autoClearInvalid
-            ToggleSwitch toggleAutoClear = new ToggleSwitch { Checked = autoClearInvalid, Size = new Size(80, 32), Location = new Point(controlStartX + 380, 16) };
-            row4.Controls.Add(toggleAutoClear);
-            WireMouseEvents(row4, row4);
-            y += rowHeight;
+            ToggleSwitch toggleAutoClear = new ToggleSwitch { Checked = autoClearInvalid, Size = new Size(SY(80), SY(30)), Location = new Point(cardWidth - SY(110), SY(47)) };
+            funcCard.Controls.Add(toggleAutoClear);
 
-            // ========== 检测列表持久化 ==========
-            Panel row5 = AddRowPanel(y);
-            contentPanel.Controls.Add(row5);
-
-            // 标签: [位置] (20, 20) [大小] 200 x 24 [字体] YaHei 10 Bold
             Label persistLabel = new Label
             {
                 Text = "检测列表持久化",
-                Font = GetFont(10, FontStyle.Bold),
+                Font = GetFont(9.5f),
                 ForeColor = textColor,
-                Size = new Size(labelWidth, 24),
-                Location = new Point(20, 20)
+                Size = new Size(SY(180), 24),
+                Location = new Point(SY(15), SY(85))
             };
-            row5.Controls.Add(persistLabel);
+            funcCard.Controls.Add(persistLabel);
 
-            // 开关: [位置] (350, 20) [大小] 80 x 32 [状态] persistList
-            ToggleSwitch togglePersist = new ToggleSwitch { Checked = persistList, Size = new Size(80, 32), Location = new Point(controlStartX + 380, 16) };
-            row5.Controls.Add(togglePersist);
-            WireMouseEvents(row5, row5);
-            y += rowHeight;
+            ToggleSwitch togglePersist = new ToggleSwitch { Checked = persistList, Size = new Size(SY(80), SY(30)), Location = new Point(cardWidth - SY(110), SY(84)) };
+            funcCard.Controls.Add(togglePersist);
 
-            // ========== 字体设置 ==========
-            Panel row6 = AddRowPanel(y);
-            contentPanel.Controls.Add(row6);
+            Label watchLabel = new Label
+            {
+                Text = "关闭搜索提示框",
+                Font = GetFont(9.5f),
+                ForeColor = textColor,
+                Size = new Size(SY(180), 24),
+                Location = new Point(SY(15), SY(122))
+            };
+            funcCard.Controls.Add(watchLabel);
 
-            // 标签: [位置] (20, 20) [大小] 200 x 24 [字体] YaHei 10 Bold
+            ToggleSwitch toggleWatch = new ToggleSwitch { Checked = watchSearchWindow, Size = new Size(SY(80), SY(30)), Location = new Point(cardWidth - SY(110), SY(121)) };
+            funcCard.Controls.Add(toggleWatch);
+
+            Label autoParseLabel = new Label
+            {
+                Text = "自动解析链接",
+                Font = GetFont(9.5f),
+                ForeColor = textColor,
+                Size = new Size(SY(180), 24),
+                Location = new Point(SY(15), SY(159))
+            };
+            funcCard.Controls.Add(autoParseLabel);
+
+            ToggleSwitch toggleAutoParse = new ToggleSwitch { Checked = autoParseLink, Size = new Size(SY(80), SY(30)), Location = new Point(cardWidth - SY(110), SY(158)) };
+            funcCard.Controls.Add(toggleAutoParse);
+
+            Label searchBtnLabel = new Label
+            {
+                Text = "搜索功能",
+                Font = GetFont(9.5f),
+                ForeColor = textColor,
+                Size = new Size(SY(180), 24),
+                Location = new Point(SY(15), SY(196))
+            };
+            funcCard.Controls.Add(searchBtnLabel);
+
+            ToggleSwitch toggleSearchBtn = new ToggleSwitch { Checked = showSearchButton, Size = new Size(SY(80), SY(30)), Location = new Point(cardWidth - SY(110), SY(195)) };
+            funcCard.Controls.Add(toggleSearchBtn);
+
+            funcCard.Size = new Size(cardWidth, funcCardH);
+            scrollContainer.Controls.Add(funcCard);
+            cardY += funcCardH + cardGap;
+
+            // ========== 个性化设置卡片 ==========
+            Panel customCard = CreateCard(customCardBg, customCardBorder);
+            PaintCardBorder(customCard, customCardBorder);
+
+            Label customTitle = new Label
+            {
+                Text = "🎨 个性化",
+                Font = GetFont(11, FontStyle.Bold),
+                ForeColor = isDark ? Color.FromArgb(200, 150, 255) : Color.FromArgb(120, 60, 180),
+                Size = new Size(cardWidth - SY(30), 28),
+                Location = new Point(SY(15), SY(12))
+            };
+            customCard.Controls.Add(customTitle);
+
             Label fontLabel = new Label
             {
                 Text = "字体设置",
-                Font = GetFont(10, FontStyle.Bold),
+                Font = GetFont(9.5f),
                 ForeColor = textColor,
-                Size = new Size(labelWidth, 24),
-                Location = new Point(20, 20)
+                Size = new Size(SY(120), 24),
+                Location = new Point(SY(15), SY(48))
             };
-            row6.Controls.Add(fontLabel);
+            customCard.Controls.Add(fontLabel);
 
-            // 字体选择下拉框: [位置] (350, 18) [大小] 280 x 28
+            int cmbFontW = SX(220);
             ComboBox cmbFont = new ComboBox
             {
                 Font = GetFont(9),
                 ForeColor = textColor,
                 BackColor = bgColor,
-                Size = new Size(220, 28),
-                Location = new Point(controlStartX + 120, 18),
+                Size = new Size(cmbFontW, SY(28)),
+                Location = new Point(cardWidth - SX(90) - SX(12) - cmbFontW, SY(46)),
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
-            
-            // 加载系统可用字体
             foreach (FontFamily fontFamily in FontFamily.Families)
             {
                 cmbFont.Items.Add(fontFamily.Name);
             }
-            
-            // 设置当前选中字体
             if (cmbFont.Items.Contains(customFontFamily))
             {
                 cmbFont.SelectedItem = customFontFamily;
@@ -4463,10 +4574,8 @@ namespace WindowsFormsApp1
             {
                 cmbFont.SelectedIndex = 0;
             }
-            
-            row6.Controls.Add(cmbFont);
-            
-            // 字体保存按钮: [位置] (650, 18) [大小] 80 x 28 [字体] YaHei 9 [颜色] White/accentColor
+            customCard.Controls.Add(cmbFont);
+
             Button btnFontApply = new Button
             {
                 Text = "应用",
@@ -4474,11 +4583,12 @@ namespace WindowsFormsApp1
                 ForeColor = Color.White,
                 BackColor = accentColor,
                 FlatStyle = FlatStyle.Flat,
-                Size = new Size(80, 28),
-                Location = new Point(controlStartX + 380, 18)
+                Size = new Size(SY(70), SY(28)),
+                Location = new Point(cardWidth - SY(90), SY(46)),
+                Cursor = Cursors.Hand
             };
             btnFontApply.FlatAppearance.BorderSize = 0;
-            btnFontApply.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, 80, 28), 6));
+            btnFontApply.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, SY(70), SY(28)), 6));
             btnFontApply.Click += (s, e) =>
             {
                 if (cmbFont.SelectedItem != null)
@@ -4494,27 +4604,22 @@ namespace WindowsFormsApp1
                     }
                 }
             };
-            row6.Controls.Add(btnFontApply);
-            
-            WireMouseEvents(row6, row6);
-            y += rowHeight;
+            customCard.Controls.Add(btnFontApply);
 
-            // ========== 第三方播放器 ==========
-            Panel row7 = AddRowPanel(y);
-            contentPanel.Controls.Add(row7);
-
-            // 标签: [位置] (20, 20) [大小] 200 x 24 [字体] YaHei 10 Bold
             Label playerLabel = new Label
             {
                 Text = "第三方播放器",
-                Font = GetFont(10, FontStyle.Bold),
+                Font = GetFont(9.5f),
                 ForeColor = textColor,
-                Size = new Size(labelWidth - 30, 24),
-                Location = new Point(20, 20)
+                Size = new Size(SY(100), 24),
+                Location = new Point(SY(15), SY(85))
             };
-            row7.Controls.Add(playerLabel);
+            customCard.Controls.Add(playerLabel);
 
-            // 路径输入框: [位置] (350, 18) [大小] 450 x 28 [字体] YaHei 9
+            int btnBrowseW = SX(75);
+            int btnRightMargin = SX(20);
+            int inputBtnGap = SX(12);
+            int playerInputW = cardWidth - SX(130) - btnRightMargin - btnBrowseW - inputBtnGap;
             TextBox txtPlayerPath = new TextBox
             {
                 Text = customPlayerPath,
@@ -4522,12 +4627,11 @@ namespace WindowsFormsApp1
                 ForeColor = textColor,
                 BackColor = bgColor,
                 BorderStyle = BorderStyle.FixedSingle,
-                Size = new Size(430, 28),    // 修改此值调整输入框宽度
-                Location = new Point(controlStartX - 60, 18)
+                Size = new Size(playerInputW, SY(28)),
+                Location = new Point(cardWidth - btnRightMargin - btnBrowseW - inputBtnGap - playerInputW, SY(83))
             };
-            row7.Controls.Add(txtPlayerPath);
+            customCard.Controls.Add(txtPlayerPath);
 
-            // 浏览按钮: [位置] (710, 18) [大小] 80 x 28 [字体] YaHei 9 [颜色] White/accentColor
             Button btnBrowsePlayer = new Button
             {
                 Text = "浏览...",
@@ -4535,11 +4639,12 @@ namespace WindowsFormsApp1
                 ForeColor = Color.White,
                 BackColor = accentColor,
                 FlatStyle = FlatStyle.Flat,
-                Size = new Size(80, 32),     // 修改此值调整按钮大小
-                Location = new Point(controlStartX + 380, 18) // 输入框右侧，间距10像素
+                Size = new Size(btnBrowseW, SY(28)),
+                Location = new Point(cardWidth - btnRightMargin - btnBrowseW, SY(83)),
+                Cursor = Cursors.Hand
             };
             btnBrowsePlayer.FlatAppearance.BorderSize = 0;
-            btnBrowsePlayer.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, 80, 32), 6));
+            btnBrowsePlayer.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, btnBrowseW, SY(28)), 6));
             btnBrowsePlayer.Click += (s, e) =>
             {
                 using (OpenFileDialog ofd = new OpenFileDialog())
@@ -4552,140 +4657,40 @@ namespace WindowsFormsApp1
                     }
                 }
             };
-            row7.Controls.Add(btnBrowsePlayer);
-            WireMouseEvents(row7, row7);
-            y += rowHeight;
+            customCard.Controls.Add(btnBrowsePlayer);
 
-            // ========== 搜索模式信息窗口看管 ==========
-            Panel row8 = AddRowPanel(y);
-            contentPanel.Controls.Add(row8);
+            customCard.Size = new Size(cardWidth, customCardH);
+            scrollContainer.Controls.Add(customCard);
+            cardY += customCardH + cardGap;
 
-            // 标签: [位置] (20, 20) [大小] 200 x 24 [字体] YaHei 10 Bold
-            Label watchLabel = new Label
-            {
-                Text = "关闭搜索提示框",
-                Font = GetFont(10, FontStyle.Bold),
-                ForeColor = textColor,
-                Size = new Size(labelWidth, 24),
-                Location = new Point(20, 20)
-            };
-            row8.Controls.Add(watchLabel);
-
-            // 开关: [位置] (350, 20) [大小] 100 x 32 [状态] watchSearchWindow
-            ToggleSwitch toggleWatch = new ToggleSwitch { Checked = watchSearchWindow, Size = new Size(80, 32), Location = new Point(controlStartX + 380, 16) };
-            row8.Controls.Add(toggleWatch);
-            WireMouseEvents(row8, row8);
-            y += rowHeight;
-
-            // ========== 自动解析链接 ==========
-            Panel row9 = AddRowPanel(y);
-            contentPanel.Controls.Add(row9);
-
-            Label autoParseLabel = new Label
-            {
-                Text = "自动解析链接",
-                Font = GetFont(10, FontStyle.Bold),
-                ForeColor = textColor,
-                Size = new Size(labelWidth, 24),
-                Location = new Point(20, 20)
-            };
-            row9.Controls.Add(autoParseLabel);
-
-            ToggleSwitch toggleAutoParse = new ToggleSwitch { Checked = autoParseLink, Size = new Size(80, 32), Location = new Point(controlStartX + 380, 16) };
-            row9.Controls.Add(toggleAutoParse);
-            WireMouseEvents(row9, row9);
-            y += rowHeight;
+            // 设置滚动容器的最小滚动区域大小，确保所有内容都能滚动到
+            scrollContainer.AutoScrollMinSize = new Size(cardWidth, contentTotalH);
 
             // ========== 底部按钮面板 ==========
-            // [位置] 底部 [大小] 100高度 [背景] bgColor
             Panel btnPanel = new Panel
             {
-                Dock = DockStyle.Bottom,          // 停靠在窗口底部
-                Height = 100,                     // 面板高度，修改此值调整底部区域大小
-                BackColor = bgColor,              // 背景色
-                Padding = new Padding(0, 30, 0, 30) // 上下内边距各30像素
+                Dock = DockStyle.Bottom,
+                Height = btnPanelH,
+                BackColor = bgColor,
+                Padding = new Padding(0, SY(12), 0, SY(12))
             };
+            
+            // 先添加按钮面板（Dock=Bottom），再添加滚动容器（Dock=Fill）
+            // 这样 Dock=Bottom 的按钮面板会先占底部空间，然后 scrollContainer 填充剩余空间
             dlg.Controls.Add(btnPanel);
-
-            // 确定按钮: [大小] 120 x 38 [字体] YaHei 11 Bold [描边样式]
-            Button btnOK = new Button
-            {
-                Text = "确定",
-                Font = GetFont(11, FontStyle.Bold),
-                ForeColor = textColor,                                    // 文字颜色（与取消按钮统一）
-                BackColor = Color.Transparent,                          // 透明背景
-                FlatStyle = FlatStyle.Flat,                             // 扁平样式
-                Size = new Size(120, 38),                               // 按钮大小，修改此值调整按钮尺寸
-                Cursor = Cursors.Hand
-            };
-            StyleOutlineButton(btnOK, 19, theme.Border, textColor);      // 描边药丸按钮（与取消按钮统一）
-            btnOK.Click += (s, e) =>
-            {
-                // 保存检测引擎设置
-                foreach (Control ctrl in row1.Controls)
-                {
-                    if (ctrl is RadioButton rb)
-                    {
-                        if (rb.Checked)
-                        {
-                            detectEngine = rb.Text;
-                            break;
-                        }
-                    }
-                }
-
-                // 保存并发数量设置（限制1-20）
-                int concurrency;
-                if (int.TryParse(txtConcurrency.Text, out concurrency))
-                {
-                    detectConcurrency = Math.Max(1, Math.Min(20, concurrency));
-                }
-
-                // 保存超时时间设置（限制1-60秒）
-                int timeout;
-                if (int.TryParse(txtTimeout.Text, out timeout))
-                {
-                    timeoutSeconds = Math.Max(1, Math.Min(60, timeout));
-                }
-
-                // 保存开关设置
-                autoClearInvalid = toggleAutoClear.Checked;
-                persistList = togglePersist.Checked;
-                customPlayerPath = txtPlayerPath.Text;
-                watchSearchWindow = toggleWatch.Checked;
-                autoParseLink = toggleAutoParse.Checked;
-
-                SaveConfig();
-
-                dlg.DialogResult = DialogResult.OK;
-                dlg.Close();
-            };
-
-            // 取消按钮: [大小] 120 x 38 [字体] YaHei 11 [描边样式]
-            Button btnCancel = new Button
-            {
-                Text = "取消",
-                Font = GetFont(11),
-                ForeColor = textColor,                                  // 文字颜色
-                BackColor = Color.Transparent,                          // 透明背景
-                FlatStyle = FlatStyle.Flat,                             // 扁平样式
-                Size = new Size(120, 38),                               // 按钮大小，修改此值调整按钮尺寸
-                Cursor = Cursors.Hand
-            };
-            StyleOutlineButton(btnCancel, 19, theme.Border, textColor); // 描边药丸按钮
-            btnCancel.Click += (s, e) => dlg.Close();
+            dlg.Controls.Add(scrollContainer);
 
             Button btnReset = new Button
             {
                 Text = "恢复默认",
-                Font = GetFont(11),
+                Font = GetFont(10),
                 ForeColor = textColor,
                 BackColor = Color.Transparent,
                 FlatStyle = FlatStyle.Flat,
-                Size = new Size(120, 38),
+                Size = new Size(SY(110), SY(35)),
                 Cursor = Cursors.Hand
             };
-            StyleOutlineButton(btnReset, 19, theme.Border, textColor);
+            StyleOutlineButton(btnReset, 17, borderColor, textColor);
             btnReset.Click += (s, e) =>
             {
                 if (DarkMessageBox.Show("确定要恢复所有设置为默认值吗？", "恢复默认", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -4702,6 +4707,8 @@ namespace WindowsFormsApp1
                     themePreference = "跟随系统";
                     theme = AppTheme.GetAutoTheme();
 
+                    rbHttp.Checked = true;
+                    rbFfmpeg.Checked = false;
                     txtConcurrency.Text = "10";
                     txtTimeout.Text = "5";
                     toggleAutoClear.Checked = false;
@@ -4721,20 +4728,178 @@ namespace WindowsFormsApp1
                     dlg.Invalidate();
                 }
             };
-            btnPanel.Controls.Add(btnOK);
-            btnPanel.Controls.Add(btnCancel);
-            btnPanel.Controls.Add(btnReset);
 
-            // 按钮与内容窗口右对齐（在Paint事件中动态计算）
-            btnPanel.Paint += (s, pe) =>
+            Button btnOK = new Button
             {
-                int contentRightX = contentX + contentWidth;  // 内容窗口右边缘X坐标
-                btnReset.Location = new Point(contentX, 30);           // 恢复默认按钮，与内容窗口左对齐
-                btnOK.Location = new Point(contentRightX - 280, 30);   // 确定按钮，与内容窗口右对齐
-                btnCancel.Location = new Point(contentRightX - 120, 30); // 取消按钮，与内容窗口右对齐
+                Text = "确定",
+                Font = GetFont(10, FontStyle.Bold),
+                ForeColor = Color.White,
+                BackColor = accentColor,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(SY(110), SY(35)),
+                Cursor = Cursors.Hand
+            };
+            btnOK.FlatAppearance.BorderSize = 0;
+            btnOK.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, SY(110), SY(35)), 6));
+            btnOK.Click += (s, e) =>
+            {
+                detectEngine = rbHttp.Checked ? "HTTP" : "FFMPEG";
+
+                int concurrency;
+                if (int.TryParse(txtConcurrency.Text, out concurrency))
+                {
+                    detectConcurrency = Math.Max(1, Math.Min(20, concurrency));
+                }
+
+                int timeout;
+                if (int.TryParse(txtTimeout.Text, out timeout))
+                {
+                    timeoutSeconds = Math.Max(1, Math.Min(60, timeout));
+                }
+
+                autoClearInvalid = toggleAutoClear.Checked;
+                persistList = togglePersist.Checked;
+                customPlayerPath = txtPlayerPath.Text;
+                watchSearchWindow = toggleWatch.Checked;
+                autoParseLink = toggleAutoParse.Checked;
+                showSearchButton = toggleSearchBtn.Checked;
+
+                if (btnNavSearch != null)
+                {
+                    btnNavSearch.Visible = showSearchButton;
+                    RefreshNavButtonSizes();
+                }
+
+                SaveConfig();
+                dlg.DialogResult = DialogResult.OK;
+                dlg.Close();
             };
 
-            dlg.ShowDialog();
+            Button btnCancel = new Button
+            {
+                Text = "取消",
+                Font = GetFont(10),
+                ForeColor = textColor,
+                BackColor = Color.Transparent,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(SY(110), SY(35)),
+                Cursor = Cursors.Hand
+            };
+            StyleOutlineButton(btnCancel, 17, borderColor, textColor);
+            btnCancel.Click += (s, e) => dlg.Close();
+
+            // 动态更新卡片布局（与关于窗口公众号推广布局逻辑一致）
+            Action UpdateCardsLayout = () =>
+            {
+                int curY = cardStartY;
+
+                engineCard.Location = new Point(cardX, curY);
+                curY += engineCardH + cardGap;
+
+                perfCard.Location = new Point(cardX, curY);
+                curY += perfCardH + cardGap;
+
+                if (funcCard.Visible)
+                {
+                    funcCard.Location = new Point(cardX, curY);
+                    curY += funcCardH + cardGap;
+                }
+
+                customCard.Location = new Point(cardX, curY);
+                curY += customCardH + cardGap;
+
+                int newContentH = curY - cardStartY + scrollBottomPad;
+                scrollContainer.AutoScrollMinSize = new Size(cardWidth, newContentH);
+
+                // 动态调整窗口高度
+                int newRequiredHeight = scrollTopPad + newContentH + btnPanelH;
+                int newWindowHeight = Math.Min(Math.Max(newRequiredHeight, SY(450)), (int)(screenHeight * 0.95));
+                if (dlg.ClientSize.Height != newWindowHeight)
+                {
+                    dlg.ClientSize = new Size(windowWidth, newWindowHeight);
+                }
+            };
+
+            // ========== 高级功能按钮（彩蛋）==========
+            // 与关于窗口公众号推广彩蛋逻辑一致：覆盖在恢复默认按钮上
+            Button btnAdvanced = new Button
+            {
+                Text = "高级功能",
+                Font = GetFont(10),
+                ForeColor = accentColor,
+                BackColor = Color.Transparent,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(SX(110), SY(35)),
+                Visible = false,
+                Cursor = Cursors.Hand
+            };
+            btnAdvanced.FlatAppearance.BorderSize = 0;
+            btnAdvanced.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, SX(110), SY(35)), 17));
+            btnAdvanced.Click += (s, e) =>
+            {
+                funcCard.Visible = !funcCard.Visible;
+                UpdateCardsLayout();
+            };
+            btnPanel.Controls.Add(btnAdvanced);
+
+            btnPanel.Controls.Add(btnReset);
+            btnPanel.Controls.Add(btnOK);
+            btnPanel.Controls.Add(btnCancel);
+
+            // 彩蛋：鼠标悬停恢复默认按钮3秒后显示高级功能按钮，逻辑与关于窗口公众号推广彩蛋一致
+            using (System.Windows.Forms.Timer advEggTimer = new System.Windows.Forms.Timer { Interval = 3000 })
+            using (System.Windows.Forms.Timer advHideTimer = new System.Windows.Forms.Timer { Interval = 1000 })
+            {
+                advEggTimer.Tick += (s, e) =>
+                {
+                    advEggTimer.Stop();
+                    btnAdvanced.Visible = true;
+                    btnAdvanced.Refresh();
+                };
+
+                advHideTimer.Tick += (s, e) =>
+                {
+                    advHideTimer.Stop();
+                    btnAdvanced.Visible = false;
+                };
+
+                // 鼠标悬停恢复默认按钮触发彩蛋
+                Action<Control> resetWireUpWithEgg = null;
+                resetWireUpWithEgg = (ctrl) =>
+                {
+                    ctrl.MouseEnter += (s, e) => { advEggTimer.Start(); advHideTimer.Stop(); };
+                    ctrl.MouseLeave += (s, e) => { advEggTimer.Stop(); if (btnAdvanced.Visible) advHideTimer.Start(); };
+                    foreach (Control child in ctrl.Controls)
+                        resetWireUpWithEgg(child);
+                };
+                resetWireUpWithEgg(btnReset);
+
+                // 鼠标进入高级功能按钮时停止隐藏计时器
+                Action<Control> advWireUpWithHide = null;
+                advWireUpWithHide = (ctrl) =>
+                {
+                    ctrl.MouseEnter += (s, e) => advHideTimer.Stop();
+                    ctrl.MouseLeave += (s, e) => { if (btnAdvanced.Visible) advHideTimer.Start(); };
+                    foreach (Control child in ctrl.Controls)
+                        advWireUpWithHide(child);
+                };
+                advWireUpWithHide(btnAdvanced);
+
+                // 初始化功能开关卡片为隐藏状态
+                funcCard.Visible = false;
+                UpdateCardsLayout();
+
+                btnPanel.Paint += (s, pe) =>
+                {
+                    int contentRightX = cardX + cardWidth;
+                    btnReset.Location = new Point(cardX, SY(15));
+                    btnAdvanced.Location = new Point(cardX, SY(15)); // 覆盖在恢复默认按钮上
+                    btnOK.Location = new Point(contentRightX - SX(250), SY(15));
+                    btnCancel.Location = new Point(contentRightX - SX(115), SY(15));
+                };
+
+                dlg.ShowDialog();
+            }
         }
 
         /// <summary>
@@ -4743,21 +4908,34 @@ namespace WindowsFormsApp1
         private void ShowAboutDialog()
         {
             bool isDark = theme != null && theme.Name == "深色";
-            Color bgColor = isDark ? Color.FromArgb(30, 30, 40) : Color.White;
-            Color textColor = isDark ? Color.FromArgb(230, 230, 240) : Color.FromArgb(40, 40, 40);
-            Color subTextColor = isDark ? Color.FromArgb(180, 180, 195) : Color.FromArgb(80, 80, 80);
-            Color btnColor = isDark ? Color.FromArgb(55, 55, 70) : Color.FromArgb(240, 240, 245);
-            Color btnHoverColor = isDark ? Color.FromArgb(70, 70, 90) : Color.FromArgb(220, 220, 225);
-            Color btnBorderColor = isDark ? Color.FromArgb(80, 80, 100) : Color.FromArgb(200, 200, 205);
-            Color accentColor = Color.FromArgb(0, 122, 204);
-
+            
+            Color bgColor = isDark ? Color.FromArgb(28, 32, 42) : Color.White;
+            Color textColor = isDark ? Color.FromArgb(220, 225, 235) : Color.FromArgb(35, 40, 50);
+            Color subTextColor = isDark ? Color.FromArgb(160, 168, 185) : Color.FromArgb(100, 110, 125);
+            Color accentColor = Color.FromArgb(64, 158, 255);
+            
+            Color featureCardBg = isDark ? Color.FromArgb(38, 42, 55) : Color.FromArgb(245, 245, 248);
+            Color promoCardBg = isDark ? Color.FromArgb(30, 50, 40) : Color.FromArgb(240, 250, 240);
+            Color feedbackCardBg = isDark ? Color.FromArgb(30, 40, 55) : Color.FromArgb(240, 245, 255);
+            
+            Color featureCardBorder = isDark ? Color.FromArgb(50, 55, 70) : Color.FromArgb(230, 232, 238);
+            Color promoCardBorder = isDark ? Color.FromArgb(40, 80, 55) : Color.FromArgb(180, 220, 180);
+            Color feedbackCardBorder = isDark ? Color.FromArgb(40, 55, 80) : Color.FromArgb(180, 200, 230);
+            
+            Color btnColor = isDark ? Color.FromArgb(50, 55, 70) : Color.FromArgb(240, 242, 247);
+            Color btnHoverColor = isDark ? Color.FromArgb(60, 68, 85) : Color.FromArgb(225, 228, 235);
+            Color btnBorderColor = isDark ? Color.FromArgb(70, 78, 95) : Color.FromArgb(210, 215, 225);
+            
             string version = "Beta 1.0";
-            Color sepColor = isDark ? Color.FromArgb(80, 120, 200) : Color.FromArgb(0, 122, 204);
-
-            // 所有尺寸和位置都通过 SX/SY 缩放，适配高DPI
-            int dlgW = SX(720), dlgH = SY(720);
-            int cx = SX(30), cw = SX(660);
-
+            
+            // ========== 窗口基础尺寸参数 ==========
+            int dlgW = SX(860);                // 窗口总宽度（SX() 为水平方向 DPI 缩放函数）
+            int dlgH = SY(400);                // 窗口初始高度（SY() 为垂直方向 DPI 缩放函数）
+            int cx = SX(10);                   // 内容区域左边距
+            int cw = SX(840);                  // 内容区域宽度（窗口宽度 - 两侧边距）
+            int cardRadius = SX(8);            // 卡片圆角半径
+            int cardGap = SY(10);              // 卡片之间的垂直间距
+            
             using (Form dlg = new Form())
             {
                 dlg.Text = "关于";
@@ -4767,12 +4945,18 @@ namespace WindowsFormsApp1
                 dlg.MinimizeBox = false;
                 dlg.BackColor = bgColor;
                 dlg.ForeColor = textColor;
-                dlg.Font = GetFont(SF(10.5f));
+                dlg.Font = GetFont(SF(9f));
                 dlg.ShowInTaskbar = false;
-                dlg.TopMost = true;
+                dlg.TopMost = false;
                 dlg.ClientSize = new Size(dlgW, dlgH);
-
-                // 应用深色标题栏
+                
+                try
+                {
+                    System.Reflection.PropertyInfo pi = typeof(Control).GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                    pi?.SetValue(dlg, true, null);
+                }
+                catch { }
+                
                 dlg.HandleCreated += (s, e) =>
                 {
                     if (isDark)
@@ -4780,226 +4964,841 @@ namespace WindowsFormsApp1
                         try { int dm = 1; DarkMessageBox.ApplyDarkTitleBar(dlg.Handle, dm); } catch { }
                     }
                 };
-
-                // 图标+标题整体居中，版本号在标题右下角
-                // 用实际测量确定标题文字宽度
-                using (var tmpFont = GetFont(SF(14f), FontStyle.Bold))
+                
+                // ========== 顶部标题区域参数 ==========
+                int y = SY(16);                  // 当前布局Y坐标起始位置（顶部边距）
+                int topCardH = SY(88);           // 顶部标题卡片高度
+                
+                Panel topCard = new Panel
                 {
-                    var tmpSize = TextRenderer.MeasureText("IPTV 直播源检测工具", tmpFont);
-                    int iconW = SX(60), gap1 = SX(5), titleW = tmpSize.Width + SX(5);
-                    int totalW = iconW + gap1 + titleW;
-                    int iconTitleOffset = (cw - totalW) / 2;
-
-                    // 图标（用绘制代替emoji）
-                    Panel iconPanel = new Panel
-                    {
-                        Location = new Point(iconTitleOffset, SY(15)),
-                        Size = new Size(SX(60), SY(60)),
-                        BackColor = Color.Transparent
-                    };
-                    iconPanel.Paint += (s, e) =>
-                    {
-                        using (var g = e.Graphics)
-                        {
-                            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                            g.Clear(bgColor);
-                            using (var pen = new Pen(accentColor, 3f))
-                            {
-                                g.DrawRectangle(pen, SX(5), SY(5), SX(50), SY(35));
-                            }
-                            using (var brush = new SolidBrush(Color.FromArgb(40, 120, 220)))
-                            {
-                                g.FillRectangle(brush, SX(8), SY(8), SX(44), SY(28));
-                            }
-                            using (var pen = new Pen(accentColor, 3f))
-                            {
-                                g.DrawLine(pen, SX(22), SY(40), SX(38), SY(40));
-                                g.DrawLine(pen, SX(30), SY(35), SX(30), SY(40));
-                            }
-                            using (var pen = new Pen(accentColor, 2.5f))
-                            {
-                                g.DrawLine(pen, SX(15), SY(12), SX(8), SY(3));
-                                g.DrawLine(pen, SX(45), SY(12), SX(52), SY(3));
-                            }
-                        }
-                    };
-                    dlg.Controls.Add(iconPanel);
-
-                    // 软件名称（紧贴图标右侧，左对齐，宽度=文字宽度+余量）
-                    Label lblTitle = new Label
-                    {
-                        Text = "IPTV 直播源检测工具",
-                        Font = GetFont(SF(14f), FontStyle.Bold),
-                        Location = new Point(iconTitleOffset + iconW + gap1, SY(11)),
-                        Size = new Size(titleW, SY(55)),
-                        ForeColor = textColor,
-                        BackColor = bgColor,
-                        TextAlign = ContentAlignment.MiddleLeft
-                    };
-                    dlg.Controls.Add(lblTitle);
-
-                    // 版本号（标题右下角：AutoSize自适应文字宽度，紧贴标题右边缘下方）
-                    Label lblVersion = new Label
-                    {
-                        Text = version,
-                        Font = GetFont(SF(9f)),
-                        AutoSize = true,
-                        Location = new Point(iconTitleOffset + iconW + gap1 + titleW - SX(5), SY(48)),
-                        ForeColor = subTextColor,
-                        BackColor = Color.Transparent
-                    };
-                    dlg.Controls.Add(lblVersion);
-                }
-
-                // 分隔线1（彩色加粗）
-                Panel sep1 = new Panel
-                {
-                    Location = new Point(cx, SY(95)),
-                    Size = new Size(cw, SY(3)),
-                    BackColor = sepColor
+                    Location = new Point(cx, y),
+                    Size = new Size(cw, topCardH),
+                    BackColor = Color.Transparent
                 };
-                dlg.Controls.Add(sep1);
-
-                // 功能概述标题（居中）
+                dlg.Controls.Add(topCard);
+                
+                // 文字字体大小参数
+                Font topTitleFont = GetFont(SF(15f), FontStyle.Bold);  // 主标题字体（SF() 为字体大小 DPI 缩放）
+                Font verFont = GetFont(SF(9.5f));                       // 版本号字体
+                
+                // 图标和文字布局参数
+                int iconSize = SX(56);          // 应用图标尺寸（正方形）
+                var topTitleSize = TextRenderer.MeasureText("IPTV 直播源检测工具", topTitleFont);
+                var versionSize = TextRenderer.MeasureText("版本 " + version, verFont);
+                int gap1 = SX(18);              // 图标与文字之间的水平间距
+                int totalW = iconSize + gap1 + topTitleSize.Width;
+                int startX = (cw - totalW) / 2; // 内容居中起始X坐标
+                
+                // 垂直居中计算参数
+                int contentH = iconSize;                                        // 图标和文字区域的最大高度
+                int contentY = (topCardH - contentH) / 2;                       // 内容垂直居中偏移
+                int iconY = contentY + (contentH - iconSize) / 2;               // 图标垂直位置
+                int titleY = contentY + (contentH - topTitleSize.Height) / 2;   // 标题垂直居中位置
+                
+                Panel iconPanel = new Panel
+                {
+                    Location = new Point(startX, iconY),
+                    Size = new Size(iconSize, iconSize),
+                    BackColor = Color.Transparent
+                };
+                iconPanel.Paint += (s, e) =>
+                {
+                    using (var g = e.Graphics)
+                    {
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                        using (var brush = new SolidBrush(accentColor))
+                        {
+                            using (var path = CreateRoundedRectPath(new Rectangle(0, 0, iconSize - 1, iconSize - 1), SX(12)))
+                                g.FillPath(brush, path);
+                        }
+                        int mx = SX(12), my = SX(14), mw = SX(32), mh = SY(22);
+                        using (var wpen = new Pen(Color.White, 2f))
+                        {
+                            g.DrawRectangle(wpen, mx, my, mw, mh);
+                            g.DrawLine(wpen, mx + SX(6), my + mh + SX(7), mx + mw - SX(6), my + mh + SX(7));
+                            g.DrawLine(wpen, mx + mw / 2, my + mh, mx + mw / 2, my + mh + SX(7));
+                        }
+                    }
+                };
+                topCard.Controls.Add(iconPanel);
+                
+                int textStartX = startX + iconSize + gap1;
+                Label lblTitle = new Label
+                {
+                    Text = "IPTV 直播源检测工具",
+                    Font = topTitleFont,
+                    Location = new Point(textStartX, titleY),
+                    AutoSize = true,
+                    ForeColor = textColor,
+                    BackColor = Color.Transparent
+                };
+                topCard.Controls.Add(lblTitle);
+                
+                Font verFontSmall = GetFont(SF(6f));
+                var versionSizeSmall = TextRenderer.MeasureText("版本 " + version, verFontSmall);
+                Label lblVersion = new Label
+                {
+                    Text = "版本 " + version,
+                    Font = verFontSmall,
+                    Location = new Point(textStartX + topTitleSize.Width - versionSizeSmall.Width, titleY + topTitleSize.Height + SY(2)),
+                    AutoSize = true,
+                    ForeColor = accentColor,
+                    BackColor = Color.Transparent,
+                    TextAlign = ContentAlignment.MiddleRight
+                };
+                topCard.Controls.Add(lblVersion);
+                
+                // ========== 功能概述区域参数 ==========
+                y += topCardH + cardGap;           // 更新Y坐标到下一个卡片位置
+                int featCardH = SY(150);          // 功能概述卡片高度
+                
+                Panel featCard = new Panel
+                {
+                    Location = new Point(cx, y),
+                    Size = new Size(cw, featCardH),
+                    BackColor = featureCardBg
+                };
+                featCard.Paint += (s, e) =>
+                {
+                    using (var g = e.Graphics)
+                    {
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                        using (var path = CreateRoundedRectPath(new Rectangle(0, 0, featCard.Width - 1, featCard.Height - 1), cardRadius))
+                        {
+                            using (var pen = new Pen(featureCardBorder, 1f))
+                                g.DrawPath(pen, path);
+                        }
+                    }
+                };
+                dlg.Controls.Add(featCard);
+                
                 Label lblFeatTitle = new Label
                 {
                     Text = "功能概述",
-                    Font = GetFont(SF(10f), FontStyle.Bold),
-                    Location = new Point(cx, SY(110-5)),
-                    Size = new Size(cw, SY(30)),
+                    Font = GetFont(SF(10.5f), FontStyle.Bold), // 功能卡片标题字体大小
+                    Location = new Point(SX(16), SY(14)),      // 标题位置（左缩进16，上缩进14）
+                    AutoSize = true,
                     ForeColor = textColor,
-                    BackColor = bgColor,
-                    TextAlign = ContentAlignment.MiddleCenter
+                    BackColor = Color.Transparent
                 };
-                dlg.Controls.Add(lblFeatTitle);
-
-                // 功能列表（增加高度确保不被截断）
-                string features =
-                    "• 批量检测 IPTV 直播源可用性（HTTP/RTSP/RTMP）\n" +
-                    "\n" +
-                    "• 自动识别视频分辨率、编码格式、帧率等信息\n" +
-                    "\n" +
-                    "• 支持 ffprobe / ffmpeg / MediaInfo 多引擎检测\n" +
-                    "\n" +
-                    "• 内置链接解析、搜索、分组管理功能\n" +
-                    "\n" +
-                    "• 支持合并导出、源生成器批量生成链接\n" +
-                    "\n" +
-                    "• 支持 IP 归属地查询、响应速度测试\n" +
-                    "\n" +
-                    "• 支持深色/浅色主题切换\n" +
-                    "\n" +
-                    "• 支持第三方播放器（ffplay/VLC/PotPlayer）";
-
-                Label lblFeatures = new Label
+                featCard.Controls.Add(lblFeatTitle);
+                
+                string[][] features = new string[][]
                 {
-                    Text = features,
-                    Font = GetFont(SF(8.5f)),
-                    Location = new Point(cx, SY(136)),
-                    Size = new Size(cw, SY(400)),
-                    ForeColor = subTextColor,
-                    BackColor = bgColor,
-                    TextAlign = ContentAlignment.MiddleCenter
+                    new[] { "🔍", "批量检测 IPTV 直播源可用性" },
+                    new[] { "📺", "自动识别视频分辨率和编码格式" },
+                    new[] { "🎬", "支持 ffprobe/ffmpeg/MediaInfo" },
+                    new[] { "📋", "内置链接解析、搜索、分组管理" },
+                    new[] { "📤", "支持合并导出、源生成器批量生成" },
+                    new[] { "🌍", "支持 IP 归属地、响应速度测试" }
                 };
-                dlg.Controls.Add(lblFeatures);
-
-                // 分隔线2（彩色加粗）
-                Panel sep2 = new Panel
+                
+                // 功能列表网格布局参数
+                int colCount = 2;                // 列数（2列布局）
+                int itemH = SY(30);             // 每个功能项的高度
+                int startYFeat = SY(42);        // 功能列表起始Y坐标（标题下方）
+                int colW = (cw - SX(32)) / colCount; // 每列宽度（总宽度-左右边距后均分）
+                
+                for (int i = 0; i < features.Length; i++)
                 {
-                    Location = new Point(cx, SY(530)),
-                    Size = new Size(cw, SY(3)),
-                    BackColor = sepColor
-                };
-                dlg.Controls.Add(sep2);
-
-                // 问题反馈标题（居中）
-                Label lblBugTitle = new Label
-                {
-                    Text = "问题反馈",
-                    Font = GetFont(SF(10f), FontStyle.Bold),
-                    Location = new Point(cx, SY(545)),
-                    Size = new Size(cw, SY(30)),
-                    ForeColor = textColor,
-                    BackColor = bgColor,
-                    TextAlign = ContentAlignment.MiddleCenter
-                };
-                dlg.Controls.Add(lblBugTitle);
-
-                // 问题反馈说明（显示邮箱明文）
-                string bugDescText = "如果您在使用过程中遇到任何问题或有功能建议\n欢迎发送邮件至：xiaomiren0510@gmail.com";
-                using (var descFont = GetFont(SF(8.5f)))
-                {
-                    var descSize = TextRenderer.MeasureText(bugDescText, descFont, new Size(cw, 0), TextFormatFlags.WordBreak);
-                    Label lblBugDesc = new Label
+                    int col = i % colCount;       // 当前列索引
+                    int row = i / colCount;       // 当前行索引
+                    int itemX = SX(16) + col * colW; // 项X坐标（左边距+列偏移）
+                    int itemY = startYFeat + row * itemH; // 项Y坐标（起始Y+行偏移）
+                    
+                    Panel itemPanel = new Panel
                     {
-                        Text = bugDescText,
-                        Font = descFont,
-                        Location = new Point(cx, SY(580)),
-                        Size = new Size(cw, descSize.Height),
-                        ForeColor = subTextColor,
-                        BackColor = bgColor,
+                        Location = new Point(itemX, itemY),
+                        Size = new Size(colW - SX(8), itemH - SY(4)), // 项尺寸（减去内边距）
+                        BackColor = Color.Transparent
+                    };
+                    itemPanel.MouseEnter += (s, e) =>
+                    {
+                        itemPanel.BackColor = isDark ? Color.FromArgb(48, 54, 70) : Color.FromArgb(235, 238, 245);
+                    };
+                    itemPanel.MouseLeave += (s, e) =>
+                    {
+                        itemPanel.BackColor = Color.Transparent;
+                    };
+                    featCard.Controls.Add(itemPanel);
+                    
+                    Label lblIcon = new Label
+                    {
+                        Text = features[i][0],
+                        Font = GetFont(SF(10f)),       // 图标字体大小
+                        Location = new Point(SX(4), SY(3)),
+                        Size = new Size(SX(24), SY(22)), // 图标区域尺寸
+                        ForeColor = textColor,
+                        BackColor = Color.Transparent,
                         TextAlign = ContentAlignment.MiddleCenter
                     };
-                    dlg.Controls.Add(lblBugDesc);
-
-                    // 动态计算按钮位置（说明文字下方留40px间距）
-                    int btnY = SY(580) + descSize.Height + SY(40);
-
-                    // 复制邮箱按钮
-                    int fbW = SX(160), fbH = SY(36);
-                    Button btnFeedback = new Button
+                    itemPanel.Controls.Add(lblIcon);
+                    
+                    Label lblDesc = new Label
                     {
-                        Text = " 复制邮箱地址",
-                        Font = GetFont(SF(9.5f)),
-                        Location = new Point(cx, btnY),
-                        Size = new Size(fbW, fbH),
-                        BackColor = accentColor,
-                        ForeColor = Color.White,
-                        FlatStyle = FlatStyle.Flat,
-                        Cursor = Cursors.Hand,
-                        TabStop = false
+                        Text = features[i][1],
+                        Font = GetFont(SF(9f)),        // 功能描述字体大小
+                        Location = new Point(SX(32), SY(2)),
+                        Size = new Size(colW - SX(42), SY(22)), // 描述文本区域尺寸
+                        ForeColor = subTextColor,
+                        BackColor = Color.Transparent,
+                        TextAlign = ContentAlignment.MiddleLeft
                     };
-                    btnFeedback.FlatAppearance.BorderSize = 0;
-                    btnFeedback.FlatAppearance.MouseOverBackColor = Color.FromArgb(0, 100, 180);
-                    btnFeedback.Region = new Region(DarkMessageBox.CreateRoundedRectPath(
-                        new Rectangle(0, 0, fbW, fbH), SX(6)));
-                    btnFeedback.Click += (s, e) =>
+                    itemPanel.Controls.Add(lblDesc);
+                }
+                
+                // ========== 公众号推广卡片参数（彩蛋功能）==========
+                y += featCardH + cardGap;           // 更新Y坐标
+                int promoCardH = SY(220);          // 推广卡片高度（包含标题栏和图片）
+                
+                Panel promoCard = new Panel
+                {
+                    Location = new Point(cx, y),
+                    Size = new Size(cw, promoCardH),
+                    BackColor = promoCardBg,
+                    Cursor = Cursors.Hand,
+                    Visible = false                // 默认隐藏，通过彩蛋触发显示
+                };
+                promoCard.Paint += (s, e) =>
+                {
+                    using (var g = e.Graphics)
                     {
-                        try { Clipboard.SetText("xiaomiren0510@gmail.com"); } catch { }
-                    };
-                    dlg.Controls.Add(btnFeedback);
-
-                    // 关闭按钮
-                    int clW = SX(110), clH = SY(36);
-                    Button btnClose = new Button
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                        using (var path = CreateRoundedRectPath(new Rectangle(0, 0, promoCard.Width - 1, promoCard.Height - 1), cardRadius))
+                        {
+                            using (var pen = new Pen(promoCardBorder, 1f))
+                                g.DrawPath(pen, path);
+                        }
+                    }
+                };
+                dlg.Controls.Add(promoCard);
+                
+                // 推广卡片字体参数
+                Font promoLeftFont = GetFont(SF(12f), FontStyle.Bold);   // 左侧标题字体（加粗）
+                Font promoMidFont = GetFont(SF(10f));                     // 中间描述字体
+                Font promoRightFont = GetFont(SF(9.5f), FontStyle.Italic); // 右侧提示字体（斜体）
+                
+                // 推广卡片文本内容
+                string promoLeftText = "🎯 关注公众号";
+                string promoMidText = "微信搜一搜「文娱茶话会」";
+                string promoRightText = "点击复制";
+                
+                // 测量各文本尺寸
+                var promoLeftSize = TextRenderer.MeasureText(promoLeftText, promoLeftFont);
+                var promoMidSize = TextRenderer.MeasureText(promoMidText, promoMidFont);
+                var promoRightSize = TextRenderer.MeasureText(promoRightText, promoRightFont);
+                
+                // 文字栏布局参数（单行横向排列）
+                int textBarHeight = SY(32);        // 文字栏高度
+                int textBarPadding = SY(14);       // 文字栏左右内边距
+                int textBarY = SY(2);              // 文字栏顶部Y坐标
+                
+                // 左侧：关注公众号
+                Label lblPromoLeft = new Label
+                {
+                    Text = promoLeftText,
+                    Font = promoLeftFont,
+                    Size = promoLeftSize,
+                    ForeColor = isDark ? Color.FromArgb(120, 220, 140) : Color.FromArgb(40, 140, 70),
+                    BackColor = Color.Transparent,
+                    TextAlign = ContentAlignment.MiddleLeft
+                };
+                lblPromoLeft.Location = new Point(textBarPadding, textBarY + (textBarHeight - promoLeftSize.Height) / 2);
+                promoCard.Controls.Add(lblPromoLeft);
+                
+                // 中间：微信搜一搜「文娱茶话会」
+                Label lblPromoMid = new Label
+                {
+                    Text = promoMidText,
+                    Font = promoMidFont,
+                    Size = promoMidSize,
+                    ForeColor = textColor,
+                    BackColor = Color.Transparent,
+                    TextAlign = ContentAlignment.MiddleCenter
+                };
+                lblPromoMid.Location = new Point((cw - promoMidSize.Width) / 2, textBarY + (textBarHeight - promoMidSize.Height) / 2);
+                promoCard.Controls.Add(lblPromoMid);
+                
+                // 右侧：点击复制
+                Label lblPromoRight = new Label
+                {
+                    Text = promoRightText,
+                    Font = promoRightFont,
+                    Size = promoRightSize,
+                    ForeColor = isDark ? Color.FromArgb(100, 200, 120) : Color.FromArgb(60, 160, 90),
+                    BackColor = Color.Transparent,
+                    TextAlign = ContentAlignment.MiddleRight
+                };
+                lblPromoRight.Location = new Point(cw - textBarPadding - promoRightSize.Width, textBarY + (textBarHeight - promoRightSize.Height) / 2);
+                promoCard.Controls.Add(lblPromoRight);
+                
+                // 推广卡片图片区域参数（图片填满下方区域）
+                int imgAreaTopPad = SY(2);           // 图片区域顶部内边距
+                int imgAreaBottomPad = SY(8);       // 图片区域底部内边距
+                int imgAreaLeftPad = SX(40);         // 图片区域左侧内边距
+                int imgAreaRightPad = SX(40);        // 图片区域右侧内边距
+                int imgAreaY = textBarY + textBarHeight + imgAreaTopPad; // 图片区域起始Y坐标
+                int promoImgTargetW = cw - imgAreaLeftPad - imgAreaRightPad; // 图片目标宽度（卡片宽度减去左右内边距）
+                int borderSize = SX(2);              // 图片边框宽度
+                
+                Bitmap promoImg = LoadWechatPromoImage(promoImgTargetW);
+                
+                int promoImgW, promoImgH;
+                if (promoImg != null)
+                {
+                    promoImgW = promoImg.Width;
+                    promoImgH = promoImg.Height;
+                }
+                else
+                {
+                    promoImgW = promoImgTargetW;
+                    promoImgH = (int)(promoImgTargetW * 219.0 / 600.0);
+                }
+                
+                int promoImgX = (cw - promoImgW) / 2;
+                int promoImgY = imgAreaY;
+                
+                Color greenBorderColor = isDark ? Color.FromArgb(60, 160, 90) : Color.FromArgb(80, 180, 110);
+                
+                // 图片容器面板：直接在 Paint 事件中绘制图片，避免 PictureBox 的各种问题
+                Panel imgPanel = new Panel
+                {
+                    Location = new Point(promoImgX - borderSize, promoImgY - borderSize),
+                    Size = new Size(promoImgW + borderSize * 2, promoImgH + borderSize * 2),
+                    BackColor = Color.White
+                };
+                imgPanel.Paint += (s, e) =>
+                {
+                    var g = e.Graphics;
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                    
+                    // 1. 绘制白色背景（圆角）
+                    using (var bgPath = CreateRoundedRectPath(new Rectangle(0, 0, imgPanel.Width - 1, imgPanel.Height - 1), SX(8)))
                     {
-                        Text = "关闭",
-                        DialogResult = DialogResult.OK,
-                        Font = GetFont(SF(9.5f)),
-                        Location = new Point(cx + cw - clW, btnY),
-                        Size = new Size(clW, clH),
-                        BackColor = btnColor,
-                        ForeColor = textColor,
-                        FlatStyle = FlatStyle.Flat,
-                        Cursor = Cursors.Hand,
-                        TabStop = false
+                        using (var bgBrush = new SolidBrush(Color.White))
+                        {
+                            g.FillPath(bgBrush, bgPath);
+                        }
+                    }
+                    
+                    // 2. 绘制图片（居中）
+                    if (promoImg != null)
+                    {
+                        int imgDrawX = borderSize;
+                        int imgDrawY = borderSize;
+                        int imgDrawW = promoImgW;
+                        int imgDrawH = promoImgH;
+                        g.DrawImage(promoImg, imgDrawX, imgDrawY, imgDrawW, imgDrawH);
+                    }
+                    
+                    // 3. 绘制绿色圆角边框
+                    using (var borderPath = CreateRoundedRectPath(new Rectangle(1, 1, imgPanel.Width - 3, imgPanel.Height - 3), SX(8)))
+                    {
+                        using (var borderPen = new Pen(greenBorderColor, borderSize))
+                        {
+                            g.DrawPath(borderPen, borderPath);
+                        }
+                    }
+                };
+                promoCard.Controls.Add(imgPanel);
+                imgPanel.BringToFront();
+                
+                Color promoNormalBg = promoCardBg;
+                Color promoHoverBg = isDark ? Color.FromArgb(35, 60, 48) : Color.FromArgb(225, 242, 228);
+                Color promoPressBg = isDark ? Color.FromArgb(42, 70, 55) : Color.FromArgb(210, 235, 218);
+                bool promoIsHover = false;
+                
+                Action<Control> promoWireUp = null;
+                promoWireUp = (ctrl) =>
+                {
+                    ctrl.MouseEnter += (s, e) =>
+                    {
+                        promoIsHover = true;
+                        promoCard.BackColor = promoHoverBg;
+                        promoCard.Cursor = Cursors.Hand;
                     };
-                    btnClose.FlatAppearance.BorderSize = 1;
-                    btnClose.FlatAppearance.BorderColor = btnBorderColor;
-                    btnClose.FlatAppearance.MouseOverBackColor = btnHoverColor;
-                    btnClose.Region = new Region(DarkMessageBox.CreateRoundedRectPath(
-                        new Rectangle(0, 0, clW, clH), SX(6)));
-                    dlg.Controls.Add(btnClose);
-                    dlg.AcceptButton = btnClose;
-
+                    ctrl.MouseLeave += (s, e) =>
+                    {
+                        promoIsHover = false;
+                        promoCard.BackColor = promoNormalBg;
+                        promoCard.Cursor = Cursors.Default;
+                    };
+                    ctrl.MouseDown += (s, e) =>
+                    {
+                        if (e.Button == MouseButtons.Left)
+                            promoCard.BackColor = promoPressBg;
+                    };
+                    ctrl.MouseUp += (s, e) =>
+                    {
+                        if (e.Button == MouseButtons.Left)
+                            promoCard.BackColor = promoIsHover ? promoHoverBg : promoNormalBg;
+                    };
+                    ctrl.Click += async (s, e) =>
+                    {
+                        try
+                        {
+                            Clipboard.SetText("文娱茶话会");
+                            promoCard.BackColor = promoPressBg;
+                            await Task.Delay(100);
+                            promoCard.BackColor = promoIsHover ? promoHoverBg : promoNormalBg;
+                        }
+                        catch { }
+                    };
+                    foreach (Control child in ctrl.Controls)
+                        promoWireUp(child);
+                };
+                promoWireUp(promoCard);
+                
+                // ========== 反馈卡片参数 ==========
+                y += promoCardH + cardGap;           // 更新Y坐标
+                int fbCardH = SY(110);             // 反馈卡片高度（包含邮箱和TG两个子卡片）
+                
+                Panel fbCard = new Panel
+                {
+                    Location = new Point(cx, y),
+                    Size = new Size(cw, fbCardH),
+                    BackColor = feedbackCardBg
+                };
+                fbCard.Paint += (s, e) =>
+                {
+                    using (var g = e.Graphics)
+                    {
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                        using (var path = CreateRoundedRectPath(new Rectangle(0, 0, fbCard.Width - 1, fbCard.Height - 1), cardRadius))
+                        {
+                            using (var pen = new Pen(feedbackCardBorder, 1f))
+                                g.DrawPath(pen, path);
+                        }
+                    }
+                };
+                dlg.Controls.Add(fbCard);
+                
+                Label lblBugTitle = new Label
+                {
+                    Text = "问题反馈 & 交流",
+                    Font = GetFont(SF(10.5f), FontStyle.Bold), // 反馈卡片标题字体
+                    Location = new Point(SX(16), SY(14)),      // 标题位置
+                    AutoSize = true,
+                    ForeColor = textColor,
+                    BackColor = Color.Transparent
+                };
+                fbCard.Controls.Add(lblBugTitle);
+                
+                // 子卡片（邮箱/TG）布局参数
+                int infoCardW = (cw - SX(32) - SX(12)) / 2; // 每个子卡片宽度（总宽-边距-间隔后均分）
+                int infoCardH = SY(54);                     // 每个子卡片高度
+                int infoCardY = SY(44);                     // 子卡片起始Y坐标（标题下方）
+                
+                Label lblEmail = null;
+                Panel emailCard = new Panel
+                {
+                    Location = new Point(SX(16), infoCardY),
+                    Size = new Size(infoCardW, infoCardH),
+                    BackColor = Color.Transparent,
+                    Cursor = Cursors.Hand
+                };
+                emailCard.Paint += (s, e) =>
+                {
+                    using (var g = e.Graphics)
+                    {
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                        using (var path = CreateRoundedRectPath(new Rectangle(0, 0, emailCard.Width - 1, emailCard.Height - 1), SX(6)))
+                        {
+                            using (var pen = new Pen(feedbackCardBorder, 1f))
+                                g.DrawPath(pen, path);
+                        }
+                    }
+                };
+                
+                Color emailNormalBg = Color.Transparent;
+                Color emailHoverBg = isDark ? Color.FromArgb(40, 52, 75) : Color.FromArgb(225, 233, 248);
+                Color emailPressBg = isDark ? Color.FromArgb(50, 65, 90) : Color.FromArgb(210, 222, 245);
+                bool emailIsHover = false;
+                
+                Action<Control> emailWireUp = null;
+                emailWireUp = (ctrl) =>
+                {
+                    ctrl.MouseEnter += (s, e) =>
+                    {
+                        emailIsHover = true;
+                        emailCard.BackColor = emailHoverBg;
+                        emailCard.Cursor = Cursors.Hand;
+                        if (lblEmail != null) lblEmail.Font = GetFont(SF(8.5f), FontStyle.Underline);
+                    };
+                    ctrl.MouseLeave += (s, e) =>
+                    {
+                        emailIsHover = false;
+                        emailCard.BackColor = emailNormalBg;
+                        emailCard.Cursor = Cursors.Default;
+                        if (lblEmail != null) lblEmail.Font = GetFont(SF(8.5f));
+                    };
+                    ctrl.MouseDown += (s, e) =>
+                    {
+                        if (e.Button == MouseButtons.Left)
+                            emailCard.BackColor = emailPressBg;
+                    };
+                    ctrl.MouseUp += (s, e) =>
+                    {
+                        if (e.Button == MouseButtons.Left)
+                            emailCard.BackColor = emailIsHover ? emailHoverBg : emailNormalBg;
+                    };
+                    ctrl.Click += async (s, e) =>
+                    {
+                        try
+                        {
+                            Clipboard.SetText("xiaomiren0510@gmail.com");
+                            emailCard.BackColor = emailPressBg;
+                            await Task.Delay(80);
+                            emailCard.BackColor = emailIsHover ? emailHoverBg : emailNormalBg;
+                            System.Diagnostics.Process.Start("mailto:xiaomiren0510@gmail.com?subject=IPTV直播源检测工具 - BUG反馈");
+                        }
+                        catch { }
+                    };
+                    foreach (Control child in ctrl.Controls)
+                        emailWireUp(child);
+                };
+                fbCard.Controls.Add(emailCard);
+                
+                Label lblEmailIcon = new Label
+                {
+                    Text = "📧",
+                    Font = GetFont(SF(14f)),           // 邮箱图标字体大小
+                    Location = new Point(SX(12), SY(13)),
+                    Size = new Size(SX(28), SY(28)),   // 图标区域尺寸
+                    ForeColor = textColor,
+                    BackColor = Color.Transparent,
+                    TextAlign = ContentAlignment.MiddleCenter
+                };
+                emailCard.Controls.Add(lblEmailIcon);
+                
+                Label lblEmailTitle = new Label
+                {
+                    Text = "邮箱反馈",
+                    Font = GetFont(SF(8.5f), FontStyle.Bold), // 邮箱标题字体
+                    Location = new Point(SX(46), SY(8)),      // 标题位置（图标右侧）
+                    AutoSize = true,
+                    ForeColor = subTextColor,
+                    BackColor = Color.Transparent
+                };
+                emailCard.Controls.Add(lblEmailTitle);
+                
+                lblEmail = new Label
+                {
+                    Text = "xiaomiren0510@gmail.com",
+                    Font = GetFont(SF(8.5f)),          // 邮箱地址字体大小
+                    Location = new Point(SX(46), SY(26)), // 邮箱地址位置（标题下方）
+                    AutoSize = true,
+                    ForeColor = accentColor,
+                    BackColor = Color.Transparent,
+                    Cursor = Cursors.Hand
+                };
+                emailCard.Controls.Add(lblEmail);
+                emailWireUp(emailCard);
+                
+                // TG/GitHub 卡片（彩蛋：鼠标悬停3秒显示TG频道）
+                Label lblTgChannel = null;
+                Panel tgCard = new Panel
+                {
+                    Location = new Point(SX(16) + infoCardW + SX(12), infoCardY), // 右侧子卡片位置
+                    Size = new Size(infoCardW, infoCardH),
+                    BackColor = Color.Transparent,
+                    Cursor = Cursors.Hand
+                };
+                tgCard.Paint += (s, e) =>
+                {
+                    using (var g = e.Graphics)
+                    {
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                        using (var path = CreateRoundedRectPath(new Rectangle(0, 0, tgCard.Width - 1, tgCard.Height - 1), SX(6)))
+                        {
+                            using (var pen = new Pen(feedbackCardBorder, 1f))
+                                g.DrawPath(pen, path);
+                        }
+                    }
+                };
+                
+                Color tgNormalBg = Color.Transparent;
+                Color tgHoverBg = isDark ? Color.FromArgb(40, 52, 75) : Color.FromArgb(225, 233, 248);
+                Color tgPressBg = isDark ? Color.FromArgb(50, 65, 90) : Color.FromArgb(210, 222, 245);
+                bool tgIsHover = false;
+                bool isTgRevealed = false;
+                
+                Action<Control> tgWireUp = null;
+                tgWireUp = (ctrl) =>
+                {
+                    ctrl.MouseEnter += (s, e) =>
+                    {
+                        tgIsHover = true;
+                        tgCard.BackColor = tgHoverBg;
+                        tgCard.Cursor = Cursors.Hand;
+                        if (lblTgChannel != null) lblTgChannel.Font = GetFont(SF(8.5f), FontStyle.Underline);
+                    };
+                    ctrl.MouseLeave += (s, e) =>
+                    {
+                        tgIsHover = false;
+                        tgCard.BackColor = tgNormalBg;
+                        tgCard.Cursor = Cursors.Default;
+                        if (lblTgChannel != null) lblTgChannel.Font = GetFont(SF(8.5f));
+                    };
+                    ctrl.MouseDown += (s, e) =>
+                    {
+                        if (e.Button == MouseButtons.Left)
+                            tgCard.BackColor = tgPressBg;
+                    };
+                    ctrl.MouseUp += (s, e) =>
+                    {
+                        if (e.Button == MouseButtons.Left)
+                            tgCard.BackColor = tgIsHover ? tgHoverBg : tgNormalBg;
+                    };
+                    ctrl.Click += async (s, e) =>
+                    {
+                        try
+                        {
+                            tgCard.BackColor = tgPressBg;
+                            await Task.Delay(80);
+                            tgCard.BackColor = tgIsHover ? tgHoverBg : tgNormalBg;
+                            if (isTgRevealed)
+                                System.Diagnostics.Process.Start("https://t.me/+jTncKg0Vbrg5YjI1");
+                            else
+                                System.Diagnostics.Process.Start("https://github.com/281761526/IPTVLiveChecker");
+                        }
+                        catch { }
+                    };
+                    foreach (Control child in ctrl.Controls)
+                        tgWireUp(child);
+                };
+                fbCard.Controls.Add(tgCard);
+                
+                Label lblTgIcon = new Label
+                {
+                    Text = "💻",                         // 默认显示 GitHub 图标（彩蛋切换为📢）
+                    Font = GetFont(SF(14f)),           // TG/GitHub 图标字体大小
+                    Location = new Point(SX(12), SY(13)),
+                    Size = new Size(SX(28), SY(28)),   // 图标区域尺寸
+                    ForeColor = textColor,
+                    BackColor = Color.Transparent,
+                    TextAlign = ContentAlignment.MiddleCenter
+                };
+                tgCard.Controls.Add(lblTgIcon);
+                
+                Label lblTgTitle = new Label
+                {
+                    Text = "GitHub",                     // 默认显示 GitHub（彩蛋切换为"TG 频道"）
+                    Font = GetFont(SF(8.5f), FontStyle.Bold), // 标题字体
+                    Location = new Point(SX(46), SY(8)),      // 标题位置
+                    AutoSize = true,
+                    ForeColor = subTextColor,
+                    BackColor = Color.Transparent
+                };
+                tgCard.Controls.Add(lblTgTitle);
+                
+                lblTgChannel = new Label
+                {
+                    Text = "github.com/281761526/IPTVLiveChecker", // 默认显示 GitHub 地址
+                    Font = GetFont(SF(8.5f)),                       // 链接字体大小
+                    Location = new Point(SX(46), SY(26)),           // 链接位置
+                    AutoSize = true,
+                    ForeColor = accentColor,
+                    BackColor = Color.Transparent,
+                    Cursor = Cursors.Hand
+                };
+                tgCard.Controls.Add(lblTgChannel);
+                tgWireUp(tgCard);
+                
+                Font authorFont = GetFont(SF(8f));
+                var authorSize = TextRenderer.MeasureText("— Designed by 半步沧桑 —", authorFont);
+                int authorH = authorSize.Height + SY(4);
+                Label lblAuthor = new Label
+                {
+                    Text = "— Designed by 半步沧桑 —",
+                    Font = authorFont,
+                    AutoSize = true,
+                    ForeColor = isDark ? Color.FromArgb(110, 120, 135) : Color.FromArgb(170, 180, 195),
+                    BackColor = Color.Transparent,
+                    TextAlign = ContentAlignment.MiddleCenter
+                };
+                dlg.Controls.Add(lblAuthor);
+                
+                void UpdateLayout()
+                {
+                    dlg.SuspendLayout();
+                    int promoOffset = promoCard.Visible ? promoCardH + cardGap : 0;
+                    promoCard.Location = new Point(cx, SY(16) + topCardH + cardGap + featCardH + cardGap);
+                    
+                    fbCard.Location = new Point(cx, SY(16) + topCardH + cardGap + featCardH + cardGap + promoOffset);
+                    
+                    int authorY = SY(16) + topCardH + cardGap + featCardH + cardGap + promoOffset + fbCardH + cardGap;
+                    lblAuthor.Location = new Point((dlgW - authorSize.Width) / 2, authorY);
+                    
+                    int totalH = authorY + authorH + SY(14);
+                    dlg.ClientSize = new Size(dlgW, totalH);
+                    dlg.ResumeLayout();
+                    dlg.Invalidate();
+                    dlg.Update();
+                }
+                
+                UpdateLayout();
+                
+                using (System.Windows.Forms.Timer promoEggTimer = new System.Windows.Forms.Timer { Interval = 3000 })
+                using (System.Windows.Forms.Timer promoHideTimer = new System.Windows.Forms.Timer { Interval = 1000 })
+                using (System.Windows.Forms.Timer tgEggTimer = new System.Windows.Forms.Timer { Interval = 3000 })
+                {
+                    promoEggTimer.Tick += (s, e) =>
+                    {
+                        promoEggTimer.Stop();
+                        promoCard.Visible = true;
+                        promoCard.Refresh();
+                        UpdateLayout();
+                    };
+                    
+                    promoHideTimer.Tick += (s, e) =>
+                    {
+                        promoHideTimer.Stop();
+                        promoCard.Visible = false;
+                        UpdateLayout();
+                    };
+                    
+                    tgEggTimer.Tick += (s, e) =>
+                    {
+                        tgEggTimer.Stop();
+                        isTgRevealed = true;
+                        lblTgIcon.Text = "📢";
+                        lblTgTitle.Text = "TG 频道";
+                        lblTgChannel.Text = "t.me/+jTncKg0Vbrg5YjI1";
+                    };
+                    
+                    Action<Control> emailWireUpWithEgg = null;
+                    emailWireUpWithEgg = (ctrl) =>
+                    {
+                        ctrl.MouseEnter += (s, e) => { promoEggTimer.Start(); promoHideTimer.Stop(); };
+                        ctrl.MouseLeave += (s, e) => { promoEggTimer.Stop(); if (promoCard.Visible) promoHideTimer.Start(); };
+                        foreach (Control child in ctrl.Controls)
+                            emailWireUpWithEgg(child);
+                    };
+                    emailWireUpWithEgg(emailCard);
+                    
+                    Action<Control> promoWireUpWithHide = null;
+                    promoWireUpWithHide = (ctrl) =>
+                    {
+                        ctrl.MouseEnter += (s, e) => promoHideTimer.Stop();
+                        ctrl.MouseLeave += (s, e) => { if (promoCard.Visible) promoHideTimer.Start(); };
+                        foreach (Control child in ctrl.Controls)
+                            promoWireUpWithHide(child);
+                    };
+                    promoWireUpWithHide(promoCard);
+                    
+                    Action<Control> tgWireUpWithEgg = null;
+                    tgWireUpWithEgg = (ctrl) =>
+                    {
+                        ctrl.MouseEnter += (s, e) => { if (!isTgRevealed) tgEggTimer.Start(); };
+                        ctrl.MouseLeave += (s, e) => tgEggTimer.Stop();
+                        foreach (Control child in ctrl.Controls)
+                            tgWireUpWithEgg(child);
+                    };
+                    tgWireUpWithEgg(tgCard);
+                    
                     dlg.ShowDialog(this);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 调用独立Updater升级器更新
+        /// </summary>
+        private void StartUpdater(string downloadUrl)
+        {
+            string mainExe = Application.ExecutablePath;
+            string updaterPath = Path.Combine(Application.StartupPath, "Updater.exe");
+
+            if (!File.Exists(updaterPath))
+            {
+                DarkMessageBox.Show(this, "升级程序 Updater.exe 不存在，无法进行自动更新。\n请确保 Updater.exe 与主程序在同一目录。", "更新失败", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                var proc = new System.Diagnostics.ProcessStartInfo(updaterPath, $"\"{mainExe}\" \"{downloadUrl}\"");
+                System.Diagnostics.Process.Start(proc);
+                Application.Exit();
+            }
+            catch (Exception ex)
+            {
+                DarkMessageBox.Show(this, "启动升级程序失败：" + ex.Message, "更新失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// 检查软件更新
+        /// </summary>
+        private async void CheckForUpdate()
+        {
+            string updateUrl = "https://cdn.jsdelivr.net/gh/281761526/IPTVLiveChecker@main/update.json";
+            string currentVersion = "Beta 1.0";
+
+            try
+            {
+                using (var http = new System.Net.Http.HttpClient())
+                {
+                    http.Timeout = TimeSpan.FromSeconds(10);
+                    string json = await http.GetStringAsync(updateUrl);
+
+                    var serializer = new JavaScriptSerializer();
+                    var jsonObj = serializer.Deserialize<Dictionary<string, object>>(json);
+
+                    if (jsonObj == null)
+                    {
+                        DarkMessageBox.Show(this, "更新配置格式错误", "更新错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    string latestVersion = jsonObj.ContainsKey("latestVersion") ? jsonObj["latestVersion"]?.ToString() ?? "" : "";
+                    string downloadUrl = jsonObj.ContainsKey("downloadUrl") ? jsonObj["downloadUrl"]?.ToString() ?? "" : "";
+                    bool isForceUpdate = false;
+                    if (jsonObj.ContainsKey("isForceUpdate"))
+                    {
+                        bool.TryParse(jsonObj["isForceUpdate"]?.ToString(), out isForceUpdate);
+                    }
+
+                    string changelog = "";
+                    if (jsonObj.ContainsKey("changelog") && jsonObj["changelog"] is List<object> logList)
+                    {
+                        foreach (var item in logList)
+                        {
+                            changelog += "• " + item?.ToString() + "\n";
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(latestVersion) && latestVersion != currentVersion)
+                    {
+                        string msg = $"发现新版本：{latestVersion}\n\n" +
+                                     $"当前版本：{currentVersion}\n\n" +
+                                     $"更新内容：\n{changelog}\n" +
+                                     $"是否立即更新？";
+
+                        var result = DarkMessageBox.Show(this, msg, "发现新版本", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                        if (result == DialogResult.Yes)
+                        {
+                            StartUpdater(downloadUrl);
+                        }
+                    }
+                    else
+                    {
+                        DarkMessageBox.Show(this, $"当前已是最新版本！\n\n版本：{currentVersion}", "检查更新", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DarkMessageBox.Show(this, "检查更新失败：" + ex.Message, "更新错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         
         private void RefreshFontsImmediately()
         {
-            this.Font = GetFont(SF(11f));
+            this.Font = GetFont(SF(10.5f));
             
             if (dgvData != null)
             {
@@ -5017,7 +5816,200 @@ namespace WindowsFormsApp1
             RefreshContextMenuFonts();
             config.Initialize(dpiScale);
             
+            RefreshNavButtonSizes();
+            RefreshComponentSizes();
+            
             this.Invalidate();
+        }
+        
+        private void RefreshNavButtonSizes()
+        {
+            if (titleBarPanel == null || btnNavDetect == null) return;
+            
+            Font navFont = btnNavDetect.Font;
+            int requiredBtnWidth = 0;
+            
+            using (Graphics g = Graphics.FromHwnd(this.Handle))
+            {
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                
+                foreach (Button btn in new[] { btnNavDetect, btnNavSearch, btnNavSettings, btnNavAbout })
+                {
+                    if (btn != null)
+                    {
+                        SizeF textSize = g.MeasureString(btn.Text, btn.Font);
+                        requiredBtnWidth = Math.Max(requiredBtnWidth, (int)textSize.Width);
+                    }
+                }
+            }
+            
+            requiredBtnWidth += 24;
+            int requiredBtnHeight = (int)(navFont.Height * 1.4);
+            int maxBtnHeight = (int)(titleBarPanel.Height * 0.9);
+            requiredBtnHeight = Math.Min(requiredBtnHeight, maxBtnHeight);
+            
+            int navBtnY = (titleBarPanel.Height - requiredBtnHeight) / 2;
+            int navBtnRadius = 4;
+            int navBtnGap = 1;
+            
+            int startX = SX(20);
+            
+            Action<Button> updateBtn = (btn) =>
+            {
+                if (btn != null)
+                {
+                    btn.Width = requiredBtnWidth;
+                    btn.Height = requiredBtnHeight;
+                    btn.Top = navBtnY;
+                    btn.Region?.Dispose();
+                    using (GraphicsPath path = RoundedRectPath(new Rectangle(0, 0, btn.Width, btn.Height), navBtnRadius))
+                        btn.Region = new Region(path);
+                    btn.Invalidate();
+                }
+            };
+            
+            btnNavDetect.Left = startX;
+            updateBtn(btnNavDetect);
+            
+            int currentX = btnNavDetect.Right + navBtnGap;
+            
+            if (btnNavSearch.Visible)
+            {
+                btnNavSearch.Left = currentX;
+                updateBtn(btnNavSearch);
+                currentX = btnNavSearch.Right + navBtnGap;
+            }
+            
+            btnNavSettings.Left = currentX;
+            updateBtn(btnNavSettings);
+            
+            btnNavAbout.Left = btnNavSettings.Right + navBtnGap;
+            updateBtn(btnNavAbout);
+        }
+        
+        private void RefreshComponentSizes()
+        {
+            if (actionArea != null)
+            {
+                using (Graphics g = Graphics.FromHwnd(this.Handle))
+                {
+                    int btnW = SX(126);
+                    int leftX = SX(12);
+                    int ay = SY(14);
+                    
+                    foreach (Control ctrl in actionArea.Controls)
+                    {
+                        if (ctrl is Button btn && !string.IsNullOrEmpty(btn.Text))
+                        {
+                            SizeF textSize = g.MeasureString(btn.Text, btn.Font);
+                            int requiredBtnHeight = (int)(textSize.Height * 1.5) + 6;
+                            requiredBtnHeight = Math.Max(requiredBtnHeight, SY(28));
+                            
+                            btn.Width = btnW;
+                            btn.Height = requiredBtnHeight;
+                            btn.Left = leftX;
+                            btn.Top = ay;
+                            
+                            ay += requiredBtnHeight + SY(10);
+                            
+                            btn.Region?.Dispose();
+                            using (GraphicsPath path = RoundedRectPath(new Rectangle(0, 0, btn.Width, btn.Height), 8))
+                                btn.Region = new Region(path);
+                            btn.Invalidate();
+                        }
+                        else if (ctrl is Panel && ctrl == tipBox)
+                        {
+                            ctrl.Top = ay;
+                            ay += ctrl.Height + SY(10);
+                        }
+                    }
+                }
+            }
+            
+            if (searchPanelRef != null)
+            {
+                using (Graphics g = Graphics.FromHwnd(this.Handle))
+                {
+                    float baseFontSize = SF(8.5f);
+                    Font baseFont = GetFont(baseFontSize);
+                    SizeF textSize = g.MeasureString("搜 索 :", baseFont);
+                    int requiredHeight = (int)(textSize.Height * 1.6) + 8;
+                    requiredHeight = Math.Max(requiredHeight, SY(32));
+                    
+                    searchPanelRef.Height = requiredHeight;
+                    
+                    foreach (Control ctrl in searchPanelRef.Controls)
+                    {
+                        if (ctrl is Label lbl && (lbl.Text == "搜 索 :" || lbl.Text == "分组:"))
+                        {
+                            lbl.Height = (int)textSize.Height + 4;
+                            lbl.Top = (searchPanelRef.Height - lbl.Height) / 2;
+                        }
+                        else if (ctrl is Panel p && p.Width == 110)
+                        {
+                            p.Size = new Size(110, (int)textSize.Height + 6);
+                            p.Top = (searchPanelRef.Height - p.Height) / 2;
+                        }
+                    }
+                    
+                    if (searchBoxHostRef != null)
+                    {
+                        searchBoxHostRef.Size = new Size(searchPanelRef.Width - SX(300), (int)textSize.Height + 6);
+                        searchBoxHostRef.Top = (searchPanelRef.Height - searchBoxHostRef.Height) / 2;
+                        
+                        if (txtSearchBox != null)
+                        {
+                            txtSearchBox.Top = (searchBoxHostRef.Height - txtSearchBox.Height) / 2;
+                        }
+                    }
+                }
+            }
+            
+            if (statusBarRef != null)
+            {
+                using (Graphics g = Graphics.FromHwnd(this.Handle))
+                {
+                    Font statusFont = GetFont(SF(9.5f));
+                    SizeF textSize = g.MeasureString("已检测: 0/0", statusFont);
+                    int requiredHeight = (int)(textSize.Height * 1.6) + 4;
+                    requiredHeight = Math.Max(requiredHeight, SY(24));
+                    
+                    statusBarRef.Height = requiredHeight;
+                }
+                LayoutStatusBar(statusBarRef);
+                UpdateStatusBarRegion();
+            }
+            
+            if (dgvData != null)
+            {
+                using (Graphics g = Graphics.FromHwnd(this.Handle))
+                {
+                    Font rowFont = GetFont(SF(6.7f));
+                    SizeF textSize = g.MeasureString("测试文字", rowFont);
+                    int requiredRowHeight = (int)(textSize.Height * 1.4) + 4;
+                    requiredRowHeight = Math.Max(requiredRowHeight, SY(28));
+                    
+                    dgvData.RowTemplate.Height = requiredRowHeight;
+                    
+                    Font headerFont = GetFont(SF(9f));
+                    SizeF headerSize = g.MeasureString("名称", headerFont);
+                    int requiredHeaderHeight = (int)(headerSize.Height * 1.4) + 4;
+                    requiredHeaderHeight = Math.Max(requiredHeaderHeight, SY(30));
+                    
+                    dgvData.ColumnHeadersHeight = requiredHeaderHeight;
+                }
+            }
+            
+            if (tipBox != null && tipBox.Visible)
+            {
+                UpdateTipBoxSize();
+            }
+            
+            if (emptyStatePanel != null && emptyStatePanel.Visible)
+            {
+                CenterEmptyState();
+            }
         }
         
         private void RefreshContextMenuFonts()
@@ -5292,15 +6284,24 @@ namespace WindowsFormsApp1
             this.BeginInvoke(new Action(() => { _ = initTask(); }));
         }
 
+        /// <summary>
+        /// 创建自定义标题栏
+        /// 包含窗口图标、导航按钮（解析、搜索、设置、关于）和窗口控制按钮（主题切换、最小化、最大化、关闭）
+        /// 所有尺寸已适配DPI缩放，自动根据主题切换颜色
+        /// </summary>
         private void CreateTitleBar()
         {
+            // ========== 标题栏面板 ==========
+            // [位置] 顶部Dock填充 [高度] 40px [背景] 使用主题背景色
             titleBarPanel = new Panel
             {
-                Dock = DockStyle.Top,
-                Height = 40,
-                BackColor = theme.Bg
+                Dock = DockStyle.Top,           // 顶部停靠
+                Height = 40,                   // 标题栏高度（固定40px）
+                BackColor = theme.Bg            // 背景色跟随主题
             };
 
+            // ========== 窗口图标（左侧） ==========
+            // [位置] (12, 9) [大小] 22x22 [绘制] 自定义电视图标（使用主题主色）
             PictureBox titleIcon = new PictureBox
             {
                 Size = new Size(22, 22),
@@ -5309,39 +6310,48 @@ namespace WindowsFormsApp1
                 SizeMode = PictureBoxSizeMode.CenterImage
             };
             titleIconRef = titleIcon;
+            // 自定义绘制电视图标
             titleIcon.Paint += (s, e) =>
             {
                 Graphics g = e.Graphics;
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 using (SolidBrush tvBrush = new SolidBrush(theme.Primary))
                 {
+                    // 绘制电视主体（圆角矩形）
                     using (GraphicsPath tvPath = RoundedRectPath(new Rectangle(2, 4, 18, 13), 3))
                         g.FillPath(tvBrush, tvPath);
+                    // 绘制屏幕（内部矩形）
                     using (SolidBrush screenBrush = new SolidBrush(theme.Bg))
                         g.FillRectangle(screenBrush, new Rectangle(4, 6, 14, 9));
+                    // 绘制底座
                     g.FillRectangle(tvBrush, 7, 17, 7, 2);
                     g.FillRectangle(tvBrush, 5, 19, 12, 2);
                 }
             };
             titleBarPanel.Controls.Add(titleIcon);
 
-            int btnSize = 40;
-            Color titleBtnBg = theme.Bg;
-            Color titleBtnFg = theme.TextSecondary;
-            Color titleBtnHover = theme.Name == "深色" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(230, 230, 235);
-            Color closeBtnHover = Color.FromArgb(232, 17, 35);
-            Color closeBtnFg = Color.White;
+            // ========== 窗口控制按钮配置（右上角） ==========
+            // 控制按钮：主题切换、最小化、最大化、关闭，每个按钮40x40px，圆角8px
+            int btnSize = 40;                                 // 控制按钮尺寸（40x40px）
+            Color titleBtnBg = theme.Bg;                      // 控制按钮背景色
+            Color titleBtnFg = theme.TextSecondary;           // 控制按钮文字颜色
+            Color titleBtnHover = theme.Name == "深色" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(230, 230, 235); // 控制按钮悬停色
+            Color closeBtnHover = Color.FromArgb(232, 17, 35); // 关闭按钮悬停色（红色）
+            Color closeBtnFg = Color.White;                   // 关闭按钮文字颜色
 
-            int navBtnWidth = SX(75);
-            int navBtnHeight = (int)(titleBarPanel.Height * 0.6); // 自动适配导航栏高度的60%
-            int navBtnY = (titleBarPanel.Height - navBtnHeight) / 2;
-            int navBtnGap = 1;
-            int navBtnRadius = 4; // 圆角半径
+            // ========== 导航按钮配置（左侧图标右侧） ==========
+            // 导航按钮：解析(P)、搜索(F)、设置(S)、关于(A)，带悬停高亮效果
+            int navBtnWidth = SX(75);                          // 导航按钮宽度（75px * DPI缩放）
+            int navBtnHeight = (int)(titleBarPanel.Height * 0.6); // 导航按钮高度 = 标题栏高度的60%
+            int navBtnY = (titleBarPanel.Height - navBtnHeight) / 2; // 导航按钮垂直居中
+            int navBtnGap = 1;                                 // 导航按钮之间间距
+            int navBtnRadius = 4;                              // 导航按钮圆角半径（4px）
 
-            Color navBtnText = IsDarkColor(theme.Bg) ? Color.White : Color.Black;
-            navBtnHoverBg = IsDarkColor(theme.Bg) ? Color.FromArgb(60, 60, 60) : Color.FromArgb(230, 230, 230);
+            Color navBtnText = IsDarkColor(theme.Bg) ? Color.White : Color.Black;             // 导航按钮文字颜色
+            navBtnHoverBg = IsDarkColor(theme.Bg) ? Color.FromArgb(60, 60, 60) : Color.FromArgb(230, 230, 230); // 导航按钮悬停背景色
 
-            // 导航按钮通用绘制方法
+            // ========== 导航按钮通用绘制方法 ==========
+            // 实现导航按钮的自定义绘制逻辑：悬停时显示背景高亮，文字居中显示
             void PaintNavButton(object sender, PaintEventArgs e)
             {
                 Button btn = (Button)sender;
@@ -5349,15 +6359,15 @@ namespace WindowsFormsApp1
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                // 清除背景
+                // 清除背景（使用父容器背景色填充，实现透明效果）
                 Color parentBg = btn.Parent != null ? btn.Parent.BackColor : Color.White;
                 using (SolidBrush clearBrush = new SolidBrush(parentBg))
                     g.FillRectangle(clearBrush, 0, 0, btn.Width, btn.Height);
 
-                // 判断是否悬停
+                // 判断是否悬停（鼠标在按钮区域内）
                 bool isHover = btn.ClientRectangle.Contains(btn.PointToClient(Cursor.Position));
 
-                // 绘制背景（悬停时显示）
+                // 绘制背景（悬停时显示圆角矩形高亮）
                 if (isHover)
                 {
                     Rectangle rect = new Rectangle(0, 0, btn.Width - 1, btn.Height - 1);
@@ -5366,7 +6376,7 @@ namespace WindowsFormsApp1
                         g.FillPath(bgBrush, path);
                 }
 
-                // 绘制文字（带内边距，防止超出圆角）
+                // 绘制文字（带8px左右内边距，防止文字超出圆角区域）
                 Rectangle textRect = new Rectangle(8, 0, btn.Width - 16, btn.Height);
                 using (SolidBrush textBrush = new SolidBrush(btn.ForeColor))
                 using (StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
@@ -5375,7 +6385,8 @@ namespace WindowsFormsApp1
                 }
             }
 
-            // 导航按钮通用鼠标事件
+            // ========== 导航按钮通用事件绑定方法 ==========
+            // 设置导航按钮样式为无边框扁平按钮，绑定鼠标事件实现悬停效果和圆角自适应
             void AttachNavButtonEvents(Button btn)
             {
                 btn.FlatStyle = FlatStyle.Flat;
@@ -5383,16 +6394,18 @@ namespace WindowsFormsApp1
                 btn.FlatAppearance.MouseOverBackColor = Color.Empty;
                 btn.FlatAppearance.MouseDownBackColor = Color.Empty;
 
-                // 设置圆角Region
+                // 设置圆角Region（裁剪按钮区域为圆角矩形）
                 btn.Region?.Dispose();
                 using (GraphicsPath path = RoundedRectPath(new Rectangle(0, 0, btn.Width, btn.Height), navBtnRadius))
                     btn.Region = new Region(path);
 
-                btn.Paint += PaintNavButton;
-                btn.MouseEnter += (s, e) => btn.Invalidate();
-                btn.MouseLeave += (s, e) => btn.Invalidate();
+                // 绑定绘制和鼠标事件
+                btn.Paint += PaintNavButton;                          // 自定义绘制
+                btn.MouseEnter += (s, e) => btn.Invalidate();        // 鼠标进入时重绘
+                btn.MouseLeave += (s, e) => btn.Invalidate();        // 鼠标离开时重绘
                 btn.Resize += (s, e) =>
                 {
+                    // 按钮大小变化时重新设置圆角Region
                     btn.Region?.Dispose();
                     using (GraphicsPath path = RoundedRectPath(new Rectangle(0, 0, btn.Width, btn.Height), navBtnRadius))
                         btn.Region = new Region(path);
@@ -5400,6 +6413,8 @@ namespace WindowsFormsApp1
                 };
             }
 
+            // ========== 导航按钮：解析 (P) ==========
+            // [位置] (20, navBtnY) [大小] (navBtnWidth+20) x navBtnHeight [字体] YaHei 9pt [快捷键] P
             btnNavDetect = new Button
             {
                 Text = "解析 (P)",
@@ -5416,6 +6431,8 @@ namespace WindowsFormsApp1
             btnNavDetect.Click += (s, e) => ShowIptvParserDialog();
             titleBarPanel.Controls.Add(btnNavDetect);
 
+            // ========== 导航按钮：搜索 (F) ==========
+            // [位置] 在解析按钮右侧，间距navBtnGap [大小] 同解析按钮 [字体] YaHei 9pt [快捷键] F
             btnNavSearch = new Button
             {
                 Text = "搜索 (F)",
@@ -5426,12 +6443,32 @@ namespace WindowsFormsApp1
                 Font = GetFont(SF(9f), FontStyle.Regular),
                 Cursor = Cursors.Hand,
                 Tag = "nav:搜索",
-                TabStop = false
+                TabStop = false,
+                Visible = showSearchButton
             };
             AttachNavButtonEvents(btnNavSearch);
-            btnNavSearch.Click += (s, e) => ShowSearchEngineDialog();
+            btnNavSearch.Click += (s, e) =>
+            {
+                if (watchSearchWindow)
+                {
+                    string searchRule = "title=\"IPTV\" || title=\"直播\"";
+                    string baseUrl = "https://fofa.info/result?qbase64=";
+                    string url = baseUrl + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(searchRule));
+                    try
+                    {
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+                    }
+                    catch { }
+                }
+                else
+                {
+                    ShowSearchEngineDialog();
+                }
+            };
             titleBarPanel.Controls.Add(btnNavSearch);
 
+            // ========== 导航按钮：设置 (S) ==========
+            // [位置] 在搜索按钮右侧，间距navBtnGap [大小] 同解析按钮 [字体] YaHei 9pt [快捷键] S
             btnNavSettings = new Button
             {
                 Text = "设置 (S)",
@@ -5447,6 +6484,8 @@ namespace WindowsFormsApp1
             btnNavSettings.Click += (s, e) => ShowSettingsDialog();
             titleBarPanel.Controls.Add(btnNavSettings);
 
+            // ========== 导航按钮：关于 (A) ==========
+            // [位置] 在设置按钮右侧，间距navBtnGap [大小] 同解析按钮 [字体] YaHei 9pt [快捷键] A
             btnNavAbout = new Button
             {
                 Text = "关于 (A)",
@@ -5463,14 +6502,20 @@ namespace WindowsFormsApp1
             btnNavAbout.Click += (s, e) => ShowAboutDialog();
             titleBarPanel.Controls.Add(btnNavAbout);
 
+            // ========== 标题栏布局更新方法 ==========
+            // 窗口大小变化时，重新计算导航按钮和控制按钮的位置
+            // 导航按钮固定在左侧，控制按钮右对齐
             void UpdateTitleAndNav()
             {
                 int w = titleBarPanel.ClientSize.Width;
-                int btnW = navBtnWidth + 20;
+                int btnW = btnNavDetect != null ? btnNavDetect.Width : navBtnWidth + 20;
+                int btnGap = btnNavDetect != null && btnNavSearch != null ? btnNavSearch.Left - btnNavDetect.Right : navBtnGap;
+                // 重新定位导航按钮（左侧对齐）
                 if (btnNavDetect != null) btnNavDetect.Left = SX(20);
-                if (btnNavSearch != null) btnNavSearch.Left = SX(20) + btnW + navBtnGap;
-                if (btnNavSettings != null) btnNavSettings.Left = SX(20) + btnW * 2 + navBtnGap * 2;
-                if (btnNavAbout != null) btnNavAbout.Left = SX(20) + btnW * 3 + navBtnGap * 3;
+                if (btnNavSearch != null) btnNavSearch.Left = SX(20) + btnW + btnGap;
+                if (btnNavSettings != null) btnNavSettings.Left = SX(20) + btnW * 2 + btnGap * 2;
+                if (btnNavAbout != null) btnNavAbout.Left = SX(20) + btnW * 3 + btnGap * 3;
+                // 重新定位控制按钮（右侧对齐，4个按钮共160px）
                 int totalBtnsWidth = btnSize * 4;
                 int startX = w - totalBtnsWidth;
                 btnThemeToggle.Left = startX;
@@ -5479,6 +6524,9 @@ namespace WindowsFormsApp1
                 btnClose.Left = startX + btnSize * 3;
             }
 
+            // ========== 窗口控制按钮工厂方法 ==========
+            // 创建统一风格的窗口控制按钮（主题切换、最小化、最大化、关闭）
+            // [大小] 40x40px [圆角] 8px [样式] 扁平无边框
             Button CreateTitleButton()
             {
                 Button b = new Button
@@ -5492,9 +6540,10 @@ namespace WindowsFormsApp1
                 b.FlatAppearance.BorderSize = 0;
                 b.FlatAppearance.MouseOverBackColor = titleBtnHover;
                 b.FlatAppearance.CheckedBackColor = titleBtnHover;
-                // 设置圆角Region（8px圆角）
+                // 设置圆角Region（8px圆角，使按钮看起来圆润）
                 using (GraphicsPath path = RoundedRectPath(new Rectangle(0, 0, btnSize, btnSize), 8))
                     b.Region = new Region(path);
+                // 按钮大小变化时重新设置圆角Region
                 b.Resize += (s, e) =>
                 {
                     Button btn = (Button)s;
@@ -5505,6 +6554,8 @@ namespace WindowsFormsApp1
                 return b;
             }
 
+            // ========== 控制按钮：主题切换 ==========
+            // [位置] 右上角最左侧 [图标] 深色显示太阳，浅色显示月亮 [功能] 切换深色/浅色主题
             btnThemeToggle = CreateTitleButton();
             btnThemeToggle.Tag = "theme";
             btnThemeToggle.Paint += (s, e) =>
@@ -5519,6 +6570,7 @@ namespace WindowsFormsApp1
                 bool currentIsDark = IsDarkColor(theme.Bg);
                 if (currentIsDark)
                 {
+                    // 深色主题显示太阳图标（圆形+8条射线）
                     using (Pen pen = new Pen(iconColor, 1.6f))
                     using (SolidBrush br = new SolidBrush(iconColor))
                     {
@@ -5537,6 +6589,7 @@ namespace WindowsFormsApp1
                 }
                 else
                 {
+                    // 浅色主题显示月亮图标（两个重叠圆）
                     using (SolidBrush br = new SolidBrush(iconColor))
                     {
                         int r = 8;
@@ -5555,18 +6608,23 @@ namespace WindowsFormsApp1
             };
             titleBarPanel.Controls.Add(btnThemeToggle);
 
+            // ========== 控制按钮：最小化 ==========
+            // [位置] 主题按钮右侧 [图标] 水平线 [功能] 将窗口最小化到任务栏
             btnMin = CreateTitleButton();
             btnMin.Paint += (s, e) =>
             {
                 bool isHover = btnMin.ClientRectangle.Contains(btnMin.PointToClient(Cursor.Position));
                 Color ic = isHover ? theme.TextPrimary : theme.TextSecondary;
                 int baseSize = 40;
+                // 绘制水平线图标（居中偏下）
                 using (Pen pen = new Pen(ic, 1.5f))
                     e.Graphics.DrawLine(pen, baseSize / 2 - 8, baseSize / 2 + 6, baseSize / 2 + 8, baseSize / 2 + 6);
             };
             btnMin.Click += (s, e) => { this.WindowState = FormWindowState.Minimized; };
             titleBarPanel.Controls.Add(btnMin);
 
+            // ========== 控制按钮：最大化/还原 ==========
+            // [位置] 最小化按钮右侧 [图标] 最大化时显示还原图标，还原时显示最大化图标 [功能] 切换窗口最大化/还原状态
             btnMax = CreateTitleButton();
             btnMax.Paint += (s, e) =>
             {
@@ -5578,11 +6636,13 @@ namespace WindowsFormsApp1
                 {
                     if (isMaximized)
                     {
+                        // 最大化状态：显示还原图标（两个小矩形）
                         e.Graphics.DrawRectangle(pen, baseSize / 2 - 7, baseSize / 2 - 5, 9, 9);
                         e.Graphics.DrawRectangle(pen, baseSize / 2 - 4, baseSize / 2 - 8, 9, 9);
                     }
                     else
                     {
+                        // 还原状态：显示最大化图标（一个大矩形）
                         e.Graphics.DrawRectangle(pen, baseSize / 2 - 7, baseSize / 2 - 7, 14, 14);
                     }
                 }
@@ -5597,6 +6657,9 @@ namespace WindowsFormsApp1
             };
             titleBarPanel.Controls.Add(btnMax);
 
+            // ========== 控制按钮：关闭 ==========
+            // [位置] 最大化按钮右侧 [图标] X形 [功能] 关闭应用程序
+            // [特殊效果] 悬停时显示红色背景，按下时颜色加深
             btnClose = CreateTitleButton();
             btnClose.FlatAppearance.MouseOverBackColor = closeBtnHover;
             btnClose.FlatAppearance.MouseDownBackColor = Color.FromArgb(200, 15, 30);
@@ -5605,14 +6668,17 @@ namespace WindowsFormsApp1
                 bool isHover = btnClose.ClientRectangle.Contains(btnClose.PointToClient(Cursor.Position));
                 bool isDown = MouseButtons == MouseButtons.Left && isHover;
                 int baseSize = 40;
+                // 根据状态确定背景色（按下>悬停>正常）
                 Color bgColor = isDown ? Color.FromArgb(200, 15, 30) : (isHover ? closeBtnHover : btnClose.BackColor);
                 // 绘制圆角背景
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using (GraphicsPath path = RoundedRectPath(new Rectangle(0, 0, baseSize, baseSize), 8))
                 using (SolidBrush bgBr = new SolidBrush(bgColor))
                     e.Graphics.FillPath(bgBr, path);
+                // 根据状态确定图标颜色（悬停时白色，否则为次要文字色）
                 Color ic = isHover ? closeBtnFg : theme.TextSecondary;
-                int offset = isDown ? 1 : 0;
+                int offset = isDown ? 1 : 0; // 按下时图标轻微偏移
+                // 绘制X形图标（两条对角线）
                 using (Pen pen = new Pen(ic, 1.6f))
                 {
                     e.Graphics.DrawLine(pen, baseSize / 2 - 7 + offset, baseSize / 2 - 7 + offset, baseSize / 2 + 7 + offset, baseSize / 2 + 7 + offset);
@@ -5626,8 +6692,11 @@ namespace WindowsFormsApp1
             btnClose.Click += (s, e) => this.Close();
             titleBarPanel.Controls.Add(btnClose);
 
+            // ========== 标题栏事件绑定 ==========
+            // 窗口大小变化时更新布局
             titleBarPanel.Resize += (s, e) => UpdateTitleAndNav();
 
+            // 标题栏鼠标拖拽（实现自定义标题栏拖动）
             titleBarPanel.MouseDown += (s, e) =>
             {
                 if (e.Button == MouseButtons.Left)
@@ -5636,6 +6705,7 @@ namespace WindowsFormsApp1
                     SendMessage(this.Handle, 0xA1, 0x2, 0);
                 }
             };
+            // 图标区域鼠标拖拽（同标题栏）
             titleIcon.MouseDown += (s, e) =>
             {
                 if (e.Button == MouseButtons.Left)
@@ -5645,6 +6715,7 @@ namespace WindowsFormsApp1
                 }
             };
 
+            // 标题栏双击（切换最大化/还原）
             titleBarPanel.DoubleClick += (s, e) =>
             {
                 if (this.WindowState == FormWindowState.Maximized)
@@ -5794,6 +6865,103 @@ namespace WindowsFormsApp1
                 }
             }
             return GenerateAppIcon(512);
+        }
+
+        private Bitmap LoadWechatPromoImage(int maxWidth)
+        {
+            try
+            {
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                string[] resourceNames = assembly.GetManifestResourceNames();
+                
+                string expectedName = "WindowsFormsApp1.wechat_promo.png";
+                
+                foreach (string name in resourceNames)
+                {
+                    if (name.Equals(expectedName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        using (Stream stream = assembly.GetManifestResourceStream(name))
+                        {
+                            if (stream != null)
+                            {
+                                Bitmap original = new Bitmap(stream);
+                                int targetW = original.Width <= maxWidth ? original.Width : maxWidth;
+                                int targetH = (int)((double)original.Height * targetW / original.Width);
+                                Bitmap copy = new Bitmap(targetW, targetH);
+                                using (Graphics g = Graphics.FromImage(copy))
+                                {
+                                    g.SmoothingMode = SmoothingMode.HighQuality;
+                                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                                    g.DrawImage(original, 0, 0, targetW, targetH);
+                                }
+                                original.Dispose();
+                                return copy;
+                            }
+                        }
+                    }
+                }
+                
+                foreach (string name in resourceNames)
+                {
+                    if (name.IndexOf("wechat_promo", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        using (Stream stream = assembly.GetManifestResourceStream(name))
+                        {
+                            if (stream != null)
+                            {
+                                Bitmap original = new Bitmap(stream);
+                                int targetW = original.Width <= maxWidth ? original.Width : maxWidth;
+                                int targetH = (int)((double)original.Height * targetW / original.Width);
+                                Bitmap copy = new Bitmap(targetW, targetH);
+                                using (Graphics g = Graphics.FromImage(copy))
+                                {
+                                    g.SmoothingMode = SmoothingMode.HighQuality;
+                                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                                    g.DrawImage(original, 0, 0, targetW, targetH);
+                                }
+                                original.Dispose();
+                                return copy;
+                            }
+                        }
+                    }
+                }
+                
+                foreach (string name in resourceNames)
+                {
+                    if (name.IndexOf("promo", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        name.IndexOf("wechat", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        using (Stream stream = assembly.GetManifestResourceStream(name))
+                        {
+                            if (stream != null)
+                            {
+                                try
+                                {
+                                    Bitmap original = new Bitmap(stream);
+                                    int targetW = original.Width <= maxWidth ? original.Width : maxWidth;
+                                    int targetH = (int)((double)original.Height * targetW / original.Width);
+                                    Bitmap copy = new Bitmap(targetW, targetH);
+                                    using (Graphics g = Graphics.FromImage(copy))
+                                    {
+                                        g.SmoothingMode = SmoothingMode.HighQuality;
+                                        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                                        g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                                        g.DrawImage(original, 0, 0, targetW, targetH);
+                                    }
+                                    original.Dispose();
+                                    return copy;
+                                }
+                                catch { }
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            return null;
         }
 
         private Bitmap GenerateAppIconBitmap(int size)
@@ -6483,33 +7651,46 @@ namespace WindowsFormsApp1
             return targetHwnd;
         }
 
+        /// <summary>
+        /// 构建主界面UI（完整的界面初始化入口）
+        /// 包含窗口自适应、主题初始化、DPI缩放配置、整体布局结构搭建
+        /// 布局结构：外层边框容器 → 标题栏(Dock=Top) → 主内容区(Dock=Fill)
+        /// 主内容区：左侧导航栏 → 中间操作区 → 右侧数据表格区
+        /// </summary>
         private void BuildUI()
         {
+            // ========== 主题初始化 ==========
             if (themePreference == "深色") theme = AppTheme.Dark;
             else if (themePreference == "跟随系统") theme = AppTheme.GetAutoTheme();
             else theme = AppTheme.Light;
-            this.Text = "";
-            this.AutoScaleMode = AutoScaleMode.None;
+
+            // ========== 窗口基础配置 ==========
+            this.Text = "";                                    // 清空默认标题（使用自定义标题栏）
+            this.AutoScaleMode = AutoScaleMode.None;           // 禁用系统自动缩放（使用自定义DPI缩放）
+            // 获取当前DPI缩放比例（96dpi为100%缩放基准）
             using (Graphics g = this.CreateGraphics())
                 dpiScale = g.DpiX / 96f;
             config.Initialize(dpiScale);
             DarkMessageBox.DpiScale = dpiScale;
-            // 根据屏幕分辨率自动设置窗口大小（屏幕工作区的88%，最小1280x800）
+
+            // ========== 窗口大小自适应（根据屏幕分辨率） ==========
+            // 窗口大小 = 屏幕工作区的88%，最小1280x800，确保在不同分辨率下都能完整显示
             int screenW = Screen.PrimaryScreen.WorkingArea.Width;
             int screenH = Screen.PrimaryScreen.WorkingArea.Height;
-            int winW = Math.Max(1280, (int)(screenW * 0.88));
-            int winH = Math.Max(800, (int)(screenH * 0.88));
+            int winW = Math.Max(1280, (int)(screenW * 0.88)); // 窗口宽度
+            int winH = Math.Max(800, (int)(screenH * 0.88));  // 窗口高度
             this.Size = new Size(winW, winH);
-            this.StartPosition = FormStartPosition.Manual;
+            this.StartPosition = FormStartPosition.Manual;     // 手动定位（居中显示）
             this.Location = new Point(
-                (screenW - winW) / 2,
-                (screenH - winH) / 2
+                (screenW - winW) / 2,                          // 水平居中
+                (screenH - winH) / 2                           // 垂直居中
             );
-            this.Font = GetFont(SF(11f));
-            this.MinimumSize = new Size(SX(900), SY(600));
-            this.BackColor = theme.Border;
+            this.Font = GetFont(SF(11f));                      // 全局字体（YaHei 11pt * DPI缩放）
+            this.MinimumSize = new Size(SX(900), SY(600));     // 窗口最小尺寸（900x600 * DPI缩放）
+            this.BackColor = theme.Border;                     // 窗口背景色（边框色）
 
-            // 外层边框容器，用于实现细边框效果
+            // ========== 外层边框容器 ==========
+            // [作用] 实现细边框效果，padding=1px使内容与窗口边缘有1px间隔
             outerWrap = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -6518,15 +7699,16 @@ namespace WindowsFormsApp1
             };
             this.Controls.Add(outerWrap);
 
-            // 自定义标题栏
+            // ========== 自定义标题栏 ==========
             CreateTitleBar();
 
             // ================================================================
             //  WinForms Dock布局规则: Dock=Left时,最后Add的控件在最左边
-            //  目标顺序(从左到右): navPanel -> navSep -> actionArea -> actionSep -> mainArea(Fill)
+            //  目标顺序(从左到右): navPanel → navSep → actionArea → actionSep → mainArea(Fill)
             // ================================================================
 
-            // ==================== 右侧主数据区(Dock=Fill,最先Add) ====================
+            // ========== 右侧主数据区(Dock=Fill,最先Add) ==========
+            // [位置] 填充剩余空间 [背景] 主题次要背景色 [功能] 包含搜索栏和数据表格
             mainArea = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -6534,34 +7716,39 @@ namespace WindowsFormsApp1
             };
             mainArea.Resize += (s, e) =>
             {
-                UpdateScrollBarTheme(mainArea);
+                UpdateScrollBarTheme(mainArea); // 窗口大小变化时更新滚动条主题
             };
 
-            // ---- 数据表格容器(Dock=Fill,在mainArea内最先Add) ----
+            // ========== 数据表格容器(Dock=Fill,在mainArea内最先Add) ==========
+            // [位置] 填充mainArea剩余空间 [背景] 主题次要背景色 [功能] 包含DataGridView和空状态面板
             gridContainerRef = new Panel
             {
                 Dock = DockStyle.Fill,
                 BackColor = theme.BgAlt
             };
 
-            // DataGridView
+            // ========== 数据表格(DataGridView) ==========
+            // [位置] 填充gridContainerRef [字体] YaHei 6.7pt * DPI缩放 [行高] 36px * DPI缩放
+            // [功能] 显示频道列表，支持双击播放、编辑名称、排序、批量操作
             dgvData = new DataGridView();
             dgvData.Dock = DockStyle.Fill;
-            dgvData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvData.BackgroundColor = theme.BgAlt;
-            dgvData.RowHeadersVisible = false;
-            dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvData.ReadOnly = false;
-            dgvData.AllowUserToAddRows = false;
-            dgvData.AllowUserToDeleteRows = false;
-            dgvData.AllowUserToResizeColumns = false;
-            dgvData.AllowUserToResizeRows = false;
-            dgvData.AllowUserToOrderColumns = false;
-            dgvData.EditMode = DataGridViewEditMode.EditOnF2;
-            dgvData.Font = GetFont(SF(6.7f));
-            dgvData.RowTemplate.Height = SY(42);
-            dgvData.CellDoubleClick += DgvData_CellDoubleClick;
-            dgvData.CellEndEdit += DgvData_CellEndEdit;
+            dgvData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // 列自动填充
+            dgvData.BackgroundColor = theme.BgAlt;                            // 背景色
+            dgvData.RowHeadersVisible = false;                                 // 隐藏行头
+            dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;   // 整行选择
+            dgvData.ReadOnly = false;                                          // 允许编辑
+            dgvData.AllowUserToAddRows = false;                                // 禁止用户添加行
+            dgvData.AllowUserToDeleteRows = false;                             // 禁止用户删除行
+            dgvData.AllowUserToResizeColumns = false;                          // 禁止用户调整列宽
+            dgvData.AllowUserToResizeRows = false;                             // 禁止用户调整行高
+            dgvData.AllowUserToOrderColumns = false;                           // 禁止用户排序列
+            dgvData.EditMode = DataGridViewEditMode.EditOnF2;                  // 按F2编辑
+            dgvData.Font = GetFont(SF(6.7f));                                  // 单元格字体（6.7pt * DPI缩放）
+            dgvData.RowTemplate.Height = SY(42);                               // 行高（42px * DPI缩放）
+            // 绑定事件
+            dgvData.CellDoubleClick += DgvData_CellDoubleClick;                // 双击播放
+            dgvData.CellEndEdit += DgvData_CellEndEdit;                        // 编辑结束
+            // 快捷键：Ctrl+A全选，Ctrl+Shift+C复制所有链接
             dgvData.KeyDown += (s, e) =>
             {
                 if (e.Control && e.KeyCode == Keys.A)
@@ -6575,38 +7762,42 @@ namespace WindowsFormsApp1
                     e.SuppressKeyPress = true;
                 }
             };
-            dgvData.EnableHeadersVisualStyles = false;
-            dgvData.GridColor = theme.Border;
-            dgvData.BorderStyle = BorderStyle.None;
-            dgvData.CellBorderStyle = DataGridViewCellBorderStyle.SingleVertical;
-            dgvData.ColumnHeadersVisible = true;
-            dgvData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dgvData.ColumnHeadersHeight = SY(36);
-            dgvData.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dgvData.DefaultCellStyle.SelectionBackColor = theme.SelectRow;
-            dgvData.DefaultCellStyle.SelectionForeColor = theme.SelectRowText;
-            dgvData.RowTemplate.Height = SY(36);
+            // 样式配置
+            dgvData.EnableHeadersVisualStyles = false;                         // 禁用系统默认表头样式
+            dgvData.GridColor = theme.Border;                                  // 网格线颜色
+            dgvData.BorderStyle = BorderStyle.None;                            // 无边框
+            dgvData.CellBorderStyle = DataGridViewCellBorderStyle.SingleVertical; // 仅显示垂直分隔线
+            dgvData.ColumnHeadersVisible = true;                               // 显示表头
+            dgvData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing; // 固定表头高度
+            dgvData.ColumnHeadersHeight = SY(36);                              // 表头高度（36px * DPI缩放）
+            dgvData.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None; // 表头无边框
+            dgvData.DefaultCellStyle.SelectionBackColor = theme.SelectRow;    // 选中行背景色
+            dgvData.DefaultCellStyle.SelectionForeColor = theme.SelectRowText; // 选中行文字色
+            dgvData.RowTemplate.Height = SY(36);                               // 行高（36px * DPI缩放）
 
-            // 表头样式
+            // ========== 表头样式 ==========
+            // [背景] 主题表头背景色 [文字] 次要文字色 [字体] YaHei 9pt * DPI缩放 [对齐] 左对齐
             DataGridViewCellStyle headerStyle = new DataGridViewCellStyle();
-            headerStyle.BackColor = theme.HeaderBg;
-            headerStyle.ForeColor = theme.TextSecondary;
-            headerStyle.Font = GetFont(SF(9f));
-            headerStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            headerStyle.Padding = new Padding(SX(10), 0, 0, 0);
-            headerStyle.SelectionBackColor = theme.HeaderBg;
-            headerStyle.SelectionForeColor = theme.TextSecondary;
+            headerStyle.BackColor = theme.HeaderBg;        // 表头背景色
+            headerStyle.ForeColor = theme.TextSecondary;   // 表头文字色
+            headerStyle.Font = GetFont(SF(9f));            // 表头字体（9pt * DPI缩放）
+            headerStyle.Alignment = DataGridViewContentAlignment.MiddleLeft; // 左对齐
+            headerStyle.Padding = new Padding(SX(10), 0, 0, 0); // 左内边距（10px * DPI缩放）
+            headerStyle.SelectionBackColor = theme.HeaderBg;    // 选中时背景色不变
+            headerStyle.SelectionForeColor = theme.TextSecondary; // 选中时文字色不变
             dgvData.ColumnHeadersDefaultCellStyle = headerStyle;
 
-            // 行样式
+            // ========== 行样式 ==========
+            // [背景] 主题表面色 [文字] 主文字色 [字体] YaHei 6.7pt * DPI缩放 [内边距] 左10px右6px
             DataGridViewCellStyle rowStyle = new DataGridViewCellStyle();
-            rowStyle.BackColor = theme.Surface;
-            rowStyle.ForeColor = theme.TextPrimary;
-            rowStyle.SelectionBackColor = theme.SelectRow;
-            rowStyle.SelectionForeColor = theme.SelectRowText;
-            rowStyle.Padding = new Padding(SX(10), SY(0), SX(6), SY(0));
-            rowStyle.Font = GetFont(SF(6.7f));
+            rowStyle.BackColor = theme.Surface;           // 行背景色
+            rowStyle.ForeColor = theme.TextPrimary;       // 行文字色
+            rowStyle.SelectionBackColor = theme.SelectRow; // 选中行背景色
+            rowStyle.SelectionForeColor = theme.SelectRowText; // 选中行文字色
+            rowStyle.Padding = new Padding(SX(10), SY(0), SX(6), SY(0)); // 内边距（左10px,右6px * DPI缩放）
+            rowStyle.Font = GetFont(SF(6.7f));            // 行字体（6.7pt * DPI缩放）
             dgvData.RowsDefaultCellStyle = rowStyle;
+            // 交替行样式（与普通行相同，无斑马纹效果）
             DataGridViewCellStyle altStyle = new DataGridViewCellStyle();
             altStyle.BackColor = theme.Surface;
             altStyle.ForeColor = theme.TextPrimary;
@@ -6616,24 +7807,28 @@ namespace WindowsFormsApp1
             altStyle.Font = GetFont(SF(6.7f));
             dgvData.AlternatingRowsDefaultCellStyle = altStyle;
 
-            // 添加8列（含操作列，自绘双按钮）
-            dgvData.Columns.Add("colName", "名称");
-            dgvData.Columns.Add("colUrl", "链接");
-            dgvData.Columns.Add("colLocation", "归属地");
-            dgvData.Columns.Add("colResolution", "分辨率");
-            dgvData.Columns.Add("colSpeed", "响应速度");
-            dgvData.Columns.Add("colGroup", "分组");
-            dgvData.Columns.Add("colStatus", "状态");
-            dgvData.Columns.Add("colAction", "操作");
+            // ========== 列定义（8列） ==========
+            // [名称] 可编辑 [链接] 只读/Consolas字体 [归属地] 只读 [分辨率] 只读
+            // [响应速度] 药丸样式/只读 [分组] 只读 [状态] 药丸样式/只读 [操作] 自绘双按钮/只读
+            dgvData.Columns.Add("colName", "名称");       // 频道名称（可编辑）
+            dgvData.Columns.Add("colUrl", "链接");        // 播放链接（只读，Consolas字体）
+            dgvData.Columns.Add("colLocation", "归属地"); // 归属地信息
+            dgvData.Columns.Add("colResolution", "分辨率"); // 视频分辨率
+            dgvData.Columns.Add("colSpeed", "响应速度");   // 响应速度（药丸样式）
+            dgvData.Columns.Add("colGroup", "分组");      // 分组信息
+            dgvData.Columns.Add("colStatus", "状态");      // 状态（药丸样式）
+            dgvData.Columns.Add("colAction", "操作");      // 操作列（自绘播放/复制按钮）
 
-            dgvData.CellClick += DgvData_CellClick;
-            dgvData.ColumnHeaderMouseClick += DgvData_ColumnHeaderMouseClick;
-            dgvData.CellPainting += DgvData_CellPainting;
-            dgvData.CellFormatting += DgvData_CellFormatting;
-            dgvData.CellMouseMove += DgvData_CellMouseMove;
-            dgvData.CellMouseDown += DgvData_CellMouseDown;
-            dgvData.CellMouseUp += DgvData_CellMouseUp;
-            dgvData.ShowCellToolTips = true;
+            // ========== 表格事件绑定 ==========
+            dgvData.CellClick += DgvData_CellClick;                          // 单元格点击（操作按钮）
+            dgvData.ColumnHeaderMouseClick += DgvData_ColumnHeaderMouseClick; // 表头点击（排序）
+            dgvData.CellPainting += DgvData_CellPainting;                    // 单元格自绘（药丸、按钮）
+            dgvData.CellFormatting += DgvData_CellFormatting;                // 单元格格式化
+            dgvData.CellMouseMove += DgvData_CellMouseMove;                  // 鼠标移动（悬停按钮）
+            dgvData.CellMouseDown += DgvData_CellMouseDown;                  // 鼠标按下
+            dgvData.CellMouseUp += DgvData_CellMouseUp;                      // 鼠标释放
+            dgvData.ShowCellToolTips = true;                                 // 显示单元格工具提示
+            // 工具提示：当单元格内容过长时显示完整内容
             dgvData.CellToolTipTextNeeded += (s, e) =>
             {
                 if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
@@ -6646,33 +7841,39 @@ namespace WindowsFormsApp1
                     }
                 }
             };
+            // 鼠标离开表格时重置悬停状态
             dgvData.MouseLeave += (s, e) => { if (_hoverRow != -1) { _hoverRow = -1; _hoverBtn = -1; dgvData.Invalidate(); } };
 
-            dgvData.Columns["colName"].FillWeight = 15;
-            dgvData.Columns["colUrl"].FillWeight = 160;
-            dgvData.Columns["colLocation"].FillWeight = 35;
-            dgvData.Columns["colResolution"].FillWeight = 22;
-            dgvData.Columns["colSpeed"].FillWeight = 25;
-            dgvData.Columns["colGroup"].FillWeight = 18;
-            dgvData.Columns["colStatus"].FillWeight = 20;
-            dgvData.Columns["colAction"].FillWeight = 28;
+            // ========== 列宽权重配置（FillWeight） ==========
+            // 权重总和 = 323，链接列占最大比重（160/323 ≈ 50%）
+            dgvData.Columns["colName"].FillWeight = 15;       // 名称列权重
+            dgvData.Columns["colUrl"].FillWeight = 160;      // 链接列权重（最宽）
+            dgvData.Columns["colLocation"].FillWeight = 35;   // 归属地列权重
+            dgvData.Columns["colResolution"].FillWeight = 22; // 分辨率列权重
+            dgvData.Columns["colSpeed"].FillWeight = 25;      // 响应速度列权重
+            dgvData.Columns["colGroup"].FillWeight = 18;      // 分组列权重
+            dgvData.Columns["colStatus"].FillWeight = 20;     // 状态列权重
+            dgvData.Columns["colAction"].FillWeight = 28;     // 操作列权重
 
-            // 设置列的最小宽度（确保默认窗口下右侧列内容完整显示）
-            dgvData.Columns["colName"].MinimumWidth = SX(12);
-            dgvData.Columns["colUrl"].MinimumWidth = SX(600);
-            dgvData.Columns["colLocation"].MinimumWidth = SX(20);
-            dgvData.Columns["colResolution"].MinimumWidth = SX(15);
-            dgvData.Columns["colSpeed"].MinimumWidth = SX(20);
-            dgvData.Columns["colGroup"].MinimumWidth = SX(18);
-            dgvData.Columns["colStatus"].MinimumWidth = SX(18);
-            dgvData.Columns["colAction"].MinimumWidth = SX(20);
+            // ========== 列最小宽度配置（确保内容完整显示） ==========
+            // [链接列] 最小600px（防止URL被截断）[操作列] 最小20px（双按钮空间）
+            dgvData.Columns["colName"].MinimumWidth = SX(12);       // 名称列最小宽度
+            dgvData.Columns["colUrl"].MinimumWidth = SX(600);      // 链接列最小宽度（确保URL完整）
+            dgvData.Columns["colLocation"].MinimumWidth = SX(20);   // 归属地列最小宽度
+            dgvData.Columns["colResolution"].MinimumWidth = SX(15); // 分辨率列最小宽度
+            dgvData.Columns["colSpeed"].MinimumWidth = SX(20);      // 响应速度列最小宽度
+            dgvData.Columns["colGroup"].MinimumWidth = SX(18);      // 分组列最小宽度
+            dgvData.Columns["colStatus"].MinimumWidth = SX(18);     // 状态列最小宽度
+            dgvData.Columns["colAction"].MinimumWidth = SX(20);     // 操作列最小宽度（双按钮）
 
-            // 所有列居中显示（除名称和链接左对齐）
+            // ========== 列对齐方式配置 ==========
+            // [默认] 居中对齐 [名称/链接/归属地/分辨率/分组] 左对齐 [响应速度/状态/操作] 居中对齐
             foreach (DataGridViewColumn col in dgvData.Columns)
             {
-                col.SortMode = DataGridViewColumnSortMode.Programmatic;
-                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                col.SortMode = DataGridViewColumnSortMode.Programmatic; // 编程式排序
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; // 默认居中
             }
+            // 文本列左对齐
             dgvData.Columns["colName"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dgvData.Columns["colUrl"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dgvData.Columns["colLocation"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
@@ -6683,187 +7884,212 @@ namespace WindowsFormsApp1
             dgvData.Columns["colStatus"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgvData.Columns["colAction"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-            dgvData.Columns["colName"].ReadOnly = false;
-            dgvData.Columns["colUrl"].ReadOnly = true;
-            dgvData.Columns["colUrl"].DefaultCellStyle.Font = new Font("Consolas", SF(6.7f));
-            dgvData.Columns["colLocation"].ReadOnly = true;
-            dgvData.Columns["colResolution"].ReadOnly = true;
-            dgvData.Columns["colSpeed"].ReadOnly = true;
-            dgvData.Columns["colGroup"].ReadOnly = true;
-            dgvData.Columns["colStatus"].ReadOnly = true;
-            dgvData.Columns["colAction"].ReadOnly = true;
+            // ========== 列只读配置 ==========
+            // [名称] 可编辑（允许用户修改频道名称）[其他] 只读（数据由程序生成）
+            dgvData.Columns["colName"].ReadOnly = false;          // 名称列可编辑
+            dgvData.Columns["colUrl"].ReadOnly = true;            // 链接列只读
+            dgvData.Columns["colUrl"].DefaultCellStyle.Font = new Font("Consolas", SF(6.7f)); // 链接列使用等宽字体
+            dgvData.Columns["colLocation"].ReadOnly = true;       // 归属地列只读
+            dgvData.Columns["colResolution"].ReadOnly = true;     // 分辨率列只读
+            dgvData.Columns["colSpeed"].ReadOnly = true;          // 响应速度列只读
+            dgvData.Columns["colGroup"].ReadOnly = true;          // 分组列只读
+            dgvData.Columns["colStatus"].ReadOnly = true;         // 状态列只读
+            dgvData.Columns["colAction"].ReadOnly = true;         // 操作列只读（自绘按钮）
 
-            // 默认按名称排序
+            // 默认按名称升序排序
             sortedColumn = "colName";
             sortDirection = SortOrder.Ascending;
 
             gridContainerRef.Controls.Add(dgvData);
 
-            // 空状态面板
+            // ========== 空状态面板（无数据时显示） ==========
+            // [位置] 居中显示 [大小] 140x110px * DPI缩放 [内容] 图标 + "无效站"提示文字
             emptyStatePanel = new Panel
             {
-                BackColor = Color.Transparent,
-                Size = new Size(SX(140), SY(110))
+                BackColor = Color.Transparent,  // 透明背景
+                Size = new Size(SX(140), SY(110)) // 面板大小（140x110px * DPI缩放）
             };
 
+            // 空状态图标（自定义绘制电视关闭图标）
             PictureBox emptyIconBox = new PictureBox
             {
-                Size = new Size(SX(56), SY(56)),
-                Location = new Point(SX(42), SY(0)),
+                Size = new Size(SX(56), SY(56)),      // 图标大小（56x56px * DPI缩放）
+                Location = new Point(SX(42), SY(0)),   // 图标位置（水平居中）
                 BackColor = Color.Transparent,
                 SizeMode = PictureBoxSizeMode.CenterImage
             };
-            emptyIconBox.Paint += EmptyIcon_Paint;
+            emptyIconBox.Paint += EmptyIcon_Paint; // 绑定自定义绘制事件
 
+            // 空状态文字提示
             emptyLabel = new Label
             {
-                Text = "无效站",
-                Font = GetFont(SF(11f)),
-                ForeColor = Color.FromArgb(180, 180, 180),
-                AutoSize = true,
-                TextAlign = ContentAlignment.MiddleCenter
+                Text = "无效站",                        // 提示文字
+                Font = GetFont(SF(11f)),               // 字体（11pt * DPI缩放）
+                ForeColor = Color.FromArgb(180, 180, 180), // 灰色文字
+                AutoSize = true,                        // 自动调整大小
+                TextAlign = ContentAlignment.MiddleCenter // 居中对齐
             };
 
             emptyStatePanel.Controls.Add(emptyIconBox);
             emptyStatePanel.Controls.Add(emptyLabel);
             gridContainerRef.Controls.Add(emptyStatePanel);
-            emptyStatePanel.BringToFront();
+            emptyStatePanel.BringToFront(); // 置于最上层
 
+            // 容器大小变化时重新居中空状态面板
             gridContainerRef.Resize += (s, e) => CenterEmptyState();
 
-            // ---- 搜索栏(Dock=Top,在gridContainer上方Add) ----
+            // ========== 搜索栏(Dock=Top,在gridContainer上方Add) ==========
+            // [位置] 顶部停靠 [高度] 38px * DPI缩放 [背景] 主题次要背景色
+            // [内容] 搜索标签 + 搜索框 + 分组筛选标签 + 分组下拉框
             searchPanelRef = new Panel
             {
-                Dock = DockStyle.Top,
-                Height = SY(38),
-                BackColor = theme.BgAlt
+                Dock = DockStyle.Top,           // 顶部停靠
+                Height = SY(38),                // 高度（38px * DPI缩放）
+                BackColor = theme.BgAlt         // 背景色
             };
 
+            // 搜索标签（"搜 索 :"）
             Label lblSearch = new Label
             {
                 Text = "搜 索 :",
-                Font = GetFont(SF(8.5f)),
+                Font = GetFont(SF(8.5f)),     // 字体（8.5pt * DPI缩放）
                 ForeColor = theme.TextPrimary,
                 Location = new Point(0, SY(0)),
                 AutoSize = true
             };
             lblSearch.Height = SY(26);
-            lblSearch.Top = (SY(38) - SY(26)) / 2;
+            lblSearch.Top = (SY(38) - SY(26)) / 2; // 垂直居中
             searchPanelRef.Controls.Add(lblSearch);
 
-            // 分组筛选下拉框 - DarkComboBox自绘圆角（放在右边）
+            // ========== 分组筛选下拉框（右侧） ==========
+            // [容器] 110x26px * DPI缩放 [控件] DarkComboBox自绘圆角
             cboGroupHost = new Panel
             {
                 BackColor = theme.BgAlt,
-                Visible = false,
+                Visible = false,               // 默认隐藏（有分组时显示）
                 Anchor = AnchorStyles.Top | AnchorStyles.Left,
-                Location = new Point(0, (SY(38) - SY(26)) / 2),
-                Size = new Size(110, SY(26))
+                Location = new Point(0, (SY(38) - SY(26)) / 2), // 垂直居中
+                Size = new Size(110, SY(26))   // 容器大小（110x26px）
             };
+            // 自定义深色下拉框（圆角6px）
             DarkComboBox darkCbo = new DarkComboBox
             {
-                Font = GetFont(SF(8.5f)),
+                Font = GetFont(SF(8.5f)),               // 字体（8.5pt * DPI缩放）
                 Dock = DockStyle.Fill,
-                BackColor = theme.Surface,
-                ForeColor = theme.TextPrimary,
-                BorderColor = theme.Border,
-                FocusBorderColor = theme.Primary,
-                ItemBackColor = theme.Surface,
-                ItemSelectedBackColor = theme.BgAlt,
-                ItemHoverBackColor = Color.FromArgb(Math.Min(255, theme.Surface.R + 10), Math.Min(255, theme.Surface.G + 10), Math.Min(255, theme.Surface.B + 10)),
-                CornerRadius = 6,
-                ItemHeight = SY(22)
+                BackColor = theme.Surface,              // 背景色
+                ForeColor = theme.TextPrimary,          // 文字色
+                BorderColor = theme.Border,             // 边框色
+                FocusBorderColor = theme.Primary,       // 聚焦时边框色
+                ItemBackColor = theme.Surface,          // 选项背景色
+                ItemSelectedBackColor = theme.BgAlt,    // 选中选项背景色
+                ItemHoverBackColor = Color.FromArgb(Math.Min(255, theme.Surface.R + 10), Math.Min(255, theme.Surface.G + 10), Math.Min(255, theme.Surface.B + 10)), // 悬停选项背景色
+                CornerRadius = 6,                       // 圆角半径（6px）
+                ItemHeight = SY(22)                     // 选项高度（22px * DPI缩放）
             };
             cboGroup = darkCbo;
-            cboGroup.Items.Add("全部");
-            cboGroup.SelectedIndex = 0;
-            cboGroup.SelectedIndexChanged += CboGroup_SelectedIndexChanged;
+            cboGroup.Items.Add("全部");                // 默认选项
+            cboGroup.SelectedIndex = 0;                // 默认选中"全部"
+            cboGroup.SelectedIndexChanged += CboGroup_SelectedIndexChanged; // 绑定分组筛选事件
             cboGroupHost.Controls.Add(cboGroup);
             searchPanelRef.Controls.Add(cboGroupHost);
 
-            // 分组筛选标签
+            // 分组筛选标签（"分组:"）
             Label lblGroup = new Label
             {
                 Text = "分组:",
-                Font = GetFont(SF(8.5f)),
+                Font = GetFont(SF(8.5f)),     // 字体（8.5pt * DPI缩放）
                 ForeColor = theme.TextPrimary,
                 AutoSize = true,
                 Anchor = AnchorStyles.Top | AnchorStyles.Left,
-                Visible = false,
+                Visible = false,               // 默认隐藏（有分组时显示）
                 TextAlign = ContentAlignment.MiddleRight
             };
             lblGroup.Height = SY(26);
-            lblGroup.Top = (SY(38) - SY(26)) / 2;
+            lblGroup.Top = (SY(38) - SY(26)) / 2; // 垂直居中
             lblGroupFilter = lblGroup;
             searchPanelRef.Controls.Add(lblGroup);
 
-            // 搜索框圆角容器（左边是"地址"标签，右边是分组下拉框区域）
+            // ========== 搜索框圆角容器 ==========
+            // [位置] (98, 垂直居中) [大小] 40x26px [背景] 主题表面色
+            // [内部] TextBox（无边框）+ 圆角边框自绘
             Panel searchBoxHost = new Panel
             {
-                Location = new Point(98, (SY(38) - SY(26)) / 2),
+                Location = new Point(98, (SY(38) - SY(26)) / 2), // 位于搜索标签右侧
                 Anchor = AnchorStyles.Top | AnchorStyles.Left,
-                Size = new Size(40, SY(26)),
-                BackColor = theme.Surface
+                Size = new Size(40, SY(26)),                     // 初始大小（40x26px）
+                BackColor = theme.Surface                        // 背景色
             };
             searchBoxHostRef = searchBoxHost;
             searchPanelRef.Controls.Add(searchBoxHost);
 
+            // 搜索输入框（无边框，嵌入圆角容器内）
             TextBox txtSearch = new TextBox
             {
-                Font = GetFont(SF(8f)),
-                BorderStyle = BorderStyle.None,
-                Location = new Point(18, SY(2)),
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                Width = searchBoxHost.Width - 20,
-                Height = SY(18),
-                Text = "输入搜索内容，按下回车键搜索",
-                ForeColor = theme.TextSecondary,
-                BackColor = theme.Surface
+                Font = GetFont(SF(8f)),              // 字体（8pt * DPI缩放）
+                BorderStyle = BorderStyle.None,       // 无边框（由容器绘制圆角边框）
+                Location = new Point(18, SY(2)),      // 内部偏移（左18px,上2px）
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, // 左右自适应
+                Width = searchBoxHost.Width - 20,    // 宽度（容器宽度-20px）
+                Height = SY(18),                     // 高度（18px * DPI缩放）
+                Text = "输入搜索内容，按下回车键搜索", // 占位提示文字
+                ForeColor = theme.TextSecondary,     // 占位文字颜色（次要文字色）
+                BackColor = theme.Surface            // 背景色
             };
             txtSearchBox = txtSearch;
             searchBoxHost.Controls.Add(txtSearch);
 
+            // 移除下拉框的系统默认主题样式（使其使用自定义绘制）
             cboGroup.HandleCreated += (s, e) =>
             {
                 SetWindowTheme(cboGroup.Handle, "", "");
             };
 
-            // 统一绘制圆角边框：搜索框和下拉框容器
-            bool searchFocus = false;
+            // ========== 搜索框焦点处理与圆角边框绘制 ==========
+            bool searchFocus = false; // 搜索框聚焦状态标志
+
+            // 搜索框获取焦点
             txtSearch.GotFocus += (s, e) =>
             {
                 searchFocus = true;
-                searchBoxHost.Invalidate();
+                searchBoxHost.Invalidate(); // 触发重绘（更新边框颜色）
+                // 清空占位提示文字，改为主文字色
                 if (txtSearch.Text == "输入搜索内容，按下回车键搜索")
                 {
                     txtSearch.Text = "";
                     txtSearch.ForeColor = theme.TextPrimary;
                 }
             };
+
+            // 搜索框失去焦点
             txtSearch.LostFocus += (s, e) =>
             {
                 searchFocus = false;
-                searchBoxHost.Invalidate();
+                searchBoxHost.Invalidate(); // 触发重绘（恢复边框颜色）
+                // 恢复占位提示文字，改为次要文字色
                 if (string.IsNullOrWhiteSpace(txtSearch.Text))
                 {
                     txtSearch.Text = "输入搜索内容，按下回车键搜索";
                     txtSearch.ForeColor = theme.TextSecondary;
                 }
             };
+
+            // 搜索框圆角边框绘制（聚焦时边框变粗变亮）
             searchBoxHost.Paint += (s, e) =>
             {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias; // 抗锯齿
                 Rectangle rect = new Rectangle(0, 0, searchBoxHost.Width - 1, searchBoxHost.Height - 1);
+                // 聚焦时使用主题主色（边框1.5px），未聚焦时使用边框色（边框1px）
                 Color bc = searchFocus ? theme.Primary : theme.Border;
-                using (GraphicsPath sp = GetRoundedPath(rect, 6))
+                using (GraphicsPath sp = GetRoundedPath(rect, 6)) // 圆角半径6px
                 {
                     using (SolidBrush br = new SolidBrush(theme.Surface))
-                        e.Graphics.FillPath(br, sp);
+                        e.Graphics.FillPath(br, sp); // 填充背景
                     using (Pen pen = new Pen(bc, searchFocus ? 1.5f : 1f))
-                        e.Graphics.DrawPath(pen, sp);
+                        e.Graphics.DrawPath(pen, sp); // 绘制边框
                 }
             };
 
+            // 更新搜索框Region（已废弃，圆角效果通过Paint事件实现）
             void UpdateSearchBoxRegion()
             {
                 // 不再使用Region裁剪，避免裁掉子控件TextBox
@@ -6871,13 +8097,14 @@ namespace WindowsFormsApp1
             }
             UpdateSearchBoxRegion();
 
+            // 更新分组下拉框Region（圆角裁剪）
             void UpdateCboGroupRegion()
             {
                 if (cboGroupHost.Width > 0 && cboGroupHost.Height > 0)
                 {
                     using (GraphicsPath path = GetRoundedPath(new Rectangle(0, 0, cboGroupHost.Width - 1, cboGroupHost.Height - 1), 6))
                     {
-                        cboGroupHost.Region = new Region(path);
+                        cboGroupHost.Region = new Region(path); // 裁剪为圆角矩形
                     }
                 }
             }
@@ -7667,6 +8894,7 @@ namespace WindowsFormsApp1
 
             UpdateStatusBar();
             ApplyTheme();
+            RefreshNavButtonSizes();
 
             if (btnParseLink != null) btnParseLink.Visible = false;
         }
@@ -8013,6 +9241,15 @@ namespace WindowsFormsApp1
             }
             SortChannels();
             dgvData.Invalidate();
+        }
+
+        private Color LightenColor(Color color, int percent)
+        {
+            float factor = 1 + percent / 100f;
+            int r = Math.Min(255, (int)(color.R * factor));
+            int g = Math.Min(255, (int)(color.G * factor));
+            int b = Math.Min(255, (int)(color.B * factor));
+            return Color.FromArgb(color.A, r, g, b);
         }
 
         /// <summary>
@@ -15470,6 +16707,7 @@ else { exit 1 }
                 BackColor = PanelBg,
                 Location = new Point(30, 30),
                 Size = new Size(540, 40),
+                Checked = true,
                 TextAlign = ContentAlignment.MiddleLeft,
                 Cursor = Cursors.Hand
             };
@@ -15495,7 +16733,6 @@ else { exit 1 }
                 BackColor = PanelBg,
                 Location = new Point(30, 120),
                 Size = new Size(540, 40),
-                Checked = true,
                 TextAlign = ContentAlignment.MiddleLeft,
                 Cursor = Cursors.Hand
             };
@@ -15688,27 +16925,41 @@ else { exit 1 }
             }
         }
 
+        /// <summary>
+        /// 创建简易进度对话框（轻量级，仅显示文本提示）
+        /// 用于安装运行库、WebView2等后台操作时显示等待状态
+        /// </summary>
+        /// <param name="message">显示的提示文字</param>
+        /// <returns>进度对话框窗体</returns>
         private Form CreateProgressForm(string message)
         {
+            // ========== 颜色配置（根据主题自动切换） ==========
             bool isDark = theme.Name == "深色";
+            Color progressBg = isDark ? Color.FromArgb(46, 78, 126) : Color.White;      // 窗口背景色（深色：蓝灰色 / 浅色：纯白）
+            Color progressText = isDark ? Color.White : Color.FromArgb(51, 51, 51);     // 文字颜色
+
+            // ========== 主窗口配置 ==========
+            // [位置] 手动定位（由调用方负责居中）[大小] 400x120 [样式] 固定对话框
             Form progressForm = new Form
             {
-                Text = "安装进度",
-                StartPosition = FormStartPosition.Manual,
-                FormBorderStyle = FormBorderStyle.FixedDialog,
-                MaximizeBox = false,
-                MinimizeBox = false,
-                ShowInTaskbar = false,
-                ClientSize = new Size(400, 120),
-                BackColor = isDark ? Color.FromArgb(46, 78, 126) : Color.White
+                Text = "安装进度",                         // 窗口标题
+                StartPosition = FormStartPosition.Manual,   // 手动定位（调用方负责居中于主窗口）
+                FormBorderStyle = FormBorderStyle.FixedDialog,  // 固定对话框样式，禁止调整大小
+                MaximizeBox = false,                       // 禁用最大化按钮
+                MinimizeBox = false,                       // 禁用最小化按钮
+                ShowInTaskbar = false,                     // 不在任务栏显示
+                ClientSize = new Size(400, 120),            // 窗口大小（宽400px，高120px）
+                BackColor = progressBg                     // 窗口背景色
             };
-            SetFormDarkModeTitleBar(progressForm, isDark);
+            SetFormDarkModeTitleBar(progressForm, isDark);  // 应用深色标题栏
 
+            // ========== 提示标签 ==========
+            // [位置] (20, 40) [大小] 360x24 [字体] YaHei 10pt
             Label lblProgress = new Label
             {
                 Text = message,
                 Font = GetFont(10f),
-                ForeColor = isDark ? Color.White : Color.FromArgb(51, 51, 51),
+                ForeColor = progressText,
                 Location = new Point(20, 40),
                 Size = new Size(360, 24)
             };
@@ -15717,49 +16968,60 @@ else { exit 1 }
             return progressForm;
         }
 
+        /// <summary>
+        /// 显示浏览器搜索对话框（规则搜索功能）
+        /// 允许用户选择搜索规则和搜索引擎，在浏览器中打开搜索结果
+        /// </summary>
         private void ShowBrowserSearchDialog()
         {
+            // ========== 颜色配置（根据主题自动切换） ==========
             bool isDark = theme.Name == "深色";
-            Color LightBlueBg = Color.FromArgb(46, 78, 126);
-            Color PanelBg = isDark ? LightBlueBg : Color.White;
-            Color SurfaceBg = isDark ? Color.FromArgb(36, 62, 100) : Color.White;
-            Color TextPrimary = isDark ? Color.White : Color.FromArgb(51, 51, 51);
-            Color TextSecondary = isDark ? Color.FromArgb(200, 220, 240) : Color.FromArgb(153, 153, 153);
-            Color BorderColor = isDark ? Color.FromArgb(60, 100, 150) : Color.FromArgb(200, 203, 210);
-            Color PrimaryColor = isDark ? Color.FromArgb(100, 150, 220) : theme.Primary;
-            Color HoverBg = isDark ? Color.FromArgb(50, 85, 135) : Color.FromArgb(248, 249, 250);
+            Color LightBlueBg = Color.FromArgb(46, 78, 126);      // 深色主题浅蓝背景
+            Color PanelBg = isDark ? LightBlueBg : Color.White;   // 面板背景色（深色：浅蓝 / 浅色：纯白）
+            Color SurfaceBg = isDark ? Color.FromArgb(36, 62, 100) : Color.White; // 表面背景色（比面板略深/同色）
+            Color TextPrimary = isDark ? Color.White : Color.FromArgb(51, 51, 51);      // 主文字色
+            Color TextSecondary = isDark ? Color.FromArgb(200, 220, 240) : Color.FromArgb(153, 153, 153); // 次要文字色
+            Color BorderColor = isDark ? Color.FromArgb(60, 100, 150) : Color.FromArgb(200, 203, 210);  // 边框色
+            Color PrimaryColor = isDark ? Color.FromArgb(100, 150, 220) : theme.Primary; // 主色调（蓝色系）
+            Color HoverBg = isDark ? Color.FromArgb(50, 85, 135) : Color.FromArgb(248, 249, 250); // 悬停背景色
 
+            // 保存主窗口状态（用于关闭对话框后恢复）
             FormWindowState originalState = this.WindowState;
             Rectangle originalBounds = this.Bounds;
 
+            // ========== 主窗口配置 ==========
+            // [标题] 规则搜索 [大小] 900x550 [样式] 可调整大小 [位置] 居中于主窗口
             Form dlg = new Form
             {
-                Text = "规则搜索",
-                StartPosition = FormStartPosition.Manual,
-                FormBorderStyle = FormBorderStyle.Sizable,
-                MaximizeBox = true,
-                MinimizeBox = true,
-                ShowInTaskbar = true,
-                BackColor = PanelBg,
-                ClientSize = new Size(900, 550),
-                KeyPreview = true
+                Text = "规则搜索",                    // 窗口标题
+                StartPosition = FormStartPosition.Manual,  // 手动定位
+                FormBorderStyle = FormBorderStyle.Sizable, // 可调整大小
+                MaximizeBox = true,                   // 启用最大化按钮
+                MinimizeBox = true,                   // 启用最小化按钮
+                ShowInTaskbar = true,                 // 在任务栏显示
+                BackColor = PanelBg,                  // 窗口背景色
+                ClientSize = new Size(900, 550),      // 窗口大小（900x550px）
+                KeyPreview = true                     // 预览键盘事件
             };
-            SetFormDarkModeTitleBar(dlg, isDark);
-            CenterForm(dlg, this);
+            SetFormDarkModeTitleBar(dlg, isDark);     // 应用深色标题栏
+            CenterForm(dlg, this);                    // 居中于主窗口
 
+            // 隐藏主窗口，关闭对话框后恢复
             this.Hide();
             dlg.Closed += (s, e) =>
             {
-                this.Show();
-                this.WindowState = originalState;
+                this.Show();                         // 显示主窗口
+                this.WindowState = originalState;    // 恢复窗口状态
                 if (originalState != FormWindowState.Maximized)
                 {
-                    this.Bounds = originalBounds;
+                    this.Bounds = originalBounds;    // 恢复窗口位置和大小
                 }
-                this.Activate();
-                this.Refresh();
+                this.Activate();                     // 激活主窗口
+                this.Refresh();                      // 刷新界面
             };
 
+            // ========== 顶部栏（标题+规则选择+搜索按钮） ==========
+            // [位置] 顶部Dock [高度] 60px [背景] 表面背景色
             Panel topBar = new Panel
             {
                 Dock = DockStyle.Top,
@@ -15768,6 +17030,8 @@ else { exit 1 }
             };
             dlg.Controls.Add(topBar);
 
+            // ========== 主内容面板（搜索引擎列表） ==========
+            // [位置] 填充剩余空间 [内边距] 20px [背景] 面板背景色
             Panel mainPanel = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -15776,10 +17040,12 @@ else { exit 1 }
             };
             dlg.Controls.Add(mainPanel);
 
+            // ========== 标题标签 ==========
+            // [位置] (16, 0) [大小] 200x48 [字体] YaHei 12pt Bold [对齐] 左居中
             Label lblTitle = new Label
             {
                 Text = "规则搜索",
-                Font = GetFont(12f, FontStyle.Bold),
+                Font = GetFont(12f, FontStyle.Bold),  // 字体（12pt Bold * DPI缩放）
                 ForeColor = TextPrimary,
                 Location = new Point(16, 0),
                 Size = new Size(200, 48),
@@ -15788,19 +17054,22 @@ else { exit 1 }
             };
             topBar.Controls.Add(lblTitle);
 
+            // ========== 搜索规则下拉框 ==========
+            // [位置] (220, 14) [大小] 120x32 [选项] 智慧桌面/智慧光迅/华视美达 [默认] 智慧桌面
             ComboBox cboSearchRule = new ComboBox
             {
-                DropDownStyle = ComboBoxStyle.DropDownList,
+                DropDownStyle = ComboBoxStyle.DropDownList, // 只读下拉列表
                 Size = new Size(120, 32),
                 FlatStyle = FlatStyle.Flat,
-                BackColor = isDark ? Color.FromArgb(30, 50, 80) : Color.White,
+                BackColor = isDark ? Color.FromArgb(30, 50, 80) : Color.White, // 背景色
                 ForeColor = TextPrimary,
-                Font = GetFont(10f),
+                Font = GetFont(10f),                        // 字体（10pt * DPI缩放）
                 Cursor = Cursors.Hand,
                 Location = new Point(220, 14)
             };
             cboSearchRule.Items.AddRange(new object[] { "智慧桌面", "智慧光迅", "华视美达" });
-            cboSearchRule.SelectedIndex = 0;
+            cboSearchRule.SelectedIndex = 0;               // 默认选中第一个选项
+            // 自定义绘制边框
             cboSearchRule.Paint += (s, e) =>
             {
                 ComboBox cb = (ComboBox)s;
@@ -15809,6 +17078,8 @@ else { exit 1 }
             };
             topBar.Controls.Add(cboSearchRule);
 
+            // ========== 搜索规则映射表 ==========
+            // 键：规则名称，值：FOFA搜索规则
             var searchRules = new Dictionary<string, string>
             {
                 {"智慧桌面", "body=\"/iptv/live/zh_cn.js\""},
@@ -15816,6 +17087,8 @@ else { exit 1 }
                 {"华视美达", "body=\"华视美达\""}
             };
 
+            // ========== 搜索引擎映射表 ==========
+            // 键：搜索引擎名称，值：搜索引擎URL
             var searchEngines = new Dictionary<string, string>
             {
                 {"FOFA", "https://fofa.info/"},
@@ -15826,8 +17099,10 @@ else { exit 1 }
                 {"Censys", "https://search.censys.io/"}
             };
 
-            string selectedEngine = "FOFA";
+            string selectedEngine = "FOFA"; // 默认选中FOFA
 
+            // ========== 打开搜索按钮 ==========
+            // [位置] (780, 14) [大小] 100x32 [字体] YaHei 10pt Bold [圆角] 6px [颜色] 主色调背景+白色文字
             Button btnSearch = new Button
             {
                 Text = "打开搜索",
@@ -15837,16 +17112,18 @@ else { exit 1 }
                 ForeColor = Color.White,
                 Font = GetFont(10f, FontStyle.Bold),
                 Cursor = Cursors.Hand,
-                Location = new Point(780, 14)
+                Location = new Point(780, 14),
+                Visible = showSearchButton
             };
             btnSearch.FlatAppearance.BorderSize = 0;
             btnSearch.FlatAppearance.MouseOverBackColor = Color.FromArgb(
                 Math.Min(255, PrimaryColor.R + 20),
                 Math.Min(255, PrimaryColor.G + 20),
-                Math.Min(255, PrimaryColor.B + 20));
-            StyleRoundButton(btnSearch, 6, null, 0, "dynamic");
+                Math.Min(255, PrimaryColor.B + 20)); // 悬停时颜色变亮
+            StyleRoundButton(btnSearch, 6, null, 0, "dynamic"); // 设置圆角（6px）
             btnSearch.Click += (s, e) =>
             {
+                // 获取选中的规则和引擎，构建搜索URL并在浏览器中打开
                 string ruleName = cboSearchRule.SelectedItem?.ToString() ?? "智慧桌面";
                 string searchRule = searchRules.ContainsKey(ruleName) ? searchRules[ruleName] : searchRules["智慧桌面"];
                 string baseUrl = searchEngines.ContainsKey(selectedEngine) ? searchEngines[selectedEngine] : searchEngines["FOFA"];
@@ -15858,14 +17135,18 @@ else { exit 1 }
                 catch { }
             };
             topBar.Controls.Add(btnSearch);
+            btnSearchRef = btnSearch;
 
+            // 顶部栏底部边框绘制
             topBar.Paint += (s, e) =>
             {
                 Panel p = (Panel)s;
                 using (Pen pen = new Pen(BorderColor))
-                    e.Graphics.DrawLine(pen, 0, 47, p.Width, 47);
+                    e.Graphics.DrawLine(pen, 0, 47, p.Width, 47); // 在Y=47处绘制分隔线
             };
 
+            // ========== 搜索引擎列表面板 ==========
+            // [位置] (20, 80) [大小] 860x420 [背景] 表面背景色 [边框] 固定单边框
             Panel listPanel = new Panel
             {
                 Location = new Point(20, 80),
@@ -15875,11 +17156,15 @@ else { exit 1 }
             };
             mainPanel.Controls.Add(listPanel);
 
-            Color hoverColor = isDark ? Color.FromArgb(50, 85, 135) : Color.FromArgb(240, 245, 250);
+            Color hoverColor = isDark ? Color.FromArgb(50, 85, 135) : Color.FromArgb(240, 245, 250); // 列表项悬停色
 
+            // ========== 动态生成搜索引擎列表项 ==========
+            // 每个列表项包含：单选按钮(引擎名称) + URL标签 + 访问按钮
+            // 列表项高度55px，间距5px（累计60px）
             int y = 10;
             foreach (var engine in searchEngines)
             {
+                // 列表项容器（带悬停高亮）
                 Panel itemPanel = new Panel
                 {
                     Location = new Point(10, y),
@@ -15888,6 +17173,7 @@ else { exit 1 }
                 };
                 listPanel.Controls.Add(itemPanel);
 
+                // 悬停效果：鼠标进入时显示高亮背景
                 itemPanel.MouseEnter += (s, e) =>
                 {
                     itemPanel.BackColor = hoverColor;
@@ -15897,6 +17183,7 @@ else { exit 1 }
                     itemPanel.BackColor = Color.Transparent;
                 };
 
+                // 搜索引擎单选按钮
                 RadioButton rbEngine = new RadioButton
                 {
                     Text = engine.Key,
@@ -15905,49 +17192,52 @@ else { exit 1 }
                     FlatStyle = FlatStyle.Flat,
                     BackColor = Color.Transparent,
                     ForeColor = isDark ? Color.White : Color.FromArgb(51, 51, 51),
-                    Font = GetFont(10f, FontStyle.Bold),
+                    Font = GetFont(10f, FontStyle.Bold), // 字体（10pt Bold * DPI缩放）
                     Cursor = Cursors.Hand,
-                    Checked = engine.Key == selectedEngine
+                    Checked = engine.Key == selectedEngine // 默认选中FOFA
                 };
                 rbEngine.CheckedChanged += (s, e) =>
                 {
                     if (rbEngine.Checked)
                     {
-                        selectedEngine = engine.Key;
+                        selectedEngine = engine.Key; // 更新选中的搜索引擎
                     }
                 };
                 itemPanel.Controls.Add(rbEngine);
 
+                // 搜索引擎URL标签
                 Label lblUrl = new Label
                 {
                     Text = engine.Value,
                     Size = new Size(630, 36),
                     Location = new Point(130, 10),
-                    Font = GetFont(10f),
-                    ForeColor = TextSecondary,
+                    Font = GetFont(10f),              // 字体（10pt * DPI缩放）
+                    ForeColor = TextSecondary,       // 次要文字色（灰色）
                     TextAlign = ContentAlignment.MiddleLeft
                 };
                 itemPanel.Controls.Add(lblUrl);
 
+                // 访问按钮
                 Button btnGo = new Button
                 {
                     Text = "访问",
                     Size = new Size(70, 36),
                     Location = new Point(760, 10),
                     FlatStyle = FlatStyle.Flat,
-                    BackColor = PrimaryColor,
-                    ForeColor = Color.White,
-                    Font = GetFont(9f, FontStyle.Bold),
+                    BackColor = PrimaryColor,         // 主色调背景
+                    ForeColor = Color.White,          // 白色文字
+                    Font = GetFont(9f, FontStyle.Bold), // 字体（9pt Bold * DPI缩放）
                     Cursor = Cursors.Hand
                 };
                 btnGo.FlatAppearance.BorderSize = 0;
                 btnGo.FlatAppearance.MouseOverBackColor = Color.FromArgb(
                     Math.Min(255, PrimaryColor.R + 20),
                     Math.Min(255, PrimaryColor.G + 20),
-                    Math.Min(255, PrimaryColor.B + 20));
-                StyleRoundButton(btnGo, 6, null, 0, "dynamic");
+                    Math.Min(255, PrimaryColor.B + 20)); // 悬停时颜色变亮
+                StyleRoundButton(btnGo, 6, null, 0, "dynamic"); // 设置圆角（6px）
                 btnGo.Click += (s, e) =>
                 {
+                    // 在浏览器中打开搜索引擎主页
                     try
                     {
                         System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(engine.Value) { UseShellExecute = true });
@@ -15956,10 +17246,10 @@ else { exit 1 }
                 };
                 itemPanel.Controls.Add(btnGo);
 
-                y += 60;
+                y += 60; // 下一个列表项Y坐标（55px高度 + 5px间距）
             }
 
-            dlg.ShowDialog(this);
+            dlg.ShowDialog(this); // 显示对话框（模态）
         }
 
         private void ShowWebView2SearchDialog()
@@ -17370,21 +18660,30 @@ else { exit 1 }
             using (Form dlg = new Form())
             {
                 dlg.Text = "直播源解析";
-                dlg.Size = new Size(1100, 820);
                 dlg.StartPosition = FormStartPosition.Manual;
                 dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
                 dlg.MaximizeBox = false;
                 dlg.MinimizeBox = false;
                 dlg.BackColor = bgColor;
                 SetFormDarkModeTitleBar(dlg, isDark);
+
+                Rectangle screen = Screen.PrimaryScreen.WorkingArea;
+                int formWidth = (int)(screen.Width * 0.9);
+                int formHeight = (int)(screen.Height * 0.85);
+                formWidth = Math.Max(formWidth, 900);
+                formHeight = Math.Max(formHeight, 650);
+                dlg.Size = new Size(formWidth, formHeight);
+
                 CenterForm(dlg, this);
 
-                int padding = 20;
-                    int labelWidth = 100;
-                    int inputHeight = 32;
-                    int btnHeight = 38;
-                    int btnWidth = 110;
-                    int leftPanelWidth = 400;
+                int padding = SX(12);
+                    int labelWidth = SX(80);
+                    int inputHeight = SY(30);
+                    int btnHeight = SY(34);
+                    int btnWidth = SX(110);
+                    int leftPanelWidth = (int)(dlg.ClientSize.Width * 0.28);
+                    leftPanelWidth = Math.Max(leftPanelWidth, SX(300));
+                    leftPanelWidth = Math.Min(leftPanelWidth, SX(380));
 
                     Panel leftPanel = new Panel
                     {
@@ -17439,36 +18738,54 @@ else { exit 1 }
                             using (GraphicsPath path = GetRoundedPath(new Rectangle(0, 0, btn.Width, btn.Height), 6))
                                 btn.Region = new Region(path);
                         };
+                        btn.MouseEnter += (s, e) =>
+                        {
+                            btn.BackColor = LightenColor(bg, 20);
+                        };
+                        btn.MouseLeave += (s, e) =>
+                        {
+                            btn.BackColor = bg;
+                        };
+                        btn.MouseDown += (s, e) =>
+                        {
+                            btn.BackColor = LightenColor(bg, 40);
+                            btn.Location = new Point(btn.Location.X + 1, btn.Location.Y + 1);
+                        };
+                        btn.MouseUp += (s, e) =>
+                        {
+                            btn.BackColor = LightenColor(bg, 20);
+                            btn.Location = new Point(btn.Location.X - 1, btn.Location.Y - 1);
+                        };
                     };
 
-                int y = 16;
+                int y = SX(16);
 
                 Label lblTitle = new Label
                 {
                     Text = "解析配置",
-                    Font = GetFont(13f, FontStyle.Bold),
+                    Font = GetFont(SF(10.5f), FontStyle.Bold),
                     ForeColor = textColor,
-                    Location = new Point(16, y-6),
+                    Location = new Point(SX(16), y-SX(6)),
                     AutoSize = true
                 };
                 leftPanel.Controls.Add(lblTitle);
-                y += 36;
+                y += SY(36);
 
                 Label lblPlatform = new Label
                 {
                     Text = "平台选择",
-                    Font = GetFont(10f),
+                    Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
-                    Location = new Point(16, y),
+                    Location = new Point(SX(16), y),
                     Size = new Size(labelWidth, inputHeight)
                 };
                 leftPanel.Controls.Add(lblPlatform);
 
                 ComboBox cboPlatform = new ComboBox
                 {
-                    Location = new Point(labelWidth + 20, y),
-                    Size = new Size(220, inputHeight),
-                    Font = GetFont(10f),
+                    Location = new Point(labelWidth + SX(16), y),
+                    Size = new Size(SX(270), inputHeight),
+                    Font = GetFont(SF(8.5f)),
                     DropDownStyle = ComboBoxStyle.DropDownList,
                     BackColor = isDark ? Color.FromArgb(55, 55, 65) : Color.White,
                     ForeColor = textColor
@@ -17480,23 +18797,23 @@ else { exit 1 }
                 });
                 cboPlatform.SelectedIndex = 0;
                 leftPanel.Controls.Add(cboPlatform);
-                y += 40;
+                y += SY(40);
 
                 Label lblIpPort = new Label
                 {
                     Text = "IP端口",
-                    Font = GetFont(10f),
+                    Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
-                    Location = new Point(16, y),
+                    Location = new Point(SX(16), y),
                     Size = new Size(labelWidth, inputHeight)
                 };
                 leftPanel.Controls.Add(lblIpPort);
 
                 TextBox txtIpPort = new TextBox
                 {
-                    Location = new Point(labelWidth + 20, y),
-                    Size = new Size(220, inputHeight),
-                    Font = GetFont(9f),
+                    Location = new Point(labelWidth + SX(16), y),
+                    Size = new Size(SX(270), inputHeight),
+                    Font = GetFont(SF(8.5f)),
                     BackColor = isDark ? Color.FromArgb(55, 55, 65) : Color.White,
                     ForeColor = isDark ? Color.FromArgb(120, 120, 130) : Color.FromArgb(150, 150, 160),
                     Text = "示例：110.72.103.69:8181"
@@ -17518,14 +18835,14 @@ else { exit 1 }
                     }
                 };
                 leftPanel.Controls.Add(txtIpPort);
-                y += 40;
+                y += SY(40);
 
                 Button btnAutoBuild = new Button
                 {
                     Text = "自动拼接完整URL",
-                    Location = new Point(labelWidth + 30, y),
-                    Size = new Size(200, inputHeight),
-                    Font = GetFont(9f),
+                    Location = new Point((leftPanelWidth - btnWidth) / 2, y),
+                    Size = new Size(btnWidth+100, btnHeight),
+                    Font = GetFont(SF(9f)),
                     BackColor = btnColor,
                     ForeColor = btnText,
                     FlatStyle = FlatStyle.Flat
@@ -17533,35 +18850,38 @@ else { exit 1 }
                 btnAutoBuild.FlatAppearance.BorderSize = 0;
                 ApplyRoundButton(btnAutoBuild, btnColor);
                 leftPanel.Controls.Add(btnAutoBuild);
-                y += 45;
+                y += SY(45);
 
                 Label lblTimeout = new Label
                 {
                     Text = "请求超时(秒)",
-                    Font = GetFont(10f),
+                    Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
-                    Location = new Point(16, y + 0),
-                    Size = new Size(labelWidth + 50, inputHeight)
+                    Location = new Point(SX(16), y),
+                    Size = new Size(SX(150), inputHeight),
+                    TextAlign = ContentAlignment.MiddleLeft
                 };
                 leftPanel.Controls.Add(lblTimeout);
 
                 TextBox txtTimeout = new TextBox
                 {
-                    Location = new Point(labelWidth + 100, y),
-                    Size = new Size(80, inputHeight),
-                    Font = GetFont(10f),
+                    Location = new Point(SX(200) + SX(16), y),
+                    Size = new Size(SX(80), inputHeight),
+                    Font = GetFont(SF(9f)),
                     BackColor = isDark ? Color.FromArgb(55, 55, 65) : Color.White,
                     ForeColor = textColor,
-                    Text = "8"
+                    Text = "8",
+                    TextAlign = HorizontalAlignment.Center
                 };
                 leftPanel.Controls.Add(txtTimeout);
-                y += 40;
+                y += SY(40);
 
                 Panel huashiPanel = new Panel
                 {
-                    Location = new Point(16, y),
-                    Size = new Size(340, 100),
-                    BackColor = Color.Transparent
+                    Location = new Point(SX(16), y),
+                    Size = new Size(SX(368), SY(100)),
+                    BackColor = Color.Transparent,
+                    Visible = false
                 };
                 Color huashiBg = isDark ? Color.FromArgb(55, 55, 65) : Color.FromArgb(240, 242, 248);
                 huashiPanel.Paint += (s, e) =>
@@ -17577,64 +18897,73 @@ else { exit 1 }
                 };
                 leftPanel.Controls.Add(huashiPanel);
 
+                cboPlatform.SelectedIndexChanged += (s, e) =>
+                {
+                    huashiPanel.Visible = (cboPlatform.SelectedIndex == 1);
+                };
+
                 Label lblHuashiRange = new Label
                 {
                     Text = "扫描ID区间",
-                    Font = GetFont(9f),
+                    Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
-                    Location = new Point(12, 12),
-                    Size = new Size(80, inputHeight)
+                    Location = new Point(SX(16), SY(12)),
+                    Size = new Size(SX(90), inputHeight),
+                    TextAlign = ContentAlignment.MiddleLeft
                 };
                 huashiPanel.Controls.Add(lblHuashiRange);
 
                 TextBox txtHuashiRange = new TextBox
                 {
-                    Location = new Point(92, 12),
-                    Size = new Size(120, inputHeight),
-                    Font = GetFont(9f),
+                    Location = new Point(SX(106), SY(12)),
+                    Size = new Size(SX(140), inputHeight),
+                    Font = GetFont(SF(9f)),
                     BackColor = isDark ? Color.FromArgb(55, 55, 65) : Color.White,
                     ForeColor = textColor,
-                    Text = "1-100"
+                    Text = "1-100",
+                    TextAlign = HorizontalAlignment.Center
                 };
                 huashiPanel.Controls.Add(txtHuashiRange);
 
                 Label lblHuashiThread = new Label
                 {
                     Text = "并发线程数",
-                    Font = GetFont(9f),
+                    Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
-                    Location = new Point(12, 48),
-                    Size = new Size(80, inputHeight)
+                    Location = new Point(SX(16), SY(48)),
+                    Size = new Size(SX(90), inputHeight),
+                    TextAlign = ContentAlignment.MiddleLeft
                 };
                 huashiPanel.Controls.Add(lblHuashiThread);
 
                 TextBox txtHuashiThread = new TextBox
                 {
-                    Location = new Point(92, 48),
-                    Size = new Size(80, inputHeight),
-                    Font = GetFont(9f),
+                    Location = new Point(SX(106), SY(48)),
+                    Size = new Size(SX(140), inputHeight),
+                    Font = GetFont(SF(9f)),
                     BackColor = isDark ? Color.FromArgb(55, 55, 65) : Color.White,
                     ForeColor = textColor,
-                    Text = "8"
+                    Text = "8",
+                    TextAlign = HorizontalAlignment.Center
                 };
                 huashiPanel.Controls.Add(txtHuashiThread);
-                y += 110;
+                y += SY(110);
 
                 Label lblHistory = new Label
                 {
                     Text = "历史记录",
-                    Font = GetFont(10f),
+                    Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
-                    Location = new Point(16, y),
+                    Location = new Point(SX(16), y+40),
                     AutoSize = true
                 };
                 leftPanel.Controls.Add(lblHistory);
-                y += 24;
+                y += SY(24);
 
                 Panel historyPanel = new Panel
                 {
-                    Location = new Point(16, y),
-                    Size = new Size(388, 140),
+                    Location = new Point(SX(16), y+50),
+                    Size = new Size(SX(368), SY(140)),
                     BackColor = Color.Transparent
                 };
                 Color historyBg = isDark ? Color.FromArgb(55, 55, 65) : Color.FromArgb(240, 242, 248);
@@ -17653,9 +18982,9 @@ else { exit 1 }
 
                 ListBox lstHistory = new ListBox
                 {
-                    Location = new Point(16, 6),
-                    Size = new Size(350, 120),
-                    Font = GetFont(9f),
+                    Location = new Point(SX(16), SY(6)),
+                    Size = new Size(SX(336), SY(120)),
+                    Font = GetFont(SF(8.5f)),
                     BackColor = isDark ? Color.FromArgb(45, 45, 55) : Color.White,
                     ForeColor = textColor,
                     BorderStyle = BorderStyle.None,
@@ -17684,7 +19013,7 @@ else { exit 1 }
                 };
 
                 ContextMenuStrip historyContextMenu = new ContextMenuStrip();
-                historyContextMenu.Font = GetFont(9f);
+                historyContextMenu.Font = GetFont(SF(8.5f));
                 historyContextMenu.Renderer = new ToolStripProfessionalRenderer(new MenuColorTable(IsDarkColor(theme.Bg)));
                 historyContextMenu.BackColor = theme.Surface;
                 historyContextMenu.ForeColor = theme.TextPrimary;
@@ -17712,24 +19041,24 @@ else { exit 1 }
 
                 lstHistory.ContextMenuStrip = historyContextMenu;
                 historyPanel.Controls.Add(lstHistory);
-                y += 110;
+                y += SY(150);
 
                 Label lblHeaders = new Label
                 {
                     Text = "自定义请求头",
-                    Font = GetFont(10f),
+                    Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
-                    Location = new Point(16, y + 50),
+                    Location = new Point(SX(16), y+70),
                     AutoSize = true
                 };
                 leftPanel.Controls.Add(lblHeaders);
-                y += 24;
+                y += SY(24);
 
                 TextBox txtHeaders = new TextBox
                 {
-                    Location = new Point(16, y + 60),
-                    Size = new Size(388, 100),
-                    Font = new Font("Consolas", 9f),
+                    Location = new Point(SX(16), y+80),
+                    Size = new Size(SX(368), SY(140)),
+                    Font = new Font("Consolas", SF(8.5f)),
                     Multiline = true,
                     ScrollBars = ScrollBars.Vertical,
                     BackColor = isDark ? Color.FromArgb(55, 55, 65) : Color.White,
@@ -17737,14 +19066,14 @@ else { exit 1 }
                     Text = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0 Safari/537.36\nAccept-Language: zh-CN,zh;q=0.9\nAccept: */*"
                 };
                 leftPanel.Controls.Add(txtHeaders);
-                y += 110;
+                y += SY(115);
 
                 Button btnExecute = new Button
                 {
                     Text = "开始解析",
-                    Location = new Point(60, y + 70),
+                    Location = new Point(SX(60), leftPanel.ClientSize.Height - SY(64)),
                     Size = new Size(btnWidth, btnHeight),
-                    Font = GetFont(11f),
+                    Font = GetFont(SF(8f)),
                     BackColor = btnColor,
                     ForeColor = btnText,
                     FlatStyle = FlatStyle.Flat
@@ -17756,9 +19085,9 @@ else { exit 1 }
                 Button btnCancel = new Button
                 {
                     Text = "取消",
-                    Location = new Point(200, y + 70),
+                    Location = new Point(SX(200), leftPanel.ClientSize.Height - SY(64)),
                     Size = new Size(btnWidth, btnHeight),
-                    Font = GetFont(11f),
+                    Font = GetFont(SF(8f)),
                     BackColor = isDark ? Color.FromArgb(60, 60, 70) : Color.FromArgb(220, 220, 228),
                     ForeColor = textColor,
                     FlatStyle = FlatStyle.Flat
@@ -17770,26 +19099,29 @@ else { exit 1 }
                 Label lblResult = new Label
                 {
                     Text = "解析结果",
-                    Font = GetFont(11f, FontStyle.Bold),
+                    Font = GetFont(SF(10.5f), FontStyle.Bold),
                     ForeColor = textColor,
-                    Location = new Point(16, 10),
+                    Location = new Point(SX(10), SY(10)),
                     AutoSize = true
                 };
                 rightPanel.Controls.Add(lblResult);
 
-                // 使用 DarkTabControl 彻底解决标签头右侧白色留白
-                int tabW = rightPanel.ClientSize.Width - 32;
-                int tabH = rightPanel.ClientSize.Height - 110;
+                int tabW = rightPanel.ClientSize.Width - SX(20);
+                int tabH = rightPanel.ClientSize.Height - SY(110);
                 DarkTabControl tabResult = new DarkTabControl
                 {
-                    Location = new Point(16, 40),
+                    Location = new Point(SX(10), SY(40)),
                     Size = new Size(tabW, tabH),
-                    Font = GetFont(10f),
+                    Font = GetFont(SF(8f)),
                     BackColor = isDark ? Color.FromArgb(35, 35, 35) : panelBg,
                     ForeColor = textColor,
                     Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right
                 };
                 tabResult.ApplyTheme(isDark);
+                tabResult.TabWidths = new int[] { SX(90), SX(90), SX(110), SX(90) };
+                tabResult.TabHeight = SY(30);
+                tabResult.TabXOffset = SX(10);
+                tabResult.TabSpacing = SX(8);
                 rightPanel.Controls.Add(tabResult);
 
                 TabPage tabRaw = new TabPage("原始文本");
@@ -17797,7 +19129,7 @@ else { exit 1 }
                 TextBox txtRaw = new TextBox
                 {
                     Dock = DockStyle.Fill,
-                    Font = new Font("Consolas", 9f),
+                    Font = new Font("Consolas", SF(9f)),
                     Multiline = true,
                     ScrollBars = ScrollBars.Both,
                     ReadOnly = true,
@@ -17812,7 +19144,7 @@ else { exit 1 }
                 TextBox txtPreview = new TextBox
                 {
                     Dock = DockStyle.Fill,
-                    Font = new Font("Consolas", 9f),
+                    Font = new Font("Consolas", SF(9f)),
                     Multiline = true,
                     ScrollBars = ScrollBars.Both,
                     ReadOnly = true,
@@ -17827,7 +19159,7 @@ else { exit 1 }
                 TextBox txtM3u = new TextBox
                 {
                     Dock = DockStyle.Fill,
-                    Font = new Font("Consolas", 9f),
+                    Font = new Font("Consolas", SF(9f)),
                     Multiline = true,
                     ScrollBars = ScrollBars.Both,
                     ReadOnly = true,
@@ -17842,7 +19174,7 @@ else { exit 1 }
                 TextBox txtLog = new TextBox
                 {
                     Dock = DockStyle.Fill,
-                    Font = new Font("Consolas", 9f),
+                    Font = new Font("Consolas", SF(9f)),
                     Multiline = true,
                     ScrollBars = ScrollBars.Both,
                     ReadOnly = true,
@@ -17852,12 +19184,16 @@ else { exit 1 }
                 tabLog.Controls.Add(txtLog);
                 tabResult.TabPages.Add(tabLog);
 
+                int btnStartY = rightPanel.ClientSize.Height - SY(64);
+                int btnExportWidth = SX(140);
+                int btnAddWidth = SX(140);
+
                 Button btnExport = new Button
                 {
                     Text = "导出全部文件",
-                    Location = new Point(16, rightPanel.ClientSize.Height - 60),
-                    Size = new Size(140, btnHeight),
-                    Font = GetFont(10f),
+                    Location = new Point(SX(16), btnStartY),
+                    Size = new Size(btnExportWidth, btnHeight),
+                    Font = GetFont(SF(8f)),
                     BackColor = successColor,
                     ForeColor = Color.White,
                     FlatStyle = FlatStyle.Flat
@@ -17869,9 +19205,9 @@ else { exit 1 }
                 Button btnAddToList = new Button
                 {
                     Text = "添加到列表",
-                    Location = new Point(162, rightPanel.ClientSize.Height - 60),
-                    Size = new Size(140, btnHeight),
-                    Font = GetFont(10f),
+                    Location = new Point(SX(16) + btnExportWidth + SX(12), btnStartY),
+                    Size = new Size(btnAddWidth, btnHeight),
+                    Font = GetFont(SF(8f)),
                     BackColor = btnColor,
                     ForeColor = btnText,
                     FlatStyle = FlatStyle.Flat
@@ -17883,9 +19219,9 @@ else { exit 1 }
                 Label lblStats = new Label
                 {
                     Text = "频道：0 | 状态：就绪",
-                    Font = GetFont(9f),
+                    Font = GetFont(SF(8f)),
                     ForeColor = labelColor,
-                    Location = new Point(310, rightPanel.ClientSize.Height - 56),
+                    Location = new Point(rightPanel.ClientSize.Width - SX(180), btnStartY + 4),
                     AutoSize = true
                 };
                 rightPanel.Controls.Add(lblStats);
