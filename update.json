@@ -6,7 +6,7 @@
     "versionCode":  101,
     "updateType":  "beta",
     "updateTime":  "2026-07-21",
-    "isForceUpdate":  false,
+    "isForceUpdate":  true,
     "downloadUrl":  "https://github.com/281761526/IPTVLiveChecker/releases/download/Beta1.0/IPTVLiveChecker_Beta1.0.exe",
     "githubRepo":  "https://github.com/281761526/IPTVLiveChecker",
     "changelog":  [
@@ -19,7 +19,7 @@
     "disclaimerUrl":  "https://github.com/281761526/IPTVLiveChecker/blob/master/DISCLAIMER.md",
     "feedbackEmail":  "xiaomiren0510@gmail.com",
     "developer":  "半步沧桑",
-    "md5Checksum": "446CCE055EDC5C0201B438BF237DE16F",
+    "md5Checksum": "8064af94739f94182ae46831b4197b2c",
     "supportOS":  [
                       "Windows 10",
                       "Windows 11"

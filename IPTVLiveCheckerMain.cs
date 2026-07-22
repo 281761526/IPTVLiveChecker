@@ -5075,21 +5075,7 @@ namespace IPTVLiveChecker
                 };
                 topCard.Controls.Add(lblVersion);
                 
-                // 检查更新链接
-                Label lblCheckUpdate = new Label
-                {
-                    Text = "检查更新",
-                    Font = GetFont(SF(8f), FontStyle.Underline),
-                    Location = new Point(textStartX + topTitleSize.Width - versionSizeSmall.Width + versionSizeSmall.Width + SX(6), titleY + topTitleSize.Height + SY(3)),
-                    AutoSize = true,
-                    ForeColor = accentColor,
-                    BackColor = Color.Transparent,
-                    Cursor = Cursors.Hand
-                };
-                lblCheckUpdate.MouseEnter += (s, e) => { lblCheckUpdate.Font = GetFont(SF(8f), FontStyle.Underline | FontStyle.Bold); };
-                lblCheckUpdate.MouseLeave += (s, e) => { lblCheckUpdate.Font = GetFont(SF(8f), FontStyle.Underline); };
-                lblCheckUpdate.Click += (s, e) => { dlg.Close(); CheckForUpdate(); };
-                topCard.Controls.Add(lblCheckUpdate);
+
                 
                 // ========== 功能概述区域参数 ==========
                 y += topCardH + cardGap;           // 更新Y坐标到下一个卡片位置
@@ -5886,180 +5872,243 @@ namespace IPTVLiveChecker
         /// <returns>用户是否同意条款</returns>
         private bool ShowDisclaimerDialog()
         {
+            // ========== 局部返回值：仅在用户点击"进入软件"按钮时置为 true ==========
             bool dialogResult = false;
 
+            // ==================== 主题颜色配置（深色/浅色自动适配） ====================
             bool isDark = theme != null && theme.Name == "深色";
+
+            // 窗口背景色：深色为深灰蓝，浅色为近白
             Color bgColor = isDark ? Color.FromArgb(24, 27, 36) : Color.FromArgb(250, 251, 253);
+            // 主文字颜色：深色为浅灰白，浅色为深灰
             Color textColor = isDark ? Color.FromArgb(220, 226, 238) : Color.FromArgb(28, 32, 44);
+            // 副标题文字颜色：比主文字略暗，用于提示性文字
             Color subTextColor = isDark ? Color.FromArgb(148, 156, 172) : Color.FromArgb(120, 128, 145);
+            // 强调色：用于按钮高亮、链接等，深色为亮蓝，浅色为标准蓝
             Color accentColor = isDark ? Color.FromArgb(82, 160, 250) : Color.FromArgb(46, 135, 245);
+            // 按钮启用时的背景色（与强调色相同）
             Color btnEnabledBg = accentColor;
+            // 按钮禁用时的背景色：深色为暗灰，浅色为浅灰
             Color btnDisabledBg = isDark ? Color.FromArgb(50, 54, 66) : Color.FromArgb(225, 228, 234);
+            // 按钮启用时的文字颜色：白色
             Color btnEnabledText = Color.White;
+            // 按钮禁用时的文字颜色：深色为中灰，浅色为浅灰
             Color btnDisabledText = isDark ? Color.FromArgb(115, 118, 132) : Color.FromArgb(170, 175, 185);
+            // 分割线颜色：深色为深灰，浅色为浅灰
             Color dividerColor = isDark ? Color.FromArgb(48, 52, 64) : Color.FromArgb(230, 233, 238);
+            // 内容区域背景色（免责声明文本框所在面板）
             Color contentBg = isDark ? Color.FromArgb(32, 36, 46) : Color.FromArgb(255, 255, 255);
+            // 提示文字颜色：用于倒计时提示等
             Color hintColor = isDark ? Color.FromArgb(120, 128, 145) : Color.FromArgb(140, 148, 165);
+            // 成功提示颜色：倒计时结束后提示文字变绿
             Color successColor = isDark ? Color.FromArgb(56, 196, 106) : Color.FromArgb(36, 176, 86);
+            // 警告提示颜色：倒计时进行中提示文字变橙
             Color warningColor = isDark ? Color.FromArgb(252, 176, 54) : Color.FromArgb(235, 145, 18);
 
-            int padX = SX(36);
-            int contentW = SX(688);
+            // ==================== 窗口布局尺寸参数（SX/SY为DPI自适应缩放） ====================
+            int padX = SX(36);       // 左右内边距：控件与窗口边缘的水平间距
+            int contentW = SX(688);   // 内容区域宽度：标题、分割线、内容面板、按钮的统一宽度
 
             using (Form dlg = new Form())
             {
-                dlg.Text = "免责声明";
-                dlg.StartPosition = FormStartPosition.CenterScreen;
-                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
-                dlg.MaximizeBox = false;
-                dlg.MinimizeBox = false;
-                dlg.ControlBox = true;
-                dlg.ShowInTaskbar = true;
-                dlg.TopMost = true;
-                dlg.BackColor = bgColor;
-                dlg.ForeColor = textColor;
-                dlg.Font = GetFont(SF(9f));
-                dlg.ClientSize = new Size(SX(760), SY(720));
+                // ==================== 窗口基本属性 ====================
+                dlg.Text = "免责声明";                              // 窗口标题栏文字
+                dlg.StartPosition = FormStartPosition.CenterScreen; // 窗口居中显示
+                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;  // 固定对话框边框（不可调整大小）
+                dlg.MaximizeBox = false;                             // 禁用最大化按钮
+                dlg.MinimizeBox = false;                             // 禁用最小化按钮
+                dlg.ControlBox = true;                               // 显示右上角关闭按钮
+                dlg.ShowInTaskbar = true;                            // 在任务栏显示窗口图标
+                dlg.TopMost = false;                                 // 非置顶（允许切换到其他窗口）
+                dlg.BackColor = bgColor;                             // 窗口背景色
+                dlg.ForeColor = textColor;                           // 窗口默认文字颜色
+                dlg.Font = GetFont(SF(9f));                          // 窗口默认字体（9pt，DPI自适应）
+                dlg.ClientSize = new Size(SX(760), SY(640));        // 窗口客户区大小：宽760×高640（DPI缩放后，内容面板高度减少，窗口高度相应减小）
 
-                int y = SY(36);
+                // ==================== 布局游标 y：从上往下依次排列各控件 ====================
+                int y = SY(36);  // 起始Y坐标：距窗口顶部36px（DPI缩放后）
 
+                // ==================== 标题标签"免责声明" ====================
                 Label lblTitle = new Label
                 {
-                    Text = "免责声明",
-                    Font = GetFont(SF(14f), FontStyle.Bold),
-                    Location = new Point(padX, y-20),
-                    AutoSize = true,
-                    ForeColor = textColor,
-                    BackColor = Color.Transparent
+                    Text = "免责声明",                                    // 标题文字
+                    Font = GetFont(SF(14f), FontStyle.Bold),             // 字体：14pt加粗（DPI自适应）
+                    Location = new Point(0, y-30),                     // 位置：水平居中（宽度=窗口宽度），垂直偏移-30微调
+                    Size = new Size(dlg.ClientSize.Width, SY(40)),       // 大小：宽=窗口宽度，高=40px（增大高度避免文字截断）
+                    TextAlign = ContentAlignment.MiddleCenter,           // 文字居中对齐
+                    ForeColor = textColor,                               // 文字颜色：主文字色
+                    BackColor = Color.Transparent                        // 背景透明
                 };
                 dlg.Controls.Add(lblTitle);
 
+                // y下移32px，为副标题留出空间
                 y += SY(32);
+
+                // ==================== 副标题标签"使用本软件前请仔细阅读以下条款" ====================
                 Label lblSubtitle = new Label
                 {
-                    Text = "使用本软件前请仔细阅读以下条款",
-                    Font = GetFont(SF(9f)),
-                    Location = new Point(padX, y),
-                    AutoSize = true,
-                    ForeColor = subTextColor,
-                    BackColor = Color.Transparent
+                    Text = "使用本软件前请仔细阅读以下条款",               // 副标题文字
+                    Font = GetFont(SF(9f)),                              // 字体：9pt常规（DPI自适应）
+                    Location = new Point(0, y-10),                          // 位置：水平居中，Y=当前游标-10微调
+                    Size = new Size(dlg.ClientSize.Width, SY(20)),       // 大小：宽=窗口宽度，高=20px
+                    TextAlign = ContentAlignment.MiddleCenter,            // 文字居中对齐
+                    ForeColor = subTextColor,                            // 文字颜色：副文字色（略暗）
+                    BackColor = Color.Transparent                        // 背景透明
                 };
                 dlg.Controls.Add(lblSubtitle);
 
+                // y下移24px，为分割线留出空间
                 y += SY(24);
 
+                // ==================== 顶部分割线 ====================
                 Panel dividerTop = new Panel
                 {
-                    Location = new Point(padX, y),
-                    Size = new Size(contentW, 1),
-                    BackColor = dividerColor
+                    Location = new Point(padX, y),           // 位置：左边距=padX，Y=当前游标
+                    Size = new Size(contentW, 1),            // 大小：宽=内容宽度，高=1px
+                    BackColor = dividerColor                 // 背景色：分割线颜色
                 };
                 dlg.Controls.Add(dividerTop);
+                // y下移18px，为内容面板留出间距
                 y += SY(18);
 
+                // ==================== 免责声明正文内容 ====================
                 string disclaimerText =
 @"第一条  软件性质
+
 本软件仅为「流媒体链接技术检测工具」，仅提供链接连通性、媒体编码、网络延迟检测功能。软件本身不生产、不存储、不提供任何 IPTV 直播源、影视播放地址、电视节目资源。
 
 第二条  责任归属
+
 所有待检测流媒体链接、频道地址均由使用者自行导入、自行获取。用户访问、检测第三方流媒体地址产生的一切著作权纠纷、行政处罚、法律责任，全部由使用者独立承担，与软件开发者无关。
 
 第三条  禁止行为
+
 严禁使用本软件从事以下行为：
-  1. 窃取、破解运营商专网 IPTV 组播信号
-  2. 爬取、售卖、分发无版权直播源
-  3. 搭建商用非法视听、直播服务
-  4. 绕过版权保护收看付费影视、有线电视节目
+    1. 窃取、破解运营商专网 IPTV 组播信号
+    2. 爬取、售卖、分发无版权直播源
+    3. 搭建商用非法视听、直播服务
+    4. 绕过版权保护收看付费影视、有线电视节目
 
 第四条  合规使用
+
 使用者应当严格遵守《中华人民共和国网络安全法》《中华人民共和国著作权法》《互联网视听节目服务管理规定》等法律法规，仅检测自身拥有合法授权的流媒体链接。
 
 第五条  免责条款
+
 本程序按现状免费提供，不提供任何明示或隐含担保。因使用本软件造成 IP 封禁、网络限制、设备故障等损失，开发者不承担任何赔偿责任。";
 
+                // ==================== 内容面板（包裹RichTextBox，带边框） ====================
                 Panel contentPanel = new Panel
                 {
-                    Location = new Point(padX, y),
-                    Size = new Size(contentW, SY(420)),
-                    BackColor = contentBg,
-                    BorderStyle = BorderStyle.FixedSingle
+                    Location = new Point(padX, y),               // 位置：左边距=padX，Y=当前游标
+                    Size = new Size(contentW, SY(400)),           // 大小：宽=内容宽度，高=400px（段落间距减少，高度相应减小）
+                    BackColor = contentBg,                        // 背景色：内容区域背景色
+                    BorderStyle = BorderStyle.FixedSingle         // 边框：单线边框
                 };
 
+                // ==================== 免责声明文本框（RichTextBox，支持滚动） ====================
                 RichTextBox txtDisclaimer = new RichTextBox
                 {
-                    Text = disclaimerText,
-                    Multiline = true,
-                    ReadOnly = true,
-                    ScrollBars = RichTextBoxScrollBars.Vertical,
-                    Location = new Point(SX(10), SY(10)),
-                    Size = new Size(contentW - SX(20), SY(400)),
-                    Font = GetFont(SF(9f)),
-                    BackColor = contentBg,
-                    ForeColor = textColor,
-                    BorderStyle = BorderStyle.None,
-                    WordWrap = true,
-                    DetectUrls = false
+                    Text = disclaimerText,                                    // 文本内容
+                    Multiline = true,                                         // 多行模式
+                    ReadOnly = true,                                          // 只读
+                    ScrollBars = RichTextBoxScrollBars.Vertical,              // 垂直滚动条
+                    Location = new Point(SX(12), SY(12)),                     // 位置：距面板左上角各12px内边距（增大2px更美观）
+                    Size = new Size(contentW - SX(24), SY(376)),             // 大小：宽=内容宽度-24px内边距，高=376px（配合面板高度调整）
+                    Font = GetFont(SF(9f)),                                   // 字体：9pt（DPI自适应，增大0.5pt更清晰）
+                    BackColor = contentBg,                                    // 背景色：与面板一致
+                    ForeColor = textColor,                                    // 文字颜色：主文字色
+                    BorderStyle = BorderStyle.None,                           // 无边框（由面板提供边框）
+                    WordWrap = true,                                          // 自动换行
+                    DetectUrls = false,                                       // 不自动检测URL
+                    SelectionTabs = new int[] { SX(20) }                      // 设置缩进：条款项缩进20px
                 };
+                // 设置文本居中对齐（标题和列表项居中，更美观）
+                txtDisclaimer.SelectAll();
+                txtDisclaimer.SelectionAlignment = HorizontalAlignment.Center;
+                txtDisclaimer.DeselectAll();
+
+                // 手动设置条款标题加粗（"第一条"、"第二条"等标题更醒目）
+                ApplyDisclaimerFormatting(txtDisclaimer, accentColor);
+
                 contentPanel.Controls.Add(txtDisclaimer);
                 dlg.Controls.Add(contentPanel);
 
-                y += SY(436);
+                // 在控件添加到父容器后，设置滚动位置到顶部（确保从第一条开始显示）
+                txtDisclaimer.SelectionStart = 0;
+                txtDisclaimer.ScrollToCaret();
 
+                // y下移418px（内容面板高度400+间距18），为提示文字留出空间
+                y += SY(418);
+
+                // ==================== 提示文字标签（倒计时/状态提示） ====================
                 Label lblHint = new Label
                 {
-                    Text = "请滚动阅读至底部并等待倒计时结束",
-                    Font = GetFont(SF(8.5f)),
-                    Location = new Point(padX, y),
-                    AutoSize = true,
-                    ForeColor = hintColor,
-                    BackColor = Color.Transparent
+                    Text = "请滚动阅读至底部并等待倒计时结束",                  // 初始提示文字
+                    Font = GetFont(SF(8.5f)),                                 // 字体：8.5pt（DPI自适应）
+                    Location = new Point(0, y),                               // 位置：水平居中，Y=当前游标
+                    Size = new Size(dlg.ClientSize.Width, SY(20)),            // 大小：宽=窗口宽度，高=20px
+                    TextAlign = ContentAlignment.MiddleCenter,                // 文字居中对齐
+                    ForeColor = hintColor,                                    // 文字颜色：提示色
+                    BackColor = Color.Transparent                             // 背景透明
                 };
                 dlg.Controls.Add(lblHint);
 
+                // y下移26px，为复选框留出空间
                 y += SY(26);
 
+                // ==================== 同意条款复选框 ====================
                 CheckBox cbAgree = new CheckBox
                 {
-                    Text = "我已仔细阅读并同意以上全部条款",
-                    Location = new Point(padX, y),
-                    Size = new Size(contentW, SY(26)),
-                    ForeColor = textColor,
-                    BackColor = Color.Transparent,
-                    Font = GetFont(SF(9.5f)),
-                    Enabled = false
+                    Text = "我已仔细阅读并同意以上全部条款",                    // 复选框文字
+                    AutoSize = true,                                          // 自动大小（根据文字内容）
+                    TextAlign = ContentAlignment.MiddleLeft,                  // 文字左中对齐
+                    CheckAlign = ContentAlignment.MiddleLeft,                 // 勾选框左中对齐
+                    ForeColor = textColor,                                    // 文字颜色：主文字色
+                    BackColor = Color.Transparent,                            // 背景透明
+                    Font = GetFont(SF(9.5f)),                                 // 字体：9.5pt（DPI自适应）
+                    Enabled = false                                           // 初始禁用（需满足条件后启用）
                 };
                 dlg.Controls.Add(cbAgree);
+                // 复选框水平居中：X = (窗口宽度 - 复选框宽度) / 2
+                cbAgree.Location = new Point((dlg.ClientSize.Width - cbAgree.Width) / 2, y);
 
+                // y下移32px，为按钮留出空间
                 y += SY(32);
 
+                // ==================== "进入软件"按钮 ====================
                 Button btnEnter = new Button
                 {
-                    Text = "进入软件",
-                    Location = new Point(padX, y),
-                    Size = new Size(contentW, SY(40)),
-                    Font = GetFont(SF(10f), FontStyle.Regular),
-                    FlatStyle = FlatStyle.Flat,
-                    Enabled = false,
-                    BackColor = btnDisabledBg,
-                    ForeColor = btnDisabledText,
-                    Cursor = Cursors.No,
-                    UseVisualStyleBackColor = false
+                    Text = "进入软件",                                        // 按钮文字
+                    Location = new Point(padX, y),                           // 位置：左边距=padX，Y=当前游标
+                    Size = new Size(contentW, SY(40)),                       // 大小：宽=内容宽度，高=40px（DPI缩放后）
+                    Font = GetFont(SF(10f), FontStyle.Regular),              // 字体：10pt常规（DPI自适应）
+                    FlatStyle = FlatStyle.Flat,                              // 扁平样式
+                    Enabled = false,                                         // 初始禁用（需勾选同意后启用）
+                    BackColor = btnDisabledBg,                               // 背景色：禁用态颜色
+                    ForeColor = btnDisabledText,                             // 文字颜色：禁用态颜色
+                    Cursor = Cursors.No,                                     // 鼠标光标：禁止样式
+                    UseVisualStyleBackColor = false                          // 禁用系统视觉样式（使用自定义颜色）
                 };
-                btnEnter.FlatAppearance.BorderSize = 0;
+                btnEnter.FlatAppearance.BorderSize = 0;                      // 扁平样式边框宽度：0（无边框）
+                // 按钮鼠标悬停时的背景色：深色为亮蓝，浅色为深蓝
                 btnEnter.FlatAppearance.MouseOverBackColor = isDark ? Color.FromArgb(68, 145, 238) : Color.FromArgb(36, 118, 225);
                 dlg.Controls.Add(btnEnter);
 
-                bool canAgree = false;
-                bool hasScrolledToBottom = false;
-                bool timerStarted = false;
-                int countdownSeconds = 8;
+                // ==================== 倒计时与交互状态控制 ====================
+                bool canAgree = false;              // 是否允许勾选同意（需同时满足：滚动到底+倒计时结束）
+                bool hasScrolledToBottom = false;    // 用户是否已滚动到文本底部
+                bool timerStarted = false;           // 倒计时是否已启动（首次滚动时启动）
+                int countdownSeconds = 8;            // 倒计时秒数：用户需阅读8秒后方可勾选同意
 
+                // 倒计时定时器：每秒触发一次
                 System.Windows.Forms.Timer countdownTimer = new System.Windows.Forms.Timer { Interval = 1000 };
                 countdownTimer.Tick += (s, e) =>
                 {
                     countdownSeconds--;
                     if (countdownSeconds <= 0)
                     {
+                        // 倒计时结束：更新提示文字为成功状态
                         countdownSeconds = 0;
                         countdownTimer.Stop();
                         lblHint.Text = "✓ 阅读时间已满足，请勾选同意条款后进入软件";
@@ -6068,12 +6117,15 @@ namespace IPTVLiveChecker
                     }
                     else
                     {
+                        // 倒计时进行中：更新提示文字显示剩余秒数
                         lblHint.Text = $"⏳ 阅读倒计时 {countdownSeconds} 秒 · 请滚动至底部";
                     }
                 };
 
+                // 文本框滚动事件：首次滚动启动倒计时，滚动到底部时更新状态
                 txtDisclaimer.VScroll += (s, e) =>
                 {
+                    // 首次滚动时启动倒计时，提示文字变为警告色
                     if (!timerStarted)
                     {
                         timerStarted = true;
@@ -6082,11 +6134,13 @@ namespace IPTVLiveChecker
                         lblHint.ForeColor = warningColor;
                     }
 
+                    // 通过Win32 API获取滚动条位置，判断是否滚动到底部
                     var scrollInfo = new SCROLLINFO();
                     scrollInfo.cbSize = (uint)Marshal.SizeOf(typeof(SCROLLINFO));
-                    scrollInfo.fMask = 7;
+                    scrollInfo.fMask = 7;  // SIF_RANGE | SIF_PAGE | SIF_POS
                     GetScrollInfo(txtDisclaimer.Handle, 1, ref scrollInfo);
 
+                    // 判断是否到达底部：当前位置 + 可见页高度 >= 最大滚动范围 - 2（容差）
                     bool atBottom = scrollInfo.nPos + (int)scrollInfo.nPage >= scrollInfo.nMax - 2;
                     if (atBottom && !hasScrolledToBottom)
                     {
@@ -6095,14 +6149,18 @@ namespace IPTVLiveChecker
                     }
                 };
 
+                // 更新同意复选框的可用状态
                 void UpdateAgreeState()
                 {
+                    // 仅当"已滚动到底"且"倒计时结束"时才允许勾选
                     canAgree = hasScrolledToBottom && countdownSeconds <= 0;
                     cbAgree.Enabled = canAgree;
+                    // 如果条件不满足但已勾选，则取消勾选
                     if (!canAgree && cbAgree.Checked)
                         cbAgree.Checked = false;
                 }
 
+                // 复选框状态变化事件：控制"进入软件"按钮的启用/禁用
                 cbAgree.CheckedChanged += (s, e) =>
                 {
                     bool ready = cbAgree.Checked && canAgree;
@@ -6112,28 +6170,60 @@ namespace IPTVLiveChecker
                     btnEnter.Cursor = ready ? Cursors.Hand : Cursors.No;
                 };
 
+                // "进入软件"按钮点击事件：用户同意条款，保存配置并关闭窗口
                 btnEnter.Click += (s, e) =>
                 {
-                    dialogResult = true;
-                    disclaimerAgreed = true;
-                    countdownTimer.Stop();
-                    SaveConfig();
-                    dlg.DialogResult = DialogResult.OK;
-                    dlg.Close();
+                    dialogResult = true;           // 设置返回值为true
+                    disclaimerAgreed = true;       // 保存到实例字段
+                    countdownTimer.Stop();         // 停止倒计时
+                    SaveConfig();                  // 持久化保存同意状态
+                    dlg.DialogResult = DialogResult.OK;  // 设置对话框返回值为OK
+                    dlg.Close();                   // 关闭窗口
                 };
 
+                // 窗口关闭事件：停止倒计时，根据返回值设置对话框结果
                 dlg.FormClosing += (s, e) =>
                 {
                     countdownTimer.Stop();
                     if (!dialogResult)
                     {
-                        dlg.DialogResult = DialogResult.Cancel;
+                        dlg.DialogResult = DialogResult.Cancel;  // 未同意则返回Cancel
                     }
+                };
+
+                // 在对话框显示后立即设置滚动位置到顶部（确保从第一条开始显示）
+                dlg.Shown += (s, e) =>
+                {
+                    txtDisclaimer.SelectionStart = 0;
+                    txtDisclaimer.ScrollToCaret();
                 };
 
                 dlg.ShowDialog(this);
 
                 return dialogResult;
+            }
+        }
+
+        /// <summary>
+        /// 为免责声明文本框应用格式化：条款标题加粗并使用强调色
+        /// </summary>
+        /// <param name="rtb">RichTextBox控件</param>
+        /// <param name="accentColor">强调色（用于标题高亮）</param>
+        private void ApplyDisclaimerFormatting(RichTextBox rtb, Color accentColor)
+        {
+            string[] titles = { "第一条", "第二条", "第三条", "第四条", "第五条" };
+
+            foreach (string title in titles)
+            {
+                int startIndex = rtb.Text.IndexOf(title);
+                if (startIndex >= 0)
+                {
+                    rtb.Select(startIndex, title.Length);
+                    rtb.SelectionFont = new Font(rtb.Font, FontStyle.Bold);
+                    rtb.SelectionColor = accentColor;
+                    rtb.SelectionAlignment = HorizontalAlignment.Center;
+                    rtb.DeselectAll();
+                }
             }
         }
 
@@ -6194,7 +6284,7 @@ namespace IPTVLiveChecker
             int navBtnRadius = 4;
             int navBtnGap = 1;
             
-            int startX = SX(20);
+            int startX = SX(42);
             
             Action<Button> updateBtn = (btn) =>
             {
@@ -6636,7 +6726,7 @@ namespace IPTVLiveChecker
             titleBarPanel = new Panel
             {
                 Dock = DockStyle.Top,           // 顶部停靠
-                Height = 40,                   // 标题栏高度（固定40px）
+                Height = SY(40),               // 标题栏高度（40px * DPI缩放）
                 BackColor = theme.Bg            // 背景色跟随主题
             };
 
@@ -6644,8 +6734,8 @@ namespace IPTVLiveChecker
             // [位置] (12, 9) [大小] 22x22 [绘制] 自定义电视图标（使用主题主色）
             PictureBox titleIcon = new PictureBox
             {
-                Size = new Size(22, 22),
-                Location = new Point(12, 9),
+                Size = new Size(SX(22), SY(22)),
+                Location = new Point(SX(12), SY(9)),
                 BackColor = Color.Transparent,
                 SizeMode = PictureBoxSizeMode.CenterImage
             };
@@ -6658,21 +6748,21 @@ namespace IPTVLiveChecker
                 using (SolidBrush tvBrush = new SolidBrush(theme.Primary))
                 {
                     // 绘制电视主体（圆角矩形）
-                    using (GraphicsPath tvPath = RoundedRectPath(new Rectangle(2, 4, 18, 13), 3))
+                    using (GraphicsPath tvPath = RoundedRectPath(new Rectangle(SX(2), SY(4), SX(18), SY(13)), SX(3)))
                         g.FillPath(tvBrush, tvPath);
                     // 绘制屏幕（内部矩形）
                     using (SolidBrush screenBrush = new SolidBrush(theme.Bg))
-                        g.FillRectangle(screenBrush, new Rectangle(4, 6, 14, 9));
+                        g.FillRectangle(screenBrush, new Rectangle(SX(4), SY(6), SX(14), SY(9)));
                     // 绘制底座
-                    g.FillRectangle(tvBrush, 7, 17, 7, 2);
-                    g.FillRectangle(tvBrush, 5, 19, 12, 2);
+                    g.FillRectangle(tvBrush, SX(7), SY(17), SX(7), SY(2));
+                    g.FillRectangle(tvBrush, SX(5), SY(19), SX(12), SY(2));
                 }
             };
             titleBarPanel.Controls.Add(titleIcon);
 
             // ========== 窗口控制按钮配置（右上角） ==========
             // 控制按钮：主题切换、最小化、最大化、关闭，每个按钮40x40px，圆角8px
-            int btnSize = 40;                                 // 控制按钮尺寸（40x40px）
+            int btnSize = SY(40);                              // 控制按钮尺寸（40px * DPI缩放）
             Color titleBtnBg = theme.Bg;                      // 控制按钮背景色
             Color titleBtnFg = theme.TextSecondary;           // 控制按钮文字颜色
             Color titleBtnHover = theme.Name == "深色" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(230, 230, 235); // 控制按钮悬停色
@@ -6754,12 +6844,12 @@ namespace IPTVLiveChecker
             }
 
             // ========== 导航按钮：解析 (P) ==========
-            // [位置] (20, navBtnY) [大小] (navBtnWidth+20) x navBtnHeight [字体] YaHei 9pt [快捷键] P
+            // [位置] (42, navBtnY) [大小] (navBtnWidth+20) x navBtnHeight [字体] YaHei 9pt [快捷键] P
             btnNavDetect = new Button
             {
                 Text = "解析 (P)",
                 Size = new Size(navBtnWidth + 20, navBtnHeight),
-                Location = new Point(20, navBtnY),
+                Location = new Point(SX(42), navBtnY),
                 BackColor = Color.Transparent,
                 ForeColor = navBtnText,
                 Font = GetFont(SF(9f), FontStyle.Regular),
@@ -6777,7 +6867,7 @@ namespace IPTVLiveChecker
             {
                 Text = "搜索 (F)",
                 Size = new Size(navBtnWidth + 20, navBtnHeight),
-                Location = new Point(20 + navBtnWidth + 20 + navBtnGap, navBtnY),
+                Location = new Point(SX(42) + navBtnWidth + 20 + navBtnGap, navBtnY),
                 BackColor = Color.Transparent,
                 ForeColor = navBtnText,
                 Font = GetFont(SF(9f), FontStyle.Regular),
@@ -6813,7 +6903,7 @@ namespace IPTVLiveChecker
             {
                 Text = "设置 (S)",
                 Size = new Size(navBtnWidth + 20, navBtnHeight),
-                Location = new Point(20 + (navBtnWidth + 20) * 2 + navBtnGap * 2, navBtnY ),
+                Location = new Point(SX(42) + (navBtnWidth + 20) * 2 + navBtnGap * 2, navBtnY ),
                 BackColor = Color.Transparent,
                 ForeColor = navBtnText,
                 Font = GetFont(SF(9f), FontStyle.Regular),
@@ -6830,7 +6920,7 @@ namespace IPTVLiveChecker
             {
                 Text = "关于 (A)",
                 Size = new Size(navBtnWidth + 20, navBtnHeight),
-                Location = new Point(20 + (navBtnWidth + 20) * 3 + navBtnGap * 3, navBtnY),
+                Location = new Point(SX(42) + (navBtnWidth + 20) * 3 + navBtnGap * 3, navBtnY),
                 BackColor = Color.Transparent,
                 ForeColor = navBtnText,
                 Font = GetFont(SF(9f), FontStyle.Regular),
@@ -6854,7 +6944,7 @@ namespace IPTVLiveChecker
                 if (btnNavDetect != null && btnNavSearch != null && btnNavSearch.Visible)
                     btnGap = btnNavSearch.Left - btnNavDetect.Right;
                 
-                int currentX = SX(20);
+                int currentX = SX(42);
                 if (btnNavDetect != null)
                 {
                     btnNavDetect.Left = currentX;
@@ -7562,6 +7652,7 @@ namespace IPTVLiveChecker
         private const int WM_NCHITTEST = 0x84;
         private const int WM_NCLBUTTONDBLCLK = 0x00A3;
         private const int WM_GETMINMAXINFO = 0x0024;
+        private const int WM_DPICHANGED = 0x02E0;
         private const int WM_SETREDRAW = 0x000B;
         private const int HTLEFT = 10;
         private const int HTRIGHT = 11;
@@ -8927,7 +9018,7 @@ namespace IPTVLiveChecker
                 Font = GetFont(9.5f, FontStyle.Bold),
                 ForeColor = theme.TextPrimary,
                 AutoSize = true,
-                Location = new Point(12, 10),
+                Location = new Point(SX(12), SY(10)),
                 BackColor = Color.Transparent
             };
             tipBox.Controls.Add(tipTitle);
@@ -14366,6 +14457,28 @@ namespace IPTVLiveChecker
                 }
                 return;
             }
+            if (m.Msg == WM_DPICHANGED)
+            {
+                int newDpiX = (int)(m.WParam.ToInt64() & 0xFFFF);
+                float newScale = newDpiX / 96f;
+                if (Math.Abs(newScale - dpiScale) > 0.01f)
+                {
+                    dpiScale = newScale;
+                    DarkMessageBox.DpiScale = dpiScale;
+                    config.Initialize(dpiScale);
+                    if (this.IsHandleCreated && !this.IsDisposed)
+                    {
+                        this.Invoke(new Action(() => {
+                            this.SuspendLayout();
+                            this.Controls.Clear();
+                            BuildUI();
+                            this.ResumeLayout(true);
+                        }));
+                    }
+                }
+                m.Result = IntPtr.Zero;
+                return;
+            }
             base.WndProc(ref m);
         }
 
@@ -14468,36 +14581,91 @@ namespace IPTVLiveChecker
 
         private void ShowScanSourceDialog()
         {
+            // ==================== 主题颜色配置（深色/浅色自动适配） ====================
             bool isDark = theme.Name == "深色";
+            // [主绿色] 按钮、选中状态、成功提示的主要颜色：深色偏亮绿，浅色标准绿
             Color GreenMain = isDark ? Color.FromArgb(70, 200, 110) : Color.FromArgb(46, 189, 96);
+            // [深绿色] 按钮悬停状态颜色：比主绿色略深，提供视觉反馈
             Color GreenDark = isDark ? Color.FromArgb(55, 180, 95) : Color.FromArgb(39, 174, 86);
+            // [灰色文字] 辅助文字、占位符、非选中状态文字颜色
             Color GrayText = isDark ? theme.TextSecondary : Color.FromArgb(153, 153, 153);
+            // [分割线颜色] 标题栏下方分割线、面板分隔线颜色
             Color GrayLine = isDark ? theme.Border : Color.FromArgb(230, 232, 238);
+            // [边框颜色] 输入框、面板的边框颜色（未聚焦时）
             Color GrayBorder = isDark ? theme.Border : Color.FromArgb(200, 203, 210);
+            // [深色文字] 主要文字、标签、按钮文字颜色（浅色主题下为深色）
             Color DarkText = isDark ? theme.TextPrimary : Color.FromArgb(51, 51, 51);
+            // [红色高亮] 必填项星号、错误提示、警告文字颜色
             Color RedHighlight = isDark ? theme.ErrorColor : Color.FromArgb(231, 76, 60);
+            // [浅色按钮背景] 数字面板加减按钮、次要按钮的背景色
             Color LightBtnBg = isDark ? Color.FromArgb(55, 55, 65) : Color.FromArgb(248, 249, 250);
-            Color InputBg = isDark ? theme.Surface : Color.White;
+            // [输入框背景] 文本框、数字面板的背景色（浅色主题使用浅灰，与窗口背景区分）
+            Color InputBg = isDark ? theme.Surface : Color.FromArgb(245, 245, 247);
+            // [输入框聚焦边框] 输入框获得焦点时的边框高亮颜色（与主绿色一致）
             Color InputFocusBorder = GreenMain;
+            // [面板背景] 整个对话框、所有面板的背景色
             Color PanelBg = isDark ? theme.Bg : Color.White;
+            // [步骤指示器线条颜色] 步骤指示器中未完成步骤的灰色线条
             Color StepLineGray = isDark ? Color.FromArgb(80, 80, 92) : Color.FromArgb(210, 213, 220);
+            // [数字面板悬停] 数字面板加减按钮的鼠标悬停背景色
             Color NumPadHover = isDark ? Color.FromArgb(65, 65, 75) : Color.FromArgb(235, 236, 240);
+            // [数字面板按下] 数字面板加减按钮的鼠标按下背景色
             Color NumPadDown = isDark ? Color.FromArgb(75, 75, 85) : Color.FromArgb(225, 226, 232);
+            // [关闭按钮悬停] 标题栏关闭按钮的鼠标悬停背景色
             Color CloseHover = isDark ? Color.FromArgb(55, 55, 65) : Color.FromArgb(245, 245, 245);
+            // [关闭按钮按下] 标题栏关闭按钮的鼠标按下背景色
             Color CloseDown = isDark ? Color.FromArgb(65, 65, 75) : Color.FromArgb(230, 230, 230);
 
-            int DLG_W = 900;
-            int DLG_H = 750;
-            int CONTENT_PAD = 32;
-            int INPUT_HEIGHT = 40;
-            int BTN_HEIGHT = 42;
-            Font BASE_FONT = GetFont(10.5f);
-            Font TITLE_FONT = GetFont(15f, FontStyle.Bold);
-            Font HINT_FONT = GetFont(11f);
-            Font URL_FONT = new Font("Consolas", 11f);
-            Font URL_SEL_FONT = new Font("Consolas", 11f, FontStyle.Bold | FontStyle.Underline);
-            Font URL_BOLD_FONT = new Font("Consolas", 11f, FontStyle.Bold);
-            Font BTN_FONT = GetFont(11f, FontStyle.Bold);
+            // ====== 窗口尺寸配置 ======
+            // [窗口宽度] 固定900px，足够容纳完整URL和操作按钮，DPI自适应缩放
+            int DLG_W = SX(900);
+            // [窗口高度] 580px，包含：标题栏(52px) + 分割线(1px) + 步骤指示器(80px) + 内容区(447px)
+            // 增大高度以容纳步骤2的所有控件，确保按钮和信息栏完整显示
+            int DLG_H = SY(620);
+            
+            // ====== 布局间距配置 ======
+            // [内容边距] 左右两侧留白，避免控件贴边，增强视觉舒适度
+            int CONTENT_PAD = SX(32);
+            // [控件间距] 控件之间的垂直间距，保持视觉平衡，避免拥挤
+            int CONTROL_GAP = SY(12);
+            // [分组间距] 逻辑分组（如标签+输入框、提示栏）之间的间距，比控件间距略大
+            int GROUP_GAP = SY(16);
+            // [顶部留白] 步骤内容区与步骤指示器之间的间距
+            int TOP_PADDING = SY(20);
+            
+            // ====== 控件尺寸配置 ======
+            // [输入框高度] 文本框和数字面板的统一高度（增大至44px，更清晰易读）
+            int INPUT_HEIGHT = SY(44);
+            // [按钮高度] 操作按钮（下一步、取消）的统一高度
+            int BTN_HEIGHT = SY(38);
+            // [提示栏高度] 智能提示、范围提示等信息栏高度（容纳2行文字+上下内边距）
+            int HINT_HEIGHT = SY(68);
+            // [标题栏高度] 对话框顶部标题栏高度（包含标题文字和关闭按钮）
+            int TITLE_BAR_H = SY(52);
+            // [步骤指示器高度] 步骤进度条区域高度（圆形指示器+标签文字）
+            int STEP_INDICATOR_H = SY(80);
+            
+            // ====== 字体配置 ======
+            // [基础字体] 整个对话框的默认字体（10pt）
+            Font BASE_FONT = GetFont(9f);
+            // [标题字体] 对话框标题"直播源生成器"（14pt加粗）
+            Font TITLE_FONT = GetFont(14f, FontStyle.Bold);
+            // [标签字体] 字段标签（如"直播源地址"、"起始数字"）（10.5pt）
+            Font LABEL_FONT = GetFont(10.5f);
+            // [提示字体] 提示信息（如"智能识别"、"最大生成范围"）（10pt）
+            Font HINT_FONT = GetFont(10f);
+            // [URL字体] URL显示和输入框使用的等宽字体（Consolas 9.5pt，确保数字对齐）
+            Font URL_FONT = new Font("Consolas", SF(9.5f));
+            // [URL选中字体] URL中选中部分的高亮字体（Consolas 10.5pt，加粗下划线）
+            Font URL_SEL_FONT = new Font("Consolas", SF(10.5f), FontStyle.Bold | FontStyle.Underline);
+            // [URL加粗字体] URL中强调部分的字体（Consolas 10.5pt加粗）
+            Font URL_BOLD_FONT = new Font("Consolas", SF(10.5f), FontStyle.Bold);
+            // [按钮字体] 操作按钮的字体（10.5pt加粗，提高可读性）
+            Font BTN_FONT = GetFont(10.5f, FontStyle.Bold);
+            // [数字面板字体] 数字面板加减按钮的字体（14pt加粗）
+            Font NUMPAD_BTN_FONT = GetFont(14f, FontStyle.Bold);
+            // [数字输入字体] 数字面板输入框的字体（12pt，居中显示）
+            Font NUM_INPUT_FONT = GetFont(12f);
 
             Form dlg = new Form
             {
@@ -14707,48 +14875,54 @@ namespace IPTVLiveChecker
 
             void StyleGreenButton(Button btn)
             {
-                btn.FlatStyle = FlatStyle.Flat;
-                btn.FlatAppearance.BorderSize = 0;
-                btn.FlatAppearance.MouseOverBackColor = GreenDark;
-                btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(34, 160, 76);
-                btn.BackColor = GreenMain;
-                btn.ForeColor = Color.White;
-                btn.Font = BTN_FONT;
-                btn.Cursor = Cursors.Hand;
-                StyleRoundButton(btn, 8);
+                // [按钮样式] 绿色主按钮统一样式配置
+                btn.FlatStyle = FlatStyle.Flat;           // 扁平样式，无边框凸起效果
+                btn.FlatAppearance.BorderSize = 0;        // 边框宽度为0
+                btn.FlatAppearance.MouseOverBackColor = GreenDark;      // 鼠标悬停时背景色变为深绿色
+                btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(34, 160, 76);  // 鼠标按下时背景色更深
+                btn.BackColor = GreenMain;                // 默认背景色为主绿色
+                btn.ForeColor = Color.White;              // 文字颜色为白色
+                btn.Font = BTN_FONT;                      // 使用按钮字体（10.5pt加粗）
+                btn.Cursor = Cursors.Hand;                // 鼠标变为手型
+                StyleRoundButton(btn, SX(8));             // 设置圆角半径为8px（DPI自适应）
             }
 
+            // ====== 标题栏 ======
+            // [标题栏面板] 对话框顶部标题区域，包含标题和关闭按钮，可拖动
             Panel titleBar = new Panel
             {
-                Dock = DockStyle.Top,
-                Height = 56,
-                BackColor = PanelBg
+                Dock = DockStyle.Top,     // 顶部停靠，自动填充宽度
+                Height = TITLE_BAR_H,     // 标题栏高度52px
+                BackColor = PanelBg       // 使用面板背景色
             };
+            
+            // [标题标签] 对话框标题"🔍 直播源生成器"
             Label lblTitle = new Label
             {
-                Text = "🔍 直播源生成器",
-                Font = TITLE_FONT,
-                ForeColor = DarkText,
-                Location = new Point(CONTENT_PAD, 14),
-                AutoSize = true
+                Text = "🔍 直播源生成器",                // 标题文字，带放大镜图标
+                Font = TITLE_FONT,                      // 使用标题字体（14pt加粗）
+                ForeColor = DarkText,                   // 深色文字，确保对比度
+                Location = new Point(CONTENT_PAD, (TITLE_BAR_H - SY(22)) / 2),  // 垂直居中，水平左对齐
+                AutoSize = true                         // 自动调整大小以适应文字
             };
             titleBar.Controls.Add(lblTitle);
 
+            // [关闭按钮] 标题栏右侧的关闭按钮（✕）
             Button btnClose = new Button
             {
-                Text = "✕",
-                FlatStyle = FlatStyle.Flat,
-                Size = new Size(50, 50),
-                Location = new Point(DLG_W - 50, 0),
-                ForeColor = GrayText,
-                BackColor = PanelBg,
-                Font = GetFont(13f),
-                Cursor = Cursors.Hand
+                Text = "✕",                                  // 关闭图标
+                FlatStyle = FlatStyle.Flat,                  // 扁平样式
+                Size = new Size(SX(40), TITLE_BAR_H),        // 宽度40px，高度与标题栏一致
+                Location = new Point(DLG_W - SX(40), 0),     // 位于窗口最右侧
+                ForeColor = GrayText,                        // 灰色文字，不显眼
+                BackColor = PanelBg,                         // 与标题栏背景一致
+                Font = GetFont(11f),                         // 11pt字体，图标清晰
+                Cursor = Cursors.Hand                        // 鼠标变为手型
             };
-            btnClose.FlatAppearance.BorderSize = 0;
-            btnClose.FlatAppearance.MouseOverBackColor = CloseHover;
-            btnClose.FlatAppearance.MouseDownBackColor = CloseDown;
-            btnClose.Click += (s, e) => dlg.Close();
+            btnClose.FlatAppearance.BorderSize = 0;           // 无边框
+            btnClose.FlatAppearance.MouseOverBackColor = CloseHover;  // 悬停时背景色变深
+            btnClose.FlatAppearance.MouseDownBackColor = CloseDown;   // 按下时背景色更深
+            btnClose.Click += (s, e) => dlg.Close();         // 点击关闭对话框
             titleBar.Controls.Add(btnClose);
 
             void MakeDraggable(Control c)
@@ -14764,7 +14938,7 @@ namespace IPTVLiveChecker
 
             dlg.KeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) dlg.Close(); };
 
-            Panel sepTitle = new Panel { Dock = DockStyle.Top, Height = 1, BackColor = GrayLine };
+            Panel sepTitle = new Panel { Dock = DockStyle.Top, Height = SX(1), BackColor = GrayLine };
 
             Panel contentHost = new Panel
             {
@@ -14792,14 +14966,19 @@ namespace IPTVLiveChecker
             int selectedResSegIndex = -1;
             bool multiResEnabled = false;
 
+            // ====== 步骤指示器 ======
+            // [步骤指示器面板] 显示当前向导进度，包含3个步骤：输入源地址 → 选择字段 → 设置范围
             Panel stepIndicator = new Panel
             {
-                Dock = DockStyle.Top,
-                Height = 105,
-                BackColor = PanelBg
+                Dock = DockStyle.Top,     // 顶部停靠
+                Height = STEP_INDICATOR_H,  // 高度80px，容纳圆形指示器和标签文字
+                BackColor = PanelBg       // 使用面板背景色
             };
-            string[] stepLabelsArr = { "输入直播源地址", "选择生成字段", "设置数值范围" };
-            int stepCircleR = 14;
+            
+            // [步骤标签数组] 三个步骤的显示文字
+            string[] stepLabelsArr = { "输入源地址", "选择字段", "设置范围" };
+            // [步骤圆半径] 步骤指示器中圆形的半径（12px，DPI自适应）
+            int stepCircleR = SX(12);
 
             stepIndicator.Paint += (s, pe) =>
             {
@@ -14810,30 +14989,52 @@ namespace IPTVLiveChecker
                 int h = stepIndicator.Height;
 
                 float circleD = stepCircleR * 2;
-                float circleY = 16;
+                float circleY = SY(10);
                 float lineY = circleY + stepCircleR;
                 float sectionW = w / 3f;
                 float[] circleCX = new float[3];
                 for (int i = 0; i < 3; i++)
                     circleCX[i] = sectionW * i + sectionW / 2f;
 
-                Font stepLblFont = GetFont(11f);
-                Font stepLblFontBold = GetFont(11f, FontStyle.Bold);
+                float maxLabelWidth = sectionW - SX(40);
+                float fontSize = 10.5f;
+                Font stepLblFont = null;
+                Font stepLblFontBold = null;
+                SizeF lblSize;
+                do
+                {
+                    stepLblFont?.Dispose();
+                    stepLblFontBold?.Dispose();
+                    stepLblFont = GetFont(fontSize);
+                    stepLblFontBold = GetFont(fontSize, FontStyle.Bold);
+                    lblSize = g.MeasureString("输入源地址", stepLblFontBold);
+                    fontSize -= 0.5f;
+                } while (lblSize.Width > maxLabelWidth && fontSize >= 8f);
+
+                float circleFontSize = fontSize * 0.9f;
+                if (circleFontSize < 7.5f) circleFontSize = 7.5f;
+                Font numFont = GetFont(circleFontSize, FontStyle.Bold);
+                Font checkFont = GetFont(circleFontSize + 1f, FontStyle.Bold);
+
+                float lblGap = h - circleY - circleD - lblSize.Height;
+                if (lblGap < SY(8)) lblGap = SY(8);
 
                 using (Pen linePen = new Pen(GrayLine, 2f))
                 using (Pen greenPen = new Pen(GreenMain, 2f))
                 using (Brush greenBrush = new SolidBrush(GreenMain))
                 using (Brush whiteBrush = new SolidBrush(PanelBg))
                 using (Brush grayBrush = new SolidBrush(GrayText))
-                using (Font numFont = GetFont(10.5f, FontStyle.Bold))
-                using (Font checkFont = GetFont(11f, FontStyle.Bold))
+                using (numFont)
+                using (checkFont)
+                using (stepLblFont)
+                using (stepLblFontBold)
                 using (StringFormat sfCenter = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
                 {
                     for (int seg = 0; seg < 2; seg++)
                     {
                         Pen p = (currentStep >= seg + 2) ? greenPen : linePen;
-                        float x1 = circleCX[seg] + stepCircleR + 8;
-                        float x2 = circleCX[seg + 1] - stepCircleR - 8;
+                        float x1 = circleCX[seg] + stepCircleR + SX(10);
+                        float x2 = circleCX[seg + 1] - stepCircleR - SX(10);
                         g.DrawLine(p, x1, lineY, x2, lineY);
                     }
                     for (int i = 0; i < 3; i++)
@@ -14866,9 +15067,9 @@ namespace IPTVLiveChecker
 
                         Brush lblBrush = isCurrent || isCompleted ? (Brush)new SolidBrush(GreenMain) : grayBrush;
                         Font lblF = isCurrent ? stepLblFontBold : stepLblFont;
-                        SizeF lblSize = g.MeasureString(stepLabelsArr[i], lblF);
-                        float lblX = cx - lblSize.Width / 2;
-                        float lblY = circleY + circleD + 14;
+                        SizeF labelSize = g.MeasureString(stepLabelsArr[i], lblF);
+                        float lblX = cx - labelSize.Width / 2;
+                        float lblY = circleY + circleD + lblGap;
                         g.DrawString(stepLabelsArr[i], lblF, lblBrush, lblX, lblY);
                     }
                 }
@@ -14881,56 +15082,99 @@ namespace IPTVLiveChecker
             };
 
             contentHost.Controls.Add(stepContainer);
+            
+            Panel stepIndicatorTopGap = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = SY(20),
+                BackColor = PanelBg
+            };
+            contentHost.Controls.Add(stepIndicatorTopGap);
+            
             contentHost.Controls.Add(stepIndicator);
 
             Panel step1Panel = new Panel { Dock = DockStyle.Fill, BackColor = PanelBg };
-            Panel step2Panel = new Panel { BackColor = PanelBg, Visible = false, AutoScroll = true };
-            Panel step3Panel = new Panel { BackColor = PanelBg, Visible = false };
+            Panel step2Panel = new Panel { Dock = DockStyle.Fill, BackColor = PanelBg, Visible = false };
+            Panel step3Panel = new Panel { Dock = DockStyle.Fill, BackColor = PanelBg, Visible = false };
 
             stepContainer.Controls.Add(step2Panel);
             stepContainer.Controls.Add(step3Panel);
             stepContainer.Controls.Add(step1Panel);
 
+            // ====== 步骤1：输入源地址 ======
+            // [布局结构] 标签(28px) → 间距(12px) → 输入框(44px) → 间距(12px) → 提示栏(68px)
+            
+            // ------ 标签 ------
+            int step1Top = TOP_PADDING;  // 步骤1内容起始位置（距步骤指示器底部20px）
+            
+            // [步骤1标签] "直播源地址"，带必填星号
             Label lblStep1Hint = new Label
             {
                 Text = "直播源地址",
-                Font = HINT_FONT,
-                ForeColor = DarkText,
-                Location = new Point(CONTENT_PAD, 28),
-                AutoSize = true,
-                BackColor = PanelBg
+                Font = LABEL_FONT,    // 标签字体10.5pt
+                ForeColor = DarkText, // 深色文字
+                Location = new Point(CONTENT_PAD, step1Top),  // 左对齐，距左侧边距32px
+                AutoSize = true,      // 自动调整大小
+                BackColor = PanelBg   // 透明背景
             };
             int hint1W = TextRenderer.MeasureText(lblStep1Hint.Text, lblStep1Hint.Font).Width;
+            int hint1H = TextRenderer.MeasureText(lblStep1Hint.Text, lblStep1Hint.Font).Height;
+            
+            // [必填星号] 红色星号，标识该字段为必填项
             Label lblStep1Star = new Label
             {
                 Text = "*",
-                Font = HINT_FONT,
-                ForeColor = RedHighlight,
-                Location = new Point(CONTENT_PAD + hint1W + 3, 28),
+                Font = LABEL_FONT,      // 与标签字体一致
+                ForeColor = RedHighlight,  // 红色高亮
+                Location = new Point(CONTENT_PAD + hint1W + SX(3), step1Top),  // 紧跟标签右侧，间距3px
                 AutoSize = true,
                 BackColor = PanelBg
             };
             step1Panel.Controls.Add(lblStep1Hint);
             step1Panel.Controls.Add(lblStep1Star);
 
+            // ------ 输入框 ------
+            // 输入框顶部位置 = 标签高度 + 控件间距
+            int step1InputTop = step1Top + hint1H + CONTROL_GAP;  
+            
+            // [URL输入框] 用于输入直播源地址，支持标准URL或自定义范围格式
             TextBox txtStep1Url = new TextBox
             {
-                Location = new Point(CONTENT_PAD, 62),
-                Width = DLG_W - CONTENT_PAD * 2,
-                Height = INPUT_HEIGHT,
-                Font = URL_FONT,
-                BorderStyle = BorderStyle.FixedSingle,
-                BackColor = InputBg
+                Location = new Point(CONTENT_PAD, step1InputTop),  // 左对齐，距左侧边距32px
+                Width = DLG_W - CONTENT_PAD * 2,                   // 宽度 = 窗口宽度 - 左右边距
+                Height = INPUT_HEIGHT,                              // 输入框高度44px
+                Font = URL_FONT,                                    // 等宽字体9.5pt（Consolas）
+                BorderStyle = BorderStyle.None,                     // 无边框（自定义绘制圆角边框）
+                BackColor = InputBg,                                // 输入框背景色（浅灰/深色Surface）
+                Padding = new Padding(SX(8), SX(2), SX(8), SX(2))   // 内边距，防止文字被边框截断
             };
+            // 设置圆角路径（半径6px）
+            txtStep1Url.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, txtStep1Url.Width, txtStep1Url.Height), SX(6)));
+            // 自定义绘制边框（聚焦时绿色高亮，未聚焦时灰色）
+            txtStep1Url.Paint += (s, pe) =>
+            {
+                Color borderColor = txtStep1Url.Focused ? InputFocusBorder : Color.FromArgb(100, 100, 100);  // 深灰色边框，浅色主题下更醒目
+                using (Pen p = new Pen(borderColor, 2.5f))
+                {
+                    pe.Graphics.DrawPath(p, CreateRoundedRectPath(new Rectangle(0, 0, txtStep1Url.Width - 1, txtStep1Url.Height - 1), SX(6)));
+                }
+            };
+            // 设置右键菜单（剪切/复制/粘贴/全选/清空）
             txtStep1Url.ContextMenuStrip = CreateInputContextMenu(txtStep1Url);
-            Color phColor = isDark ? theme.TextSecondary : Color.FromArgb(170, 173, 180);
+            
+            // [占位符颜色] 提示文字颜色，加深以提高可读性（深色主题下稍亮，浅色主题下稍深）
+            Color phColor = isDark ? Color.FromArgb(120, 125, 135) : Color.FromArgb(130, 133, 140);
             bool phStep1Active = true;
+            // 设置占位符文字（提示用户支持的输入格式）
             txtStep1Url.Text = "请输入直播源地址，支持标准URL或{0001-0100}/[1-100]自定义范围，也可用{数字}手动框选生成段";
             txtStep1Url.ForeColor = phColor;
+            // 获取焦点时清除占位符，恢复正常文字颜色
             txtStep1Url.GotFocus += (s, e) =>
             {
                 if (phStep1Active) { phStep1Active = false; txtStep1Url.Text = ""; txtStep1Url.ForeColor = DarkText; }
+                txtStep1Url.Invalidate();
             };
+            // 失去焦点时如果输入框为空，恢复占位符
             txtStep1Url.LostFocus += (s, e) =>
             {
                 if (string.IsNullOrWhiteSpace(txtStep1Url.Text))
@@ -14938,92 +15182,127 @@ namespace IPTVLiveChecker
             };
             step1Panel.Controls.Add(txtStep1Url);
 
+            // ------ 智能提示栏 ------
+            // 提示栏顶部位置 = 输入框顶部 + 输入框高度 + 控件间距
+            int step1HintTop = step1InputTop + INPUT_HEIGHT + CONTROL_GAP;  
+            
+            // [智能提示面板] 显示使用说明和格式示例
             Panel pnlSmartHint = new Panel
             {
-                Location = new Point(CONTENT_PAD, 120),
-                Size = new Size(DLG_W - CONTENT_PAD * 2, 70),
-                BackColor = theme.StatusTagBg,
-                BorderStyle = BorderStyle.None
+                Location = new Point(CONTENT_PAD, step1HintTop),  // 左对齐，距左侧边距32px
+                Size = new Size(DLG_W - CONTENT_PAD * 2, HINT_HEIGHT),  // 宽度 = 窗口宽度 - 左右边距，高度68px
+                BackColor = theme.StatusTagBg,                    // 使用主题的提示背景色（浅绿色）
+                BorderStyle = BorderStyle.None                    // 无边框（自定义绘制圆角边框）
             };
+            // 设置圆角路径（半径6px）
+            pnlSmartHint.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, pnlSmartHint.Width, pnlSmartHint.Height), SX(6)));
+            
+            // [智能提示标签] 提示文字，带💡图标
             Label lblStep1SmartHint = new Label
             {
                 Text = "💡 智能识别：输入标准URL进入向导模式；输入带 [起始-结束] 的地址直接生成\n（如 http://example.com/[1-100].m3u8）",
-                Font = GetFont(10.5f),
-                ForeColor = theme.SuccessColor,
-                Location = new Point(16, 12),
-                AutoSize = false,
-                Size = new Size(DLG_W - CONTENT_PAD * 2 - 32, 50),
-                BackColor = theme.StatusTagBg
+                Font = HINT_FONT,      // 提示字体10pt
+                ForeColor = theme.SuccessColor,  // 成功提示颜色（绿色）
+                Location = new Point(SX(16), SY(8)),  // 提示栏内边距（左16px，上8px）
+                AutoSize = false,      // 固定大小，支持换行
+                Size = new Size(DLG_W - CONTENT_PAD * 2 - SX(32), HINT_HEIGHT - SY(16)),  // 减去左右内边距
+                BackColor = theme.StatusTagBg  // 透明背景
             };
             pnlSmartHint.Controls.Add(lblStep1SmartHint);
+            // 自定义绘制边框（使用主题的提示边框色）
             pnlSmartHint.Paint += (s, pe) =>
             {
-                using (Pen p = new Pen(theme.StatusTagBorder, 2.5f))
+                using (Pen p = new Pen(theme.StatusTagBorder, 1f))
                 {
-                    pe.Graphics.DrawLine(p, 0, 0, 0, pnlSmartHint.Height);
+                    pe.Graphics.DrawPath(p, CreateRoundedRectPath(new Rectangle(0, 0, pnlSmartHint.Width - 1, pnlSmartHint.Height - 1), SX(6)));
                 }
             };
             step1Panel.Controls.Add(pnlSmartHint);
 
+            // ====== 步骤2：选择字段 ======
+            // [布局结构] 标签(28px) → 间距(12px) → URL显示区(310px)
+            
+            // ------ 标签 ------
+            int step2Top = TOP_PADDING;  // 步骤2内容起始位置（距步骤指示器底部20px）
+            
+            // [步骤2标签] "请选择要生成的字符段"，带必填星号
             Label lblStep2Hint = new Label
             {
                 Text = "请选择要生成的字符段",
-                Font = HINT_FONT,
-                ForeColor = DarkText,
-                Location = new Point(CONTENT_PAD, 28),
+                Font = LABEL_FONT,    // 标签字体10.5pt
+                ForeColor = DarkText, // 深色文字
+                Location = new Point(CONTENT_PAD, step2Top),
                 AutoSize = true,
                 BackColor = PanelBg
             };
             int hint2W = TextRenderer.MeasureText(lblStep2Hint.Text, lblStep2Hint.Font).Width;
+            int hint2H = TextRenderer.MeasureText(lblStep2Hint.Text, lblStep2Hint.Font).Height;
+            
+            // [必填星号] 红色星号，标识该字段为必填项
             Label lblStep2Star = new Label
             {
                 Text = "*",
-                Font = HINT_FONT,
+                Font = LABEL_FONT,
                 ForeColor = RedHighlight,
-                Location = new Point(CONTENT_PAD + hint2W + 3, 28),
+                Location = new Point(CONTENT_PAD + hint2W + SX(3), step2Top),
                 AutoSize = true,
                 BackColor = PanelBg
             };
             step2Panel.Controls.Add(lblStep2Hint);
             step2Panel.Controls.Add(lblStep2Star);
 
-            int step2ContentTop = 62;
+            // ------ URL显示容器 ------
+            // URL显示区顶部位置 = 标签高度 + 控件间距
+            int step2ContentTop = step2Top + hint2H + CONTROL_GAP;  
+            
+            // [URL显示面板] 用于展示解析后的URL片段，用户可选择要生成的字符段
             Panel segListContainer = new Panel
             {
                 Location = new Point(CONTENT_PAD, step2ContentTop),
                 Width = DLG_W - CONTENT_PAD * 2,
-                Height = 300,
+                Height = SY(310),        // 高度310px，可容纳多个URL片段
                 BackColor = PanelBg,
-                AutoScroll = true
+                AutoScroll = true        // 支持垂直滚动
             };
             step2Panel.Controls.Add(segListContainer);
 
-            int numPanelW = 200;
-            int numPanelY = 58;
-            int pFromX = CONTENT_PAD + 40;
-            int pToX = DLG_W - CONTENT_PAD - numPanelW - 40;
-
+            // ====== 步骤3：设置范围 ======
+            // [布局结构] 标签(28px) → 间距(12px) → 数字面板(44px) → 间距(24px) → 提示栏(72px)
+            
+            // ------ 数字面板配置 ------
+            int numPanelW = SX(180);   // 数字面板宽度180px（包含加减按钮和输入框）
+            int step3Top = TOP_PADDING;     // 步骤3内容起始位置
+            
+            // 计算两个数字面板的位置，使其在窗口中水平居中分布
+            int panelTotalW = numPanelW * 2 + SX(180);  // 两个面板 + 中间间距180px
+            int pFromX = (DLG_W - panelTotalW) / 2;     // 起始面板X位置（水平居中）
+            int pToX = pFromX + numPanelW + SX(180);    // 结束面板X位置（距起始面板180px）
+            
+            // ------ 标签 ------
+            // [起始数字标签] "起始数字"，居中对齐
             Label lblStep3From = new Label
             {
                 Text = "起始数字",
-                Font = GetFont(11f),
+                Font = LABEL_FONT,    // 标签字体10.5pt
                 ForeColor = DarkText,
-                Location = new Point(pFromX, 22),
+                Location = new Point(pFromX, step3Top),
                 AutoSize = false,
-                Size = new Size(numPanelW, 28),
-                TextAlign = ContentAlignment.MiddleCenter,
+                Size = new Size(numPanelW, SY(28)),     // 宽度与数字面板一致，高度28px
+                TextAlign = ContentAlignment.MiddleCenter,  // 文字居中对齐
                 BackColor = PanelBg
             };
             step3Panel.Controls.Add(lblStep3From);
+            
+            // [结束数字标签] "结束数字"，居中对齐
             Label lblStep3To = new Label
             {
                 Text = "结束数字",
-                Font = GetFont(11f),
+                Font = LABEL_FONT,
                 ForeColor = DarkText,
-                Location = new Point(pToX, 22),
+                Location = new Point(pToX, step3Top),
                 AutoSize = false,
-                Size = new Size(numPanelW, 28),
-                TextAlign = ContentAlignment.MiddleCenter,
+                Size = new Size(numPanelW, SY(28)),     // 宽度与数字面板一致，高度28px
+                TextAlign = ContentAlignment.MiddleCenter,  // 文字居中对齐
                 BackColor = PanelBg
             };
             step3Panel.Controls.Add(lblStep3To);
@@ -15033,17 +15312,35 @@ namespace IPTVLiveChecker
             CheckedListBox clstTextCandidates = null;
             List<string> selectedTextValues = null;
 
+            // ====== 数字面板创建方法 ======
+            // [创建数字面板] 创建一个包含减号按钮、输入框、加号按钮的数字选择面板
+            // 参数: x - 面板X位置, initialVal - 初始数值, outTextBox - 返回的输入框引用
             Panel CreateNumPanel(int x, long initialVal, out TextBox outTextBox)
             {
+                // [数字面板容器] 包含加减按钮和输入框的面板
                 Panel p = new Panel
                 {
-                    Location = new Point(x, numPanelY),
+                    Location = new Point(x, 0),
                     Width = numPanelW,
                     Height = INPUT_HEIGHT,
                     BackColor = InputBg,
-                    BorderStyle = BorderStyle.FixedSingle
+                    BorderStyle = BorderStyle.None
                 };
-                int btnW = INPUT_HEIGHT;
+                // 设置圆角路径（半径6px）
+                p.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, numPanelW, INPUT_HEIGHT), SX(6)));
+                // 自定义绘制边框（深灰色，圆角）
+                p.Paint += (s, pe) =>
+                {
+                    Color borderColor = isDark ? Color.FromArgb(100, 105, 115) : Color.FromArgb(130, 135, 145);
+                    using (Pen pen = new Pen(borderColor, 2.5f))
+                    {
+                        pe.Graphics.DrawPath(pen, CreateRoundedRectPath(new Rectangle(0, 0, numPanelW - 1, INPUT_HEIGHT - 1), SX(6)));
+                    }
+                };
+                
+                int btnW = INPUT_HEIGHT;  // 加减按钮宽度 = 输入框高度（正方形）
+                
+                // [减号按钮] 点击减少数字
                 Button btnMinus = new Button
                 {
                     Text = "−",
@@ -15052,52 +15349,62 @@ namespace IPTVLiveChecker
                     FlatStyle = FlatStyle.Flat,
                     BackColor = LightBtnBg,
                     ForeColor = DarkText,
-                    Font = GetFont(14f, FontStyle.Bold),
+                    Font = NUMPAD_BTN_FONT,  // 14pt加粗字体
                     Cursor = Cursors.Hand
                 };
                 btnMinus.FlatAppearance.BorderSize = 0;
-                btnMinus.FlatAppearance.MouseOverBackColor = NumPadHover;
-                btnMinus.FlatAppearance.MouseDownBackColor = NumPadDown;
+                btnMinus.FlatAppearance.MouseOverBackColor = NumPadHover;   // 悬停时背景色变深
+                btnMinus.FlatAppearance.MouseDownBackColor = NumPadDown;   // 按下时背景色更深
+                
+                // [数字输入框] 显示和输入当前数值
                 TextBox tb = new TextBox
                 {
                     Text = initialVal.ToString(),
-                    Location = new Point(btnW + 2, (INPUT_HEIGHT - 24) / 2),
-                    Width = numPanelW - btnW * 2 - 6,
+                    Location = new Point(btnW + 2, (INPUT_HEIGHT - 24) / 2),  // 垂直居中
+                    Width = numPanelW - btnW * 2 - 6,                         // 宽度 = 面板宽度 - 两个按钮宽度
                     Height = 24,
                     BorderStyle = BorderStyle.None,
-                    Font = GetFont(12f),
+                    Font = NUM_INPUT_FONT,     // 12pt字体，居中显示
                     ForeColor = DarkText,
                     BackColor = InputBg,
                     TextAlign = HorizontalAlignment.Center
                 };
+                // 设置右键菜单（剪切/复制/粘贴/全选/清空）
                 tb.ContextMenuStrip = CreateInputContextMenu(tb);
+                
+                // [加号按钮] 点击增加数字
                 Button btnPlus = new Button
                 {
                     Text = "+",
                     Size = new Size(btnW, INPUT_HEIGHT - 2),
-                    Location = new Point(numPanelW - btnW - 1, 0),
+                    Location = new Point(numPanelW - btnW - SX(1), 0),  // 右侧对齐
                     FlatStyle = FlatStyle.Flat,
                     BackColor = LightBtnBg,
                     ForeColor = DarkText,
-                    Font = GetFont(14f, FontStyle.Bold),
+                    Font = NUMPAD_BTN_FONT,  // 14pt加粗字体
                     Cursor = Cursors.Hand
                 };
                 btnPlus.FlatAppearance.BorderSize = 0;
-                btnPlus.FlatAppearance.MouseOverBackColor = NumPadHover;
-                btnPlus.FlatAppearance.MouseDownBackColor = NumPadDown;
+                btnPlus.FlatAppearance.MouseOverBackColor = NumPadHover;   // 悬停时背景色变深
+                btnPlus.FlatAppearance.MouseDownBackColor = NumPadDown;   // 按下时背景色更深
 
+                // 减号按钮点击事件：数字减1（最小值为0）
                 btnMinus.Click += (s, e) =>
                 {
                     long v;
                     if (long.TryParse(tb.Text, out v) && v > 0) { v--; tb.Text = v.ToString(); }
                     else { tb.Text = "0"; }
                 };
+                
+                // 加号按钮点击事件：数字加1（最大值为9999999999）
                 btnPlus.Click += (s, e) =>
                 {
                     long v;
                     if (long.TryParse(tb.Text, out v) && v < 9999999999L) { v++; tb.Text = v.ToString(); }
                     else if (!long.TryParse(tb.Text, out v)) { tb.Text = "0"; }
                 };
+                
+                // 输入框按键事件：只允许输入数字
                 tb.KeyPress += (s, e) =>
                 {
                     if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
@@ -15111,34 +15418,45 @@ namespace IPTVLiveChecker
                 return p;
             }
 
+            // ------ 数字面板 ------
+            int step3PanelTop = step3Top + SY(28) + CONTROL_GAP;  // 标签高度28px + 控件间距12px
+            
             Panel pFrom = CreateNumPanel(pFromX, fromVal, out txtFrom);
+            pFrom.Location = new Point(pFromX, step3PanelTop);
             step3Panel.Controls.Add(pFrom);
+            
             Panel pTo = CreateNumPanel(pToX, toVal, out txtTo);
+            pTo.Location = new Point(pToX, step3PanelTop);
             step3Panel.Controls.Add(pTo);
 
+            // ------ 范围提示栏 ------
+            int step3HintTop = step3PanelTop + INPUT_HEIGHT + SY(24);  // 面板高度44px + 控件间距24px，增大间距
+            
             Panel pnlRangeHint = new Panel
             {
-                Location = new Point(CONTENT_PAD, 114),
-                Size = new Size(DLG_W - CONTENT_PAD * 2, 48),
+                Location = new Point(CONTENT_PAD, step3HintTop),
+                Size = new Size(DLG_W - CONTENT_PAD * 2, SY(72)),  // 提示栏高度72px
                 BackColor = theme.TipBg,
                 BorderStyle = BorderStyle.None
             };
+            pnlRangeHint.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, pnlRangeHint.Width, pnlRangeHint.Height), SX(6)));
             Label lblStep3RangeHint = new Label
             {
                 Text = "⚠ 最大生成范围为10000，范围过大可能导致检测时间过长",
-                Font = GetFont(10.5f),
+                Font = GetFont(9.5f),      // 提示字体9.5pt
                 ForeColor = theme.WarnColor,
-                Location = new Point(14, 8),
+                Location = new Point(SX(16), SY(10)),  // 提示栏内边距
                 AutoSize = false,
-                Size = new Size(DLG_W - CONTENT_PAD * 2 - 28, 34),
-                BackColor = theme.TipBg
+                Size = new Size(DLG_W - CONTENT_PAD * 2 - SX(32), SY(52)),
+                BackColor = theme.TipBg,
+                TextAlign = ContentAlignment.MiddleLeft
             };
             pnlRangeHint.Controls.Add(lblStep3RangeHint);
             pnlRangeHint.Paint += (s, pe) =>
             {
-                using (Pen p = new Pen(theme.WarnColor, 2.5f))
+                using (Pen p = new Pen(theme.WarnColor, 1.5f))
                 {
-                    pe.Graphics.DrawLine(p, 0, 0, 0, pnlRangeHint.Height);
+                    pe.Graphics.DrawPath(p, CreateRoundedRectPath(new Rectangle(0, 0, pnlRangeHint.Width - 1, pnlRangeHint.Height - 1), SX(6)));
                 }
             };
             step3Panel.Controls.Add(pnlRangeHint);
@@ -15148,12 +15466,12 @@ namespace IPTVLiveChecker
                 Text = "",
                 Font = URL_FONT,
                 ForeColor = GreenMain,
-                Location = new Point(CONTENT_PAD, 176),
+                Location = new Point(CONTENT_PAD, SY(176)),
                 AutoSize = false,
                 Size = new Size(DLG_W - CONTENT_PAD * 2, 60),
                 BackColor = theme.StatusTagBg,
                 Visible = false,
-                Padding = new Padding(10, 8, 10, 8)
+                Padding = new Padding(SX(10), SY(8), SX(10), SY(8))
             };
             step3Panel.Controls.Add(lblStep3Preview);
 
@@ -15176,7 +15494,7 @@ namespace IPTVLiveChecker
             pnlTextOptions.Controls.Add(lblTextOptTitle);
             clstTextCandidates = new CheckedListBox
             {
-                Location = new Point(0, 30),
+                Location = new Point(0, SY(30)),
                 Size = new Size(DLG_W - CONTENT_PAD * 2, 140),
                 Font = GetFont(10f),
                 BackColor = InputBg,
@@ -15187,7 +15505,7 @@ namespace IPTVLiveChecker
             pnlTextOptions.Controls.Add(clstTextCandidates);
             FlowLayoutPanel pnlTextBtns = new FlowLayoutPanel
             {
-                Location = new Point(0, 176),
+                Location = new Point(0, SY(176)),
                 Size = new Size(DLG_W - CONTENT_PAD * 2, 32),
                 BackColor = Color.Transparent,
                 FlowDirection = FlowDirection.LeftToRight,
@@ -15196,7 +15514,7 @@ namespace IPTVLiveChecker
             Button btnTextCheckAll = new Button
             {
                 Text = "全选",
-                Size = new Size(70, 30),
+                Size = new Size(SX(70), SY(30)),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = LightBtnBg,
                 ForeColor = DarkText,
@@ -15217,7 +15535,7 @@ namespace IPTVLiveChecker
             Button btnTextUncheckAll = new Button
             {
                 Text = "全不选",
-                Size = new Size(70, 30),
+                Size = new Size(SX(70), SY(30)),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = LightBtnBg,
                 ForeColor = DarkText,
@@ -15240,21 +15558,26 @@ namespace IPTVLiveChecker
             pnlTextOptions.Controls.Add(pnlTextBtns);
             step3Panel.Controls.Add(pnlTextOptions);
 
+            // ====== 底部按钮栏 ======
+            // [高度] 68px，包含按钮(38px) + 上下间距各15px
+            
             Panel sepBottom = new Panel { Dock = DockStyle.Bottom, Height = 1, BackColor = GrayLine };
 
             Panel bottomBar = new Panel
             {
                 Dock = DockStyle.Bottom,
-                Height = 80,
+                Height = SY(68),
                 BackColor = PanelBg,
                 Padding = new Padding(CONTENT_PAD, 0, CONTENT_PAD, 0)
             };
 
+            int btnBottomY = (bottomBar.Height - BTN_HEIGHT) / 2;  // 垂直居中
+            
             Button btnPrev = new Button
             {
                 Text = "← 上一步 (B)",
-                Size = new Size(150, BTN_HEIGHT),
-                Location = new Point(CONTENT_PAD, 18),
+                Size = new Size(SX(130), BTN_HEIGHT),
+                Location = new Point(CONTENT_PAD, btnBottomY),
                 Visible = false
             };
             StyleGreenButton(btnPrev);
@@ -15263,8 +15586,8 @@ namespace IPTVLiveChecker
             Button btnAction = new Button
             {
                 Text = "下一步 (N) →",
-                Size = new Size(150, BTN_HEIGHT),
-                Location = new Point(DLG_W - CONTENT_PAD - 150, 18)
+                Size = new Size(SX(130), BTN_HEIGHT),
+                Location = new Point(DLG_W - CONTENT_PAD - SX(130), btnBottomY)
             };
             StyleGreenButton(btnAction);
             bottomBar.Controls.Add(btnAction);
@@ -15488,7 +15811,7 @@ namespace IPTVLiveChecker
                         Text = "❌ 未找到可生成的字段，请检查URL格式（支持数字段如/123/、频道名如cctv1、分辨率如1080p等）",
                         ForeColor = RedHighlight,
                         Font = GetFont(10.5f),
-                        Location = new Point(0, 8),
+                        Location = new Point(0, SY(8)),
                         AutoSize = true,
                         BackColor = Color.Transparent
                     };
@@ -15512,8 +15835,8 @@ namespace IPTVLiveChecker
                     }
                 }
 
-                int itemY = 4;
-                int itemH = 34;
+                int itemY = 8;
+                int itemH = SY(44);  // 增大行高以容纳所有控件
                 int radioSize = 18;
                 Color rowBgNormal = PanelBg;
                 Color radioBorderColor = GrayBorder;
@@ -15689,8 +16012,8 @@ namespace IPTVLiveChecker
                         Dock = DockStyle.Fill,
                         BackColor = Color.Transparent,
                         WrapContents = false,
-                        Margin = new Padding(0),
-                        Padding = new Padding(0),
+                        Margin = new Padding(4),
+                        Padding = new Padding(4, 0, 4, 0),
                         FlowDirection = FlowDirection.LeftToRight
                     };
 
@@ -15703,7 +16026,7 @@ namespace IPTVLiveChecker
                         BackColor = Color.Transparent,
                         Cursor = Cursors.Hand,
                         Tag = i,
-                        Margin = new Padding(0, (itemH - 22) / 2, 0, 0)
+                        Margin = new Padding(0)
                     };
                     rowFlow.Controls.Add(lblBefore);
 
@@ -15713,7 +16036,7 @@ namespace IPTVLiveChecker
                         BackColor = Color.Transparent,
                         Tag = i,
                         Cursor = Cursors.Hand,
-                        Margin = new Padding(4, (itemH - radioSize) / 2, 4, 0)
+                        Margin = new Padding(4, 0, 4, 0)
                     };
                     radioCircle.Paint += (s, pe) =>
                     {
@@ -15751,7 +16074,7 @@ namespace IPTVLiveChecker
                             AutoSize = true,
                             BackColor = Color.Transparent,
                             Visible = false,
-                            Margin = new Padding(0, (itemH - 22) / 2, 0, 0)
+                            Margin = new Padding(0)
                         };
                         rowFlow.Controls.Add(lblPre);
                         segPrefixLbl[i] = lblPre;
@@ -15765,7 +16088,7 @@ namespace IPTVLiveChecker
                             BackColor = Color.Transparent,
                             Cursor = Cursors.Hand,
                             Tag = i,
-                            Margin = new Padding(0, (itemH - 22) / 2, 0, 0)
+                            Margin = new Padding(0)
                         };
                         rowFlow.Controls.Add(lblBL);
                         segBracketL[i] = lblBL;
@@ -15779,7 +16102,7 @@ namespace IPTVLiveChecker
                             BackColor = Color.Transparent,
                             Cursor = Cursors.Hand,
                             Tag = i,
-                            Margin = new Padding(0, (itemH - 22) / 2, 0, 0)
+                            Margin = new Padding(0)
                         };
                         rowFlow.Controls.Add(lblNum);
                         segSelTextLbl[i] = lblNum;
@@ -15793,7 +16116,7 @@ namespace IPTVLiveChecker
                             BackColor = Color.Transparent,
                             Cursor = Cursors.Hand,
                             Tag = i,
-                            Margin = new Padding(0, (itemH - 22) / 2, 0, 0)
+                            Margin = new Padding(0)
                         };
                         rowFlow.Controls.Add(lblBR);
                         segBracketR[i] = lblBR;
@@ -15806,7 +16129,7 @@ namespace IPTVLiveChecker
                             AutoSize = true,
                             BackColor = Color.Transparent,
                             Visible = false,
-                            Margin = new Padding(0, (itemH - 22) / 2, 0, 0)
+                            Margin = new Padding(0)
                         };
                         rowFlow.Controls.Add(lblSuf);
                         segSuffixLbl[i] = lblSuf;
@@ -15827,7 +16150,7 @@ namespace IPTVLiveChecker
                             BackColor = Color.Transparent,
                             Cursor = Cursors.Hand,
                             Tag = i,
-                            Margin = new Padding(0, (itemH - 22) / 2, 0, 0)
+                            Margin = new Padding(0)
                         };
                         rowFlow.Controls.Add(lblText);
                         segSelTextLbl[i] = lblText;
@@ -15840,7 +16163,7 @@ namespace IPTVLiveChecker
                         ForeColor = DarkText,
                         AutoSize = true,
                         BackColor = Color.Transparent,
-                        Margin = new Padding(0, (itemH - 22) / 2, 0, 0)
+                        Margin = new Padding(0)
                     };
                     rowFlow.Controls.Add(lblAfter);
 
@@ -15857,23 +16180,25 @@ namespace IPTVLiveChecker
                     rowPanel.Controls.Add(rowFlow);
                     rowPanels[i] = rowPanel;
                     segListContainer.Controls.Add(rowPanel);
-                    itemY += itemH + 2;
+                    itemY += itemH + CONTROL_GAP;  // 使用标准控件间距
                 }
 
                 adjPanel = new Panel
                 {
-                    Location = new Point(0, itemY + 4),
+                    Location = new Point(0, itemY),
                     Width = segListContainer.Width - 20,
-                    Height = 38,
+                    Height = SY(50),
                     BackColor = Color.Transparent,
                     Visible = false
                 };
 
-                btnLeftExpand = new Button { Text = "◀ {", Size = new Size(50, 30), Location = new Point(0, 2), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(8.5f), Cursor = Cursors.Hand };
-                btnLeftShrink = new Button { Text = "{ ▶", Size = new Size(50, 30), Location = new Point(54, 2), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(8.5f), Cursor = Cursors.Hand };
-                btnRightShrink = new Button { Text = "} ◀", Size = new Size(50, 30), Location = new Point(108, 2), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(8.5f), Cursor = Cursors.Hand };
-                btnRightExpand = new Button { Text = "} ▶", Size = new Size(50, 30), Location = new Point(162, 2), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(8.5f), Cursor = Cursors.Hand };
-                btnSelectAll = new Button { Text = "全选本段", Size = new Size(72, 30), Location = new Point(220, 2), FlatStyle = FlatStyle.Flat, BackColor = bracketActiveColor, ForeColor = Color.White, Font = GetFont(8.5f), Cursor = Cursors.Hand };
+                int btnH = SY(34);
+                int btnY = (SY(50) - btnH) / 2;
+                btnLeftExpand = new Button { Text = "◀ {", Size = new Size(SX(54), btnH), Location = new Point(0, btnY), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(9f), Cursor = Cursors.Hand };
+                btnLeftShrink = new Button { Text = "{ ▶", Size = new Size(SX(54), btnH), Location = new Point(SX(58), btnY), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(9f), Cursor = Cursors.Hand };
+                btnRightShrink = new Button { Text = "} ◀", Size = new Size(SX(54), btnH), Location = new Point(SX(116), btnY), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(9f), Cursor = Cursors.Hand };
+                btnRightExpand = new Button { Text = "} ▶", Size = new Size(SX(54), btnH), Location = new Point(SX(174), btnY), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(9f), Cursor = Cursors.Hand };
+                btnSelectAll = new Button { Text = "全选本段", Size = new Size(SX(80), btnH), Location = new Point(SX(236), btnY), FlatStyle = FlatStyle.Flat, BackColor = bracketActiveColor, ForeColor = Color.White, Font = GetFont(9f), Cursor = Cursors.Hand };
 
                 void StyleBtn(Button b)
                 {
@@ -15953,11 +16278,11 @@ namespace IPTVLiveChecker
                 lblSelInfo = new Label
                 {
                     Text = "",
-                    Font = GetFont(9f),
+                    Font = GetFont(8.5f),
                     ForeColor = theme.TextSecondary,
                     AutoSize = false,
-                    Location = new Point(300, 6),
-                    Size = new Size(adjPanel.Width - 300, 24),
+                    Location = new Point(SX(320), (SY(50) - SY(22)) / 2),
+                    Size = new Size(adjPanel.Width - SX(320), SY(22)),
                     BackColor = Color.Transparent
                 };
                 adjPanel.Controls.Add(lblSelInfo);
@@ -15968,16 +16293,17 @@ namespace IPTVLiveChecker
                 Label lblHint = new Label
                 {
                     Text = "💡 点击单选按钮选择要生成的字段，绿色●为当前选中。数字段可用 ◀{ {▶ }◀ }▶ 按钮调整大括号框选部分位数（长数字可选子范围），含前导零将保持补零。频道/分辨率段将提供候选列表供选择。",
-                    Font = GetFont(9f),
+                    Font = GetFont(8.5f),
                     ForeColor = theme.SuccessColor,
-                    Location = new Point(0, itemY + 6),
+                    Location = new Point(0, itemY + SY(20)),
                     AutoSize = false,
-                    Size = new Size(segListContainer.Width - 20, 56),
+                    Size = new Size(segListContainer.Width - 20, SY(56)),
                     BackColor = theme.StatusTagBg,
-                    Padding = new Padding(8, 4, 8, 4)
+                    Padding = new Padding(SX(10), SY(8), SX(10), SY(8)),
+                    TextAlign = ContentAlignment.TopLeft
                 };
                 segListContainer.Controls.Add(lblHint);
-                itemY = lblHint.Bottom + 6;
+                itemY = lblHint.Bottom + CONTROL_GAP;  // 使用标准控件间距
 
                 CheckBox chkMultiRes = new CheckBox
                 {
@@ -16989,7 +17315,7 @@ else { exit 1 }
                 MinimizeBox = false,
                 ShowInTaskbar = false,
                 BackColor = PanelBg,
-                ClientSize = new Size(600, 420),
+                ClientSize = new Size(SX(600), SY(420)),
                 KeyPreview = true
             };
             SetFormDarkModeTitleBar(dlg, isDark);
@@ -17013,8 +17339,8 @@ else { exit 1 }
                 Font = GetFont(14f),
                 ForeColor = TextPrimary,
                 BackColor = PanelBg,
-                Location = new Point(30, 30),
-                Size = new Size(540, 40),
+                Location = new Point(SX(30), SY(30)),
+                Size = new Size(SX(540), SY(40)),
                 Checked = true,
                 TextAlign = ContentAlignment.MiddleLeft,
                 Cursor = Cursors.Hand
@@ -17026,8 +17352,8 @@ else { exit 1 }
                 Text = "使用系统默认浏览器打开网络空间搜索引擎",
                 Font = GetFont(12f),
                 ForeColor = TextSecondary,
-                Location = new Point(30, 78),
-                Size = new Size(540, 32),
+                Location = new Point(SX(30), SY(78)),
+                Size = new Size(SX(540), SY(32)),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Cursor = Cursors.Hand
             };
@@ -17039,8 +17365,8 @@ else { exit 1 }
                 Font = GetFont(14f),
                 ForeColor = TextPrimary,
                 BackColor = PanelBg,
-                Location = new Point(30, 120),
-                Size = new Size(540, 40),
+                Location = new Point(SX(30), SY(120)),
+                Size = new Size(SX(540), SY(40)),
                 TextAlign = ContentAlignment.MiddleLeft,
                 Cursor = Cursors.Hand
             };
@@ -17051,8 +17377,8 @@ else { exit 1 }
                 Text = "在应用内窗口中使用Edge内核显示搜索页面",
                 Font = GetFont(12f),
                 ForeColor = TextSecondary,
-                Location = new Point(30, 168),
-                Size = new Size(540, 32),
+                Location = new Point(SX(30), SY(168)),
+                Size = new Size(SX(540), SY(32)),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Cursor = Cursors.Hand
             };
@@ -17069,8 +17395,8 @@ else { exit 1 }
                 Text = "",
                 Font = GetFont(12f),
                 ForeColor = isDark ? Color.FromArgb(100, 255, 100) : Color.Green,
-                Location = new Point(30, 210),
-                Size = new Size(540, 36),
+                Location = new Point(SX(30), SY(210)),
+                Size = new Size(SX(540), SY(36)),
                 AutoSize = false
             };
             dlg.Controls.Add(lblStatus);
@@ -17091,13 +17417,13 @@ else { exit 1 }
             Button btnOK = new Button
             {
                 Text = "确定",
-                Size = new Size(120, 36),
+                Size = new Size(SX(120), SY(36)),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = PrimaryColor,
                 ForeColor = Color.White,
                 Font = GetFont(10f, FontStyle.Bold),
                 Cursor = Cursors.Hand,
-                Location = new Point(btnSpacing, 340)
+                Location = new Point(btnSpacing, SY(340))
             };
             btnOK.FlatAppearance.BorderSize = 0;
             StyleRoundButton(btnOK, 6, null, 0, "dynamic");
@@ -17106,13 +17432,13 @@ else { exit 1 }
             Button btnCancel = new Button
             {
                 Text = "取消",
-                Size = new Size(120, 36),
+                Size = new Size(SX(120), SY(36)),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = isDark ? Color.FromArgb(30, 50, 80) : Color.White,
                 ForeColor = TextPrimary,
                 Font = GetFont(10f, FontStyle.Bold),
                 Cursor = Cursors.Hand,
-                Location = new Point(btnSpacing + 120 + btnSpacing, 340)
+                Location = new Point(btnSpacing + SX(120) + btnSpacing, SY(340))
             };
             btnCancel.FlatAppearance.BorderSize = 0;
             btnCancel.FlatAppearance.BorderColor = BorderColor;
@@ -17256,7 +17582,7 @@ else { exit 1 }
                 MaximizeBox = false,                       // 禁用最大化按钮
                 MinimizeBox = false,                       // 禁用最小化按钮
                 ShowInTaskbar = false,                     // 不在任务栏显示
-                ClientSize = new Size(400, 120),            // 窗口大小（宽400px，高120px）
+                ClientSize = new Size(SX(400), SY(120)),    // 窗口大小（宽400px，高120px，DPI适配）
                 BackColor = progressBg                     // 窗口背景色
             };
             SetFormDarkModeTitleBar(progressForm, isDark);  // 应用深色标题栏
@@ -17268,8 +17594,8 @@ else { exit 1 }
                 Text = message,
                 Font = GetFont(10f),
                 ForeColor = progressText,
-                Location = new Point(20, 40),
-                Size = new Size(360, 24)
+                Location = new Point(SX(20), SY(40)),
+                Size = new Size(SX(360), SY(24))
             };
             progressForm.Controls.Add(lblProgress);
 
@@ -17308,7 +17634,7 @@ else { exit 1 }
                 MinimizeBox = true,                   // 启用最小化按钮
                 ShowInTaskbar = true,                 // 在任务栏显示
                 BackColor = PanelBg,                  // 窗口背景色
-                ClientSize = new Size(900, 550),      // 窗口大小（900x550px）
+                ClientSize = new Size(SX(900), SY(550)),  // 窗口大小（900x550px，DPI适配）
                 KeyPreview = true                     // 预览键盘事件
             };
             SetFormDarkModeTitleBar(dlg, isDark);     // 应用深色标题栏
@@ -17333,7 +17659,7 @@ else { exit 1 }
             Panel topBar = new Panel
             {
                 Dock = DockStyle.Top,
-                Height = 60,
+                Height = SY(60),
                 BackColor = SurfaceBg
             };
             dlg.Controls.Add(topBar);
@@ -17344,7 +17670,7 @@ else { exit 1 }
             {
                 Dock = DockStyle.Fill,
                 BackColor = PanelBg,
-                Padding = new Padding(20)
+                Padding = new Padding(SX(20))
             };
             dlg.Controls.Add(mainPanel);
 
@@ -17355,8 +17681,8 @@ else { exit 1 }
                 Text = "规则搜索",
                 Font = GetFont(12f, FontStyle.Bold),  // 字体（12pt Bold * DPI缩放）
                 ForeColor = TextPrimary,
-                Location = new Point(16, 0),
-                Size = new Size(200, 48),
+                Location = new Point(SX(16), 0),
+                Size = new Size(SX(200), SY(48)),
                 TextAlign = ContentAlignment.MiddleLeft,
                 BackColor = Color.Transparent
             };
@@ -17367,13 +17693,13 @@ else { exit 1 }
             ComboBox cboSearchRule = new ComboBox
             {
                 DropDownStyle = ComboBoxStyle.DropDownList, // 只读下拉列表
-                Size = new Size(120, 32),
+                Size = new Size(SX(120), SY(32)),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = isDark ? Color.FromArgb(30, 50, 80) : Color.White, // 背景色
                 ForeColor = TextPrimary,
                 Font = GetFont(10f),                        // 字体（10pt * DPI缩放）
                 Cursor = Cursors.Hand,
-                Location = new Point(220, 14)
+                Location = new Point(SX(220), SY(14))
             };
             cboSearchRule.Items.AddRange(new object[] { "智慧桌面", "智慧光迅", "华视美达" });
             cboSearchRule.SelectedIndex = 0;               // 默认选中第一个选项
@@ -17414,13 +17740,13 @@ else { exit 1 }
             Button btnSearch = new Button
             {
                 Text = "打开搜索",
-                Size = new Size(100, 32),
+                Size = new Size(SX(100), SY(32)),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = PrimaryColor,
                 ForeColor = Color.White,
                 Font = GetFont(10f, FontStyle.Bold),
                 Cursor = Cursors.Hand,
-                Location = new Point(780, 14),
+                Location = new Point(SX(780), SY(14)),
                 Visible = showSearchButton
             };
             btnSearch.FlatAppearance.BorderSize = 0;
@@ -17450,15 +17776,15 @@ else { exit 1 }
             {
                 Panel p = (Panel)s;
                 using (Pen pen = new Pen(BorderColor))
-                    e.Graphics.DrawLine(pen, 0, 47, p.Width, 47); // 在Y=47处绘制分隔线
+                    e.Graphics.DrawLine(pen, 0, SY(47), p.Width, SY(47)); // 在Y=47处绘制分隔线（DPI适配）
             };
 
             // ========== 搜索引擎列表面板 ==========
             // [位置] (20, 80) [大小] 860x420 [背景] 表面背景色 [边框] 固定单边框
             Panel listPanel = new Panel
             {
-                Location = new Point(20, 80),
-                Size = new Size(860, 420),
+                Location = new Point(SX(20), SY(80)),
+                Size = new Size(SX(860), SY(420)),
                 BackColor = SurfaceBg,
                 BorderStyle = BorderStyle.FixedSingle
             };
@@ -17475,8 +17801,8 @@ else { exit 1 }
                 // 列表项容器（带悬停高亮）
                 Panel itemPanel = new Panel
                 {
-                    Location = new Point(10, y),
-                    Size = new Size(840, 55),
+                    Location = new Point(SX(10), y),
+                    Size = new Size(SX(840), SY(55)),
                     BackColor = Color.Transparent
                 };
                 listPanel.Controls.Add(itemPanel);
@@ -17495,8 +17821,8 @@ else { exit 1 }
                 RadioButton rbEngine = new RadioButton
                 {
                     Text = engine.Key,
-                    Size = new Size(100, 36),
-                    Location = new Point(0, 7),
+                    Size = new Size(SX(100), SY(36)),
+                    Location = new Point(0, SY(7)),
                     FlatStyle = FlatStyle.Flat,
                     BackColor = Color.Transparent,
                     ForeColor = isDark ? Color.White : Color.FromArgb(51, 51, 51),
@@ -17517,8 +17843,8 @@ else { exit 1 }
                 Label lblUrl = new Label
                 {
                     Text = engine.Value,
-                    Size = new Size(630, 36),
-                    Location = new Point(130, 10),
+                    Size = new Size(SX(630), SY(36)),
+                    Location = new Point(SX(130), SY(10)),
                     Font = GetFont(10f),              // 字体（10pt * DPI缩放）
                     ForeColor = TextSecondary,       // 次要文字色（灰色）
                     TextAlign = ContentAlignment.MiddleLeft
@@ -17529,8 +17855,8 @@ else { exit 1 }
                 Button btnGo = new Button
                 {
                     Text = "访问",
-                    Size = new Size(70, 36),
-                    Location = new Point(760, 10),
+                    Size = new Size(SX(70), SY(36)),
+                    Location = new Point(SX(760), SY(10)),
                     FlatStyle = FlatStyle.Flat,
                     BackColor = PrimaryColor,         // 主色调背景
                     ForeColor = Color.White,          // 白色文字
@@ -19529,7 +19855,7 @@ else { exit 1 }
                     Text = "频道：0 | 状态：就绪",
                     Font = GetFont(SF(8f)),
                     ForeColor = labelColor,
-                    Location = new Point(rightPanel.ClientSize.Width - SX(180), btnStartY + 4),
+                    Location = new Point(rightPanel.ClientSize.Width - SX(220), btnStartY + 24),
                     AutoSize = true
                 };
                 rightPanel.Controls.Add(lblStats);
