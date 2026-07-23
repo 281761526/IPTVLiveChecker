@@ -1,29 +1,28 @@
 ﻿{
     "appName":  "IPTV直播源检测工具",
     "appId":  "IPTVLiveChecker",
-    "currentLocalVersion":  "Beta 1.0",
-    "latestVersion":  "Beta 1.0",
-    "versionCode":  101,
+    "currentLocalVersion":  "v1.0-beta",
+    "latestVersion":  "v1.0-beta",
+    "versionCode":  100,
     "updateType":  "beta",
-    "updateTime":  "2026-07-21",
+    "updateTime":  "2026-07-23",
     "isForceUpdate":  true,
-    "downloadUrl":  "https://github.com/281761526/IPTVLiveChecker/releases/download/Beta1.0/IPTVLiveChecker_Beta1.0.exe",
+    "downloadUrl":  "https://github.com/281761526/IPTVLiveChecker/releases/download/v1.0-beta/IPTVLiveChecker_v1.0-beta.exe",
     "githubRepo":  "https://github.com/281761526/IPTVLiveChecker",
     "changelog":  [
-                      "Beta 1.1 测试更新",
-                      "- 新增免责声明",
-                      "- 修复CDN链接",
-                      "- 测试自动更新功能"
+                      "v1.0-beta 初始测试版",
+                      "- 支持三平台IPTV直播源解析",
+                      "- 内置FFmpeg运行库",
+                      "- 自动更新功能"
                   ],
-    "updateNotice":  "当前为Beta测试版，功能持续迭代，程序Bug可通过邮箱反馈",
+    "updateNotice":  "当前为v1.0-beta测试版，功能持续迭代，程序Bug可通过邮箱反馈",
     "disclaimerUrl":  "https://github.com/281761526/IPTVLiveChecker/blob/master/DISCLAIMER.md",
     "feedbackEmail":  "xiaomiren0510@gmail.com",
     "developer":  "半步沧桑",
-    "md5Checksum": "98E9D1108980C9DE4C3F8E92915F5F5B",
+    "md5Checksum":  "B5622E623B94EBBFE428EAA0E88F0F23",
     "supportOS":  [
                       "Windows 10",
                       "Windows 11"
                   ],
     "dependence":  "FFmpeg运行库（程序内置，无需手动安装）"
 }
-
