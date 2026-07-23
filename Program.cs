@@ -18,7 +18,7 @@ namespace IPTVLiveChecker
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            const string updateUrl = "https://cdn.jsdelivr.net/gh/281761526/IPTVLiveChecker@ea0c785/update.json";
+            const string updateUrl = "https://raw.githubusercontent.com/281761526/IPTVLiveChecker/master/update.json";
             UpdateConfig config = FetchUpdateConfig(updateUrl);
             if (config == null)
             {
