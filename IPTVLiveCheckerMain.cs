@@ -5753,7 +5753,7 @@ namespace IPTVLiveChecker
         /// <summary>
         /// 调用独立Updater升级器更新
         /// </summary>
-        private void StartUpdater(string downloadUrl)
+        private void StartUpdater(string downloadUrl, string md5 = "")
         {
             string mainExe = Application.ExecutablePath;
             string updaterPath = Path.Combine(Application.StartupPath, "Updater.exe");
@@ -5766,7 +5766,8 @@ namespace IPTVLiveChecker
 
             try
             {
-                var proc = new System.Diagnostics.ProcessStartInfo(updaterPath, $"\"{mainExe}\" \"{downloadUrl}\"");
+                string args = $"\"{mainExe}\" \"{downloadUrl}\" \"{md5}\"";
+                var proc = new System.Diagnostics.ProcessStartInfo(updaterPath, args);
                 System.Diagnostics.Process.Start(proc);
                 Application.Exit();
             }
@@ -5789,7 +5790,8 @@ namespace IPTVLiveChecker
                 using (var http = new System.Net.Http.HttpClient())
                 {
                     http.Timeout = TimeSpan.FromSeconds(10);
-                    string json = await http.GetStringAsync(updateUrl);
+                    http.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+                    string json = await http.GetStringAsync(updateUrl).ConfigureAwait(true);
 
                     var serializer = new JavaScriptSerializer();
                     var jsonObj = serializer.Deserialize<Dictionary<string, object>>(json);
@@ -5800,34 +5802,45 @@ namespace IPTVLiveChecker
                         return;
                     }
 
+                    int localVersionCode = 100;
                     string latestVersion = jsonObj.ContainsKey("latestVersion") ? jsonObj["latestVersion"]?.ToString() ?? "" : "";
                     string downloadUrl = jsonObj.ContainsKey("downloadUrl") ? jsonObj["downloadUrl"]?.ToString() ?? "" : "";
+                    string md5Checksum = jsonObj.ContainsKey("md5Checksum") ? jsonObj["md5Checksum"]?.ToString() ?? "" : "";
+                    int remoteVersionCode = 0;
+                    if (jsonObj.ContainsKey("versionCode"))
+                        int.TryParse(jsonObj["versionCode"]?.ToString(), out remoteVersionCode);
+
                     bool isForceUpdate = false;
                     if (jsonObj.ContainsKey("isForceUpdate"))
-                    {
                         bool.TryParse(jsonObj["isForceUpdate"]?.ToString(), out isForceUpdate);
-                    }
 
                     string changelog = "";
-                    if (jsonObj.ContainsKey("changelog") && jsonObj["changelog"] is List<object> logList)
+                    if (jsonObj.ContainsKey("changelog") && jsonObj["changelog"] is System.Collections.ArrayList logList)
                     {
                         foreach (var item in logList)
-                        {
-                            changelog += "? " + item?.ToString() + "\n";
-                        }
+                            changelog += "\u2022 " + item?.ToString() + "\n";
                     }
 
-                    if (!string.IsNullOrEmpty(latestVersion) && latestVersion != currentVersion)
+                    bool hasUpdate = remoteVersionCode > localVersionCode;
+                    if (hasUpdate)
                     {
+                        string updateNotice = jsonObj.ContainsKey("updateNotice") ? jsonObj["updateNotice"]?.ToString() ?? "" : "";
                         string msg = $"发现新版本：{latestVersion}\n\n" +
                                      $"当前版本：{currentVersion}\n\n" +
                                      $"更新内容：\n{changelog}\n" +
-                                     $"是否立即更新？";
+                                     (string.IsNullOrEmpty(updateNotice) ? "" : $"说明：{updateNotice}\n\n") +
+                                     (isForceUpdate ? "此更新为强制更新，必须升级后才能继续使用。" : "是否立即更新？");
 
-                        var result = DarkMessageBox.Show(this, msg, "发现新版本", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                        if (result == DialogResult.Yes)
+                        if (isForceUpdate)
                         {
-                            StartUpdater(downloadUrl);
+                            DarkMessageBox.Show(this, msg, "强制更新", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            StartUpdater(downloadUrl, md5Checksum);
+                        }
+                        else
+                        {
+                            var result = DarkMessageBox.Show(this, msg, "发现新版本", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                            if (result == DialogResult.Yes)
+                                StartUpdater(downloadUrl, md5Checksum);
                         }
                     }
                     else

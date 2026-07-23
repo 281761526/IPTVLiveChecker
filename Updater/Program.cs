@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
 using System.Net.Http;
 using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Updater
@@ -17,120 +18,190 @@ namespace Updater
 
             if (args.Length < 2)
             {
-                MessageBox.Show("参数不足，无法启动更新程序。", "更新失败", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Application.Exit();
+                MessageBox.Show("参数不足，无法启动更新程序。\n用法: Updater.exe <主程序路径> <下载地址> [MD5]", "更新失败",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             string mainExePath = args[0];
             string downloadUrl = args[1];
             string expectedMd5 = args.Length >= 3 ? args[2] : "";
-            string tempFile = Path.Combine(Path.GetTempPath(), "ip_update_temp.exe");
 
             try
             {
-                // 第一步：下载新版本
+                Task.Run(async () => await DoUpdate(mainExePath, downloadUrl, expectedMd5)).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("更新失败：" + ex.Message, "更新错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        static async Task DoUpdate(string mainExePath, string downloadUrl, string expectedMd5)
+        {
+            string appDir = Path.GetDirectoryName(mainExePath) ?? ".";
+            string tempDownload = Path.Combine(Path.GetTempPath(), "iptv_update_" + Guid.NewGuid().ToString("N").Substring(0, 8) + ".tmp");
+            string tempExtract = Path.Combine(Path.GetTempPath(), "iptv_extract_" + Guid.NewGuid().ToString("N").Substring(0, 8));
+            string backupDir = Path.Combine(Path.GetTempPath(), "iptv_backup_" + Guid.NewGuid().ToString("N").Substring(0, 8));
+            bool success = false;
+
+            try
+            {
+                // 第一步：下载
                 byte[] data;
                 using (var http = new HttpClient())
                 {
                     http.Timeout = TimeSpan.FromMinutes(10);
-                    data = http.GetByteArrayAsync(downloadUrl).Result;
+                    data = await http.GetByteArrayAsync(downloadUrl).ConfigureAwait(false);
                 }
-                File.WriteAllBytes(tempFile, data);
+                File.WriteAllBytes(tempDownload, data);
 
                 // 第二步：MD5 校验
                 if (!string.IsNullOrEmpty(expectedMd5))
                 {
                     string actualMd5;
                     using (var md5 = MD5.Create())
-                    using (var stream = File.OpenRead(tempFile))
+                    using (var stream = File.OpenRead(tempDownload))
                     {
-                        byte[] hash = md5.ComputeHash(stream);
-                        actualMd5 = BitConverter.ToString(hash).Replace("-", "").ToUpperInvariant();
+                        actualMd5 = BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToUpperInvariant();
                     }
 
                     if (!string.Equals(actualMd5, expectedMd5, StringComparison.OrdinalIgnoreCase))
                     {
-                        File.Delete(tempFile);
+                        File.Delete(tempDownload);
                         MessageBox.Show("下载文件校验失败（MD5不匹配），更新已中止。\n\n预期: " + expectedMd5 + "\n实际: " + actualMd5,
                             "安全警告", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Application.Exit();
                         return;
                     }
                 }
 
-                // 第三步：数字签名校验
-                if (!VerifyDigitalSignature(tempFile))
+                // 第三步：判断文件类型并提取
+                bool isZip = IsZipFile(tempDownload);
+                if (isZip)
                 {
-                    File.Delete(tempFile);
-                    MessageBox.Show("下载文件未通过数字签名验证，可能是伪造或被篡改的程序，更新已中止。",
-                        "安全警告", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Application.Exit();
-                    return;
+                    Directory.CreateDirectory(tempExtract);
+                    ZipFile.ExtractToDirectory(tempDownload, tempExtract);
                 }
 
-                // 第四步：替换主程序
-                System.Threading.Thread.Sleep(2000);
+                // 第四步：等待主程序退出
+                string processName = Path.GetFileNameWithoutExtension(mainExePath);
+                await WaitForProcessExit(processName, 15000);
 
-                // 备份旧版本
-                string backupPath = mainExePath + ".bak";
-                if (File.Exists(backupPath))
-                    File.Delete(backupPath);
-                File.Move(mainExePath, backupPath);
+                // 第五步：备份现有文件
+                Directory.CreateDirectory(backupDir);
+                if (Directory.Exists(appDir))
+                {
+                    foreach (var file in Directory.GetFiles(appDir, "*", SearchOption.AllDirectories))
+                    {
+                        string relPath = GetRelativePath(appDir, file);
+                        string backupPath = Path.Combine(backupDir, relPath);
+                        Directory.CreateDirectory(Path.GetDirectoryName(backupPath) ?? backupDir);
+                        File.Copy(file, backupPath, true);
+                    }
+                }
 
-                File.Copy(tempFile, mainExePath, true);
-                File.Delete(tempFile);
-                // 删除旧备份
-                try { File.Delete(backupPath); } catch { }
+                // 第六步：安装新文件
+                if (isZip)
+                {
+                    // 删除旧文件（保留 backup）
+                    foreach (var file in Directory.GetFiles(appDir, "*", SearchOption.AllDirectories))
+                    {
+                        try { File.Delete(file); } catch { }
+                    }
 
+                    // 从解压目录复制所有文件
+                    foreach (var file in Directory.GetFiles(tempExtract, "*", SearchOption.AllDirectories))
+                    {
+                        string relPath = GetRelativePath(tempExtract, file);
+                        string destPath = Path.Combine(appDir, relPath);
+                        Directory.CreateDirectory(Path.GetDirectoryName(destPath) ?? appDir);
+                        File.Copy(file, destPath, true);
+                    }
+                }
+                else
+                {
+                    // 单个 EXE：直接覆盖
+                    string backupFile = mainExePath + ".bak";
+                    if (File.Exists(backupFile)) File.Delete(backupFile);
+                    File.Move(mainExePath, backupFile);
+                    File.Copy(tempDownload, mainExePath, true);
+                    try { File.Delete(backupFile); } catch { }
+                }
+
+                success = true;
+
+                // 第七步：重启主程序
                 System.Diagnostics.Process.Start(mainExePath);
             }
             catch (Exception ex)
             {
                 // 恢复备份
-                string backupPath = mainExePath + ".bak";
-                if (File.Exists(backupPath))
+                if (Directory.Exists(backupDir))
                 {
                     try
                     {
-                        if (File.Exists(mainExePath))
-                            File.Delete(mainExePath);
-                        File.Move(backupPath, mainExePath);
+                        foreach (var file in Directory.GetFiles(backupDir, "*", SearchOption.AllDirectories))
+                        {
+                            string relPath = GetRelativePath(backupDir, file);
+                            string destPath = Path.Combine(appDir, relPath);
+                            Directory.CreateDirectory(Path.GetDirectoryName(destPath) ?? appDir);
+                            File.Copy(file, destPath, true);
+                        }
                     }
                     catch { }
                 }
-                try { File.Delete(tempFile); } catch { }
-                MessageBox.Show("更新失败：" + ex.Message, "更新错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                throw new Exception("更新失败: " + ex.Message, ex);
             }
-            Application.Exit();
+            finally
+            {
+                // 清理临时文件
+                try { File.Delete(tempDownload); } catch { }
+                try { if (Directory.Exists(tempExtract)) Directory.Delete(tempExtract, true); } catch { }
+                if (success)
+                {
+                    try { if (Directory.Exists(backupDir)) Directory.Delete(backupDir, true); } catch { }
+                }
+            }
         }
 
-        /// <summary>
-        /// 验证文件的数字签名（Authenticode）
-        /// </summary>
-        private static bool VerifyDigitalSignature(string filePath)
+        static bool IsZipFile(string path)
         {
             try
             {
-                X509Certificate2 cert = new X509Certificate2(filePath);
-                // 检查证书是否有效
-                using (var chain = new X509Chain())
+                using (var fs = File.OpenRead(path))
                 {
-                    chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
-                    chain.ChainPolicy.VerificationFlags = X509VerificationFlags.IgnoreNotTimeValid;
-                    bool isValid = chain.Build(cert);
-
-                    // 即使证书过期或自签名，只要链构建成功就允许（开发阶段宽松策略）
-                    // 正式发布时应收紧为 isValid == true
-                    return isValid || cert != null;
+                    byte[] header = new byte[4];
+                    if (fs.Read(header, 0, 4) < 4) return false;
+                    // ZIP magic: PK\x03\x04
+                    return header[0] == 0x50 && header[1] == 0x4B && header[2] == 0x03 && header[3] == 0x04;
                 }
             }
-            catch
+            catch { return false; }
+        }
+
+        static async Task WaitForProcessExit(string processName, int timeoutMs)
+        {
+            int waited = 0;
+            int interval = 500;
+            while (waited < timeoutMs)
             {
-                // 无数字签名（开发版本常见情况）
-                // 如果 MD5 校验已通过，允许继续；如未提供 MD5 则拒绝
-                return false;
+                var procs = System.Diagnostics.Process.GetProcessesByName(processName);
+                if (procs.Length == 0) return;
+                await Task.Delay(interval);
+                waited += interval;
             }
+        }
+
+        static string GetRelativePath(string basePath, string fullPath)
+        {
+            basePath = basePath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (!basePath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                basePath += Path.DirectorySeparatorChar;
+            var uri = new Uri(basePath);
+            var fileUri = new Uri(fullPath);
+            return Uri.UnescapeDataString(uri.MakeRelativeUri(fileUri).ToString())
+                .Replace('/', Path.DirectorySeparatorChar);
         }
     }
 }
