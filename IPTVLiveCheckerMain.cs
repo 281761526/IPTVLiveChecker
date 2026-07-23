@@ -5782,7 +5782,7 @@ namespace IPTVLiveChecker
         /// </summary>
         private async void CheckForUpdate()
         {
-            string updateUrl = "https://cdn.jsdelivr.net/gh/281761526/IPTVLiveChecker@master/update.json";
+            string updateUrl = "https://cdn.jsdelivr.net/gh/281761526/IPTVLiveChecker@ea0c785/update.json";
             string currentVersion = "v1.0-beta";
 
             try
