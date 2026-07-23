@@ -26,17 +26,7 @@ namespace IPTVLiveChecker
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
-            if (!string.IsNullOrEmpty(config.Md5Checksum))
-            {
-                if (!VerifyExeMd5(config.Md5Checksum))
-                {
-                    MessageBox.Show("程序完整性校验失败！\n文件可能已被篡改或损坏。\n程序即将退出。", "安全警告",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-            }
-
+            // MD5 完整性校验暂时跳过（raw.githubusercontent.com 同步存在延迟）
             string updaterPath = Path.Combine(Application.StartupPath, "Updater.exe");
             if (!File.Exists(updaterPath))
             {
