@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+﻿﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -5786,7 +5786,7 @@ namespace IPTVLiveChecker
         private async void CheckForUpdate()
         {
             string updateUrl = "https://raw.githubusercontent.com/281761526/IPTVLiveChecker/master/update.json";
-            string currentVersion = AppVersion.Version;
+            string currentVersion = "v1.0-beta";
 
             try
             {
@@ -5805,7 +5805,7 @@ namespace IPTVLiveChecker
                         return;
                     }
 
-                    int localVersionCode = AppVersion.VersionCode;
+                    int localVersionCode = 100;
                     string latestVersion = jsonObj.ContainsKey("latestVersion") ? jsonObj["latestVersion"]?.ToString() ?? "" : "";
                     string downloadUrl = jsonObj.ContainsKey("downloadUrl") ? jsonObj["downloadUrl"]?.ToString() ?? "" : "";
                     string md5Checksum = jsonObj.ContainsKey("md5Checksum") ? jsonObj["md5Checksum"]?.ToString() ?? "" : "";

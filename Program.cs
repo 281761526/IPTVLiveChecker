@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
@@ -68,8 +68,8 @@ namespace IPTVLiveChecker
             }
 #endif
 
-            int localVersionCode = AppVersion.VersionCode;
-            string currentVersion = AppVersion.Version;
+            const int localVersionCode = 100;
+            const string currentVersion = "v1.0-beta";
             UpdateConfig config = null;
 
             try

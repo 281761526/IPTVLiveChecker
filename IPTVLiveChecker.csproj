@@ -128,7 +128,6 @@
       <DependentUpon>IPTVLiveCheckerMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
-    <Compile Include="AppVersion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="IPTVLiveCheckerMain.resx">
       <DependentUpon>IPTVLiveCheckerMain.cs</DependentUpon>
@@ -161,7 +160,7 @@
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 Èçú?x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 Èç?x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
