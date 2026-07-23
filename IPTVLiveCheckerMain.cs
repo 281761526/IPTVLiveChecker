@@ -1,4 +1,4 @@
-using Microsoft.Win32;
+ï»¿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -75,7 +75,7 @@ namespace IPTVLiveChecker
 
         public static AppTheme Light = new AppTheme
         {
-            Name = "Ç³É«",
+            Name = "æµ…è‰²",
             Primary = Color.FromArgb(155, 89, 182),
             PrimaryDark = Color.FromArgb(142, 68, 173),
             Accent = Color.FromArgb(255, 107, 129),
@@ -106,7 +106,7 @@ namespace IPTVLiveChecker
 
         public static AppTheme Dark = new AppTheme
         {
-            Name = "ÉîÉ«",
+            Name = "æ·±è‰²",
             Primary = Color.FromArgb(160, 110, 225),
             PrimaryDark = Color.FromArgb(180, 130, 240),
             Accent = Color.FromArgb(255, 95, 145),
@@ -136,7 +136,7 @@ namespace IPTVLiveChecker
         };
     }
 
-    // ×Ô¶¨Òå TabControl£¬½â¾ö±êÇ©Í·ÓÒ²à°×É«Áô°×ÎÊÌâ£¬Ö§³ÖÖ÷ÌâÇĞ»»
+    // è‡ªå®šä¹‰ TabControlï¼Œè§£å†³æ ‡ç­¾å¤´å³ä¾§ç™½è‰²ç•™ç™½é—®é¢˜ï¼Œæ”¯æŒä¸»é¢˜åˆ‡æ¢
     public class DarkTabControl : TabControl
     {
         private Color _headerBg = Color.FromArgb(35, 35, 35);
@@ -214,7 +214,7 @@ namespace IPTVLiveChecker
             return new Rectangle(x, 0, width, TabHeight);
         }
 
-        // ¸ù¾İÖ÷ÌâÉèÖÃÅäÉ«
+        // æ ¹æ®ä¸»é¢˜è®¾ç½®é…è‰²
         public void ApplyTheme(bool isDark)
         {
             if (isDark)
@@ -240,14 +240,14 @@ namespace IPTVLiveChecker
 
         protected override void OnPaintBackground(PaintEventArgs e)
         {
-            // Ìî³äÕû¸ö¿Ø¼ş±³¾°£¨°üÀ¨±êÇ©Í·ÇøÓò£©
+            // å¡«å……æ•´ä¸ªæ§ä»¶èƒŒæ™¯ï¼ˆåŒ…æ‹¬æ ‡ç­¾å¤´åŒºåŸŸï¼‰
             using (SolidBrush br = new SolidBrush(_headerBg))
                 e.Graphics.FillRectangle(br, e.ClipRectangle);
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            // Ìî³äÕû¸ö±êÇ©Í·ÇøÓò±³¾°£¨º¬ÓÒ²à¿Õ°×£©
+            // å¡«å……æ•´ä¸ªæ ‡ç­¾å¤´åŒºåŸŸèƒŒæ™¯ï¼ˆå«å³ä¾§ç©ºç™½ï¼‰
             if (this.TabPages.Count > 0)
             {
                 int headerH = (TabHeight > 0 ? TabHeight : this.GetTabRect(0).Height) + 4;
@@ -255,7 +255,7 @@ namespace IPTVLiveChecker
                     e.Graphics.FillRectangle(br, 0, 0, this.Width, headerH);
             }
 
-            // »æÖÆÃ¿¸ö±êÇ©
+            // ç»˜åˆ¶æ¯ä¸ªæ ‡ç­¾
             for (int i = 0; i < this.TabPages.Count; i++)
             {
                 Rectangle tabRect = GetCustomTabRect(i);
@@ -275,7 +275,7 @@ namespace IPTVLiveChecker
                 }
             }
 
-            // »æÖÆ TabPage ÄÚÈİÇøÓò±³¾°
+            // ç»˜åˆ¶ TabPage å†…å®¹åŒºåŸŸèƒŒæ™¯
             if (this.TabPages.Count > 0 && this.SelectedIndex >= 0)
             {
                 Rectangle displayRect = this.DisplayRectangle;
@@ -314,15 +314,15 @@ namespace IPTVLiveChecker
         }
     }
 
-    // ×Ô¶¨ÒåÉîÉ« MessageBox£¬Ìæ´úÏµÍ³°×É« MessageBox
-    // Ö§³ÖÉîÉ«/Ç³É«Ö÷ÌâÇĞ»»£¬×Ô¶¯ÊÊÅäDPIËõ·Å£¬¿É×Ô¶¨Òåµ¯´°´óĞ¡¡¢°´Å¥ÑùÊ½¡¢Ô²½ÇµÈ
+    // è‡ªå®šä¹‰æ·±è‰² MessageBoxï¼Œæ›¿ä»£ç³»ç»Ÿç™½è‰² MessageBox
+    // æ”¯æŒæ·±è‰²/æµ…è‰²ä¸»é¢˜åˆ‡æ¢ï¼Œè‡ªåŠ¨é€‚é…DPIç¼©æ”¾ï¼Œå¯è‡ªå®šä¹‰å¼¹çª—å¤§å°ã€æŒ‰é’®æ ·å¼ã€åœ†è§’ç­‰
     public static class DarkMessageBox
     {
         /// <summary>
-        /// ´´½¨Ô²½Ç¾ØĞÎÂ·¾¶
+        /// åˆ›å»ºåœ†è§’çŸ©å½¢è·¯å¾„
         /// </summary>
-        /// <param name="rect">¾ØĞÎÇøÓò</param>
-        /// <param name="radius">Ô²½Ç°ë¾¶£¨½¨ÒéÉèÖÃÎª°´Å¥¸ß¶ÈµÄÒ»°ë£¬Èç6£©</param>
+        /// <param name="rect">çŸ©å½¢åŒºåŸŸ</param>
+        /// <param name="radius">åœ†è§’åŠå¾„ï¼ˆå»ºè®®è®¾ç½®ä¸ºæŒ‰é’®é«˜åº¦çš„ä¸€åŠï¼Œå¦‚6ï¼‰</param>
         public static System.Drawing.Drawing2D.GraphicsPath CreateRoundedRectPath(Rectangle rect, int radius)
         {
             int diameter = radius * 2;
@@ -335,22 +335,22 @@ namespace IPTVLiveChecker
             return path;
         }
 
-        // Windows API£ºÉèÖÃ´°¿ÚÊôĞÔ£¨ÉîÉ«±êÌâÀ¸£©
+        // Windows APIï¼šè®¾ç½®çª—å£å±æ€§ï¼ˆæ·±è‰²æ ‡é¢˜æ ï¼‰
         [System.Runtime.InteropServices.DllImport("dwmapi.dll")]
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
         private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
         private const int DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_24H2 = 19;
 
-        /// <summary>Ö÷ÌâÌá¹©Æ÷ - ·µ»Øµ±Ç°ÊÇ·ñÎªÉîÉ«Ö÷Ìâ</summary>
+        /// <summary>ä¸»é¢˜æä¾›å™¨ - è¿”å›å½“å‰æ˜¯å¦ä¸ºæ·±è‰²ä¸»é¢˜</summary>
         public static Func<bool> IsDarkProvider { get; set; } = () => false;
-        /// <summary>DPIËõ·ÅÒò×Ó - ÓÃÓÚ×ÔÊÊÓ¦²»Í¬ÆÁÄ»·Ö±æÂÊ£¬Ä¬ÈÏ1.0£¨96DPI£©</summary>
+        /// <summary>DPIç¼©æ”¾å› å­ - ç”¨äºè‡ªé€‚åº”ä¸åŒå±å¹•åˆ†è¾¨ç‡ï¼Œé»˜è®¤1.0ï¼ˆ96DPIï¼‰</summary>
         public static float DpiScale { get; set; } = 1f;
 
         /// <summary>
-        /// Ó¦ÓÃÉîÉ«±êÌâÀ¸Ğ§¹û£¨Windows 10 1809+£©
+        /// åº”ç”¨æ·±è‰²æ ‡é¢˜æ æ•ˆæœï¼ˆWindows 10 1809+ï¼‰
         /// </summary>
-        /// <param name="hwnd">´°¿Ú¾ä±ú</param>
-        /// <param name="darkMode">ÊÇ·ñÆôÓÃÉîÉ«Ä£Ê½£¨1=ÉîÉ«£¬0=Ç³É«£©</param>
+        /// <param name="hwnd">çª—å£å¥æŸ„</param>
+        /// <param name="darkMode">æ˜¯å¦å¯ç”¨æ·±è‰²æ¨¡å¼ï¼ˆ1=æ·±è‰²ï¼Œ0=æµ…è‰²ï¼‰</param>
         public static void ApplyDarkTitleBar(IntPtr hwnd, int darkMode)
         {
             int dm = darkMode;
@@ -359,67 +359,67 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÏÔÊ¾ÏûÏ¢¿ò£¨ÎŞËùÓĞÕß´°¿Ú£©
+        /// æ˜¾ç¤ºæ¶ˆæ¯æ¡†ï¼ˆæ— æ‰€æœ‰è€…çª—å£ï¼‰
         /// </summary>
-        /// <param name="text">ÏûÏ¢ÄÚÈİ</param>
-        /// <param name="caption">´°¿Ú±êÌâ</param>
-        /// <param name="buttons">°´Å¥ÀàĞÍ£¨OK/YesNo/OKCancel£©</param>
-        /// <param name="icon">Í¼±êÀàĞÍ£¨Information/Warning/Error/Question£©</param>
+        /// <param name="text">æ¶ˆæ¯å†…å®¹</param>
+        /// <param name="caption">çª—å£æ ‡é¢˜</param>
+        /// <param name="buttons">æŒ‰é’®ç±»å‹ï¼ˆOK/YesNo/OKCancelï¼‰</param>
+        /// <param name="icon">å›¾æ ‡ç±»å‹ï¼ˆInformation/Warning/Error/Questionï¼‰</param>
         public static DialogResult Show(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
         {
             return Show(null, text, caption, buttons, icon);
         }
 
         /// <summary>
-        /// ÏÔÊ¾ÏûÏ¢¿ò£¨ÓĞËùÓĞÕß´°¿Ú£¬¾ÓÖĞÓÚËùÓĞÕß£©
+        /// æ˜¾ç¤ºæ¶ˆæ¯æ¡†ï¼ˆæœ‰æ‰€æœ‰è€…çª—å£ï¼Œå±…ä¸­äºæ‰€æœ‰è€…ï¼‰
         /// </summary>
-        /// <param name="owner">ËùÓĞÕß´°¿Ú</param>
-        /// <param name="text">ÏûÏ¢ÄÚÈİ</param>
-        /// <param name="caption">´°¿Ú±êÌâ</param>
-        /// <param name="buttons">°´Å¥ÀàĞÍ£¨OK/YesNo/OKCancel£©</param>
-        /// <param name="icon">Í¼±êÀàĞÍ£¨Information/Warning/Error/Question£©</param>
+        /// <param name="owner">æ‰€æœ‰è€…çª—å£</param>
+        /// <param name="text">æ¶ˆæ¯å†…å®¹</param>
+        /// <param name="caption">çª—å£æ ‡é¢˜</param>
+        /// <param name="buttons">æŒ‰é’®ç±»å‹ï¼ˆOK/YesNo/OKCancelï¼‰</param>
+        /// <param name="icon">å›¾æ ‡ç±»å‹ï¼ˆInformation/Warning/Error/Questionï¼‰</param>
         public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon)
         {
-            // ========== ÑÕÉ«ÅäÖÃ ==========
+            // ========== é¢œè‰²é…ç½® ==========
             bool isDark = IsDarkProvider();
-            Color bgColor = isDark ? Color.FromArgb(40, 40, 50) : Color.White;           // ´°¿Ú±³¾°É«£¨ÉîÉ«£ºÉîÀ¶»Ò / Ç³É«£º´¿°×£©
-            Color textColor = isDark ? Color.FromArgb(230, 230, 240) : Color.FromArgb(40, 40, 40); // ÎÄ×ÖÑÕÉ«£¨ÉîÉ«£ºÇ³»Ò°× / Ç³É«£ºÉî»Ò£©
-            Color accentColor = Color.FromArgb(66, 133, 244);                             // Ç¿µ÷É«£¨À¶É«£¬ÓÃÓÚÖ÷°´Å¥£©
-            Color btnColor = isDark ? Color.FromArgb(60, 60, 75) : Color.FromArgb(240, 240, 245); // ´ÎÒª°´Å¥±³¾°É«
-            Color btnHoverColor = isDark ? Color.FromArgb(80, 80, 100) : Color.FromArgb(220, 220, 230); // °´Å¥ĞüÍ£É«
-            Color btnBorderColor = isDark ? Color.FromArgb(90, 90, 110) : Color.FromArgb(200, 200, 205); // °´Å¥±ß¿òÉ«
-            Color btnFg = isDark ? Color.White : Color.FromArgb(50, 50, 50);               // ´ÎÒª°´Å¥ÎÄ×ÖÉ«
+            Color bgColor = isDark ? Color.FromArgb(40, 40, 50) : Color.White;           // çª—å£èƒŒæ™¯è‰²ï¼ˆæ·±è‰²ï¼šæ·±è“ç° / æµ…è‰²ï¼šçº¯ç™½ï¼‰
+            Color textColor = isDark ? Color.FromArgb(230, 230, 240) : Color.FromArgb(40, 40, 40); // æ–‡å­—é¢œè‰²ï¼ˆæ·±è‰²ï¼šæµ…ç°ç™½ / æµ…è‰²ï¼šæ·±ç°ï¼‰
+            Color accentColor = Color.FromArgb(66, 133, 244);                             // å¼ºè°ƒè‰²ï¼ˆè“è‰²ï¼Œç”¨äºä¸»æŒ‰é’®ï¼‰
+            Color btnColor = isDark ? Color.FromArgb(60, 60, 75) : Color.FromArgb(240, 240, 245); // æ¬¡è¦æŒ‰é’®èƒŒæ™¯è‰²
+            Color btnHoverColor = isDark ? Color.FromArgb(80, 80, 100) : Color.FromArgb(220, 220, 230); // æŒ‰é’®æ‚¬åœè‰²
+            Color btnBorderColor = isDark ? Color.FromArgb(90, 90, 110) : Color.FromArgb(200, 200, 205); // æŒ‰é’®è¾¹æ¡†è‰²
+            Color btnFg = isDark ? Color.White : Color.FromArgb(50, 50, 50);               // æ¬¡è¦æŒ‰é’®æ–‡å­—è‰²
 
-            Font msgFont = new Font("Microsoft YaHei UI", 10.5f);  // ÏûÏ¢ÎÄ×Ö×ÖÌå£¨10.5pt£©
+            Font msgFont = new Font("Microsoft YaHei UI", 10.5f);  // æ¶ˆæ¯æ–‡å­—å­—ä½“ï¼ˆ10.5ptï¼‰
 
             using (Form dlg = new Form())
             {
-                // ========== µ¯´°»ù´¡ÊôĞÔ ==========
-                dlg.Text = caption;                                    // ´°¿Ú±êÌâ
-                dlg.StartPosition = FormStartPosition.Manual;           // ÊÖ¶¯¶¨Î»£¨ºóĞø¼ÆËã¾ÓÖĞÎ»ÖÃ£©
-                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;      // ¹Ì¶¨¶Ô»°¿òÑùÊ½£¬½ûÖ¹µ÷Õû´óĞ¡
-                dlg.MaximizeBox = false;                               // ½ûÓÃ×î´ó»¯°´Å¥
-                dlg.MinimizeBox = false;                               // ½ûÓÃ×îĞ¡»¯°´Å¥
-                dlg.BackColor = bgColor;                               // ´°¿Ú±³¾°É«
-                dlg.ForeColor = textColor;                             // Ä¬ÈÏÎÄ×ÖÑÕÉ«
-                dlg.Font = msgFont;                                    // Ä¬ÈÏ×ÖÌå
-                dlg.ShowInTaskbar = false;                             // ²»ÔÚÈÎÎñÀ¸ÏÔÊ¾
-                dlg.TopMost = true;                                    // ÖÃ¶¥ÏÔÊ¾
+                // ========== å¼¹çª—åŸºç¡€å±æ€§ ==========
+                dlg.Text = caption;                                    // çª—å£æ ‡é¢˜
+                dlg.StartPosition = FormStartPosition.Manual;           // æ‰‹åŠ¨å®šä½ï¼ˆåç»­è®¡ç®—å±…ä¸­ä½ç½®ï¼‰
+                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;      // å›ºå®šå¯¹è¯æ¡†æ ·å¼ï¼Œç¦æ­¢è°ƒæ•´å¤§å°
+                dlg.MaximizeBox = false;                               // ç¦ç”¨æœ€å¤§åŒ–æŒ‰é’®
+                dlg.MinimizeBox = false;                               // ç¦ç”¨æœ€å°åŒ–æŒ‰é’®
+                dlg.BackColor = bgColor;                               // çª—å£èƒŒæ™¯è‰²
+                dlg.ForeColor = textColor;                             // é»˜è®¤æ–‡å­—é¢œè‰²
+                dlg.Font = msgFont;                                    // é»˜è®¤å­—ä½“
+                dlg.ShowInTaskbar = false;                             // ä¸åœ¨ä»»åŠ¡æ æ˜¾ç¤º
+                dlg.TopMost = true;                                    // ç½®é¡¶æ˜¾ç¤º
 
-                // ========== ³ß´ç²ÎÊıÅäÖÃ£¨¾ùÒÑ³ËÒÔDpiScale£¬×Ô¶¯ÊÊÅä¸ßDPI£© ==========
-                int paddingH = (int)(24 * DarkMessageBox.DpiScale);     // Ë®Æ½ÄÚ±ß¾à£¨24px * DPIËõ·Å£©
-                int paddingV = (int)(20 * DarkMessageBox.DpiScale);     // ´¹Ö±ÄÚ±ß¾à£¨20px * DPIËõ·Å£©
-                int iconSize = (int)(40 * DarkMessageBox.DpiScale);     // Í¼±ê´óĞ¡£¨40x40px * DPIËõ·Å£©
-                int iconGap = (int)(16 * DarkMessageBox.DpiScale);      // Í¼±êÓëÎÄ×Ö¼ä¾à£¨16px * DPIËõ·Å£©
-                int btnGap = (int)(16 * DarkMessageBox.DpiScale);       // °´Å¥Ö®¼ä¼ä¾à£¨16px * DPIËõ·Å£©
-                int btnW = (int)(85 * DarkMessageBox.DpiScale);         // °´Å¥¿í¶È£¨85px * DPIËõ·Å£©
-                int btnH = (int)(34 * DarkMessageBox.DpiScale);         // °´Å¥¸ß¶È£¨34px * DPIËõ·Å£©
-                int btnPadding = (int)(16 * DarkMessageBox.DpiScale);   // °´Å¥ÇøÓòÓëÄÚÈİ¼ä¾à£¨16px * DPIËõ·Å£©
-                int minWidth = (int)(320 * DarkMessageBox.DpiScale);    // µ¯´°×îĞ¡¿í¶È£¨320px * DPIËõ·Å£©
+                // ========== å°ºå¯¸å‚æ•°é…ç½®ï¼ˆå‡å·²ä¹˜ä»¥DpiScaleï¼Œè‡ªåŠ¨é€‚é…é«˜DPIï¼‰ ==========
+                int paddingH = (int)(24 * DarkMessageBox.DpiScale);     // æ°´å¹³å†…è¾¹è·ï¼ˆ24px * DPIç¼©æ”¾ï¼‰
+                int paddingV = (int)(20 * DarkMessageBox.DpiScale);     // å‚ç›´å†…è¾¹è·ï¼ˆ20px * DPIç¼©æ”¾ï¼‰
+                int iconSize = (int)(40 * DarkMessageBox.DpiScale);     // å›¾æ ‡å¤§å°ï¼ˆ40x40px * DPIç¼©æ”¾ï¼‰
+                int iconGap = (int)(16 * DarkMessageBox.DpiScale);      // å›¾æ ‡ä¸æ–‡å­—é—´è·ï¼ˆ16px * DPIç¼©æ”¾ï¼‰
+                int btnGap = (int)(16 * DarkMessageBox.DpiScale);       // æŒ‰é’®ä¹‹é—´é—´è·ï¼ˆ16px * DPIç¼©æ”¾ï¼‰
+                int btnW = (int)(85 * DarkMessageBox.DpiScale);         // æŒ‰é’®å®½åº¦ï¼ˆ85px * DPIç¼©æ”¾ï¼‰
+                int btnH = (int)(34 * DarkMessageBox.DpiScale);         // æŒ‰é’®é«˜åº¦ï¼ˆ34px * DPIç¼©æ”¾ï¼‰
+                int btnPadding = (int)(16 * DarkMessageBox.DpiScale);   // æŒ‰é’®åŒºåŸŸä¸å†…å®¹é—´è·ï¼ˆ16px * DPIç¼©æ”¾ï¼‰
+                int minWidth = (int)(320 * DarkMessageBox.DpiScale);    // å¼¹çª—æœ€å°å®½åº¦ï¼ˆ320px * DPIç¼©æ”¾ï¼‰
 
-                // ========== ÏûÏ¢ÄÚÈİ±êÇ© ==========
-                // [Î»ÖÃ] Í¼±êÓÒ²à£¬Ë®Æ½ÄÚ±ß¾à + Í¼±ê¿í + Í¼±ê¼ä¾à
-                // [´óĞ¡] ¸ù¾İÎÄ×ÖÄÚÈİ×Ô¶¯¼ÆËã£¬×îĞ¡¿í¶È = minWidth - 2*paddingH - iconSize - iconGap
+                // ========== æ¶ˆæ¯å†…å®¹æ ‡ç­¾ ==========
+                // [ä½ç½®] å›¾æ ‡å³ä¾§ï¼Œæ°´å¹³å†…è¾¹è· + å›¾æ ‡å®½ + å›¾æ ‡é—´è·
+                // [å¤§å°] æ ¹æ®æ–‡å­—å†…å®¹è‡ªåŠ¨è®¡ç®—ï¼Œæœ€å°å®½åº¦ = minWidth - 2*paddingH - iconSize - iconGap
                 Label lblText = new Label
                 {
                     Text = text,
@@ -431,28 +431,28 @@ namespace IPTVLiveChecker
                 };
                 lblText.PerformLayout();
 
-                // ¼ÆËãÊµ¼ÊÎÄ±¾³ß´çºÍµ¯´°×Ü´óĞ¡
+                // è®¡ç®—å®é™…æ–‡æœ¬å°ºå¯¸å’Œå¼¹çª—æ€»å¤§å°
                 int textW = Math.Max(lblText.PreferredWidth, minWidth - paddingH * 2 - iconSize - iconGap);
                 int textH = lblText.PreferredHeight;
-                int contentW = paddingH + iconSize + iconGap + textW + paddingH;       // ×Ü¿í¶È = ×óÄÚ±ß¾à + Í¼±ê + ¼ä¾à + ÎÄ×Ö + ÓÒÄÚ±ß¾à
-                int contentH = paddingV + Math.Max(iconSize, textH) + btnPadding + btnH + paddingV; // ×Ü¸ß¶È = ÉÏÄÚ±ß¾à + Í¼±ê/ÎÄ×Ö¸ß¶È + °´Å¥¼ä¾à + °´Å¥ + ÏÂÄÚ±ß¾à
+                int contentW = paddingH + iconSize + iconGap + textW + paddingH;       // æ€»å®½åº¦ = å·¦å†…è¾¹è· + å›¾æ ‡ + é—´è· + æ–‡å­— + å³å†…è¾¹è·
+                int contentH = paddingV + Math.Max(iconSize, textH) + btnPadding + btnH + paddingV; // æ€»é«˜åº¦ = ä¸Šå†…è¾¹è· + å›¾æ ‡/æ–‡å­—é«˜åº¦ + æŒ‰é’®é—´è· + æŒ‰é’® + ä¸‹å†…è¾¹è·
 
-                dlg.ClientSize = new Size(Math.Max(contentW, minWidth), contentH);     // ÉèÖÃµ¯´°´óĞ¡£¨²»Ğ¡ÓÚ×îĞ¡¿í¶È£©
+                dlg.ClientSize = new Size(Math.Max(contentW, minWidth), contentH);     // è®¾ç½®å¼¹çª—å¤§å°ï¼ˆä¸å°äºæœ€å°å®½åº¦ï¼‰
 
-                // ¼ÆËã¸÷ÔªËØÎ»ÖÃ
-                int iconX = paddingH;                            // Í¼±êX = ×óÄÚ±ß¾à
-                int iconY = paddingV;                            // Í¼±êY = ÉÏÄÚ±ß¾à
-                int textX = paddingH + iconSize + iconGap;        // ÎÄ×ÖX = ×óÄÚ±ß¾à + Í¼±ê¿í + Í¼±ê¼ä¾à
-                int textY = paddingV;                            // ÎÄ×ÖY = ÉÏÄÚ±ß¾à
-                int btnY = contentH - paddingV - btnH;            // °´Å¥Y = ×Ü¸ß¶È - ÏÂÄÚ±ß¾à - °´Å¥¸ß¶È
+                // è®¡ç®—å„å…ƒç´ ä½ç½®
+                int iconX = paddingH;                            // å›¾æ ‡X = å·¦å†…è¾¹è·
+                int iconY = paddingV;                            // å›¾æ ‡Y = ä¸Šå†…è¾¹è·
+                int textX = paddingH + iconSize + iconGap;        // æ–‡å­—X = å·¦å†…è¾¹è· + å›¾æ ‡å®½ + å›¾æ ‡é—´è·
+                int textY = paddingV;                            // æ–‡å­—Y = ä¸Šå†…è¾¹è·
+                int btnY = contentH - paddingV - btnH;            // æŒ‰é’®Y = æ€»é«˜åº¦ - ä¸‹å†…è¾¹è· - æŒ‰é’®é«˜åº¦
 
                 lblText.Location = new Point(textX, textY);
                 lblText.Size = new Size(textW, textH);
                 dlg.Controls.Add(lblText);
 
-                // ========== Í¼±êÍ¼Æ¬¿ò ==========
-                // [Î»ÖÃ] ×óÉÏ½Ç£¬Ë®Æ½/´¹Ö±ÄÚ±ß¾à´¦
-                // [´óĞ¡] iconSize x iconSize
+                // ========== å›¾æ ‡å›¾ç‰‡æ¡† ==========
+                // [ä½ç½®] å·¦ä¸Šè§’ï¼Œæ°´å¹³/å‚ç›´å†…è¾¹è·å¤„
+                // [å¤§å°] iconSize x iconSize
                 PictureBox picIcon = new PictureBox
                 {
                     Size = new Size(iconSize, iconSize),
@@ -460,7 +460,7 @@ namespace IPTVLiveChecker
                     BackColor = bgColor,
                     SizeMode = PictureBoxSizeMode.AutoSize
                 };
-                // ¸ù¾İÍ¼±êÀàĞÍÉèÖÃ¶ÔÓ¦ÏµÍ³Í¼±ê
+                // æ ¹æ®å›¾æ ‡ç±»å‹è®¾ç½®å¯¹åº”ç³»ç»Ÿå›¾æ ‡
                 switch (icon)
                 {
                     case MessageBoxIcon.Information:
@@ -481,45 +481,45 @@ namespace IPTVLiveChecker
                 }
                 dlg.Controls.Add(picIcon);
 
-                // ========== °´Å¥´´½¨£¨¸ù¾İ°´Å¥ÀàĞÍ£© ==========
-                // ËùÓĞ°´Å¥Í³Ò»ÑùÊ½£ºÔ²½Ç6px£¬ĞüÍ£¸ßÁÁ£¬ÎŞ±ß¿ò
+                // ========== æŒ‰é’®åˆ›å»ºï¼ˆæ ¹æ®æŒ‰é’®ç±»å‹ï¼‰ ==========
+                // æ‰€æœ‰æŒ‰é’®ç»Ÿä¸€æ ·å¼ï¼šåœ†è§’6pxï¼Œæ‚¬åœé«˜äº®ï¼Œæ— è¾¹æ¡†
 
-                // --- OK°´Å¥ ---
+                // --- OKæŒ‰é’® ---
                 if (buttons == MessageBoxButtons.OK)
                 {
-                    int btnX = (dlg.ClientSize.Width - btnW) / 2;  // Ë®Æ½¾ÓÖĞ
+                    int btnX = (dlg.ClientSize.Width - btnW) / 2;  // æ°´å¹³å±…ä¸­
                     Button btnOK = new Button
                     {
-                        Text = "È·¶¨",
+                        Text = "ç¡®å®š",
                         DialogResult = DialogResult.OK,
                         Location = new Point(btnX, btnY),
                         Size = new Size(btnW, btnH),
-                        BackColor = accentColor,           // À¶É«Ö÷°´Å¥
+                        BackColor = accentColor,           // è“è‰²ä¸»æŒ‰é’®
                         ForeColor = Color.White,
                         FlatStyle = FlatStyle.Flat,
                         FlatAppearance = { BorderSize = 0 },
                         Font = msgFont
                     };
                     btnOK.FlatAppearance.BorderSize = 0;
-                    btnOK.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, btnW, btnH), 6));  // Ô²½Ç6px
-                    btnOK.MouseEnter += (s, ev) => btnOK.BackColor = Color.FromArgb(86, 153, 254);         // ĞüÍ£¸ßÁÁ
+                    btnOK.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, btnW, btnH), 6));  // åœ†è§’6px
+                    btnOK.MouseEnter += (s, ev) => btnOK.BackColor = Color.FromArgb(86, 153, 254);         // æ‚¬åœé«˜äº®
                     btnOK.MouseLeave += (s, ev) => btnOK.BackColor = accentColor;
                     dlg.Controls.Add(btnOK);
-                    dlg.AcceptButton = btnOK;              // Enter¼ü´¥·¢
+                    dlg.AcceptButton = btnOK;              // Enteré”®è§¦å‘
                 }
-                // --- Yes/No°´Å¥ ---
+                // --- Yes/NoæŒ‰é’® ---
                 else if (buttons == MessageBoxButtons.YesNo)
                 {
-                    int btnGroupW = btnW * 2 + btnGap;     // °´Å¥×é×Ü¿í¶È = Á½¸ö°´Å¥ + ¼ä¾à
-                    int btnStartX = (dlg.ClientSize.Width - btnGroupW) / 2;  // °´Å¥×éË®Æ½¾ÓÖĞ
+                    int btnGroupW = btnW * 2 + btnGap;     // æŒ‰é’®ç»„æ€»å®½åº¦ = ä¸¤ä¸ªæŒ‰é’® + é—´è·
+                    int btnStartX = (dlg.ClientSize.Width - btnGroupW) / 2;  // æŒ‰é’®ç»„æ°´å¹³å±…ä¸­
 
                     Button btnYes = new Button
                     {
-                        Text = "ÊÇ",
+                        Text = "æ˜¯",
                         DialogResult = DialogResult.Yes,
                         Location = new Point(btnStartX, btnY),
                         Size = new Size(btnW, btnH),
-                        BackColor = accentColor,           // À¶É«Ö÷°´Å¥
+                        BackColor = accentColor,           // è“è‰²ä¸»æŒ‰é’®
                         ForeColor = Color.White,
                         FlatStyle = FlatStyle.Flat,
                         FlatAppearance = { BorderSize = 0 },
@@ -533,11 +533,11 @@ namespace IPTVLiveChecker
 
                     Button btnNo = new Button
                     {
-                        Text = "·ñ",
+                        Text = "å¦",
                         DialogResult = DialogResult.No,
                         Location = new Point(btnStartX + btnW + btnGap, btnY),
                         Size = new Size(btnW, btnH),
-                        BackColor = btnColor,              // »ÒÉ«´ÎÒª°´Å¥
+                        BackColor = btnColor,              // ç°è‰²æ¬¡è¦æŒ‰é’®
                         ForeColor = btnFg,
                         FlatStyle = FlatStyle.Flat,
                         FlatAppearance = { BorderSize = 0 },
@@ -549,10 +549,10 @@ namespace IPTVLiveChecker
                     btnNo.MouseEnter += (s, ev) => btnNo.BackColor = btnHoverColor;
                     btnNo.MouseLeave += (s, ev) => btnNo.BackColor = btnColor;
                     dlg.Controls.Add(btnNo);
-                    dlg.AcceptButton = btnYes;             // Enter¼ü´¥·¢"ÊÇ"
-                    dlg.CancelButton = btnNo;              // Escape¼ü´¥·¢"·ñ"
+                    dlg.AcceptButton = btnYes;             // Enteré”®è§¦å‘"æ˜¯"
+                    dlg.CancelButton = btnNo;              // Escapeé”®è§¦å‘"å¦"
                 }
-                // --- OK/Cancel°´Å¥ ---
+                // --- OK/CancelæŒ‰é’® ---
                 else if (buttons == MessageBoxButtons.OKCancel)
                 {
                     int btnGroupW = btnW * 2 + btnGap;
@@ -560,7 +560,7 @@ namespace IPTVLiveChecker
 
                     Button btnOK = new Button
                     {
-                        Text = "È·¶¨",
+                        Text = "ç¡®å®š",
                         DialogResult = DialogResult.OK,
                         Location = new Point(btnStartX, btnY),
                         Size = new Size(btnW, btnH),
@@ -578,7 +578,7 @@ namespace IPTVLiveChecker
 
                     Button btnCancel = new Button
                     {
-                        Text = "È¡Ïû",
+                        Text = "å–æ¶ˆ",
                         DialogResult = DialogResult.Cancel,
                         Location = new Point(btnStartX + btnW + btnGap, btnY),
                         Size = new Size(btnW, btnH),
@@ -594,11 +594,11 @@ namespace IPTVLiveChecker
                     btnCancel.MouseEnter += (s, ev) => btnCancel.BackColor = btnHoverColor;
                     btnCancel.MouseLeave += (s, ev) => btnCancel.BackColor = btnColor;
                     dlg.Controls.Add(btnCancel);
-                    dlg.AcceptButton = btnOK;              // Enter¼ü´¥·¢"È·¶¨"
-                    dlg.CancelButton = btnCancel;          // Escape¼ü´¥·¢"È¡Ïû"
+                    dlg.AcceptButton = btnOK;              // Enteré”®è§¦å‘"ç¡®å®š"
+                    dlg.CancelButton = btnCancel;          // Escapeé”®è§¦å‘"å–æ¶ˆ"
                 }
 
-                // ========== ÉîÉ«±êÌâÀ¸ÊÊÅä£¨Windows 10+£© ==========
+                // ========== æ·±è‰²æ ‡é¢˜æ é€‚é…ï¼ˆWindows 10+ï¼‰ ==========
                 if (isDark)
                 {
                     int dm = 1;
@@ -606,13 +606,13 @@ namespace IPTVLiveChecker
                     try { DwmSetWindowAttribute(dlg.Handle, DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_24H2, ref dm, 4); } catch { }
                 }
 
-                // ========== µ¯´°Î»ÖÃ¼ÆËã£¨¾ÓÖĞÏÔÊ¾£© ==========
+                // ========== å¼¹çª—ä½ç½®è®¡ç®—ï¼ˆå±…ä¸­æ˜¾ç¤ºï¼‰ ==========
                 Rectangle screen = Screen.PrimaryScreen.WorkingArea;
                 int winTotalW = dlg.Width;
                 int winTotalH = dlg.Height;
-                int centerX = screen.X + (screen.Width - winTotalW) / 2;       // ÆÁÄ»¾ÓÖĞ
+                int centerX = screen.X + (screen.Width - winTotalW) / 2;       // å±å¹•å±…ä¸­
                 int centerY = screen.Y + (screen.Height - winTotalH) / 2;
-                if (owner != null)                                              // Èç¹ûÓĞËùÓĞÕß´°¿Ú£¬¾ÓÖĞÓÚËùÓĞÕß
+                if (owner != null)                                              // å¦‚æœæœ‰æ‰€æœ‰è€…çª—å£ï¼Œå±…ä¸­äºæ‰€æœ‰è€…
                 {
                     Form ownerForm = owner as Form;
                     if (ownerForm != null)
@@ -621,14 +621,14 @@ namespace IPTVLiveChecker
                         centerY = ownerForm.Top + (ownerForm.Height - winTotalH) / 2;
                     }
                 }
-                // È·±£µ¯´°²»³¬³öÆÁÄ»±ß½ç
+                // ç¡®ä¿å¼¹çª—ä¸è¶…å‡ºå±å¹•è¾¹ç•Œ
                 if (centerX < screen.X) centerX = screen.X;
                 if (centerY < screen.Y) centerY = screen.Y;
                 if (centerX + winTotalW > screen.X + screen.Width) centerX = screen.X + screen.Width - winTotalW;
                 if (centerY + winTotalH > screen.Y + screen.Height) centerY = screen.Y + screen.Height - winTotalH;
                 dlg.Location = new Point(centerX, centerY);
 
-                // ÏÔÊ¾µ¯´°²¢µÈ´ıÓÃ»§²Ù×÷
+                // æ˜¾ç¤ºå¼¹çª—å¹¶ç­‰å¾…ç”¨æˆ·æ“ä½œ
                 DialogResult result;
                 if (owner != null)
                     result = dlg.ShowDialog(owner);
@@ -640,7 +640,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ¿ì½İ·½·¨£ºÏÔÊ¾Ö»ÓĞÈ·¶¨°´Å¥µÄÏûÏ¢¿ò£¨ÎŞÍ¼±ê£©
+        /// å¿«æ·æ–¹æ³•ï¼šæ˜¾ç¤ºåªæœ‰ç¡®å®šæŒ‰é’®çš„æ¶ˆæ¯æ¡†ï¼ˆæ— å›¾æ ‡ï¼‰
         /// </summary>
         public static DialogResult Show(string text, string caption)
         {
@@ -648,7 +648,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ¿ì½İ·½·¨£ºÏÔÊ¾Ö»ÓĞÈ·¶¨°´Å¥µÄÏûÏ¢¿ò£¨ÎŞ±êÌâ£¬ÎŞÍ¼±ê£©
+        /// å¿«æ·æ–¹æ³•ï¼šæ˜¾ç¤ºåªæœ‰ç¡®å®šæŒ‰é’®çš„æ¶ˆæ¯æ¡†ï¼ˆæ— æ ‡é¢˜ï¼Œæ— å›¾æ ‡ï¼‰
         /// </summary>
         public static DialogResult Show(string text)
         {
@@ -815,7 +815,7 @@ namespace IPTVLiveChecker
                         string url = urlMatches[i].Groups[2].Value;
                         if (url.StartsWith("/"))
                             url = baseUrl.Replace(baseUrl.Split('/')[3], "") + url.TrimStart('/');
-                        allChannels.Add(new ChannelInfo { Name = name, Url = url, Group = "½âÎö½á¹û", Status = "Î´¼ì²â", ParseDateTime = parseTime });
+                        allChannels.Add(new ChannelInfo { Name = name, Url = url, Group = "è§£æç»“æœ", Status = "æœªæ£€æµ‹", ParseDateTime = parseTime });
                     }
                 }
                 else if (content.Contains(".m3u8"))
@@ -828,7 +828,7 @@ namespace IPTVLiveChecker
                         string url = urlMatches[i].Groups[1].Value;
                         if (!url.StartsWith("http"))
                             url = baseUrl + "/" + url;
-                        allChannels.Add(new ChannelInfo { Name = name, Url = url, Group = "½âÎö½á¹û", Status = "Î´¼ì²â", ParseDateTime = parseTime });
+                        allChannels.Add(new ChannelInfo { Name = name, Url = url, Group = "è§£æç»“æœ", Status = "æœªæ£€æµ‹", ParseDateTime = parseTime });
                     }
                 }
                 else if (content.Contains(".txt"))
@@ -838,13 +838,13 @@ namespace IPTVLiveChecker
                     {
                         if (line.StartsWith("http"))
                         {
-                            string name = "Ö±²¥Ô´";
+                            string name = "ç›´æ’­æº";
                             int idx = line.IndexOf(",");
                             if (idx > 0)
                             {
                                 name = line.Substring(0, idx);
                             }
-                            allChannels.Add(new ChannelInfo { Name = name, Url = line, Group = "½âÎö½á¹û", Status = "Î´¼ì²â", ParseDateTime = parseTime });
+                            allChannels.Add(new ChannelInfo { Name = name, Url = line, Group = "è§£æç»“æœ", Status = "æœªæ£€æµ‹", ParseDateTime = parseTime });
                         }
                     }
                 }
@@ -866,7 +866,7 @@ namespace IPTVLiveChecker
                     string url = parts[1].Trim();
                     if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(url))
                     {
-                        allChannels.Add(new ChannelInfo { Name = name, Url = url, Group = "½âÎö½á¹û", Status = "Î´¼ì²â", ParseDateTime = parseTime });
+                        allChannels.Add(new ChannelInfo { Name = name, Url = url, Group = "è§£æç»“æœ", Status = "æœªæ£€æµ‹", ParseDateTime = parseTime });
                     }
                 }
             }
@@ -889,7 +889,7 @@ namespace IPTVLiveChecker
                     if (string.IsNullOrEmpty(relUrl)) continue;
 
                     string fullUrl = relUrl.StartsWith("http") ? relUrl : $"{baseHttp}{relUrl}";
-                    allChannels.Add(new ChannelInfo { Name = name, Url = fullUrl, Group = "½âÎö½á¹û", Status = "Î´¼ì²â", ParseDateTime = parseTime });
+                    allChannels.Add(new ChannelInfo { Name = name, Url = fullUrl, Group = "è§£æç»“æœ", Status = "æœªæ£€æµ‹", ParseDateTime = parseTime });
                 }
             }
             catch { }
@@ -906,13 +906,13 @@ namespace IPTVLiveChecker
                     if (line.StartsWith("#EXTINF:"))
                     {
                         int commaIdx = line.IndexOf(',');
-                        name = commaIdx > 0 ? CleanText(line.Substring(commaIdx + 1).Trim()) : "»ªÊÓÆµµÀ";
+                        name = commaIdx > 0 ? CleanText(line.Substring(commaIdx + 1).Trim()) : "åè§†é¢‘é“";
                     }
                     else if (line.StartsWith("http"))
                     {
                         if (!string.IsNullOrEmpty(name))
                         {
-                            allChannels.Add(new ChannelInfo { Name = name, Url = line.Trim(), Group = "½âÎö½á¹û", Status = "Î´¼ì²â", ParseDateTime = parseTime });
+                            allChannels.Add(new ChannelInfo { Name = name, Url = line.Trim(), Group = "è§£æç»“æœ", Status = "æœªæ£€æµ‹", ParseDateTime = parseTime });
                             name = "";
                         }
                     }
@@ -920,7 +920,7 @@ namespace IPTVLiveChecker
             }
             else if (!string.IsNullOrEmpty(content) && content.Length < 500)
             {
-                allChannels.Add(new ChannelInfo { Name = "»ªÊÓÆµµÀ", Url = baseUrl, Group = "½âÎö½á¹û", Status = "Î´¼ì²â", ParseDateTime = parseTime });
+                allChannels.Add(new ChannelInfo { Name = "åè§†é¢‘é“", Url = baseUrl, Group = "è§£æç»“æœ", Status = "æœªæ£€æµ‹", ParseDateTime = parseTime });
             }
         }
 
@@ -929,7 +929,7 @@ namespace IPTVLiveChecker
             if (string.IsNullOrEmpty(text)) return text;
             return System.Text.RegularExpressions.Regex.Replace(text, @"[\x00-\x1F\x7F]", "").Trim();
         }
-        private string themePreference = "Ç³É«";
+        private string themePreference = "æµ…è‰²";
         private static string customFontFamily = "Microsoft YaHei";
         
         private static Font GetFont(float size)
@@ -972,7 +972,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ±£´æÖ±²¥Ô´ÁĞ±íµ½ÎÄ¼ş£¨¸ñÊ½£ºÃû³Æ,Á´½Ó,·Ö×é,×´Ì¬,·Ö±æÂÊ,Î»ÖÃ,ËÙ¶È£©
+        /// ä¿å­˜ç›´æ’­æºåˆ—è¡¨åˆ°æ–‡ä»¶ï¼ˆæ ¼å¼ï¼šåç§°,é“¾æ¥,åˆ†ç»„,çŠ¶æ€,åˆ†è¾¨ç‡,ä½ç½®,é€Ÿåº¦ï¼‰
         /// </summary>
         private void SaveChannelList()
         {
@@ -981,9 +981,9 @@ namespace IPTVLiveChecker
                 StringBuilder sb = new StringBuilder();
                 foreach (var ch in allChannels)
                 {
-                    string name = ch.Name?.Replace(",", "£¬") ?? "";
+                    string name = ch.Name?.Replace(",", "ï¼Œ") ?? "";
                     string url = ch.Url ?? "";
-                    string group = ch.Group?.Replace(",", "£¬") ?? "";
+                    string group = ch.Group?.Replace(",", "ï¼Œ") ?? "";
                     string status = ch.Status ?? "";
                     string resolution = ch.Resolution ?? "";
                     string location = ch.Location ?? "";
@@ -996,7 +996,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ´ÓÎÄ¼ş¼ÓÔØÖ±²¥Ô´ÁĞ±í£¨Ö»¼ÓÔØÊı¾İ£¬²»¸üĞÂUI£©
+        /// ä»æ–‡ä»¶åŠ è½½ç›´æ’­æºåˆ—è¡¨ï¼ˆåªåŠ è½½æ•°æ®ï¼Œä¸æ›´æ–°UIï¼‰
         /// </summary>
         private void LoadChannelList()
         {
@@ -1017,7 +1017,7 @@ namespace IPTVLiveChecker
                         Name = parts[0],
                         Url = url,
                         Group = parts.Length > 2 ? parts[2] : "",
-                        Status = parts.Length > 3 ? parts[3] : "Î´¼ì²â",
+                        Status = parts.Length > 3 ? parts[3] : "æœªæ£€æµ‹",
                         Resolution = parts.Length > 4 ? parts[4] : "",
                         Location = parts.Length > 5 ? parts[5] : "",
                         Speed = parts.Length > 6 ? parts[6] : "",
@@ -1126,7 +1126,7 @@ namespace IPTVLiveChecker
         private Button btnMax;
         private Button btnClose;
         private PictureBox titleIconRef;
-        private string currentView = "¼ì²â";
+        private string currentView = "æ£€æµ‹";
         private bool _applyingTheme = false;
         private float dpiScale = 1f;
         private int SX(int x) { return (int)(x * dpiScale); }
@@ -1147,52 +1147,52 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÇøÓòÅäÖÃ»ùÀà - °üº¬×ÖÌå¡¢²¼¾ÖºÍÅäÉ«µÄÍ¨ÓÃ½á¹¹
-        /// Ã¿¸ö¹¦ÄÜÇøÓò¼Ì³Ğ´ËÀà£¬ÊµÏÖ¶ÀÁ¢µÄÑùÊ½¿ØÖÆ
+        /// åŒºåŸŸé…ç½®åŸºç±» - åŒ…å«å­—ä½“ã€å¸ƒå±€å’Œé…è‰²çš„é€šç”¨ç»“æ„
+        /// æ¯ä¸ªåŠŸèƒ½åŒºåŸŸç»§æ‰¿æ­¤ç±»ï¼Œå®ç°ç‹¬ç«‹çš„æ ·å¼æ§åˆ¶
         /// </summary>
         private class RegionConfig
         {
-            /// <summary>×ÖÌåÅäÖÃ - ¿ØÖÆ¸ÃÇøÓòÄÚËùÓĞÎÄ±¾µÄ×ÖÌåÀàĞÍºÍ´óĞ¡</summary>
+            /// <summary>å­—ä½“é…ç½® - æ§åˆ¶è¯¥åŒºåŸŸå†…æ‰€æœ‰æ–‡æœ¬çš„å­—ä½“ç±»å‹å’Œå¤§å°</summary>
             public FontConfig Font = new FontConfig();
-            /// <summary>²¼¾ÖÅäÖÃ - ¿ØÖÆ¸ÃÇøÓòÄÚ×é¼şµÄ´óĞ¡¡¢Î»ÖÃºÍ¼ä¾à</summary>
+            /// <summary>å¸ƒå±€é…ç½® - æ§åˆ¶è¯¥åŒºåŸŸå†…ç»„ä»¶çš„å¤§å°ã€ä½ç½®å’Œé—´è·</summary>
             public LayoutConfig Layout = new LayoutConfig();
-            /// <summary>ÅäÉ«ÅäÖÃ - ¿ØÖÆ¸ÃÇøÓòÄÚ×é¼şµÄÑÕÉ«ÉèÖÃ</summary>
+            /// <summary>é…è‰²é…ç½® - æ§åˆ¶è¯¥åŒºåŸŸå†…ç»„ä»¶çš„é¢œè‰²è®¾ç½®</summary>
             public ColorConfig Color = new ColorConfig();
         }
 
         /// <summary>
-        /// ×ÖÌåÅäÖÃÀà - ¸÷ÇøÓòµÄ×ÖÌåÉèÖÃ
-        /// Ã¿¸ö×ÖÌåÀàĞÍ¿ØÖÆÌØ¶¨×é¼şµÄÎÄ±¾ÑùÊ½£¬¿É¶ÀÁ¢µ÷Õû×ÖºÅºÍ×ÖÌå
+        /// å­—ä½“é…ç½®ç±» - å„åŒºåŸŸçš„å­—ä½“è®¾ç½®
+        /// æ¯ä¸ªå­—ä½“ç±»å‹æ§åˆ¶ç‰¹å®šç»„ä»¶çš„æ–‡æœ¬æ ·å¼ï¼Œå¯ç‹¬ç«‹è°ƒæ•´å­—å·å’Œå­—ä½“
         /// </summary>
         private class FontConfig
         {
-            /// <summary>Í¼±ê×ÖÌå - ¿ØÖÆµ¼º½À¸Í¼±ê¡¢°´Å¥Í¼±êµÈÍ¼ĞÎ·ûºÅµÄ×ÖÌå´óĞ¡</summary>
+            /// <summary>å›¾æ ‡å­—ä½“ - æ§åˆ¶å¯¼èˆªæ å›¾æ ‡ã€æŒ‰é’®å›¾æ ‡ç­‰å›¾å½¢ç¬¦å·çš„å­—ä½“å¤§å°</summary>
             public Font Icon;
-            /// <summary>ÆÕÍ¨ÎÄ×Ö×ÖÌå - ¿ØÖÆÕıÎÄÄÚÈİ¡¢ÁĞ±íÏî¡¢×´Ì¬À¸ÎÄ×ÖµÈÍ¨ÓÃÎÄ±¾</summary>
+            /// <summary>æ™®é€šæ–‡å­—å­—ä½“ - æ§åˆ¶æ­£æ–‡å†…å®¹ã€åˆ—è¡¨é¡¹ã€çŠ¶æ€æ æ–‡å­—ç­‰é€šç”¨æ–‡æœ¬</summary>
             public Font Text;
-            /// <summary>±êÌâ×ÖÌå - ¿ØÖÆ´°¿Ú±êÌâ¡¢Ò³Ãæ±êÌâ¡¢·Ö×é±êÌâµÈÖØÒª±êÌâÎÄ±¾</summary>
+            /// <summary>æ ‡é¢˜å­—ä½“ - æ§åˆ¶çª—å£æ ‡é¢˜ã€é¡µé¢æ ‡é¢˜ã€åˆ†ç»„æ ‡é¢˜ç­‰é‡è¦æ ‡é¢˜æ–‡æœ¬</summary>
             public Font Title;
-            /// <summary>°´Å¥×ÖÌå - ¿ØÖÆÆÕÍ¨°´Å¥ÉÏµÄÎÄ×Ö´óĞ¡</summary>
+            /// <summary>æŒ‰é’®å­—ä½“ - æ§åˆ¶æ™®é€šæŒ‰é’®ä¸Šçš„æ–‡å­—å¤§å°</summary>
             public Font Button;
-            /// <summary>±êÇ©×ÖÌå - ¿ØÖÆ±íµ¥±êÇ©¡¢ËµÃ÷ÎÄ×Ö¡¢·Ö×é±êÇ©µÈ±êÇ©ÎÄ±¾</summary>
+            /// <summary>æ ‡ç­¾å­—ä½“ - æ§åˆ¶è¡¨å•æ ‡ç­¾ã€è¯´æ˜æ–‡å­—ã€åˆ†ç»„æ ‡ç­¾ç­‰æ ‡ç­¾æ–‡æœ¬</summary>
             public Font Label;
-            /// <summary>ÊäÈë¿ò×ÖÌå - ¿ØÖÆÎÄ±¾¿ò¡¢ÏÂÀ­¿òµÈÊäÈë¿Ø¼şÄÚµÄÎÄ×Ö´óĞ¡</summary>
+            /// <summary>è¾“å…¥æ¡†å­—ä½“ - æ§åˆ¶æ–‡æœ¬æ¡†ã€ä¸‹æ‹‰æ¡†ç­‰è¾“å…¥æ§ä»¶å†…çš„æ–‡å­—å¤§å°</summary>
             public Font Input;
-            /// <summary>ÌáÊ¾×ÖÌå - ¿ØÖÆÕ¼Î»·ûÎÄ×Ö¡¢´íÎóÌáÊ¾¡¢¸¨ÖúËµÃ÷µÈ´ÎÒªÎÄ±¾</summary>
+            /// <summary>æç¤ºå­—ä½“ - æ§åˆ¶å ä½ç¬¦æ–‡å­—ã€é”™è¯¯æç¤ºã€è¾…åŠ©è¯´æ˜ç­‰æ¬¡è¦æ–‡æœ¬</summary>
             public Font Hint;
-            /// <summary>ÄÚÈİ×ÖÌå - ¿ØÖÆÊı¾İ±í¸ñµ¥Ôª¸ñ¡¢ÏêÇéÄÚÈİµÈÖ÷ÒªÊı¾İÏÔÊ¾ÎÄ±¾</summary>
+            /// <summary>å†…å®¹å­—ä½“ - æ§åˆ¶æ•°æ®è¡¨æ ¼å•å…ƒæ ¼ã€è¯¦æƒ…å†…å®¹ç­‰ä¸»è¦æ•°æ®æ˜¾ç¤ºæ–‡æœ¬</summary>
             public Font Content;
-            /// <summary>±íÍ·×ÖÌå - ¿ØÖÆÊı¾İ±í¸ñ±íÍ·¡¢µ¯´°±êÌâÀ¸µÈ±êÌâĞĞÎÄ±¾</summary>
+            /// <summary>è¡¨å¤´å­—ä½“ - æ§åˆ¶æ•°æ®è¡¨æ ¼è¡¨å¤´ã€å¼¹çª—æ ‡é¢˜æ ç­‰æ ‡é¢˜è¡Œæ–‡æœ¬</summary>
             public Font Header;
-            /// <summary>Ò©Íè±êÇ©×ÖÌå - ¿ØÖÆ×´Ì¬±êÇ©£¨¼ì²âÖĞ¡¢ÒÑ¼ì²âµÈ£©ÉÏµÄÎÄ×Ö´óĞ¡</summary>
+            /// <summary>è¯ä¸¸æ ‡ç­¾å­—ä½“ - æ§åˆ¶çŠ¶æ€æ ‡ç­¾ï¼ˆæ£€æµ‹ä¸­ã€å·²æ£€æµ‹ç­‰ï¼‰ä¸Šçš„æ–‡å­—å¤§å°</summary>
             public Font Pill;
-            /// <summary>URL×ÖÌå - ¿ØÖÆÁ´½ÓµØÖ·µÄÏÔÊ¾×ÖÌå£¬Í¨³£Ê¹ÓÃµÈ¿í×ÖÌå±ãÓÚÔÄ¶Á</summary>
+            /// <summary>URLå­—ä½“ - æ§åˆ¶é“¾æ¥åœ°å€çš„æ˜¾ç¤ºå­—ä½“ï¼Œé€šå¸¸ä½¿ç”¨ç­‰å®½å­—ä½“ä¾¿äºé˜…è¯»</summary>
             public Font Url;
-            /// <summary>¼¤»î×´Ì¬×ÖÌå - ¿ØÖÆÑ¡ÖĞ/¼¤»î×´Ì¬µÄÎÄ×Ö£¨Èçµ¼º½À¸Ñ¡ÖĞÏî£©</summary>
+            /// <summary>æ¿€æ´»çŠ¶æ€å­—ä½“ - æ§åˆ¶é€‰ä¸­/æ¿€æ´»çŠ¶æ€çš„æ–‡å­—ï¼ˆå¦‚å¯¼èˆªæ é€‰ä¸­é¡¹ï¼‰</summary>
             public Font Active;
-            /// <summary>Õı³£×´Ì¬×ÖÌå - ¿ØÖÆÎ´Ñ¡ÖĞ/ÆÕÍ¨×´Ì¬µÄÎÄ×Ö£¨Èçµ¼º½À¸Î´Ñ¡ÖĞÏî£©</summary>
+            /// <summary>æ­£å¸¸çŠ¶æ€å­—ä½“ - æ§åˆ¶æœªé€‰ä¸­/æ™®é€šçŠ¶æ€çš„æ–‡å­—ï¼ˆå¦‚å¯¼èˆªæ æœªé€‰ä¸­é¡¹ï¼‰</summary>
             public Font Normal;
-            /// <summary>´ó°´Å¥×ÖÌå - ¿ØÖÆÖ÷Òª²Ù×÷°´Å¥£¨Èç¿ªÊ¼¼ì²â£©ÉÏµÄÎÄ×Ö´óĞ¡</summary>
+            /// <summary>å¤§æŒ‰é’®å­—ä½“ - æ§åˆ¶ä¸»è¦æ“ä½œæŒ‰é’®ï¼ˆå¦‚å¼€å§‹æ£€æµ‹ï¼‰ä¸Šçš„æ–‡å­—å¤§å°</summary>
             public Font Btn;
 
             public void Initialize(float dpiScale, FontDefaults defaults)
@@ -1215,7 +1215,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ×ÖÌåÄ¬ÈÏÖµÅäÖÃ - ÓÃÓÚ¸÷ÇøÓò³õÊ¼»¯
+        /// å­—ä½“é»˜è®¤å€¼é…ç½® - ç”¨äºå„åŒºåŸŸåˆå§‹åŒ–
         /// </summary>
         private class FontDefaults
         {
@@ -1236,60 +1236,60 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ²¼¾ÖÅäÖÃÀà - ¸÷ÇøÓòµÄ´óĞ¡ºÍÎ»ÖÃÉèÖÃ
-        /// Ã¿¸ö²¼¾Ö²ÎÊı¿ØÖÆÌØ¶¨×é¼şµÄ³ß´ç¡¢¼ä¾à»òÎ»ÖÃ£¬¿É¶ÀÁ¢µ÷Õû²¼¾ÖĞ§¹û
+        /// å¸ƒå±€é…ç½®ç±» - å„åŒºåŸŸçš„å¤§å°å’Œä½ç½®è®¾ç½®
+        /// æ¯ä¸ªå¸ƒå±€å‚æ•°æ§åˆ¶ç‰¹å®šç»„ä»¶çš„å°ºå¯¸ã€é—´è·æˆ–ä½ç½®ï¼Œå¯ç‹¬ç«‹è°ƒæ•´å¸ƒå±€æ•ˆæœ
         /// </summary>
         private class LayoutConfig
         {
-            /// <summary>¿í¶È - ¿ØÖÆÇøÓò»ò¿Ø¼şµÄÕûÌå¿í¶È</summary>
+            /// <summary>å®½åº¦ - æ§åˆ¶åŒºåŸŸæˆ–æ§ä»¶çš„æ•´ä½“å®½åº¦</summary>
             public int Width;
-            /// <summary>¸ß¶È - ¿ØÖÆÇøÓò»ò¿Ø¼şµÄÕûÌå¸ß¶È</summary>
+            /// <summary>é«˜åº¦ - æ§åˆ¶åŒºåŸŸæˆ–æ§ä»¶çš„æ•´ä½“é«˜åº¦</summary>
             public int Height;
-            /// <summary>×îĞ¡¿í¶È - ¿ØÖÆ´°¿Ú»ò¿Ø¼şµÄ×îĞ¡¿í¶ÈÏŞÖÆ</summary>
+            /// <summary>æœ€å°å®½åº¦ - æ§åˆ¶çª—å£æˆ–æ§ä»¶çš„æœ€å°å®½åº¦é™åˆ¶</summary>
             public int MinWidth;
-            /// <summary>×îĞ¡¸ß¶È - ¿ØÖÆ´°¿Ú»ò¿Ø¼şµÄ×îĞ¡¸ß¶ÈÏŞÖÆ</summary>
+            /// <summary>æœ€å°é«˜åº¦ - æ§åˆ¶çª—å£æˆ–æ§ä»¶çš„æœ€å°é«˜åº¦é™åˆ¶</summary>
             public int MinHeight;
-            /// <summary>ÄÚ±ß¾à - ¿ØÖÆÇøÓòÄÚ²¿ÄÚÈİÓë±ß½çµÄ¾àÀë</summary>
+            /// <summary>å†…è¾¹è· - æ§åˆ¶åŒºåŸŸå†…éƒ¨å†…å®¹ä¸è¾¹ç•Œçš„è·ç¦»</summary>
             public int Padding;
-            /// <summary>Íâ±ß¾à - ¿ØÖÆÇøÓòÓëÆäËûÔªËØÖ®¼äµÄ¾àÀë</summary>
+            /// <summary>å¤–è¾¹è· - æ§åˆ¶åŒºåŸŸä¸å…¶ä»–å…ƒç´ ä¹‹é—´çš„è·ç¦»</summary>
             public int Margin;
-            /// <summary>¼ä¾à - ¿ØÖÆÇøÓòÄÚÔªËØÖ®¼äµÄÍ¨ÓÃ¼ä¾à</summary>
+            /// <summary>é—´è· - æ§åˆ¶åŒºåŸŸå†…å…ƒç´ ä¹‹é—´çš„é€šç”¨é—´è·</summary>
             public int Gap;
-            /// <summary>×óÆ«ÒÆ - ¿ØÖÆÔªËØÏà¶ÔÓÚ¸¸ÈİÆ÷×ó²àµÄÎ»ÖÃ</summary>
+            /// <summary>å·¦åç§» - æ§åˆ¶å…ƒç´ ç›¸å¯¹äºçˆ¶å®¹å™¨å·¦ä¾§çš„ä½ç½®</summary>
             public int Left;
-            /// <summary>ÉÏÆ«ÒÆ - ¿ØÖÆÔªËØÏà¶ÔÓÚ¸¸ÈİÆ÷¶¥²¿µÄÎ»ÖÃ</summary>
+            /// <summary>ä¸Šåç§» - æ§åˆ¶å…ƒç´ ç›¸å¯¹äºçˆ¶å®¹å™¨é¡¶éƒ¨çš„ä½ç½®</summary>
             public int Top;
-            /// <summary>ÓÒÆ«ÒÆ - ¿ØÖÆÔªËØÏà¶ÔÓÚ¸¸ÈİÆ÷ÓÒ²àµÄÎ»ÖÃ</summary>
+            /// <summary>å³åç§» - æ§åˆ¶å…ƒç´ ç›¸å¯¹äºçˆ¶å®¹å™¨å³ä¾§çš„ä½ç½®</summary>
             public int Right;
-            /// <summary>ÏÂÆ«ÒÆ - ¿ØÖÆÔªËØÏà¶ÔÓÚ¸¸ÈİÆ÷µ×²¿µÄÎ»ÖÃ</summary>
+            /// <summary>ä¸‹åç§» - æ§åˆ¶å…ƒç´ ç›¸å¯¹äºçˆ¶å®¹å™¨åº•éƒ¨çš„ä½ç½®</summary>
             public int Bottom;
-            /// <summary>Í¼±ê´óĞ¡ - ¿ØÖÆÍ¼±ê»òÍ¼ĞÎÔªËØµÄ³ß´ç£¨Í¨³£ÎªÕı·½ĞÎ£©</summary>
+            /// <summary>å›¾æ ‡å¤§å° - æ§åˆ¶å›¾æ ‡æˆ–å›¾å½¢å…ƒç´ çš„å°ºå¯¸ï¼ˆé€šå¸¸ä¸ºæ­£æ–¹å½¢ï¼‰</summary>
             public int IconSize;
-            /// <summary>Í¼±ê¼ä¾à - ¿ØÖÆÍ¼±êÓëÏàÁÚÔªËØ£¨ÈçÎÄ×Ö£©Ö®¼äµÄ¾àÀë</summary>
+            /// <summary>å›¾æ ‡é—´è· - æ§åˆ¶å›¾æ ‡ä¸ç›¸é‚»å…ƒç´ ï¼ˆå¦‚æ–‡å­—ï¼‰ä¹‹é—´çš„è·ç¦»</summary>
             public int IconGap;
-            /// <summary>±êÌâÀ¸¸ß¶È - ¿ØÖÆ±êÌâÀ¸ÇøÓòµÄ¸ß¶È</summary>
+            /// <summary>æ ‡é¢˜æ é«˜åº¦ - æ§åˆ¶æ ‡é¢˜æ åŒºåŸŸçš„é«˜åº¦</summary>
             public int TitleHeight;
-            /// <summary>±êÌâ¼ä¾à - ¿ØÖÆ±êÌâÔªËØÖ®¼äµÄ´¹Ö±¼ä¾à</summary>
+            /// <summary>æ ‡é¢˜é—´è· - æ§åˆ¶æ ‡é¢˜å…ƒç´ ä¹‹é—´çš„å‚ç›´é—´è·</summary>
             public int TitleGap;
-            /// <summary>°´Å¥¸ß¶È - ¿ØÖÆ°´Å¥¿Ø¼şµÄ¸ß¶È</summary>
+            /// <summary>æŒ‰é’®é«˜åº¦ - æ§åˆ¶æŒ‰é’®æ§ä»¶çš„é«˜åº¦</summary>
             public int BtnHeight;
-            /// <summary>°´Å¥¿í¶È - ¿ØÖÆ°´Å¥¿Ø¼şµÄ¿í¶È</summary>
+            /// <summary>æŒ‰é’®å®½åº¦ - æ§åˆ¶æŒ‰é’®æ§ä»¶çš„å®½åº¦</summary>
             public int BtnWidth;
-            /// <summary>°´Å¥¼ä¾à - ¿ØÖÆ¶à¸ö°´Å¥Ö®¼äµÄ¼ä¾à</summary>
+            /// <summary>æŒ‰é’®é—´è· - æ§åˆ¶å¤šä¸ªæŒ‰é’®ä¹‹é—´çš„é—´è·</summary>
             public int BtnGap;
-            /// <summary>±êÇ©¿í¶È - ¿ØÖÆ±íµ¥±êÇ©»òËµÃ÷ÎÄ×ÖµÄ¿í¶È</summary>
+            /// <summary>æ ‡ç­¾å®½åº¦ - æ§åˆ¶è¡¨å•æ ‡ç­¾æˆ–è¯´æ˜æ–‡å­—çš„å®½åº¦</summary>
             public int LabelWidth;
-            /// <summary>±êÇ©¼ä¾à - ¿ØÖÆ±êÇ©Óë¹ØÁª¿Ø¼şÖ®¼äµÄ¾àÀë</summary>
+            /// <summary>æ ‡ç­¾é—´è· - æ§åˆ¶æ ‡ç­¾ä¸å…³è”æ§ä»¶ä¹‹é—´çš„è·ç¦»</summary>
             public int LabelGap;
-            /// <summary>ÊäÈë¿ò¸ß¶È - ¿ØÖÆÎÄ±¾¿ò¡¢ÏÂÀ­¿òµÈÊäÈë¿Ø¼şµÄ¸ß¶È</summary>
+            /// <summary>è¾“å…¥æ¡†é«˜åº¦ - æ§åˆ¶æ–‡æœ¬æ¡†ã€ä¸‹æ‹‰æ¡†ç­‰è¾“å…¥æ§ä»¶çš„é«˜åº¦</summary>
             public int InputHeight;
-            /// <summary>Ô²½Ç°ë¾¶ - ¿ØÖÆ°´Å¥¡¢ÊäÈë¿ò¡¢µ¯´°µÈ¿Ø¼şµÄÔ²½Ç´óĞ¡</summary>
+            /// <summary>åœ†è§’åŠå¾„ - æ§åˆ¶æŒ‰é’®ã€è¾“å…¥æ¡†ã€å¼¹çª—ç­‰æ§ä»¶çš„åœ†è§’å¤§å°</summary>
             public int CornerRadius;
-            /// <summary>ĞĞ¸ß¶È - ¿ØÖÆÊı¾İ±í¸ñĞĞ»òÁĞ±íÏîµÄ¸ß¶È</summary>
+            /// <summary>è¡Œé«˜åº¦ - æ§åˆ¶æ•°æ®è¡¨æ ¼è¡Œæˆ–åˆ—è¡¨é¡¹çš„é«˜åº¦</summary>
             public int RowHeight;
-            /// <summary>±íÍ·¸ß¶È - ¿ØÖÆÊı¾İ±í¸ñ±íÍ·ĞĞµÄ¸ß¶È</summary>
+            /// <summary>è¡¨å¤´é«˜åº¦ - æ§åˆ¶æ•°æ®è¡¨æ ¼è¡¨å¤´è¡Œçš„é«˜åº¦</summary>
             public int HeaderHeight;
-            /// <summary>·Ö¸îÏß¿í¶È - ¿ØÖÆ·Ö¸ôÔªËØµÄÏßÌõ¿í¶È</summary>
+            /// <summary>åˆ†å‰²çº¿å®½åº¦ - æ§åˆ¶åˆ†éš”å…ƒç´ çš„çº¿æ¡å®½åº¦</summary>
             public int DividerWidth;
 
             public void Initialize(LayoutDefaults defaults)
@@ -1323,7 +1323,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ²¼¾ÖÄ¬ÈÏÖµÅäÖÃ - ÓÃÓÚ¸÷ÇøÓò³õÊ¼»¯
+        /// å¸ƒå±€é»˜è®¤å€¼é…ç½® - ç”¨äºå„åŒºåŸŸåˆå§‹åŒ–
         /// </summary>
         private class LayoutDefaults
         {
@@ -1355,101 +1355,101 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÅäÉ«ÅäÖÃÀà - ¸÷ÇøÓòµÄÑÕÉ«ÉèÖÃ
-        /// °üº¬±³¾°É«¡¢Ç°¾°É«¡¢±ß¿òÉ«¡¢°´Å¥ÑÕÉ«¡¢×´Ì¬ÑÕÉ«µÈ£¬Ö§³ÖÍêÕûµÄÖ÷ÌâÅäÉ«
-        /// Í¨¹ıĞŞ¸ÄÕâĞ©ÑÕÉ«Öµ£¬¿ÉÒÔ×Ô¶¨Òå½çÃæÍâ¹Û£¬ÊµÏÖÖ÷ÌâÇĞ»»Ğ§¹û
+        /// é…è‰²é…ç½®ç±» - å„åŒºåŸŸçš„é¢œè‰²è®¾ç½®
+        /// åŒ…å«èƒŒæ™¯è‰²ã€å‰æ™¯è‰²ã€è¾¹æ¡†è‰²ã€æŒ‰é’®é¢œè‰²ã€çŠ¶æ€é¢œè‰²ç­‰ï¼Œæ”¯æŒå®Œæ•´çš„ä¸»é¢˜é…è‰²
+        /// é€šè¿‡ä¿®æ”¹è¿™äº›é¢œè‰²å€¼ï¼Œå¯ä»¥è‡ªå®šä¹‰ç•Œé¢å¤–è§‚ï¼Œå®ç°ä¸»é¢˜åˆ‡æ¢æ•ˆæœ
         /// </summary>
         private class ColorConfig
         {
-            /// <summary>±³¾°É« - ¿Ø¼ş»òÇøÓòµÄÖ÷±³¾°É«£¬Èç´°¿Ú±³¾°¡¢Ãæ°å±³¾°</summary>
+            /// <summary>èƒŒæ™¯è‰² - æ§ä»¶æˆ–åŒºåŸŸçš„ä¸»èƒŒæ™¯è‰²ï¼Œå¦‚çª—å£èƒŒæ™¯ã€é¢æ¿èƒŒæ™¯</summary>
             public Color Background;
-            /// <summary>Ç³É«±³¾° - ÓÃÓÚ´ÎÒªÇøÓò»òĞü¸¡Ğ§¹û£¬±ÈÖ÷±³¾°É«ÉÔÇ³</summary>
+            /// <summary>æµ…è‰²èƒŒæ™¯ - ç”¨äºæ¬¡è¦åŒºåŸŸæˆ–æ‚¬æµ®æ•ˆæœï¼Œæ¯”ä¸»èƒŒæ™¯è‰²ç¨æµ…</summary>
             public Color BackgroundLight;
-            /// <summary>ÉîÉ«±³¾° - ÓÃÓÚÇ¿µ÷»òÒõÓ°Ğ§¹û£¬±ÈÖ÷±³¾°É«¸üÉî</summary>
+            /// <summary>æ·±è‰²èƒŒæ™¯ - ç”¨äºå¼ºè°ƒæˆ–é˜´å½±æ•ˆæœï¼Œæ¯”ä¸»èƒŒæ™¯è‰²æ›´æ·±</summary>
             public Color BackgroundDark;
-            /// <summary>Ç°¾°É« - Ö÷ÒªÎÄ×ÖÑÕÉ«£¬ÓÃÓÚ±êÌâ¡¢ÕıÎÄµÈÖØÒªÎÄ±¾</summary>
+            /// <summary>å‰æ™¯è‰² - ä¸»è¦æ–‡å­—é¢œè‰²ï¼Œç”¨äºæ ‡é¢˜ã€æ­£æ–‡ç­‰é‡è¦æ–‡æœ¬</summary>
             public Color Foreground;
-            /// <summary>´ÎÒªÇ°¾°É« - ´ÎÒªÎÄ×Ö»ò¸¨ÖúĞÅÏ¢ÑÕÉ«£¬Èç¸±±êÌâ¡¢ÌáÊ¾ÎÄ×Ö</summary>
+            /// <summary>æ¬¡è¦å‰æ™¯è‰² - æ¬¡è¦æ–‡å­—æˆ–è¾…åŠ©ä¿¡æ¯é¢œè‰²ï¼Œå¦‚å‰¯æ ‡é¢˜ã€æç¤ºæ–‡å­—</summary>
             public Color ForegroundSecondary;
-            /// <summary>½ûÓÃÇ°¾°É« - ½ûÓÃ×´Ì¬µÄÎÄ×ÖÑÕÉ«£¬Í¨³£Îª»ÒÉ«</summary>
+            /// <summary>ç¦ç”¨å‰æ™¯è‰² - ç¦ç”¨çŠ¶æ€çš„æ–‡å­—é¢œè‰²ï¼Œé€šå¸¸ä¸ºç°è‰²</summary>
             public Color ForegroundDisabled;
-            /// <summary>±ß¿òÉ« - ¿Ø¼ş±ß¿òÑÕÉ«£¬ÓÃÓÚ·Ö¸ô²»Í¬ÇøÓò»ò¿Ø¼ş</summary>
+            /// <summary>è¾¹æ¡†è‰² - æ§ä»¶è¾¹æ¡†é¢œè‰²ï¼Œç”¨äºåˆ†éš”ä¸åŒåŒºåŸŸæˆ–æ§ä»¶</summary>
             public Color Border;
-            /// <summary>Ç³É«±ß¿ò - ¸üÏ¸»ò¸üÇ³µÄ±ß¿ò£¬ÓÃÓÚ´ÎÒª·Ö¸ô</summary>
+            /// <summary>æµ…è‰²è¾¹æ¡† - æ›´ç»†æˆ–æ›´æµ…çš„è¾¹æ¡†ï¼Œç”¨äºæ¬¡è¦åˆ†éš”</summary>
             public Color BorderLight;
-            /// <summary>±êÌâ±³¾°É« - µ¯´°±êÌâÀ¸±³¾°É«</summary>
+            /// <summary>æ ‡é¢˜èƒŒæ™¯è‰² - å¼¹çª—æ ‡é¢˜æ èƒŒæ™¯è‰²</summary>
             public Color Title;
-            /// <summary>Ö÷É«µ÷ - Æ·ÅÆÉ«£¬ÓÃÓÚÖ÷Òª°´Å¥¡¢Ñ¡ÖĞ×´Ì¬¡¢Ç¿µ÷ÔªËØ</summary>
+            /// <summary>ä¸»è‰²è°ƒ - å“ç‰Œè‰²ï¼Œç”¨äºä¸»è¦æŒ‰é’®ã€é€‰ä¸­çŠ¶æ€ã€å¼ºè°ƒå…ƒç´ </summary>
             public Color Primary;
-            /// <summary>Ö÷É«µ÷ĞüÍ£ - Êó±êĞüÍ£ÔÚÖ÷É«µ÷ÔªËØÉÏÊ±µÄÑÕÉ«</summary>
+            /// <summary>ä¸»è‰²è°ƒæ‚¬åœ - é¼ æ ‡æ‚¬åœåœ¨ä¸»è‰²è°ƒå…ƒç´ ä¸Šæ—¶çš„é¢œè‰²</summary>
             public Color PrimaryHover;
-            /// <summary>Ö÷É«µ÷¼¤»î - µã»÷Ö÷É«µ÷ÔªËØÊ±µÄÑÕÉ«</summary>
+            /// <summary>ä¸»è‰²è°ƒæ¿€æ´» - ç‚¹å‡»ä¸»è‰²è°ƒå…ƒç´ æ—¶çš„é¢œè‰²</summary>
             public Color PrimaryActive;
-            /// <summary>Ç¿µ÷É« - ÓÃÓÚÌØÊâÇ¿µ÷»ò¸ßÁÁÔªËØ£¬Èç´íÎóÌáÊ¾¡¢¾¯¸æ</summary>
+            /// <summary>å¼ºè°ƒè‰² - ç”¨äºç‰¹æ®Šå¼ºè°ƒæˆ–é«˜äº®å…ƒç´ ï¼Œå¦‚é”™è¯¯æç¤ºã€è­¦å‘Š</summary>
             public Color Accent;
-            /// <summary>Ç¿µ÷É«ĞüÍ£ - Êó±êĞüÍ£ÔÚÇ¿µ÷É«ÔªËØÉÏÊ±µÄÑÕÉ«</summary>
+            /// <summary>å¼ºè°ƒè‰²æ‚¬åœ - é¼ æ ‡æ‚¬åœåœ¨å¼ºè°ƒè‰²å…ƒç´ ä¸Šæ—¶çš„é¢œè‰²</summary>
             public Color AccentHover;
-            /// <summary>°´Å¥±³¾°É« - °´Å¥µÄÄ¬ÈÏ±³¾°É«</summary>
+            /// <summary>æŒ‰é’®èƒŒæ™¯è‰² - æŒ‰é’®çš„é»˜è®¤èƒŒæ™¯è‰²</summary>
             public Color Button;
-            /// <summary>°´Å¥ĞüÍ£É« - Êó±êĞüÍ£Ê±µÄ°´Å¥±³¾°É«</summary>
+            /// <summary>æŒ‰é’®æ‚¬åœè‰² - é¼ æ ‡æ‚¬åœæ—¶çš„æŒ‰é’®èƒŒæ™¯è‰²</summary>
             public Color ButtonHover;
-            /// <summary>°´Å¥¼¤»îÉ« - µã»÷Ê±µÄ°´Å¥±³¾°É«</summary>
+            /// <summary>æŒ‰é’®æ¿€æ´»è‰² - ç‚¹å‡»æ—¶çš„æŒ‰é’®èƒŒæ™¯è‰²</summary>
             public Color ButtonActive;
-            /// <summary>°´Å¥ÎÄ×ÖÉ« - °´Å¥ÉÏÎÄ×ÖµÄÑÕÉ«</summary>
+            /// <summary>æŒ‰é’®æ–‡å­—è‰² - æŒ‰é’®ä¸Šæ–‡å­—çš„é¢œè‰²</summary>
             public Color ButtonText;
-            /// <summary>°´Å¥½ûÓÃÎÄ×ÖÉ« - ½ûÓÃ×´Ì¬µÄ°´Å¥ÎÄ×ÖÑÕÉ«</summary>
+            /// <summary>æŒ‰é’®ç¦ç”¨æ–‡å­—è‰² - ç¦ç”¨çŠ¶æ€çš„æŒ‰é’®æ–‡å­—é¢œè‰²</summary>
             public Color ButtonTextDisabled;
-            /// <summary>±êÇ©ÑÕÉ« - ±êÇ©ÎÄ×ÖÑÕÉ«£¬Èç±íµ¥±êÇ©¡¢·Ö×é±êÇ©</summary>
+            /// <summary>æ ‡ç­¾é¢œè‰² - æ ‡ç­¾æ–‡å­—é¢œè‰²ï¼Œå¦‚è¡¨å•æ ‡ç­¾ã€åˆ†ç»„æ ‡ç­¾</summary>
             public Color Label;
-            /// <summary>´ÎÒª±êÇ©ÑÕÉ« - ´ÎÒª±êÇ©ÎÄ×ÖÑÕÉ«£¬Èç¸¨ÖúËµÃ÷±êÇ©</summary>
+            /// <summary>æ¬¡è¦æ ‡ç­¾é¢œè‰² - æ¬¡è¦æ ‡ç­¾æ–‡å­—é¢œè‰²ï¼Œå¦‚è¾…åŠ©è¯´æ˜æ ‡ç­¾</summary>
             public Color LabelSecondary;
-            /// <summary>ÊäÈë¿ò±³¾°É« - ÎÄ±¾¿ò¡¢ÏÂÀ­¿òµÈÊäÈë¿Ø¼şµÄ±³¾°É«</summary>
+            /// <summary>è¾“å…¥æ¡†èƒŒæ™¯è‰² - æ–‡æœ¬æ¡†ã€ä¸‹æ‹‰æ¡†ç­‰è¾“å…¥æ§ä»¶çš„èƒŒæ™¯è‰²</summary>
             public Color Input;
-            /// <summary>ÊäÈë¿ò¾Û½¹É« - ÊäÈë¿ò»ñµÃ½¹µãÊ±µÄ±ß¿òÉ«£¬ÓÃÓÚÌáÊ¾µ±Ç°½¹µãÎ»ÖÃ</summary>
+            /// <summary>è¾“å…¥æ¡†èšç„¦è‰² - è¾“å…¥æ¡†è·å¾—ç„¦ç‚¹æ—¶çš„è¾¹æ¡†è‰²ï¼Œç”¨äºæç¤ºå½“å‰ç„¦ç‚¹ä½ç½®</summary>
             public Color InputFocus;
-            /// <summary>ÊäÈë¿òÎÄ×ÖÉ« - ÊäÈë¿òÄÚÎÄ×ÖÑÕÉ«</summary>
+            /// <summary>è¾“å…¥æ¡†æ–‡å­—è‰² - è¾“å…¥æ¡†å†…æ–‡å­—é¢œè‰²</summary>
             public Color InputText;
-            /// <summary>ÊäÈë¿òÕ¼Î»·ûÉ« - ÊäÈë¿òÕ¼Î»·ûÌáÊ¾ÎÄ×ÖÑÕÉ«</summary>
+            /// <summary>è¾“å…¥æ¡†å ä½ç¬¦è‰² - è¾“å…¥æ¡†å ä½ç¬¦æç¤ºæ–‡å­—é¢œè‰²</summary>
             public Color InputPlaceholder;
-            /// <summary>³É¹¦×´Ì¬É« - ³É¹¦ÌáÊ¾¡¢ÑéÖ¤Í¨¹ıµÈ×´Ì¬ÑÕÉ«£¨Í¨³£ÎªÂÌÉ«£©</summary>
+            /// <summary>æˆåŠŸçŠ¶æ€è‰² - æˆåŠŸæç¤ºã€éªŒè¯é€šè¿‡ç­‰çŠ¶æ€é¢œè‰²ï¼ˆé€šå¸¸ä¸ºç»¿è‰²ï¼‰</summary>
             public Color Success;
-            /// <summary>¾¯¸æ×´Ì¬É« - ¾¯¸æÌáÊ¾¡¢ĞèÒª×¢ÒâµÈ×´Ì¬ÑÕÉ«£¨Í¨³£Îª³ÈÉ«£©</summary>
+            /// <summary>è­¦å‘ŠçŠ¶æ€è‰² - è­¦å‘Šæç¤ºã€éœ€è¦æ³¨æ„ç­‰çŠ¶æ€é¢œè‰²ï¼ˆé€šå¸¸ä¸ºæ©™è‰²ï¼‰</summary>
             public Color Warning;
-            /// <summary>´íÎó×´Ì¬É« - ´íÎóÌáÊ¾¡¢ÑéÖ¤Ê§°ÜµÈ×´Ì¬ÑÕÉ«£¨Í¨³£ÎªºìÉ«£©</summary>
+            /// <summary>é”™è¯¯çŠ¶æ€è‰² - é”™è¯¯æç¤ºã€éªŒè¯å¤±è´¥ç­‰çŠ¶æ€é¢œè‰²ï¼ˆé€šå¸¸ä¸ºçº¢è‰²ï¼‰</summary>
             public Color Error;
-            /// <summary>ĞÅÏ¢×´Ì¬É« - ÆÕÍ¨ĞÅÏ¢ÌáÊ¾ÑÕÉ«£¨Í¨³£ÎªÀ¶É«£©</summary>
+            /// <summary>ä¿¡æ¯çŠ¶æ€è‰² - æ™®é€šä¿¡æ¯æç¤ºé¢œè‰²ï¼ˆé€šå¸¸ä¸ºè“è‰²ï¼‰</summary>
             public Color Info;
-            /// <summary>Ò©Íè±³¾°É« - Ò©Íè±êÇ©µÄ±³¾°É«£¬Èç"¼ì²âÖĞ"¡¢"ÒÑ¼ì²â"±êÇ©</summary>
+            /// <summary>è¯ä¸¸èƒŒæ™¯è‰² - è¯ä¸¸æ ‡ç­¾çš„èƒŒæ™¯è‰²ï¼Œå¦‚"æ£€æµ‹ä¸­"ã€"å·²æ£€æµ‹"æ ‡ç­¾</summary>
             public Color Pill;
-            /// <summary>Ò©ÍèÎÄ×ÖÉ« - Ò©Íè±êÇ©ÉÏµÄÎÄ×ÖÑÕÉ«</summary>
+            /// <summary>è¯ä¸¸æ–‡å­—è‰² - è¯ä¸¸æ ‡ç­¾ä¸Šçš„æ–‡å­—é¢œè‰²</summary>
             public Color PillText;
-            /// <summary>Ñ¡ÖĞ×´Ì¬É« - Ñ¡ÖĞÏîµÄ±³¾°É«£¬Èçµ¼º½À¸Ñ¡ÖĞÏî¡¢ÁĞ±íÑ¡ÖĞÏî</summary>
+            /// <summary>é€‰ä¸­çŠ¶æ€è‰² - é€‰ä¸­é¡¹çš„èƒŒæ™¯è‰²ï¼Œå¦‚å¯¼èˆªæ é€‰ä¸­é¡¹ã€åˆ—è¡¨é€‰ä¸­é¡¹</summary>
             public Color Selected;
-            /// <summary>Ñ¡ÖĞĞüÍ£É« - Ñ¡ÖĞÏîĞüÍ£Ê±µÄ±³¾°É«</summary>
+            /// <summary>é€‰ä¸­æ‚¬åœè‰² - é€‰ä¸­é¡¹æ‚¬åœæ—¶çš„èƒŒæ™¯è‰²</summary>
             public Color SelectedHover;
-            /// <summary>¹ö¶¯Ìõ±³¾°É« - ¹ö¶¯Ìõ¹ìµÀÑÕÉ«</summary>
+            /// <summary>æ»šåŠ¨æ¡èƒŒæ™¯è‰² - æ»šåŠ¨æ¡è½¨é“é¢œè‰²</summary>
             public Color ScrollBar;
-            /// <summary>¹ö¶¯ÌõĞüÍ£É« - ¹ö¶¯ÌõĞüÍ£Ê±µÄÑÕÉ«</summary>
+            /// <summary>æ»šåŠ¨æ¡æ‚¬åœè‰² - æ»šåŠ¨æ¡æ‚¬åœæ—¶çš„é¢œè‰²</summary>
             public Color ScrollBarHover;
-            /// <summary>¹ö¶¯Ìõ»¬¿éÉ« - ¹ö¶¯ÌõÍÏ¶¯¿éÑÕÉ«</summary>
+            /// <summary>æ»šåŠ¨æ¡æ»‘å—è‰² - æ»šåŠ¨æ¡æ‹–åŠ¨å—é¢œè‰²</summary>
             public Color ScrollBarThumb;
-            /// <summary>·Ö¸îÏßÑÕÉ« - ·Ö¸ô¿Ø¼şµÄÏßÌõÑÕÉ«</summary>
+            /// <summary>åˆ†å‰²çº¿é¢œè‰² - åˆ†éš”æ§ä»¶çš„çº¿æ¡é¢œè‰²</summary>
             public Color Divider;
-            /// <summary>±íÍ·±³¾°É« - Êı¾İ±í¸ñ±íÍ·µÄ±³¾°É«</summary>
+            /// <summary>è¡¨å¤´èƒŒæ™¯è‰² - æ•°æ®è¡¨æ ¼è¡¨å¤´çš„èƒŒæ™¯è‰²</summary>
             public Color Header;
-            /// <summary>±íÍ·ÎÄ×ÖÉ« - Êı¾İ±í¸ñ±íÍ·µÄÎÄ×ÖÑÕÉ«</summary>
+            /// <summary>è¡¨å¤´æ–‡å­—è‰² - æ•°æ®è¡¨æ ¼è¡¨å¤´çš„æ–‡å­—é¢œè‰²</summary>
             public Color HeaderText;
-            /// <summary>ĞĞ±³¾°É« - Êı¾İ±í¸ñĞĞµÄ±³¾°É«</summary>
+            /// <summary>è¡ŒèƒŒæ™¯è‰² - æ•°æ®è¡¨æ ¼è¡Œçš„èƒŒæ™¯è‰²</summary>
             public Color Row;
-            /// <summary>ĞĞĞüÍ£É« - Êó±êĞüÍ£Ê±ĞĞµÄ±³¾°É«</summary>
+            /// <summary>è¡Œæ‚¬åœè‰² - é¼ æ ‡æ‚¬åœæ—¶è¡Œçš„èƒŒæ™¯è‰²</summary>
             public Color RowHover;
-            /// <summary>½»ÌæĞĞ±³¾°É« - Êı¾İ±í¸ñ½»ÌæĞĞµÄ±³¾°É«£¬ÓÃÓÚÇø·ÖÏàÁÚĞĞ</summary>
+            /// <summary>äº¤æ›¿è¡ŒèƒŒæ™¯è‰² - æ•°æ®è¡¨æ ¼äº¤æ›¿è¡Œçš„èƒŒæ™¯è‰²ï¼Œç”¨äºåŒºåˆ†ç›¸é‚»è¡Œ</summary>
             public Color RowAlternate;
 
             /// <summary>
-            /// ³õÊ¼»¯ÅäÉ«ÅäÖÃ
+            /// åˆå§‹åŒ–é…è‰²é…ç½®
             /// </summary>
-            /// <param name="defaults">ÅäÉ«Ä¬ÈÏÖµÅäÖÃ</param>
+            /// <param name="defaults">é…è‰²é»˜è®¤å€¼é…ç½®</param>
             public void Initialize(ColorDefaults defaults)
             {
                 Background = defaults.Background;
@@ -1498,8 +1498,8 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÅäÉ«Ä¬ÈÏÖµÅäÖÃ - ÓÃÓÚ¸÷ÇøÓò³õÊ¼»¯Ê±Ö¸¶¨×Ô¶¨ÒåÑÕÉ«
-        /// Î´Ö¸¶¨µÄ²ÎÊıÄ¬ÈÏÎªColor.Empty£¬±íÊ¾Ê¹ÓÃÏµÍ³Ä¬ÈÏÑÕÉ«
+        /// é…è‰²é»˜è®¤å€¼é…ç½® - ç”¨äºå„åŒºåŸŸåˆå§‹åŒ–æ—¶æŒ‡å®šè‡ªå®šä¹‰é¢œè‰²
+        /// æœªæŒ‡å®šçš„å‚æ•°é»˜è®¤ä¸ºColor.Emptyï¼Œè¡¨ç¤ºä½¿ç”¨ç³»ç»Ÿé»˜è®¤é¢œè‰²
         /// </summary>
         private class ColorDefaults
         {
@@ -1548,158 +1548,158 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// È«¾ÖÅäÖÃÀà - Í³Ò»¹ÜÀíÓ¦ÓÃ³ÌĞòÖĞËùÓĞÇøÓòµÄ×ÖÌå¡¢²¼¾ÖºÍÅäÉ«ÉèÖÃ
-        /// °´¹¦ÄÜÇøÓò·Ö×é£¬Ã¿¸öÇøÓò°üº¬¶ÀÁ¢µÄ×ÖÌå(Font)¡¢²¼¾Ö(Layout)ºÍÅäÉ«(Color)ÅäÖÃ
-        /// Í¨¹ıĞŞ¸Ä¸÷ÇøÓòÅäÖÃ£¬¿ÉÒÔ¶ÀÁ¢µ÷ÕûÃ¿¸ö×é¼şµÄÑùÊ½¶ø²»Ó°ÏìÆäËûÇøÓò
+        /// å…¨å±€é…ç½®ç±» - ç»Ÿä¸€ç®¡ç†åº”ç”¨ç¨‹åºä¸­æ‰€æœ‰åŒºåŸŸçš„å­—ä½“ã€å¸ƒå±€å’Œé…è‰²è®¾ç½®
+        /// æŒ‰åŠŸèƒ½åŒºåŸŸåˆ†ç»„ï¼Œæ¯ä¸ªåŒºåŸŸåŒ…å«ç‹¬ç«‹çš„å­—ä½“(Font)ã€å¸ƒå±€(Layout)å’Œé…è‰²(Color)é…ç½®
+        /// é€šè¿‡ä¿®æ”¹å„åŒºåŸŸé…ç½®ï¼Œå¯ä»¥ç‹¬ç«‹è°ƒæ•´æ¯ä¸ªç»„ä»¶çš„æ ·å¼è€Œä¸å½±å“å…¶ä»–åŒºåŸŸ
         /// </summary>
         private class AppConfig
         {
-            #region Ö÷´°¿ÚÅäÖÃ - ¿ØÖÆÕû¸öÓ¦ÓÃ´°¿ÚµÄ»ù´¡ÊôĞÔ
-            /// <summary>Ö÷´°¿ÚÅäÖÃ - ¿ØÖÆ´°¿ÚÕûÌå³ß´ç¡¢×îĞ¡³ß´çÏŞÖÆ¡¢±³¾°É«¡¢±ß¿òÉ«µÈ
-            /// Font¿ØÖÆ£ºText - ´°¿ÚÄÚÍ¨ÓÃÎÄ×Ö×ÖÌå
-            /// Layout¿ØÖÆ£ºWidth/Height(´°¿Ú´óĞ¡)¡¢MinWidth/MinHeight(×îĞ¡³ß´ç)¡¢Gap(·Ö¸ô¼ä¾à)
-            /// Color¿ØÖÆ£ºBackground(´°¿Ú±³¾°)¡¢BackgroundLight(Ç³É«±³¾°)¡¢Foreground(ÎÄ×ÖÑÕÉ«)¡¢Border(±ß¿òÉ«)
+            #region ä¸»çª—å£é…ç½® - æ§åˆ¶æ•´ä¸ªåº”ç”¨çª—å£çš„åŸºç¡€å±æ€§
+            /// <summary>ä¸»çª—å£é…ç½® - æ§åˆ¶çª—å£æ•´ä½“å°ºå¯¸ã€æœ€å°å°ºå¯¸é™åˆ¶ã€èƒŒæ™¯è‰²ã€è¾¹æ¡†è‰²ç­‰
+            /// Fontæ§åˆ¶ï¼šText - çª—å£å†…é€šç”¨æ–‡å­—å­—ä½“
+            /// Layoutæ§åˆ¶ï¼šWidth/Height(çª—å£å¤§å°)ã€MinWidth/MinHeight(æœ€å°å°ºå¯¸)ã€Gap(åˆ†éš”é—´è·)
+            /// Coloræ§åˆ¶ï¼šBackground(çª—å£èƒŒæ™¯)ã€BackgroundLight(æµ…è‰²èƒŒæ™¯)ã€Foreground(æ–‡å­—é¢œè‰²)ã€Border(è¾¹æ¡†è‰²)
             /// </summary>
             public RegionConfig Window = new RegionConfig();
             #endregion
 
-            #region ±êÌâÀ¸ÅäÖÃ - ¿ØÖÆ´°¿Ú¶¥²¿±êÌâÀ¸ÇøÓò
-            /// <summary>±êÌâÀ¸ÅäÖÃ - ¿ØÖÆ±êÌâÀ¸¸ß¶È¡¢´°¿ÚÍ¼±ê¡¢±êÌâÎÄ×Ö¡¢´°¿Ú¿ØÖÆ°´Å¥(×îĞ¡»¯/×î´ó»¯/¹Ø±Õ)
-            /// Font¿ØÖÆ£ºTitle - ±êÌâÎÄ×Ö×ÖÌå¡¢Icon - ´°¿ÚÍ¼±ê×ÖÌå
-            /// Layout¿ØÖÆ£ºHeight(±êÌâÀ¸¸ß¶È)¡¢Left(Í¼±ê×óÆ«ÒÆ)¡¢IconSize(Í¼±ê´óĞ¡)¡¢IconGap(Í¼±êÓëÎÄ×Ö¼ä¾à)¡¢BtnWidth(¿ØÖÆ°´Å¥¿í¶È)
-            /// Color¿ØÖÆ£ºBackground(±êÌâÀ¸±³¾°)¡¢Foreground(±êÌâÎÄ×Ö)¡¢Button(¿ØÖÆ°´Å¥±³¾°)¡¢ButtonHover(°´Å¥ĞüÍ£)¡¢ButtonText(°´Å¥ÎÄ×Ö)
+            #region æ ‡é¢˜æ é…ç½® - æ§åˆ¶çª—å£é¡¶éƒ¨æ ‡é¢˜æ åŒºåŸŸ
+            /// <summary>æ ‡é¢˜æ é…ç½® - æ§åˆ¶æ ‡é¢˜æ é«˜åº¦ã€çª—å£å›¾æ ‡ã€æ ‡é¢˜æ–‡å­—ã€çª—å£æ§åˆ¶æŒ‰é’®(æœ€å°åŒ–/æœ€å¤§åŒ–/å…³é—­)
+            /// Fontæ§åˆ¶ï¼šTitle - æ ‡é¢˜æ–‡å­—å­—ä½“ã€Icon - çª—å£å›¾æ ‡å­—ä½“
+            /// Layoutæ§åˆ¶ï¼šHeight(æ ‡é¢˜æ é«˜åº¦)ã€Left(å›¾æ ‡å·¦åç§»)ã€IconSize(å›¾æ ‡å¤§å°)ã€IconGap(å›¾æ ‡ä¸æ–‡å­—é—´è·)ã€BtnWidth(æ§åˆ¶æŒ‰é’®å®½åº¦)
+            /// Coloræ§åˆ¶ï¼šBackground(æ ‡é¢˜æ èƒŒæ™¯)ã€Foreground(æ ‡é¢˜æ–‡å­—)ã€Button(æ§åˆ¶æŒ‰é’®èƒŒæ™¯)ã€ButtonHover(æŒ‰é’®æ‚¬åœ)ã€ButtonText(æŒ‰é’®æ–‡å­—)
             /// </summary>
             public RegionConfig TitleBar = new RegionConfig();
             #endregion
 
-            #region µ¼º½À¸ÅäÖÃ - ¿ØÖÆ×ó²à´¹Ö±µ¼º½ÇøÓò
-            /// <summary>µ¼º½À¸ÅäÖÃ - ¿ØÖÆ×ó²à´¹Ö±µ¼º½À¸¿í¶È¡¢Í¼±ê´óĞ¡¡¢µ¼º½ÎÄ×Ö¡¢Ñ¡ÖĞ/ĞüÍ£×´Ì¬
-            /// Font¿ØÖÆ£ºIcon - µ¼º½Í¼±ê×ÖÌå¡¢Text - µ¼º½ÎÄ×Ö×ÖÌå¡¢Active - Ñ¡ÖĞ×´Ì¬ÎÄ×Ö¡¢Normal - Õı³£×´Ì¬ÎÄ×Ö
-            /// Layout¿ØÖÆ£ºWidth(µ¼º½À¸¿í¶È)¡¢IconSize(Í¼±ê´óĞ¡)¡¢Gap(µ¼º½Ïî¼ä¾à)¡¢Top(¶¥²¿Æ«ÒÆ)¡¢IconGap(Í¼±êÓëÎÄ×Ö¼ä¾à)
-            /// Color¿ØÖÆ£ºBackground(µ¼º½À¸±³¾°)¡¢Selected(Ñ¡ÖĞÏî±³¾°)¡¢SelectedHover(Ñ¡ÖĞĞüÍ£)¡¢Foreground(µ¼º½ÎÄ×Ö)¡¢Primary(Ñ¡ÖĞ±ß¿ò)¡¢Border(·Ö¸ôÏß)
+            #region å¯¼èˆªæ é…ç½® - æ§åˆ¶å·¦ä¾§å‚ç›´å¯¼èˆªåŒºåŸŸ
+            /// <summary>å¯¼èˆªæ é…ç½® - æ§åˆ¶å·¦ä¾§å‚ç›´å¯¼èˆªæ å®½åº¦ã€å›¾æ ‡å¤§å°ã€å¯¼èˆªæ–‡å­—ã€é€‰ä¸­/æ‚¬åœçŠ¶æ€
+            /// Fontæ§åˆ¶ï¼šIcon - å¯¼èˆªå›¾æ ‡å­—ä½“ã€Text - å¯¼èˆªæ–‡å­—å­—ä½“ã€Active - é€‰ä¸­çŠ¶æ€æ–‡å­—ã€Normal - æ­£å¸¸çŠ¶æ€æ–‡å­—
+            /// Layoutæ§åˆ¶ï¼šWidth(å¯¼èˆªæ å®½åº¦)ã€IconSize(å›¾æ ‡å¤§å°)ã€Gap(å¯¼èˆªé¡¹é—´è·)ã€Top(é¡¶éƒ¨åç§»)ã€IconGap(å›¾æ ‡ä¸æ–‡å­—é—´è·)
+            /// Coloræ§åˆ¶ï¼šBackground(å¯¼èˆªæ èƒŒæ™¯)ã€Selected(é€‰ä¸­é¡¹èƒŒæ™¯)ã€SelectedHover(é€‰ä¸­æ‚¬åœ)ã€Foreground(å¯¼èˆªæ–‡å­—)ã€Primary(é€‰ä¸­è¾¹æ¡†)ã€Border(åˆ†éš”çº¿)
             /// </summary>
             public RegionConfig Navigation = new RegionConfig();
             #endregion
 
-            #region ËÑË÷Ãæ°åÅäÖÃ - ¿ØÖÆ¶¥²¿ËÑË÷ºÍ·Ö×éÑ¡ÔñÇøÓò
-            /// <summary>ËÑË÷Ãæ°åÅäÖÃ - ¿ØÖÆ¶¥²¿ËÑË÷À¸¸ß¶È¡¢ËÑË÷±êÇ©¡¢ÊäÈë¿ò¡¢·Ö×éÏÂÀ­¿ò¡¢ËÑË÷°´Å¥
-            /// Font¿ØÖÆ£ºLabel - "ËÑÒ»ËÑ"/"·Ö×é"±êÇ©×ÖÌå¡¢Input - ÊäÈë¿ò×ÖÌå¡¢Text - °´Å¥ÎÄ×Ö×ÖÌå
-            /// Layout¿ØÖÆ£ºHeight(ËÑË÷À¸¸ß¶È)¡¢Left(×ó²àÆ«ÒÆ)¡¢Padding(ÄÚ±ß¾à)¡¢Gap/BtnWidth/BtnHeight(°´Å¥³ß´ç)¡¢CornerRadius(Ô²½Ç)
-            /// Color¿ØÖÆ£ºBackground(ËÑË÷À¸±³¾°)¡¢Input(ÊäÈë¿ò±³¾°)¡¢InputFocus(¾Û½¹±ß¿ò)¡¢InputText(ÊäÈëÎÄ×Ö)¡¢InputPlaceholder(Õ¼Î»·û)¡¢Label(±êÇ©ÑÕÉ«)¡¢Button/ButtonHover/ButtonText(°´Å¥ÑùÊ½)
+            #region æœç´¢é¢æ¿é…ç½® - æ§åˆ¶é¡¶éƒ¨æœç´¢å’Œåˆ†ç»„é€‰æ‹©åŒºåŸŸ
+            /// <summary>æœç´¢é¢æ¿é…ç½® - æ§åˆ¶é¡¶éƒ¨æœç´¢æ é«˜åº¦ã€æœç´¢æ ‡ç­¾ã€è¾“å…¥æ¡†ã€åˆ†ç»„ä¸‹æ‹‰æ¡†ã€æœç´¢æŒ‰é’®
+            /// Fontæ§åˆ¶ï¼šLabel - "æœä¸€æœ"/"åˆ†ç»„"æ ‡ç­¾å­—ä½“ã€Input - è¾“å…¥æ¡†å­—ä½“ã€Text - æŒ‰é’®æ–‡å­—å­—ä½“
+            /// Layoutæ§åˆ¶ï¼šHeight(æœç´¢æ é«˜åº¦)ã€Left(å·¦ä¾§åç§»)ã€Padding(å†…è¾¹è·)ã€Gap/BtnWidth/BtnHeight(æŒ‰é’®å°ºå¯¸)ã€CornerRadius(åœ†è§’)
+            /// Coloræ§åˆ¶ï¼šBackground(æœç´¢æ èƒŒæ™¯)ã€Input(è¾“å…¥æ¡†èƒŒæ™¯)ã€InputFocus(èšç„¦è¾¹æ¡†)ã€InputText(è¾“å…¥æ–‡å­—)ã€InputPlaceholder(å ä½ç¬¦)ã€Label(æ ‡ç­¾é¢œè‰²)ã€Button/ButtonHover/ButtonText(æŒ‰é’®æ ·å¼)
             /// </summary>
             public RegionConfig SearchPanel = new RegionConfig();
             #endregion
 
-            #region ×ó²à²Ù×÷ÇøÅäÖÃ - ¿ØÖÆÊı¾İ±í¸ñ×ó²àµÄ²Ù×÷°´Å¥ÇøÓò
-            /// <summary>×ó²à²Ù×÷ÇøÅäÖÃ - ¿ØÖÆ"Ñ¡ÔñÎÄ¼ş"¡¢"¿ªÊ¼¼ì²â"¡¢"µ¼³ö"¡¢"Ö±²¥Ô´Éú³ÉÆ÷"µÈ²Ù×÷°´Å¥
-            /// Font¿ØÖÆ£ºTitle - ÇøÓò±êÌâ×ÖÌå¡¢Button - °´Å¥ÎÄ×Ö×ÖÌå¡¢Content - ËµÃ÷ÎÄ×Ö¡¢Label - ·Ö×é±êÇ©×ÖÌå
-            /// Layout¿ØÖÆ£ºWidth(ÇøÓò¿í¶È)¡¢Padding(ÄÚ±ß¾à)¡¢BtnHeight(°´Å¥¸ß¶È)¡¢BtnGap(°´Å¥¼ä¾à)¡¢Gap/Top/IconGap(²¼¾Ö²ÎÊı)
-            /// Color¿ØÖÆ£ºBackground(ÇøÓò±³¾°)¡¢Button/ButtonHover/ButtonActive/ButtonText(°´Å¥ÑùÊ½)¡¢Border(±ß¿ò)
+            #region å·¦ä¾§æ“ä½œåŒºé…ç½® - æ§åˆ¶æ•°æ®è¡¨æ ¼å·¦ä¾§çš„æ“ä½œæŒ‰é’®åŒºåŸŸ
+            /// <summary>å·¦ä¾§æ“ä½œåŒºé…ç½® - æ§åˆ¶"é€‰æ‹©æ–‡ä»¶"ã€"å¼€å§‹æ£€æµ‹"ã€"å¯¼å‡º"ã€"ç›´æ’­æºç”Ÿæˆå™¨"ç­‰æ“ä½œæŒ‰é’®
+            /// Fontæ§åˆ¶ï¼šTitle - åŒºåŸŸæ ‡é¢˜å­—ä½“ã€Button - æŒ‰é’®æ–‡å­—å­—ä½“ã€Content - è¯´æ˜æ–‡å­—ã€Label - åˆ†ç»„æ ‡ç­¾å­—ä½“
+            /// Layoutæ§åˆ¶ï¼šWidth(åŒºåŸŸå®½åº¦)ã€Padding(å†…è¾¹è·)ã€BtnHeight(æŒ‰é’®é«˜åº¦)ã€BtnGap(æŒ‰é’®é—´è·)ã€Gap/Top/IconGap(å¸ƒå±€å‚æ•°)
+            /// Coloræ§åˆ¶ï¼šBackground(åŒºåŸŸèƒŒæ™¯)ã€Button/ButtonHover/ButtonActive/ButtonText(æŒ‰é’®æ ·å¼)ã€Border(è¾¹æ¡†)
             /// </summary>
             public RegionConfig ActionArea = new RegionConfig();
             #endregion
 
-            #region Êı¾İ±í¸ñÅäÖÃ - ¿ØÖÆÖ÷Êı¾İÏÔÊ¾ÇøÓò
-            /// <summary>Êı¾İ±í¸ñÅäÖÃ - ¿ØÖÆÊı¾İ±í¸ñ±íÍ·¡¢ĞĞ¡¢ÁĞ¡¢·Ö¸îÏß¡¢¹ö¶¯Ìõ
-            /// Font¿ØÖÆ£ºContent - µ¥Ôª¸ñÄÚÈİ×ÖÌå¡¢Header - ±íÍ·×ÖÌå¡¢Pill - ×´Ì¬±êÇ©×ÖÌå¡¢Button - ²Ù×÷°´Å¥×ÖÌå¡¢Url - URLÁ´½Ó×ÖÌå
-            /// Layout¿ØÖÆ£ºHeaderHeight(±íÍ·¸ß¶È)¡¢RowHeight(ĞĞ¸ß¶È)¡¢Padding(ÄÚ±ß¾à)¡¢DividerWidth(·Ö¸îÏß¿í¶È)
-            /// Color¿ØÖÆ£ºBackground(±í¸ñ±³¾°)¡¢Header/HeaderText(±íÍ·ÑùÊ½)¡¢Row/RowHover/RowAlternate(ĞĞÑùÊ½)¡¢Foreground/ForegroundSecondary(ÎÄ×Ö)¡¢Divider(·Ö¸îÏß)¡¢ScrollBarÏà¹Ø(¹ö¶¯Ìõ)
+            #region æ•°æ®è¡¨æ ¼é…ç½® - æ§åˆ¶ä¸»æ•°æ®æ˜¾ç¤ºåŒºåŸŸ
+            /// <summary>æ•°æ®è¡¨æ ¼é…ç½® - æ§åˆ¶æ•°æ®è¡¨æ ¼è¡¨å¤´ã€è¡Œã€åˆ—ã€åˆ†å‰²çº¿ã€æ»šåŠ¨æ¡
+            /// Fontæ§åˆ¶ï¼šContent - å•å…ƒæ ¼å†…å®¹å­—ä½“ã€Header - è¡¨å¤´å­—ä½“ã€Pill - çŠ¶æ€æ ‡ç­¾å­—ä½“ã€Button - æ“ä½œæŒ‰é’®å­—ä½“ã€Url - URLé“¾æ¥å­—ä½“
+            /// Layoutæ§åˆ¶ï¼šHeaderHeight(è¡¨å¤´é«˜åº¦)ã€RowHeight(è¡Œé«˜åº¦)ã€Padding(å†…è¾¹è·)ã€DividerWidth(åˆ†å‰²çº¿å®½åº¦)
+            /// Coloræ§åˆ¶ï¼šBackground(è¡¨æ ¼èƒŒæ™¯)ã€Header/HeaderText(è¡¨å¤´æ ·å¼)ã€Row/RowHover/RowAlternate(è¡Œæ ·å¼)ã€Foreground/ForegroundSecondary(æ–‡å­—)ã€Divider(åˆ†å‰²çº¿)ã€ScrollBarç›¸å…³(æ»šåŠ¨æ¡)
             /// </summary>
             public RegionConfig DataGrid = new RegionConfig();
             #endregion
 
-            #region ×´Ì¬À¸ÅäÖÃ - ¿ØÖÆµ×²¿×´Ì¬ĞÅÏ¢ÇøÓò
-            /// <summary>×´Ì¬À¸ÅäÖÃ - ¿ØÖÆµ×²¿×´Ì¬À¸¸ß¶È¡¢¼ì²âÊıÁ¿¡¢ÔËĞĞ×´Ì¬¡¢Ö÷ÌâÇĞ»»°´Å¥
-            /// Font¿ØÖÆ£ºText - ×´Ì¬ÎÄ×Ö×ÖÌå
-            /// Layout¿ØÖÆ£ºHeight(×´Ì¬À¸¸ß¶È)¡¢Padding(ÄÚ±ß¾à)¡¢Gap(ÔªËØ¼ä¾à)¡¢BtnHeight(°´Å¥¸ß¶È)¡¢IconSize(Í¼±ê´óĞ¡)¡¢CornerRadius(Ô²½Ç)
-            /// Color¿ØÖÆ£ºBackground(×´Ì¬À¸±³¾°)¡¢Foreground/ForegroundSecondary(ÎÄ×Ö)¡¢Button/ButtonHover/ButtonText(°´Å¥ÑùÊ½)¡¢Border(±ß¿ò)
+            #region çŠ¶æ€æ é…ç½® - æ§åˆ¶åº•éƒ¨çŠ¶æ€ä¿¡æ¯åŒºåŸŸ
+            /// <summary>çŠ¶æ€æ é…ç½® - æ§åˆ¶åº•éƒ¨çŠ¶æ€æ é«˜åº¦ã€æ£€æµ‹æ•°é‡ã€è¿è¡ŒçŠ¶æ€ã€ä¸»é¢˜åˆ‡æ¢æŒ‰é’®
+            /// Fontæ§åˆ¶ï¼šText - çŠ¶æ€æ–‡å­—å­—ä½“
+            /// Layoutæ§åˆ¶ï¼šHeight(çŠ¶æ€æ é«˜åº¦)ã€Padding(å†…è¾¹è·)ã€Gap(å…ƒç´ é—´è·)ã€BtnHeight(æŒ‰é’®é«˜åº¦)ã€IconSize(å›¾æ ‡å¤§å°)ã€CornerRadius(åœ†è§’)
+            /// Coloræ§åˆ¶ï¼šBackground(çŠ¶æ€æ èƒŒæ™¯)ã€Foreground/ForegroundSecondary(æ–‡å­—)ã€Button/ButtonHover/ButtonText(æŒ‰é’®æ ·å¼)ã€Border(è¾¹æ¡†)
             /// </summary>
             public RegionConfig StatusBar = new RegionConfig();
             #endregion
 
-            #region Ò©Íè±êÇ©ÅäÖÃ - ¿ØÖÆ×´Ì¬±êÇ©ÑùÊ½
-            /// <summary>Ò©Íè±êÇ©ÅäÖÃ - ¿ØÖÆ"¼ì²âÖĞ"¡¢"ÒÑ¼ì²â"¡¢"²»¿ÉÓÃ"µÈ×´Ì¬±êÇ©µÄÍâ¹Û
-            /// Font¿ØÖÆ£ºPill - Ò©ÍèÎÄ×Ö×ÖÌå
-            /// Layout¿ØÖÆ£ºHeight(Ò©Íè¸ß¶È)¡¢CornerRadius(Ô²½Ç£¬Í¨³£ÉèÎª¸ß¶ÈÒ»°ë)¡¢Padding(ÄÚ±ß¾à)
-            /// Color¿ØÖÆ£ºPill(Ò©Íè±³¾°)¡¢PillText(Ò©ÍèÎÄ×Ö)¡¢Success/Warning/Error/Info(²»Í¬×´Ì¬ÑÕÉ«)
+            #region è¯ä¸¸æ ‡ç­¾é…ç½® - æ§åˆ¶çŠ¶æ€æ ‡ç­¾æ ·å¼
+            /// <summary>è¯ä¸¸æ ‡ç­¾é…ç½® - æ§åˆ¶"æ£€æµ‹ä¸­"ã€"å·²æ£€æµ‹"ã€"ä¸å¯ç”¨"ç­‰çŠ¶æ€æ ‡ç­¾çš„å¤–è§‚
+            /// Fontæ§åˆ¶ï¼šPill - è¯ä¸¸æ–‡å­—å­—ä½“
+            /// Layoutæ§åˆ¶ï¼šHeight(è¯ä¸¸é«˜åº¦)ã€CornerRadius(åœ†è§’ï¼Œé€šå¸¸è®¾ä¸ºé«˜åº¦ä¸€åŠ)ã€Padding(å†…è¾¹è·)
+            /// Coloræ§åˆ¶ï¼šPill(è¯ä¸¸èƒŒæ™¯)ã€PillText(è¯ä¸¸æ–‡å­—)ã€Success/Warning/Error/Info(ä¸åŒçŠ¶æ€é¢œè‰²)
             /// </summary>
             public RegionConfig Pill = new RegionConfig();
             #endregion
 
-            #region ²Ù×÷°´Å¥ÅäÖÃ - ¿ØÖÆ±í¸ñÄÚ²Ù×÷°´Å¥ÑùÊ½
-            /// <summary>²Ù×÷°´Å¥ÅäÖÃ - ¿ØÖÆÊı¾İ±í¸ñÄÚÃ¿ĞĞµÄ"¸´ÖÆ"ºÍ"²¥·Å"Ğ¡°´Å¥
-            /// Font¿ØÖÆ£ºButton - °´Å¥ÎÄ×Ö×ÖÌå
-            /// Layout¿ØÖÆ£ºHeight/Width(°´Å¥³ß´ç)¡¢CornerRadius(Ô²½Ç)¡¢Gap(°´Å¥¼ä¾à)
-            /// Color¿ØÖÆ£ºButton/ButtonHover/ButtonActive(°´Å¥±³¾°)¡¢ButtonText(°´Å¥ÎÄ×Ö)¡¢Border(±ß¿ò)
+            #region æ“ä½œæŒ‰é’®é…ç½® - æ§åˆ¶è¡¨æ ¼å†…æ“ä½œæŒ‰é’®æ ·å¼
+            /// <summary>æ“ä½œæŒ‰é’®é…ç½® - æ§åˆ¶æ•°æ®è¡¨æ ¼å†…æ¯è¡Œçš„"å¤åˆ¶"å’Œ"æ’­æ”¾"å°æŒ‰é’®
+            /// Fontæ§åˆ¶ï¼šButton - æŒ‰é’®æ–‡å­—å­—ä½“
+            /// Layoutæ§åˆ¶ï¼šHeight/Width(æŒ‰é’®å°ºå¯¸)ã€CornerRadius(åœ†è§’)ã€Gap(æŒ‰é’®é—´è·)
+            /// Coloræ§åˆ¶ï¼šButton/ButtonHover/ButtonActive(æŒ‰é’®èƒŒæ™¯)ã€ButtonText(æŒ‰é’®æ–‡å­—)ã€Border(è¾¹æ¡†)
             /// </summary>
             public RegionConfig DataGridButton = new RegionConfig();
             #endregion
 
-            #region µ¯´°ÅäÖÃ - ¿ØÖÆ¸÷Ààµ¯´°´°¿Ú
-            /// <summary>µ¯´°ÅäÖÃ - ¿ØÖÆÖ±²¥Ô´Éú³ÉÆ÷´°¿Ú¡¢ÉèÖÃ´°¿Ú¡¢¹ØÓÚ´°¿ÚµÈËùÓĞµ¯´°µÄÑùÊ½
-            /// Font¿ØÖÆ£ºTitle - µ¯´°±êÌâ¡¢Text - ÕıÎÄ¡¢Input - ÊäÈë¿ò¡¢Hint - ÌáÊ¾ÎÄ×Ö¡¢Btn - °´Å¥¡¢Url - URLÏÔÊ¾
-            /// Layout¿ØÖÆ£ºWidth/Height(µ¯´°´óĞ¡)¡¢CornerRadius(Ô²½Ç)¡¢TitleHeight(±êÌâÀ¸¸ß¶È)¡¢Padding(ÄÚ±ß¾à)¡¢BtnWidth/BtnHeight/BtnGap(°´Å¥)¡¢Bottom(µ×²¿Æ«ÒÆ)
-            /// Color¿ØÖÆ£ºBackground/BackgroundLight(±³¾°)¡¢Foreground/ForegroundSecondary(ÎÄ×Ö)¡¢Border(±ß¿ò)¡¢InputÏà¹Ø(ÊäÈë¿ò)¡¢ButtonÏà¹Ø(°´Å¥)¡¢Success/Warning/Error(×´Ì¬É«)
+            #region å¼¹çª—é…ç½® - æ§åˆ¶å„ç±»å¼¹çª—çª—å£
+            /// <summary>å¼¹çª—é…ç½® - æ§åˆ¶ç›´æ’­æºç”Ÿæˆå™¨çª—å£ã€è®¾ç½®çª—å£ã€å…³äºçª—å£ç­‰æ‰€æœ‰å¼¹çª—çš„æ ·å¼
+            /// Fontæ§åˆ¶ï¼šTitle - å¼¹çª—æ ‡é¢˜ã€Text - æ­£æ–‡ã€Input - è¾“å…¥æ¡†ã€Hint - æç¤ºæ–‡å­—ã€Btn - æŒ‰é’®ã€Url - URLæ˜¾ç¤º
+            /// Layoutæ§åˆ¶ï¼šWidth/Height(å¼¹çª—å¤§å°)ã€CornerRadius(åœ†è§’)ã€TitleHeight(æ ‡é¢˜æ é«˜åº¦)ã€Padding(å†…è¾¹è·)ã€BtnWidth/BtnHeight/BtnGap(æŒ‰é’®)ã€Bottom(åº•éƒ¨åç§»)
+            /// Coloræ§åˆ¶ï¼šBackground/BackgroundLight(èƒŒæ™¯)ã€Foreground/ForegroundSecondary(æ–‡å­—)ã€Border(è¾¹æ¡†)ã€Inputç›¸å…³(è¾“å…¥æ¡†)ã€Buttonç›¸å…³(æŒ‰é’®)ã€Success/Warning/Error(çŠ¶æ€è‰²)
             /// </summary>
             public RegionConfig Dialog = new RegionConfig();
             #endregion
 
-            #region ²½ÖèÖ¸Ê¾Æ÷ÅäÖÃ - ¿ØÖÆ²½Öè½ø¶ÈÏÔÊ¾
-            /// <summary>²½ÖèÖ¸Ê¾Æ÷ÅäÖÃ - ¿ØÖÆÖ±²¥Ô´Éú³ÉÆ÷µÈÏòµ¼Ê½½çÃæµÄ²½Öè½ø¶ÈÏÔÊ¾(ÈçStep1/Step2/Step3)
-            /// Font¿ØÖÆ£ºText - ²½ÖèÎÄ×Ö×ÖÌå
-            /// Layout¿ØÖÆ£ºHeight(Ö¸Ê¾Æ÷¸ß¶È)¡¢IconSize(²½ÖèÔ²È¦´óĞ¡)¡¢Gap(²½Öè¼ä¾à)¡¢IconGap(Ô²È¦ÓëÎÄ×Ö¼ä¾à)
-            /// Color¿ØÖÆ£ºBackground(±³¾°)¡¢Primary(µ±Ç°²½ÖèÑÕÉ«)¡¢Border(±ß¿ò)¡¢Foreground/ForegroundSecondary(ÎÄ×Ö)
+            #region æ­¥éª¤æŒ‡ç¤ºå™¨é…ç½® - æ§åˆ¶æ­¥éª¤è¿›åº¦æ˜¾ç¤º
+            /// <summary>æ­¥éª¤æŒ‡ç¤ºå™¨é…ç½® - æ§åˆ¶ç›´æ’­æºç”Ÿæˆå™¨ç­‰å‘å¯¼å¼ç•Œé¢çš„æ­¥éª¤è¿›åº¦æ˜¾ç¤º(å¦‚Step1/Step2/Step3)
+            /// Fontæ§åˆ¶ï¼šText - æ­¥éª¤æ–‡å­—å­—ä½“
+            /// Layoutæ§åˆ¶ï¼šHeight(æŒ‡ç¤ºå™¨é«˜åº¦)ã€IconSize(æ­¥éª¤åœ†åœˆå¤§å°)ã€Gap(æ­¥éª¤é—´è·)ã€IconGap(åœ†åœˆä¸æ–‡å­—é—´è·)
+            /// Coloræ§åˆ¶ï¼šBackground(èƒŒæ™¯)ã€Primary(å½“å‰æ­¥éª¤é¢œè‰²)ã€Border(è¾¹æ¡†)ã€Foreground/ForegroundSecondary(æ–‡å­—)
             /// </summary>
             public RegionConfig StepIndicator = new RegionConfig();
             #endregion
 
-            #region ToastÌáÊ¾ÅäÖÃ - ¿ØÖÆÏûÏ¢ÌáÊ¾¿ò
-            /// <summary>ToastÌáÊ¾ÅäÖÃ - ¿ØÖÆÓÒÏÂ½Çµ¯³öµÄÏûÏ¢ÌáÊ¾¿ò(Èç¸´ÖÆ³É¹¦¡¢µ¼Èë³É¹¦µÈ)
-            /// Font¿ØÖÆ£ºText - ÌáÊ¾ÎÄ×Ö×ÖÌå
-            /// Layout¿ØÖÆ£ºWidth/Height(ÌáÊ¾¿ò´óĞ¡)¡¢CornerRadius(Ô²½Ç)¡¢Right/Bottom(Î»ÖÃ)¡¢IconSize(Í¼±ê)¡¢IconGap(Í¼±ê¼ä¾à)¡¢Gap(ÏÔÊ¾Ê±³¤)
-            /// Color¿ØÖÆ£ºBackground(±³¾°)¡¢Foreground(ÎÄ×Ö)¡¢Border(±ß¿ò)¡¢Success/Warning/Error/Info(²»Í¬ÀàĞÍÑÕÉ«)
+            #region Toastæç¤ºé…ç½® - æ§åˆ¶æ¶ˆæ¯æç¤ºæ¡†
+            /// <summary>Toastæç¤ºé…ç½® - æ§åˆ¶å³ä¸‹è§’å¼¹å‡ºçš„æ¶ˆæ¯æç¤ºæ¡†(å¦‚å¤åˆ¶æˆåŠŸã€å¯¼å…¥æˆåŠŸç­‰)
+            /// Fontæ§åˆ¶ï¼šText - æç¤ºæ–‡å­—å­—ä½“
+            /// Layoutæ§åˆ¶ï¼šWidth/Height(æç¤ºæ¡†å¤§å°)ã€CornerRadius(åœ†è§’)ã€Right/Bottom(ä½ç½®)ã€IconSize(å›¾æ ‡)ã€IconGap(å›¾æ ‡é—´è·)ã€Gap(æ˜¾ç¤ºæ—¶é•¿)
+            /// Coloræ§åˆ¶ï¼šBackground(èƒŒæ™¯)ã€Foreground(æ–‡å­—)ã€Border(è¾¹æ¡†)ã€Success/Warning/Error/Info(ä¸åŒç±»å‹é¢œè‰²)
             /// </summary>
             public RegionConfig Toast = new RegionConfig();
             #endregion
 
-            #region ¿Õ×´Ì¬ÅäÖÃ - ¿ØÖÆÎŞÊı¾İÊ±µÄÏÔÊ¾
-            /// <summary>¿Õ×´Ì¬ÅäÖÃ - ¿ØÖÆÊı¾İ±í¸ñÎª¿ÕÊ±ÏÔÊ¾µÄÌáÊ¾Í¼±êºÍÎÄ×Ö
-            /// Font¿ØÖÆ£ºText - ÌáÊ¾ÎÄ×Ö×ÖÌå
-            /// Layout¿ØÖÆ£ºWidth/Height(ÈİÆ÷´óĞ¡)¡¢IconSize(Í¼±ê´óĞ¡)¡¢IconGap(Í¼±êÓëÎÄ×Ö¼ä¾à)
-            /// Color¿ØÖÆ£ºBackground(±³¾°)¡¢Foreground(ÎÄ×Ö)¡¢Error(ºìÉ«XÍ¼±êÑÕÉ«)
+            #region ç©ºçŠ¶æ€é…ç½® - æ§åˆ¶æ— æ•°æ®æ—¶çš„æ˜¾ç¤º
+            /// <summary>ç©ºçŠ¶æ€é…ç½® - æ§åˆ¶æ•°æ®è¡¨æ ¼ä¸ºç©ºæ—¶æ˜¾ç¤ºçš„æç¤ºå›¾æ ‡å’Œæ–‡å­—
+            /// Fontæ§åˆ¶ï¼šText - æç¤ºæ–‡å­—å­—ä½“
+            /// Layoutæ§åˆ¶ï¼šWidth/Height(å®¹å™¨å¤§å°)ã€IconSize(å›¾æ ‡å¤§å°)ã€IconGap(å›¾æ ‡ä¸æ–‡å­—é—´è·)
+            /// Coloræ§åˆ¶ï¼šBackground(èƒŒæ™¯)ã€Foreground(æ–‡å­—)ã€Error(çº¢è‰²Xå›¾æ ‡é¢œè‰²)
             /// </summary>
             public RegionConfig EmptyState = new RegionConfig();
             #endregion
 
-            #region ÓÒ¼ü²Ëµ¥ÅäÖÃ - ¿ØÖÆÉÏÏÂÎÄ²Ëµ¥ÑùÊ½
-            /// <summary>ÓÒ¼ü²Ëµ¥ÅäÖÃ - ¿ØÖÆÊı¾İ±í¸ñÓÒ¼üµ¯³ö²Ëµ¥µÄÑùÊ½
-            /// Font¿ØÖÆ£ºText - ²Ëµ¥ÏîÎÄ×Ö×ÖÌå
-            /// Layout¿ØÖÆ£ºBtnHeight(²Ëµ¥Ïî¸ß¶È)¡¢Padding(ÄÚ±ß¾à)¡¢IconSize(Í¼±ê´óĞ¡)¡¢IconGap(Í¼±êÓëÎÄ×Ö¼ä¾à)
-            /// Color¿ØÖÆ£ºBackground/BackgroundLight(±³¾°)¡¢Foreground(ÎÄ×Ö)¡¢Selected/SelectedHover(Ñ¡ÖĞ×´Ì¬)¡¢Border(±ß¿ò)¡¢Error(Î£ÏÕ²Ù×÷ÑÕÉ«)
+            #region å³é”®èœå•é…ç½® - æ§åˆ¶ä¸Šä¸‹æ–‡èœå•æ ·å¼
+            /// <summary>å³é”®èœå•é…ç½® - æ§åˆ¶æ•°æ®è¡¨æ ¼å³é”®å¼¹å‡ºèœå•çš„æ ·å¼
+            /// Fontæ§åˆ¶ï¼šText - èœå•é¡¹æ–‡å­—å­—ä½“
+            /// Layoutæ§åˆ¶ï¼šBtnHeight(èœå•é¡¹é«˜åº¦)ã€Padding(å†…è¾¹è·)ã€IconSize(å›¾æ ‡å¤§å°)ã€IconGap(å›¾æ ‡ä¸æ–‡å­—é—´è·)
+            /// Coloræ§åˆ¶ï¼šBackground/BackgroundLight(èƒŒæ™¯)ã€Foreground(æ–‡å­—)ã€Selected/SelectedHover(é€‰ä¸­çŠ¶æ€)ã€Border(è¾¹æ¡†)ã€Error(å±é™©æ“ä½œé¢œè‰²)
             /// </summary>
             public RegionConfig ContextMenu = new RegionConfig();
             #endregion
 
-            #region ToggleSwitch¿Ø¼şÅäÖÃ - ¿ØÖÆ¿ª¹Ø¿Ø¼şÑùÊ½
-            /// <summary>ToggleSwitch¿Ø¼şÅäÖÃ - ¿ØÖÆÖ÷ÌâÇĞ»»µÈ¿ª¹Ø¿Ø¼şµÄÑùÊ½
-            /// Font¿ØÖÆ£ºText - ¿ª¹ØÄÚ²¿ÎÄ×Ö×ÖÌå
-            /// Layout¿ØÖÆ£ºWidth/Height(¿ª¹Ø´óĞ¡)¡¢IconSize(ÄÚ²¿»¬¿é´óĞ¡)
-            /// Color¿ØÖÆ£ºBackground(¹Ø±Õ×´Ì¬±³¾°)¡¢Primary(¿ªÆô×´Ì¬±³¾°)¡¢Foreground(»¬¿éÑÕÉ«)¡¢Border(±ß¿ò)
+            #region ToggleSwitchæ§ä»¶é…ç½® - æ§åˆ¶å¼€å…³æ§ä»¶æ ·å¼
+            /// <summary>ToggleSwitchæ§ä»¶é…ç½® - æ§åˆ¶ä¸»é¢˜åˆ‡æ¢ç­‰å¼€å…³æ§ä»¶çš„æ ·å¼
+            /// Fontæ§åˆ¶ï¼šText - å¼€å…³å†…éƒ¨æ–‡å­—å­—ä½“
+            /// Layoutæ§åˆ¶ï¼šWidth/Height(å¼€å…³å¤§å°)ã€IconSize(å†…éƒ¨æ»‘å—å¤§å°)
+            /// Coloræ§åˆ¶ï¼šBackground(å…³é—­çŠ¶æ€èƒŒæ™¯)ã€Primary(å¼€å¯çŠ¶æ€èƒŒæ™¯)ã€Foreground(æ»‘å—é¢œè‰²)ã€Border(è¾¹æ¡†)
             /// </summary>
             public RegionConfig ToggleSwitch = new RegionConfig();
             #endregion
 
             /// <summary>
-            /// ³õÊ¼»¯ËùÓĞÇøÓòÅäÖÃ
-            /// ÎªÃ¿¸öÇøÓòÉèÖÃÄ¬ÈÏµÄ×ÖÌå¡¢²¼¾ÖºÍÅäÉ«²ÎÊı
-            /// ĞŞ¸ÄÕâÀïµÄ²ÎÊı¿ÉÒÔµ÷Õû¶ÔÓ¦ÇøÓòµÄÍâ¹Û
+            /// åˆå§‹åŒ–æ‰€æœ‰åŒºåŸŸé…ç½®
+            /// ä¸ºæ¯ä¸ªåŒºåŸŸè®¾ç½®é»˜è®¤çš„å­—ä½“ã€å¸ƒå±€å’Œé…è‰²å‚æ•°
+            /// ä¿®æ”¹è¿™é‡Œçš„å‚æ•°å¯ä»¥è°ƒæ•´å¯¹åº”åŒºåŸŸçš„å¤–è§‚
             /// </summary>
-            /// <param name="dpiScale">DPIËõ·ÅÒò×Ó£¬ÓÃÓÚÊÊÅä²»Í¬·Ö±æÂÊ</param>
+            /// <param name="dpiScale">DPIç¼©æ”¾å› å­ï¼Œç”¨äºé€‚é…ä¸åŒåˆ†è¾¨ç‡</param>
             public void Initialize(float dpiScale)
             {
-                // ==================== Ö÷´°¿ÚÅäÖÃ ====================
-                // ¿ØÖÆ£º´°¿ÚÕûÌå³ß´ç¡¢×îĞ¡³ß´ç¡¢±³¾°É«
-                // µ÷Õû²ÎÊı£ºMinWidth/MinHeight¿ØÖÆ´°¿Ú×îĞ¡´óĞ¡
+                // ==================== ä¸»çª—å£é…ç½® ====================
+                // æ§åˆ¶ï¼šçª—å£æ•´ä½“å°ºå¯¸ã€æœ€å°å°ºå¯¸ã€èƒŒæ™¯è‰²
+                // è°ƒæ•´å‚æ•°ï¼šMinWidth/MinHeightæ§åˆ¶çª—å£æœ€å°å¤§å°
                 Window.Layout.Initialize(new LayoutDefaults
                 {
                     Width = 0, Height = 0, MinWidth = 1280, MinHeight = 800,
@@ -1717,9 +1717,9 @@ namespace IPTVLiveChecker
                     Border = Color.FromArgb(60, 60, 60)
                 });
 
-                // ==================== ±êÌâÀ¸ÅäÖÃ ====================
-                // ¿ØÖÆ£º´°¿Ú¶¥²¿±êÌâÀ¸¸ß¶È¡¢Í¼±ê¡¢´°¿Ú¿ØÖÆ°´Å¥
-                // µ÷Õû²ÎÊı£ºHeight¿ØÖÆ±êÌâÀ¸¸ß¶È£¬IconSize¿ØÖÆ´°¿ÚÍ¼±ê´óĞ¡
+                // ==================== æ ‡é¢˜æ é…ç½® ====================
+                // æ§åˆ¶ï¼šçª—å£é¡¶éƒ¨æ ‡é¢˜æ é«˜åº¦ã€å›¾æ ‡ã€çª—å£æ§åˆ¶æŒ‰é’®
+                // è°ƒæ•´å‚æ•°ï¼šHeightæ§åˆ¶æ ‡é¢˜æ é«˜åº¦ï¼ŒIconSizeæ§åˆ¶çª—å£å›¾æ ‡å¤§å°
                 TitleBar.Layout.Initialize(new LayoutDefaults
                 {
                     Height = 32, Left = 12, IconSize = 18, IconGap = 8,
@@ -1734,9 +1734,9 @@ namespace IPTVLiveChecker
                     ButtonText = Color.FromArgb(200, 200, 200)
                 });
 
-                // ==================== µ¼º½À¸ÅäÖÃ ====================
-                // ¿ØÖÆ£º×ó²à´¹Ö±µ¼º½À¸¿í¶È¡¢Í¼±ê´óĞ¡¡¢ÎÄ×ÖÑùÊ½¡¢Ñ¡ÖĞ×´Ì¬
-                // µ÷Õû²ÎÊı£ºWidth¿ØÖÆµ¼º½À¸¿í¶È£¬IconSize¿ØÖÆÍ¼±ê´óĞ¡£¬Gap¿ØÖÆÍ¼±ê¼ä¾à
+                // ==================== å¯¼èˆªæ é…ç½® ====================
+                // æ§åˆ¶ï¼šå·¦ä¾§å‚ç›´å¯¼èˆªæ å®½åº¦ã€å›¾æ ‡å¤§å°ã€æ–‡å­—æ ·å¼ã€é€‰ä¸­çŠ¶æ€
+                // è°ƒæ•´å‚æ•°ï¼šWidthæ§åˆ¶å¯¼èˆªæ å®½åº¦ï¼ŒIconSizeæ§åˆ¶å›¾æ ‡å¤§å°ï¼ŒGapæ§åˆ¶å›¾æ ‡é—´è·
                 Navigation.Layout.Initialize(new LayoutDefaults
                 {
                     Width = 48, IconSize = 32, Gap = 70, Top = 6,
@@ -1759,9 +1759,9 @@ namespace IPTVLiveChecker
                     Border = Color.FromArgb(60, 60, 60)
                 });
 
-                // ==================== ËÑË÷Ãæ°åÅäÖÃ ====================
-                // ¿ØÖÆ£º¶¥²¿ËÑË÷ÇøÓò¸ß¶È¡¢ÊäÈë¿ò¡¢·Ö×éÑ¡Ôñ¿ò¡¢ËÑË÷°´Å¥
-                // µ÷Õû²ÎÊı£ºHeight¿ØÖÆÃæ°å¸ß¶È£¬BtnWidth/BtnHeight¿ØÖÆ°´Å¥³ß´ç£¬CornerRadius¿ØÖÆÔ²½Ç
+                // ==================== æœç´¢é¢æ¿é…ç½® ====================
+                // æ§åˆ¶ï¼šé¡¶éƒ¨æœç´¢åŒºåŸŸé«˜åº¦ã€è¾“å…¥æ¡†ã€åˆ†ç»„é€‰æ‹©æ¡†ã€æœç´¢æŒ‰é’®
+                // è°ƒæ•´å‚æ•°ï¼šHeightæ§åˆ¶é¢æ¿é«˜åº¦ï¼ŒBtnWidth/BtnHeightæ§åˆ¶æŒ‰é’®å°ºå¯¸ï¼ŒCornerRadiusæ§åˆ¶åœ†è§’
                 SearchPanel.Layout.Initialize(new LayoutDefaults
                 {
                     Height = 46, Left = 12, Padding = 26,
@@ -1789,9 +1789,9 @@ namespace IPTVLiveChecker
                     Border = Color.FromArgb(60, 60, 60)
                 });
 
-                // ==================== ×ó²à²Ù×÷ÇøÅäÖÃ ====================
-                // ¿ØÖÆ£ºÊı¾İ±í¸ñ×ó²àµÄ²Ù×÷°´Å¥ÁĞ
-                // µ÷Õû²ÎÊı£ºWidth¿ØÖÆÁĞ¿í¶È£¬BtnHeight¿ØÖÆ°´Å¥¸ß¶È£¬BtnGap¿ØÖÆ°´Å¥¼ä¾à
+                // ==================== å·¦ä¾§æ“ä½œåŒºé…ç½® ====================
+                // æ§åˆ¶ï¼šæ•°æ®è¡¨æ ¼å·¦ä¾§çš„æ“ä½œæŒ‰é’®åˆ—
+                // è°ƒæ•´å‚æ•°ï¼šWidthæ§åˆ¶åˆ—å®½åº¦ï¼ŒBtnHeightæ§åˆ¶æŒ‰é’®é«˜åº¦ï¼ŒBtnGapæ§åˆ¶æŒ‰é’®é—´è·
                 ActionArea.Layout.Initialize(new LayoutDefaults
                 {
                     Width = 180, Padding = 10, BtnHeight = 36,
@@ -1815,9 +1815,9 @@ namespace IPTVLiveChecker
                     Border = Color.FromArgb(60, 60, 60)
                 });
 
-                // ==================== Êı¾İ±í¸ñÅäÖÃ ====================
-                // ¿ØÖÆ£ºÖ÷Êı¾İÏÔÊ¾±í¸ñµÄ±íÍ·¡¢ĞĞ¡¢ÁĞ¡¢·Ö¸îÏß
-                // µ÷Õû²ÎÊı£ºHeaderHeight¿ØÖÆ±íÍ·¸ß¶È£¬RowHeight¿ØÖÆĞĞ¸ß¶È£¬DividerWidth¿ØÖÆ·Ö¸îÏß¿í¶È
+                // ==================== æ•°æ®è¡¨æ ¼é…ç½® ====================
+                // æ§åˆ¶ï¼šä¸»æ•°æ®æ˜¾ç¤ºè¡¨æ ¼çš„è¡¨å¤´ã€è¡Œã€åˆ—ã€åˆ†å‰²çº¿
+                // è°ƒæ•´å‚æ•°ï¼šHeaderHeightæ§åˆ¶è¡¨å¤´é«˜åº¦ï¼ŒRowHeightæ§åˆ¶è¡Œé«˜åº¦ï¼ŒDividerWidthæ§åˆ¶åˆ†å‰²çº¿å®½åº¦
                 DataGrid.Layout.Initialize(new LayoutDefaults
                 {
                     HeaderHeight = 36, RowHeight = 30, Padding = 10,
@@ -1847,9 +1847,9 @@ namespace IPTVLiveChecker
                     ScrollBarHover = Color.FromArgb(80, 80, 80)
                 });
 
-                // ==================== ×´Ì¬À¸ÅäÖÃ ====================
-                // ¿ØÖÆ£ºµ×²¿×´Ì¬À¸¸ß¶È¡¢ÎÄ×Ö¡¢Ä£Ê½ÇĞ»»°´Å¥
-                // µ÷Õû²ÎÊı£ºHeight¿ØÖÆ×´Ì¬À¸¸ß¶È£¬Gap¿ØÖÆÔªËØ¼ä¾à
+                // ==================== çŠ¶æ€æ é…ç½® ====================
+                // æ§åˆ¶ï¼šåº•éƒ¨çŠ¶æ€æ é«˜åº¦ã€æ–‡å­—ã€æ¨¡å¼åˆ‡æ¢æŒ‰é’®
+                // è°ƒæ•´å‚æ•°ï¼šHeightæ§åˆ¶çŠ¶æ€æ é«˜åº¦ï¼ŒGapæ§åˆ¶å…ƒç´ é—´è·
                 StatusBar.Layout.Initialize(new LayoutDefaults
                 {
                     Height = 26, Padding = 12, Gap = 10,
@@ -1871,9 +1871,9 @@ namespace IPTVLiveChecker
                     Border = Color.FromArgb(60, 60, 60)
                 });
 
-                // ==================== Ò©Íè±êÇ©ÅäÖÃ ====================
-                // ¿ØÖÆ£º×´Ì¬±êÇ©µÄÍâ¹Û£¨¼ì²âÖĞ¡¢ÒÑ¼ì²â¡¢²»¿ÉÓÃµÈ£©
-                // µ÷Õû²ÎÊı£ºHeight¿ØÖÆÒ©Íè¸ß¶È£¬CornerRadius¿ØÖÆÔ²½Ç£¨Í¨³£ÉèÎª¸ß¶ÈÒ»°ë£©£¬Padding¿ØÖÆÄÚ±ß¾à
+                // ==================== è¯ä¸¸æ ‡ç­¾é…ç½® ====================
+                // æ§åˆ¶ï¼šçŠ¶æ€æ ‡ç­¾çš„å¤–è§‚ï¼ˆæ£€æµ‹ä¸­ã€å·²æ£€æµ‹ã€ä¸å¯ç”¨ç­‰ï¼‰
+                // è°ƒæ•´å‚æ•°ï¼šHeightæ§åˆ¶è¯ä¸¸é«˜åº¦ï¼ŒCornerRadiusæ§åˆ¶åœ†è§’ï¼ˆé€šå¸¸è®¾ä¸ºé«˜åº¦ä¸€åŠï¼‰ï¼ŒPaddingæ§åˆ¶å†…è¾¹è·
                 Pill.Layout.Initialize(new LayoutDefaults
                 {
                     Height = 26, CornerRadius = 13, Padding = 12
@@ -1892,9 +1892,9 @@ namespace IPTVLiveChecker
                     Info = Color.FromArgb(33, 150, 243)
                 });
 
-                // ==================== ²Ù×÷°´Å¥ÅäÖÃ ====================
-                // ¿ØÖÆ£ºÊı¾İ±í¸ñÄÚµÄĞ¡°´Å¥£¨¸´ÖÆ¡¢²¥·Å£©
-                // µ÷Õû²ÎÊı£ºHeight/Width¿ØÖÆ°´Å¥³ß´ç£¬CornerRadius¿ØÖÆÔ²½Ç£¬Gap¿ØÖÆ°´Å¥¼ä¾à
+                // ==================== æ“ä½œæŒ‰é’®é…ç½® ====================
+                // æ§åˆ¶ï¼šæ•°æ®è¡¨æ ¼å†…çš„å°æŒ‰é’®ï¼ˆå¤åˆ¶ã€æ’­æ”¾ï¼‰
+                // è°ƒæ•´å‚æ•°ï¼šHeight/Widthæ§åˆ¶æŒ‰é’®å°ºå¯¸ï¼ŒCornerRadiusæ§åˆ¶åœ†è§’ï¼ŒGapæ§åˆ¶æŒ‰é’®é—´è·
                 DataGridButton.Layout.Initialize(new LayoutDefaults
                 {
                     Height = 22, Width = 60, CornerRadius = 4, Gap = 4
@@ -1912,9 +1912,9 @@ namespace IPTVLiveChecker
                     Border = Color.FromArgb(60, 60, 60)
                 });
 
-                // ==================== µ¯´°ÅäÖÃ ====================
-                // ¿ØÖÆ£ºÖ±²¥Ô´Éú³ÉÆ÷´°¿Ú¡¢ÉèÖÃ´°¿Ú¡¢¹ØÓÚ´°¿ÚµÈµ¯´°
-                // µ÷Õû²ÎÊı£ºWidth/Height¿ØÖÆµ¯´°´óĞ¡£¬TitleHeight¿ØÖÆ±êÌâÀ¸¸ß¶È£¬CornerRadius¿ØÖÆÔ²½Ç
+                // ==================== å¼¹çª—é…ç½® ====================
+                // æ§åˆ¶ï¼šç›´æ’­æºç”Ÿæˆå™¨çª—å£ã€è®¾ç½®çª—å£ã€å…³äºçª—å£ç­‰å¼¹çª—
+                // è°ƒæ•´å‚æ•°ï¼šWidth/Heightæ§åˆ¶å¼¹çª—å¤§å°ï¼ŒTitleHeightæ§åˆ¶æ ‡é¢˜æ é«˜åº¦ï¼ŒCornerRadiusæ§åˆ¶åœ†è§’
                 Dialog.Layout.Initialize(new LayoutDefaults
                 {
                     Width = 900, Height = 750, CornerRadius = 12,
@@ -1953,9 +1953,9 @@ namespace IPTVLiveChecker
                     Error = Color.FromArgb(244, 67, 54)
                 });
 
-                // ==================== ²½ÖèÖ¸Ê¾Æ÷ÅäÖÃ ====================
-                // ¿ØÖÆ£ºÖ±²¥Ô´Éú³ÉÆ÷µÈÏòµ¼Ê½½çÃæµÄ²½Öè½ø¶ÈÏÔÊ¾
-                // µ÷Õû²ÎÊı£ºHeight¿ØÖÆ¸ß¶È£¬IconSize¿ØÖÆ²½ÖèÍ¼±ê´óĞ¡
+                // ==================== æ­¥éª¤æŒ‡ç¤ºå™¨é…ç½® ====================
+                // æ§åˆ¶ï¼šç›´æ’­æºç”Ÿæˆå™¨ç­‰å‘å¯¼å¼ç•Œé¢çš„æ­¥éª¤è¿›åº¦æ˜¾ç¤º
+                // è°ƒæ•´å‚æ•°ï¼šHeightæ§åˆ¶é«˜åº¦ï¼ŒIconSizeæ§åˆ¶æ­¥éª¤å›¾æ ‡å¤§å°
                 StepIndicator.Layout.Initialize(new LayoutDefaults
                 {
                     Height = 105, IconSize = 14, Gap = 2, IconGap = 8
@@ -1969,9 +1969,9 @@ namespace IPTVLiveChecker
                     ForegroundSecondary = Color.FromArgb(160, 160, 160)
                 });
 
-                // ==================== ToastÌáÊ¾ÅäÖÃ ====================
-                // ¿ØÖÆ£ºÓÒÏÂ½Çµ¯³öµÄÏûÏ¢ÌáÊ¾¿ò
-                // µ÷Õû²ÎÊı£ºWidth/Height¿ØÖÆÌáÊ¾¿ò´óĞ¡£¬CornerRadius¿ØÖÆÔ²½Ç£¬Right/Bottom¿ØÖÆÎ»ÖÃ
+                // ==================== Toastæç¤ºé…ç½® ====================
+                // æ§åˆ¶ï¼šå³ä¸‹è§’å¼¹å‡ºçš„æ¶ˆæ¯æç¤ºæ¡†
+                // è°ƒæ•´å‚æ•°ï¼šWidth/Heightæ§åˆ¶æç¤ºæ¡†å¤§å°ï¼ŒCornerRadiusæ§åˆ¶åœ†è§’ï¼ŒRight/Bottomæ§åˆ¶ä½ç½®
                 Toast.Layout.Initialize(new LayoutDefaults
                 {
                     Width = 280, Height = 50, CornerRadius = 8,
@@ -1989,9 +1989,9 @@ namespace IPTVLiveChecker
                     Info = Color.FromArgb(33, 150, 243)
                 });
 
-                // ==================== ¿Õ×´Ì¬ÅäÖÃ ====================
-                // ¿ØÖÆ£ºÊı¾İ±í¸ñÎª¿ÕÊ±µÄÌáÊ¾ÏÔÊ¾
-                // µ÷Õû²ÎÊı£ºWidth/Height¿ØÖÆÈİÆ÷´óĞ¡£¬IconSize¿ØÖÆÍ¼±ê´óĞ¡£¬IconGap¿ØÖÆÍ¼±êÓëÎÄ×Ö¼ä¾à
+                // ==================== ç©ºçŠ¶æ€é…ç½® ====================
+                // æ§åˆ¶ï¼šæ•°æ®è¡¨æ ¼ä¸ºç©ºæ—¶çš„æç¤ºæ˜¾ç¤º
+                // è°ƒæ•´å‚æ•°ï¼šWidth/Heightæ§åˆ¶å®¹å™¨å¤§å°ï¼ŒIconSizeæ§åˆ¶å›¾æ ‡å¤§å°ï¼ŒIconGapæ§åˆ¶å›¾æ ‡ä¸æ–‡å­—é—´è·
                 EmptyState.Layout.Initialize(new LayoutDefaults
                 {
                     Width = 200, Height = 140, IconSize = 64, IconGap = 16
@@ -2003,9 +2003,9 @@ namespace IPTVLiveChecker
                     Error = Color.FromArgb(244, 67, 54)
                 });
 
-                // ==================== ÓÒ¼ü²Ëµ¥ÅäÖÃ ====================
-                // ¿ØÖÆ£ºÊı¾İ±í¸ñÓÒ¼üµ¯³ö²Ëµ¥µÄÑùÊ½
-                // µ÷Õû²ÎÊı£ºBtnHeight¿ØÖÆ²Ëµ¥Ïî¸ß¶È£¬IconSize¿ØÖÆÍ¼±ê´óĞ¡£¬IconGap¿ØÖÆÍ¼±êÓëÎÄ×Ö¼ä¾à
+                // ==================== å³é”®èœå•é…ç½® ====================
+                // æ§åˆ¶ï¼šæ•°æ®è¡¨æ ¼å³é”®å¼¹å‡ºèœå•çš„æ ·å¼
+                // è°ƒæ•´å‚æ•°ï¼šBtnHeightæ§åˆ¶èœå•é¡¹é«˜åº¦ï¼ŒIconSizeæ§åˆ¶å›¾æ ‡å¤§å°ï¼ŒIconGapæ§åˆ¶å›¾æ ‡ä¸æ–‡å­—é—´è·
                 ContextMenu.Layout.Initialize(new LayoutDefaults
                 {
                     BtnHeight = 28, Padding = 4, IconSize = 16, IconGap = 8
@@ -2025,9 +2025,9 @@ namespace IPTVLiveChecker
                     Error = Color.FromArgb(244, 67, 54)
                 });
 
-                // ==================== ToggleSwitch¿Ø¼şÅäÖÃ ====================
-                // ¿ØÖÆ£ºÖ÷ÌâÇĞ»»µÈ¿ª¹Ø¿Ø¼şµÄÑùÊ½
-                // µ÷Õû²ÎÊı£ºWidth/Height¿ØÖÆ¿ª¹Ø´óĞ¡£¬IconSize¿ØÖÆÄÚ²¿»¬¿é´óĞ¡
+                // ==================== ToggleSwitchæ§ä»¶é…ç½® ====================
+                // æ§åˆ¶ï¼šä¸»é¢˜åˆ‡æ¢ç­‰å¼€å…³æ§ä»¶çš„æ ·å¼
+                // è°ƒæ•´å‚æ•°ï¼šWidth/Heightæ§åˆ¶å¼€å…³å¤§å°ï¼ŒIconSizeæ§åˆ¶å†…éƒ¨æ»‘å—å¤§å°
                 ToggleSwitch.Layout.Initialize(new LayoutDefaults
                 {
                     Width = 70, Height = 24, IconSize = 18
@@ -2045,7 +2045,7 @@ namespace IPTVLiveChecker
                 });
             }
         }
-        /// <summary>È«¾ÖÅäÖÃÊµÀı£¬ËùÓĞ×é¼ş¹²Ïí´ËÅäÖÃ</summary>
+        /// <summary>å…¨å±€é…ç½®å®ä¾‹ï¼Œæ‰€æœ‰ç»„ä»¶å…±äº«æ­¤é…ç½®</summary>
         private AppConfig config = new AppConfig();
 
         private Color ColorPurple => theme.Primary;
@@ -2061,9 +2061,9 @@ namespace IPTVLiveChecker
         public IPTVLiveCheckerMain()
         {
             InitializeComponent();
-            // ÉèÖÃ DarkMessageBox µÄÖ÷ÌâÌá¹©Õß£¬Ê¹ÆäÄÜ»ñÈ¡µ±Ç°Ö÷Ìâ×´Ì¬
+            // è®¾ç½® DarkMessageBox çš„ä¸»é¢˜æä¾›è€…ï¼Œä½¿å…¶èƒ½è·å–å½“å‰ä¸»é¢˜çŠ¶æ€
             DarkMessageBox.IsDarkProvider = () => theme == AppTheme.Dark;
-            // ÉèÖÃ DarkMessageBox µÄ DPI Ëõ·ÅÒò×Ó
+            // è®¾ç½® DarkMessageBox çš„ DPI ç¼©æ”¾å› å­
             DarkMessageBox.DpiScale = dpiScale;
             this.FormBorderStyle = FormBorderStyle.None;
             this.DoubleBuffered = true;
@@ -2089,7 +2089,7 @@ namespace IPTVLiveChecker
             httpClient.DefaultRequestHeaders.Add("Connection", "keep-alive");
             Microsoft.Win32.SystemEvents.UserPreferenceChanged += (s, e) =>
             {
-                if (themePreference == "¸úËæÏµÍ³")
+                if (themePreference == "è·Ÿéšç³»ç»Ÿ")
                 {
                     theme = AppTheme.GetAutoTheme();
                     ApplyTheme();
@@ -2133,7 +2133,7 @@ namespace IPTVLiveChecker
                 }
                 catch (Exception ex)
                 {
-                    DarkMessageBox.Show($"µ¼ÈëÎÄ¼şÊ§°Ü: {ex.Message}", "µ¼ÈëÊ§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    DarkMessageBox.Show($"å¯¼å…¥æ–‡ä»¶å¤±è´¥: {ex.Message}", "å¯¼å…¥å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -2147,14 +2147,14 @@ namespace IPTVLiveChecker
 
                 if (json == null || !json.ContainsKey("lives"))
                 {
-                    DarkMessageBox.Show("¶©ÔÄÔ´¸ñÊ½²»ÕıÈ·£¬Î´ÕÒµ½livesÊı×é", "½âÎöÊ§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    DarkMessageBox.Show("è®¢é˜…æºæ ¼å¼ä¸æ­£ç¡®ï¼Œæœªæ‰¾åˆ°livesæ•°ç»„", "è§£æå¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 var livesArray = json["lives"] as List<object>;
                 if (livesArray == null || livesArray.Count == 0)
                 {
-                    DarkMessageBox.Show("¶©ÔÄÔ´ÖĞÃ»ÓĞÖ±²¥Ô´", "½âÎöÊ§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    DarkMessageBox.Show("è®¢é˜…æºä¸­æ²¡æœ‰ç›´æ’­æº", "è§£æå¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -2177,8 +2177,8 @@ namespace IPTVLiveChecker
                     {
                         Name = name,
                         Url = url,
-                        Group = live.ContainsKey("group") ? live["group"]?.ToString()?.Trim() ?? "Î´·Ö×é" : "Î´·Ö×é",
-                        Status = "Î´¼ì²â",
+                        Group = live.ContainsKey("group") ? live["group"]?.ToString()?.Trim() ?? "æœªåˆ†ç»„" : "æœªåˆ†ç»„",
+                        Status = "æœªæ£€æµ‹",
                         Location = ExtractLocationFromUrl(url)
                     };
                     allChannels.Add(channel);
@@ -2190,11 +2190,11 @@ namespace IPTVLiveChecker
                 totalCount = allChannels.Count;
                 UpdateStatusBar();
                 UpdateEmptyState();
-                DarkMessageBox.Show($"³É¹¦µ¼Èë {addedCount} ¸öÖ±²¥Ô´£¬{duplicateCount} ¸öÖØ¸´", "µ¼Èë³É¹¦", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DarkMessageBox.Show($"æˆåŠŸå¯¼å…¥ {addedCount} ä¸ªç›´æ’­æºï¼Œ{duplicateCount} ä¸ªé‡å¤", "å¯¼å…¥æˆåŠŸ", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                DarkMessageBox.Show($"½âÎöJSONÊ§°Ü: {ex.Message}", "½âÎöÊ§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DarkMessageBox.Show($"è§£æJSONå¤±è´¥: {ex.Message}", "è§£æå¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -2206,7 +2206,7 @@ namespace IPTVLiveChecker
                 int addedCount = 0;
                 int duplicateCount = 0;
                 var existingUrls = new HashSet<string>(allChannels.Select(c => c.Url.ToLowerInvariant()));
-                string currentGroup = "Î´·Ö×é";
+                string currentGroup = "æœªåˆ†ç»„";
                 string currentName = "";
 
                 foreach (var line in lines)
@@ -2241,7 +2241,7 @@ namespace IPTVLiveChecker
                             Name = name,
                             Url = url,
                             Group = currentGroup,
-                            Status = "Î´¼ì²â",
+                            Status = "æœªæ£€æµ‹",
                             Location = ExtractLocationFromUrl(url)
                         };
                         allChannels.Add(channel);
@@ -2255,16 +2255,16 @@ namespace IPTVLiveChecker
                 totalCount = allChannels.Count;
                 UpdateStatusBar();
                 UpdateEmptyState();
-                DarkMessageBox.Show($"³É¹¦µ¼Èë {addedCount} ¸öÖ±²¥Ô´£¬{duplicateCount} ¸öÖØ¸´", "µ¼Èë³É¹¦", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DarkMessageBox.Show($"æˆåŠŸå¯¼å…¥ {addedCount} ä¸ªç›´æ’­æºï¼Œ{duplicateCount} ä¸ªé‡å¤", "å¯¼å…¥æˆåŠŸ", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                DarkMessageBox.Show($"½âÎöM3UÎÄ¼şÊ§°Ü: {ex.Message}", "½âÎöÊ§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DarkMessageBox.Show($"è§£æM3Uæ–‡ä»¶å¤±è´¥: {ex.Message}", "è§£æå¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         /// <summary>
-        /// ÔÚÏµÍ³PATH¡¢Ó¦ÓÃÄ¿Â¼ºÍ³£¼ûÎ»ÖÃ²éÕÒffplay.exe¡¢ffprobe.exe¡¢ffmpeg.exeºÍmediainfo.exe
+        /// åœ¨ç³»ç»ŸPATHã€åº”ç”¨ç›®å½•å’Œå¸¸è§ä½ç½®æŸ¥æ‰¾ffplay.exeã€ffprobe.exeã€ffmpeg.exeå’Œmediainfo.exe
         /// </summary>
         private void FindFFplay()
         {
@@ -2342,13 +2342,13 @@ namespace IPTVLiveChecker
 
             if (!hasFfmpeg)
             {
-                string message = $"µ±Ç°¼ì²âÄ£Ê½£º¼«ËÙHTTP¼ì²â\n\n" +
-                    $"´ËÄ£Ê½½ö¼ì²âÁ´½Ó¿ÉÓÃĞÔ£¬ÎŞ·¨»ñÈ¡ÊÓÆµ·Ö±æÂÊ¡£\n\n" +
-                    $"ÈôÒªÆôÓÃÍêÕû¹¦ÄÜ£¨»ñÈ¡·Ö±æÂÊ¡¢ÄÚÖÃ²¥·Å£©£¬\n" +
-                    $"ĞèÒªÏÂÔØ°²×° FFmpeg ×é¼ş¡£\n\n" +
-                    $"ÊÇ·ñÏÂÔØ°²×°£¿";
+                string message = $"å½“å‰æ£€æµ‹æ¨¡å¼ï¼šæé€ŸHTTPæ£€æµ‹\n\n" +
+                    $"æ­¤æ¨¡å¼ä»…æ£€æµ‹é“¾æ¥å¯ç”¨æ€§ï¼Œæ— æ³•è·å–è§†é¢‘åˆ†è¾¨ç‡ã€‚\n\n" +
+                    $"è‹¥è¦å¯ç”¨å®Œæ•´åŠŸèƒ½ï¼ˆè·å–åˆ†è¾¨ç‡ã€å†…ç½®æ’­æ”¾ï¼‰ï¼Œ\n" +
+                    $"éœ€è¦ä¸‹è½½å®‰è£… FFmpeg ç»„ä»¶ã€‚\n\n" +
+                    $"æ˜¯å¦ä¸‹è½½å®‰è£…ï¼Ÿ";
 
-                var dr = DarkMessageBox.Show(this, message, "¼ì²âÄ£Ê½", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                var dr = DarkMessageBox.Show(this, message, "æ£€æµ‹æ¨¡å¼", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                 if (dr == DialogResult.Yes)
                 {
                     bool ok = await DownloadFFmpegAsync(this);
@@ -2356,73 +2356,73 @@ namespace IPTVLiveChecker
                     if (ok && FFComponentsReady())
                     {
                         detectEngine = "FFMPEG";
-                        DarkMessageBox.Show(this, "?? FFmpeg ×é¼ş°²×°³É¹¦£¡\n\nÒÑ×Ô¶¯ÇĞ»»µ½¡¾ÍêÕû¼ì²âÄ£Ê½¡¿\n\n? ½«»ñÈ¡ÊÓÆµ·Ö±æÂÊĞÅÏ¢\n? Ö§³ÖÄÚÖÃ²¥·ÅÆ÷²¥·Å", "°²×°³É¹¦", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DarkMessageBox.Show(this, "ğŸ‰ FFmpeg ç»„ä»¶å®‰è£…æˆåŠŸï¼\n\nå·²è‡ªåŠ¨åˆ‡æ¢åˆ°ã€å®Œæ•´æ£€æµ‹æ¨¡å¼ã€‘\n\nâ€¢ å°†è·å–è§†é¢‘åˆ†è¾¨ç‡ä¿¡æ¯\nâ€¢ æ”¯æŒå†…ç½®æ’­æ”¾å™¨æ’­æ”¾", "å®‰è£…æˆåŠŸ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
-                        DarkMessageBox.Show(this, "? FFmpeg °²×°Ê§°Ü\n\n½«¼ÌĞøÊ¹ÓÃ¡¾¼«ËÙHTTP¼ì²â¡¿Ä£Ê½\n\n? ÎŞ·¨»ñÈ¡·Ö±æÂÊ\n? Ä¬ÈÏ²¥·ÅÆ÷²»¿ÉÓÃ\n\n¿ÉÉÔºóÊÖ¶¯ÏÂÔØ ffmpeg ²¢½âÑ¹µ½³ÌĞòÄ¿Â¼", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        DarkMessageBox.Show(this, "âš  FFmpeg å®‰è£…å¤±è´¥\n\nå°†ç»§ç»­ä½¿ç”¨ã€æé€ŸHTTPæ£€æµ‹ã€‘æ¨¡å¼\n\nâ€¢ æ— æ³•è·å–åˆ†è¾¨ç‡\nâ€¢ é»˜è®¤æ’­æ”¾å™¨ä¸å¯ç”¨\n\nå¯ç¨åæ‰‹åŠ¨ä¸‹è½½ ffmpeg å¹¶è§£å‹åˆ°ç¨‹åºç›®å½•", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                 }
             }
 
             if (!hasMediaInfo && detectEngine == "FFMPEG")
             {
-                string message = $"¼ì²âµ½ MediaInfo ×é¼şÈ±Ê§\n\n" +
-                    $"MediaInfo ¹¦ÄÜËµÃ÷£º\n" +
-                    $"? Ìá¸ß·Ö±æÂÊ¼ì²â¾«¶È\n" +
-                    $"? Ö§³Ö¸ü¶àÊÓÆµ¸ñÊ½½âÎö\n" +
-                    $"? ²¹³ä FFmpeg ÎŞ·¨Ê¶±ğµÄ±àÂë\n\n" +
-                    $"ÊÇ·ñÏÂÔØ°²×° MediaInfo ×é¼ş£¿";
+                string message = $"æ£€æµ‹åˆ° MediaInfo ç»„ä»¶ç¼ºå¤±\n\n" +
+                    $"MediaInfo åŠŸèƒ½è¯´æ˜ï¼š\n" +
+                    $"â€¢ æé«˜åˆ†è¾¨ç‡æ£€æµ‹ç²¾åº¦\n" +
+                    $"â€¢ æ”¯æŒæ›´å¤šè§†é¢‘æ ¼å¼è§£æ\n" +
+                    $"â€¢ è¡¥å…… FFmpeg æ— æ³•è¯†åˆ«çš„ç¼–ç \n\n" +
+                    $"æ˜¯å¦ä¸‹è½½å®‰è£… MediaInfo ç»„ä»¶ï¼Ÿ";
 
-                var dr = DarkMessageBox.Show(this, message, "×é¼şÌáÊ¾", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                var dr = DarkMessageBox.Show(this, message, "ç»„ä»¶æç¤º", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                 if (dr == DialogResult.Yes)
                 {
                     bool ok = await DownloadMediaInfoAsync(this);
                     FindFFplay();
                     if (!ok && !MediaInfoReady())
                     {
-                        DarkMessageBox.Show(this, "? MediaInfo °²×°Ê§°Ü\n\n·Ö±æÂÊ¼ì²â½«Ê¹ÓÃ FFmpeg ·½°¸\n\n¿ÉÉÔºóÊÖ¶¯ÏÂÔØ mediainfo ²¢½âÑ¹µ½³ÌĞòÄ¿Â¼", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        DarkMessageBox.Show(this, "âš  MediaInfo å®‰è£…å¤±è´¥\n\nåˆ†è¾¨ç‡æ£€æµ‹å°†ä½¿ç”¨ FFmpeg æ–¹æ¡ˆ\n\nå¯ç¨åæ‰‹åŠ¨ä¸‹è½½ mediainfo å¹¶è§£å‹åˆ°ç¨‹åºç›®å½•", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                 }
             }
         }
 
         /// <summary>
-        /// ´´½¨ÏÂÔØ½ø¶È¶Ô»°¿ò
-        /// ÓÃÓÚÏÔÊ¾FFmpeg/MediaInfo×é¼şÏÂÔØ½ø¶ÈºÍÈÕÖ¾ĞÅÏ¢
+        /// åˆ›å»ºä¸‹è½½è¿›åº¦å¯¹è¯æ¡†
+        /// ç”¨äºæ˜¾ç¤ºFFmpeg/MediaInfoç»„ä»¶ä¸‹è½½è¿›åº¦å’Œæ—¥å¿—ä¿¡æ¯
         /// </summary>
-        /// <returns>ÏÂÔØ¶Ô»°¿ò´°Ìå£¬TagÊôĞÔ°üº¬(lblStatus, progressBar, txtLog)ÈıÔª×é£¬¹©Íâ²¿¸üĞÂUI</returns>
+        /// <returns>ä¸‹è½½å¯¹è¯æ¡†çª—ä½“ï¼ŒTagå±æ€§åŒ…å«(lblStatus, progressBar, txtLog)ä¸‰å…ƒç»„ï¼Œä¾›å¤–éƒ¨æ›´æ–°UI</returns>
         private Form CreateDownloadForm()
         {
-            // ========== ÑÕÉ«ÅäÖÃ£¨¸ù¾İÖ÷Ìâ×Ô¶¯ÇĞ»»£© ==========
+            // ========== é¢œè‰²é…ç½®ï¼ˆæ ¹æ®ä¸»é¢˜è‡ªåŠ¨åˆ‡æ¢ï¼‰ ==========
             bool isDarkFF = IsDarkColor(theme.Bg);
-            Color ffBg = isDarkFF ? Color.FromArgb(45, 45, 55) : Color.White;           // ´°¿Ú±³¾°É«£¨ÉîÉ«£ºÉîÀ¶»Ò / Ç³É«£º´¿°×£©
-            Color ffText = isDarkFF ? Color.FromArgb(220, 220, 230) : Color.FromArgb(50, 55, 65); // ±êÌâÎÄ×ÖÑÕÉ«
-            Color ffStatus = isDarkFF ? Color.FromArgb(160, 160, 175) : Color.FromArgb(100, 105, 115); // ×´Ì¬ÎÄ×ÖÑÕÉ«£¨±È±êÌâÂÔ°µ£©
-            Color ffLogBg = isDarkFF ? Color.FromArgb(30, 30, 38) : Color.FromArgb(248, 249, 250); // ÈÕÖ¾ÇøÓò±³¾°É«
-            Color ffLogFg = isDarkFF ? Color.FromArgb(180, 180, 190) : Color.FromArgb(50, 55, 65); // ÈÕÖ¾ÎÄ×ÖÑÕÉ«
+            Color ffBg = isDarkFF ? Color.FromArgb(45, 45, 55) : Color.White;           // çª—å£èƒŒæ™¯è‰²ï¼ˆæ·±è‰²ï¼šæ·±è“ç° / æµ…è‰²ï¼šçº¯ç™½ï¼‰
+            Color ffText = isDarkFF ? Color.FromArgb(220, 220, 230) : Color.FromArgb(50, 55, 65); // æ ‡é¢˜æ–‡å­—é¢œè‰²
+            Color ffStatus = isDarkFF ? Color.FromArgb(160, 160, 175) : Color.FromArgb(100, 105, 115); // çŠ¶æ€æ–‡å­—é¢œè‰²ï¼ˆæ¯”æ ‡é¢˜ç•¥æš—ï¼‰
+            Color ffLogBg = isDarkFF ? Color.FromArgb(30, 30, 38) : Color.FromArgb(248, 249, 250); // æ—¥å¿—åŒºåŸŸèƒŒæ™¯è‰²
+            Color ffLogFg = isDarkFF ? Color.FromArgb(180, 180, 190) : Color.FromArgb(50, 55, 65); // æ—¥å¿—æ–‡å­—é¢œè‰²
 
-            // ========== Ö÷´°¿ÚÅäÖÃ ==========
-            // [Î»ÖÃ] ÆÁÄ»¾ÓÖĞ [´óĞ¡] 580x280£¨ÒÑ³ËÒÔDPIËõ·Å£©[ÑùÊ½] ¹Ì¶¨¶Ô»°¿ò
+            // ========== ä¸»çª—å£é…ç½® ==========
+            // [ä½ç½®] å±å¹•å±…ä¸­ [å¤§å°] 580x280ï¼ˆå·²ä¹˜ä»¥DPIç¼©æ”¾ï¼‰[æ ·å¼] å›ºå®šå¯¹è¯æ¡†
             Form dlg = new Form
             {
-                Text = "ÕıÔÚ°²×° FFmpeg ×é¼ş",          // ´°¿Ú±êÌâ£¨µ÷ÓÃ·½»á¸ù¾İÏÂÔØÄÚÈİĞŞ¸Ä£©
-                Size = new Size(SX(580), SY(280)),       // ´°¿Ú´óĞ¡£¨¿í580px£¬¸ß280px£¬ÒÑÊÊÅäDPI£©
-                StartPosition = FormStartPosition.CenterScreen,    // ¾ÓÖĞÏÔÊ¾
-                FormBorderStyle = FormBorderStyle.FixedDialog,     // ¹Ì¶¨¶Ô»°¿òÑùÊ½£¬½ûÖ¹µ÷Õû´óĞ¡
-                MaximizeBox = false,                               // ½ûÓÃ×î´ó»¯°´Å¥
-                MinimizeBox = false,                               // ½ûÓÃ×îĞ¡»¯°´Å¥
-                BackColor = ffBg,                                  // ´°¿Ú±³¾°É«
-                ShowInTaskbar = false,                             // ²»ÔÚÈÎÎñÀ¸ÏÔÊ¾
-                TopMost = true                                     // ÖÃ¶¥ÏÔÊ¾
+                Text = "æ­£åœ¨å®‰è£… FFmpeg ç»„ä»¶",          // çª—å£æ ‡é¢˜ï¼ˆè°ƒç”¨æ–¹ä¼šæ ¹æ®ä¸‹è½½å†…å®¹ä¿®æ”¹ï¼‰
+                Size = new Size(SX(580), SY(280)),       // çª—å£å¤§å°ï¼ˆå®½580pxï¼Œé«˜280pxï¼Œå·²é€‚é…DPIï¼‰
+                StartPosition = FormStartPosition.CenterScreen,    // å±…ä¸­æ˜¾ç¤º
+                FormBorderStyle = FormBorderStyle.FixedDialog,     // å›ºå®šå¯¹è¯æ¡†æ ·å¼ï¼Œç¦æ­¢è°ƒæ•´å¤§å°
+                MaximizeBox = false,                               // ç¦ç”¨æœ€å¤§åŒ–æŒ‰é’®
+                MinimizeBox = false,                               // ç¦ç”¨æœ€å°åŒ–æŒ‰é’®
+                BackColor = ffBg,                                  // çª—å£èƒŒæ™¯è‰²
+                ShowInTaskbar = false,                             // ä¸åœ¨ä»»åŠ¡æ æ˜¾ç¤º
+                TopMost = true                                     // ç½®é¡¶æ˜¾ç¤º
             };
-            SetFormDarkModeTitleBar(dlg, isDarkFF);      // Ó¦ÓÃÉîÉ«±êÌâÀ¸
+            SetFormDarkModeTitleBar(dlg, isDarkFF);      // åº”ç”¨æ·±è‰²æ ‡é¢˜æ 
 
-            // ========== ±êÌâ±êÇ© ==========
-            // [Î»ÖÃ] (20, 18) [´óĞ¡] 530x30 [×ÖÌå] YaHei 11pt ¼Ó´Ö
+            // ========== æ ‡é¢˜æ ‡ç­¾ ==========
+            // [ä½ç½®] (20, 18) [å¤§å°] 530x30 [å­—ä½“] YaHei 11pt åŠ ç²—
             Label lblTitle = new Label
             {
-                Text = "? ÕıÔÚÏÂÔØ FFmpeg ×é¼ş£¨²¥·ÅºÍ¼ì²â¹¦ÄÜ±ØĞè£©",
+                Text = "â³ æ­£åœ¨ä¸‹è½½ FFmpeg ç»„ä»¶ï¼ˆæ’­æ”¾å’Œæ£€æµ‹åŠŸèƒ½å¿…éœ€ï¼‰",
                 Font = GetFont(SF(11f), FontStyle.Bold),
                 ForeColor = ffText,
                 Location = new Point(SX(20), SY(18)),
@@ -2431,11 +2431,11 @@ namespace IPTVLiveChecker
             };
             dlg.Controls.Add(lblTitle);
 
-            // ========== ×´Ì¬±êÇ© ==========
-            // [Î»ÖÃ] (20, 55) [´óĞ¡] 530x22 [×ÖÌå] YaHei 9.5pt [ÑÕÉ«] ffStatus£¨´ÎÒªÎÄ×ÖÑÕÉ«£©
+            // ========== çŠ¶æ€æ ‡ç­¾ ==========
+            // [ä½ç½®] (20, 55) [å¤§å°] 530x22 [å­—ä½“] YaHei 9.5pt [é¢œè‰²] ffStatusï¼ˆæ¬¡è¦æ–‡å­—é¢œè‰²ï¼‰
             Label lblStatus = new Label
             {
-                Text = "ÕıÔÚ×¼±¸ÏÂÔØ...",
+                Text = "æ­£åœ¨å‡†å¤‡ä¸‹è½½...",
                 Font = GetFont(SF(9.5f)),
                 ForeColor = ffStatus,
                 Location = new Point(SX(20), SY(55)),
@@ -2444,23 +2444,23 @@ namespace IPTVLiveChecker
             };
             dlg.Controls.Add(lblStatus);
 
-            // ========== ½ø¶ÈÌõ ==========
-            // [Î»ÖÃ] (20, 85) [´óĞ¡] 525x24 [ÑùÊ½] ·Ö¶Î¿éÊ½ [·¶Î§] 0-100
+            // ========== è¿›åº¦æ¡ ==========
+            // [ä½ç½®] (20, 85) [å¤§å°] 525x24 [æ ·å¼] åˆ†æ®µå—å¼ [èŒƒå›´] 0-100
             ProgressBar progressBar = new ProgressBar
             {
                 Location = new Point(SX(20), SY(85)),
                 Width = SX(525),
                 Height = SY(24),
-                Style = ProgressBarStyle.Blocks,      // ·Ö¶Î¿éÊ½½ø¶ÈÌõ
+                Style = ProgressBarStyle.Blocks,      // åˆ†æ®µå—å¼è¿›åº¦æ¡
                 Minimum = 0,
                 Maximum = 100,
                 Value = 0
             };
             dlg.Controls.Add(progressBar);
 
-            // ========== ÈÕÖ¾ÎÄ±¾¿ò ==========
-            // [Î»ÖÃ] (20, 120) [´óĞ¡] 525x100 [×ÖÌå] Consolas 8.5pt£¨µÈ¿í×ÖÌå£¬±ãÓÚÈÕÖ¾ÔÄ¶Á£©
-            // [ÊôĞÔ] ¶àĞĞ¡¢Ö»¶Á¡¢´¹Ö±¹ö¶¯Ìõ
+            // ========== æ—¥å¿—æ–‡æœ¬æ¡† ==========
+            // [ä½ç½®] (20, 120) [å¤§å°] 525x100 [å­—ä½“] Consolas 8.5ptï¼ˆç­‰å®½å­—ä½“ï¼Œä¾¿äºæ—¥å¿—é˜…è¯»ï¼‰
+            // [å±æ€§] å¤šè¡Œã€åªè¯»ã€å‚ç›´æ»šåŠ¨æ¡
             TextBox txtLog = new TextBox
             {
                 Location = new Point(SX(20), SY(120)),
@@ -2476,7 +2476,7 @@ namespace IPTVLiveChecker
             };
             dlg.Controls.Add(txtLog);
 
-            // ½«Èı¸ö¿Ø¼ş´ò°ü´æÈëTag£¬¹©Íâ²¿¸üĞÂUIÊ¹ÓÃ
+            // å°†ä¸‰ä¸ªæ§ä»¶æ‰“åŒ…å­˜å…¥Tagï¼Œä¾›å¤–éƒ¨æ›´æ–°UIä½¿ç”¨
             dlg.Tag = new Tuple<Label, ProgressBar, TextBox>(lblStatus, progressBar, txtLog);
             return dlg;
         }
@@ -2539,8 +2539,8 @@ namespace IPTVLiveChecker
                         {
                             try
                             {
-                                SetStatus("ÕıÔÚÁ¬½ÓÏÂÔØ·şÎñÆ÷£º" + new Uri(dlUrl).Host);
-                                Log("³¢ÊÔÏÂÔØ£º" + dlUrl);
+                                SetStatus("æ­£åœ¨è¿æ¥ä¸‹è½½æœåŠ¡å™¨ï¼š" + new Uri(dlUrl).Host);
+                                Log("å°è¯•ä¸‹è½½ï¼š" + dlUrl);
                                 SetProgress(2);
 
                                 using (var client = new System.Net.WebClient())
@@ -2552,11 +2552,11 @@ namespace IPTVLiveChecker
                                         {
                                             int pct = (int)Math.Min(90, 2 + (ce.BytesReceived * 88L / ce.TotalBytesToReceive));
                                             SetProgress(pct);
-                                            SetStatus($"ÕıÔÚÏÂÔØ... {(ce.BytesReceived / 1024.0 / 1024.0):F1}MB / {(ce.TotalBytesToReceive / 1024.0 / 1024.0):F1}MB");
+                                            SetStatus($"æ­£åœ¨ä¸‹è½½... {(ce.BytesReceived / 1024.0 / 1024.0):F1}MB / {(ce.TotalBytesToReceive / 1024.0 / 1024.0):F1}MB");
                                         }
                                         else
                                         {
-                                            SetStatus($"ÕıÔÚÏÂÔØ... {(ce.BytesReceived / 1024.0 / 1024.0):F1}MB");
+                                            SetStatus($"æ­£åœ¨ä¸‹è½½... {(ce.BytesReceived / 1024.0 / 1024.0):F1}MB");
                                         }
                                     };
                                     await client.DownloadFileTaskAsync(new Uri(dlUrl), zipPath);
@@ -2564,60 +2564,60 @@ namespace IPTVLiveChecker
                                 if (File.Exists(zipPath) && new FileInfo(zipPath).Length > 1024 * 1024)
                                 {
                                     downloadedFile = zipPath;
-                                    Log("ÏÂÔØÍê³É£º" + (new FileInfo(zipPath).Length / 1024.0 / 1024.0).ToString("F1") + "MB");
+                                    Log("ä¸‹è½½å®Œæˆï¼š" + (new FileInfo(zipPath).Length / 1024.0 / 1024.0).ToString("F1") + "MB");
                                     break;
                                 }
                             }
                             catch (Exception ex)
                             {
                                 lastErr = ex;
-                                Log("ÏÂÔØÊ§°Ü£º" + ex.Message);
+                                Log("ä¸‹è½½å¤±è´¥ï¼š" + ex.Message);
                                 try { if (File.Exists(zipPath)) File.Delete(zipPath); } catch { }
                             }
                         }
                         if (downloadedFile == null)
                         {
-                            SetStatus("ÏÂÔØÊ§°Ü£¬ÕıÔÚ³¢ÊÔ±¸ÓÃ·½Ê½...");
-                            Log("Ö÷ÏÂÔØµØÖ·¾ùÊ§°Ü£¬³¢ÊÔPowerShell·½Ê½...");
+                            SetStatus("ä¸‹è½½å¤±è´¥ï¼Œæ­£åœ¨å°è¯•å¤‡ç”¨æ–¹å¼...");
+                            Log("ä¸»ä¸‹è½½åœ°å€å‡å¤±è´¥ï¼Œå°è¯•PowerShellæ–¹å¼...");
                             try
                             {
                                 downloadedFile = await DownloadViaPowerShell(zipPath, Log, SetStatus, SetProgress);
                             }
-                            catch (Exception pex) { Log("PowerShellÏÂÔØÊ§°Ü: " + pex.Message); }
+                            catch (Exception pex) { Log("PowerShellä¸‹è½½å¤±è´¥: " + pex.Message); }
                         }
 
                         if (downloadedFile == null || !File.Exists(downloadedFile))
                         {
-                            Log("ËùÓĞÏÂÔØ·½Ê½¾ùÊ§°Ü");
-                            DarkMessageBox.Show(dlg, "FFmpeg ×Ô¶¯ÏÂÔØÊ§°Ü£¬ÇëÊÖ¶¯ÏÂÔØ ffmpeg ²¢½« ffmpeg.exe¡¢ffplay.exe¡¢ffprobe.exe ·Åµ½³ÌĞò¸ùÄ¿Â¼¡£\nÏÂÔØµØÖ·£ºhttps://www.gyan.dev/ffmpeg/builds/", "ÏÂÔØÊ§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            Log("æ‰€æœ‰ä¸‹è½½æ–¹å¼å‡å¤±è´¥");
+                            DarkMessageBox.Show(dlg, "FFmpeg è‡ªåŠ¨ä¸‹è½½å¤±è´¥ï¼Œè¯·æ‰‹åŠ¨ä¸‹è½½ ffmpeg å¹¶å°† ffmpeg.exeã€ffplay.exeã€ffprobe.exe æ”¾åˆ°ç¨‹åºæ ¹ç›®å½•ã€‚\nä¸‹è½½åœ°å€ï¼šhttps://www.gyan.dev/ffmpeg/builds/", "ä¸‹è½½å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             dlg.DialogResult = DialogResult.Cancel;
                             dlg.Close();
                             return;
                         }
 
-                        SetStatus("ÕıÔÚ½âÑ¹...");
+                        SetStatus("æ­£åœ¨è§£å‹...");
                         SetProgress(92);
-                        Log("¿ªÊ¼½âÑ¹ÎÄ¼ş...");
+                        Log("å¼€å§‹è§£å‹æ–‡ä»¶...");
                         Directory.CreateDirectory(extractDir);
                         try { await ExtractZipAsync(downloadedFile, extractDir, Log); }
-                        catch (Exception zex) { Log("½âÑ¹Ê§°Ü: " + zex.Message); }
+                        catch (Exception zex) { Log("è§£å‹å¤±è´¥: " + zex.Message); }
 
-                        SetStatus("ÕıÔÚ²éÕÒ×é¼ş...");
+                        SetStatus("æ­£åœ¨æŸ¥æ‰¾ç»„ä»¶...");
                         SetProgress(97);
-                        Log("²éÕÒ ffmpeg.exe/ffplay.exe/ffprobe.exe...");
+                        Log("æŸ¥æ‰¾ ffmpeg.exe/ffplay.exe/ffprobe.exe...");
                         string fp = FindFileInDir(extractDir, "ffplay.exe");
                         string fpr = FindFileInDir(extractDir, "ffprobe.exe");
                         string ffm = FindFileInDir(extractDir, "ffmpeg.exe");
                         if (string.IsNullOrEmpty(fp) || string.IsNullOrEmpty(fpr) || string.IsNullOrEmpty(ffm))
                         {
-                            Log("Î´ÔÚ½âÑ¹Ä¿Â¼ÕÒµ½ËùÓĞ×é¼ş£¡");
+                            Log("æœªåœ¨è§£å‹ç›®å½•æ‰¾åˆ°æ‰€æœ‰ç»„ä»¶ï¼");
                             try
                             {
                                 string allFiles = string.Join(", ", Directory.GetFiles(extractDir, "*.exe", SearchOption.AllDirectories).Select(f => Path.GetFileName(f)).Take(20));
-                                Log("ÕÒµ½µÄexe£º" + allFiles);
+                                Log("æ‰¾åˆ°çš„exeï¼š" + allFiles);
                             }
                             catch { }
-                            DarkMessageBox.Show(dlg, "ÒÑÏÂÔØµ«Î´ÄÜÔÚÑ¹Ëõ°üÖĞÕÒµ½ËùĞè×é¼ş£¬ÇëÊÖ¶¯½« ffmpeg.exe¡¢ffplay.exe¡¢ffprobe.exe ¸´ÖÆµ½³ÌĞòÄ¿Â¼£º\n" + appDir, "°²×°Ê§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            DarkMessageBox.Show(dlg, "å·²ä¸‹è½½ä½†æœªèƒ½åœ¨å‹ç¼©åŒ…ä¸­æ‰¾åˆ°æ‰€éœ€ç»„ä»¶ï¼Œè¯·æ‰‹åŠ¨å°† ffmpeg.exeã€ffplay.exeã€ffprobe.exe å¤åˆ¶åˆ°ç¨‹åºç›®å½•ï¼š\n" + appDir, "å®‰è£…å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             dlg.DialogResult = DialogResult.Cancel;
                             dlg.Close();
                             return;
@@ -2626,12 +2626,12 @@ namespace IPTVLiveChecker
                         File.Copy(fp, Path.Combine(appDir, "ffplay.exe"), true);
                         File.Copy(fpr, Path.Combine(appDir, "ffprobe.exe"), true);
                         File.Copy(ffm, Path.Combine(appDir, "ffmpeg.exe"), true);
-                        Log("ÒÑ¸´ÖÆ×é¼şµ½£º" + appDir);
+                        Log("å·²å¤åˆ¶ç»„ä»¶åˆ°ï¼š" + appDir);
 
                         FindFFplay();
                         SetProgress(100);
-                        SetStatus("? °²×°Íê³É£¡");
-                        Log("FFmpeg ×é¼ş°²×°³É¹¦£¡");
+                        SetStatus("âœ… å®‰è£…å®Œæˆï¼");
+                        Log("FFmpeg ç»„ä»¶å®‰è£…æˆåŠŸï¼");
                         downloadSuccess = true;
                         await Task.Delay(500);
                         dlg.DialogResult = DialogResult.OK;
@@ -2639,10 +2639,10 @@ namespace IPTVLiveChecker
                     }
                     catch (Exception ex)
                     {
-                        Log("°²×°Òì³££º" + ex.Message);
+                        Log("å®‰è£…å¼‚å¸¸ï¼š" + ex.Message);
                         try
                         {
-                            DarkMessageBox.Show(dlg, "FFmpeg °²×°¹ı³Ì³ö´í£º\n" + ex.Message + "\n\nÇëÊÖ¶¯´Ó https://www.gyan.dev/ffmpeg/builds/ ÏÂÔØ²¢½âÑ¹µ½³ÌĞòÄ¿Â¼¡£", "°²×°´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            DarkMessageBox.Show(dlg, "FFmpeg å®‰è£…è¿‡ç¨‹å‡ºé”™ï¼š\n" + ex.Message + "\n\nè¯·æ‰‹åŠ¨ä» https://www.gyan.dev/ffmpeg/builds/ ä¸‹è½½å¹¶è§£å‹åˆ°ç¨‹åºç›®å½•ã€‚", "å®‰è£…é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                         catch { }
                         dlg.DialogResult = DialogResult.Cancel;
@@ -2676,7 +2676,7 @@ namespace IPTVLiveChecker
                 Directory.CreateDirectory(tempDir);
 
                 Form dlg = CreateDownloadForm();
-                dlg.Text = "ÕıÔÚ°²×° MediaInfo ×é¼ş";
+                dlg.Text = "æ­£åœ¨å®‰è£… MediaInfo ç»„ä»¶";
                 var tuple = (Tuple<Label, ProgressBar, TextBox>)dlg.Tag;
                 Label lblStatus = tuple.Item1;
                 ProgressBar progressBar = tuple.Item2;
@@ -2714,7 +2714,7 @@ namespace IPTVLiveChecker
                         bool is64Bit = Environment.Is64BitOperatingSystem;
                         string arch = is64Bit ? "x64" : "i386";
                         string version = "26.05";
-                        Log($"ÏµÍ³¼Ü¹¹£º{(is64Bit ? "64Î»" : "32Î»")}£¬Ñ¡Ôñ MediaInfo {arch} °æ±¾");
+                        Log($"ç³»ç»Ÿæ¶æ„ï¼š{(is64Bit ? "64ä½" : "32ä½")}ï¼Œé€‰æ‹© MediaInfo {arch} ç‰ˆæœ¬");
 
                         string[] urls = new string[]
                         {
@@ -2727,8 +2727,8 @@ namespace IPTVLiveChecker
                         {
                             try
                             {
-                                SetStatus("ÕıÔÚÁ¬½ÓÏÂÔØ·şÎñÆ÷£º" + new Uri(dlUrl).Host);
-                                Log("³¢ÊÔÏÂÔØ£º" + dlUrl);
+                                SetStatus("æ­£åœ¨è¿æ¥ä¸‹è½½æœåŠ¡å™¨ï¼š" + new Uri(dlUrl).Host);
+                                Log("å°è¯•ä¸‹è½½ï¼š" + dlUrl);
                                 SetProgress(2);
 
                                 using (var client = new System.Net.WebClient())
@@ -2740,11 +2740,11 @@ namespace IPTVLiveChecker
                                         {
                                             int pct = (int)Math.Min(90, 2 + (ce.BytesReceived * 88L / ce.TotalBytesToReceive));
                                             SetProgress(pct);
-                                            SetStatus($"ÕıÔÚÏÂÔØ... {(ce.BytesReceived / 1024.0 / 1024.0):F1}MB / {(ce.TotalBytesToReceive / 1024.0 / 1024.0):F1}MB");
+                                            SetStatus($"æ­£åœ¨ä¸‹è½½... {(ce.BytesReceived / 1024.0 / 1024.0):F1}MB / {(ce.TotalBytesToReceive / 1024.0 / 1024.0):F1}MB");
                                         }
                                         else
                                         {
-                                            SetStatus($"ÕıÔÚÏÂÔØ... {(ce.BytesReceived / 1024.0 / 1024.0):F1}MB");
+                                            SetStatus($"æ­£åœ¨ä¸‹è½½... {(ce.BytesReceived / 1024.0 / 1024.0):F1}MB");
                                         }
                                     };
                                     await client.DownloadFileTaskAsync(new Uri(dlUrl), zipPath);
@@ -2752,59 +2752,59 @@ namespace IPTVLiveChecker
                                 if (File.Exists(zipPath) && new FileInfo(zipPath).Length > 100 * 1024)
                                 {
                                     downloadedFile = zipPath;
-                                    Log("ÏÂÔØÍê³É£º" + (new FileInfo(zipPath).Length / 1024.0 / 1024.0).ToString("F1") + "MB");
+                                    Log("ä¸‹è½½å®Œæˆï¼š" + (new FileInfo(zipPath).Length / 1024.0 / 1024.0).ToString("F1") + "MB");
                                     break;
                                 }
                             }
                             catch (Exception ex)
                             {
                                 lastErr = ex;
-                                Log("ÏÂÔØÊ§°Ü£º" + ex.Message);
+                                Log("ä¸‹è½½å¤±è´¥ï¼š" + ex.Message);
                                 try { if (File.Exists(zipPath)) File.Delete(zipPath); } catch { }
                             }
                         }
                         if (downloadedFile == null)
                         {
-                            SetStatus("ÏÂÔØÊ§°Ü£¬ÕıÔÚ³¢ÊÔ±¸ÓÃ·½Ê½...");
-                            Log("Ö÷ÏÂÔØµØÖ·¾ùÊ§°Ü£¬³¢ÊÔPowerShell·½Ê½...");
+                            SetStatus("ä¸‹è½½å¤±è´¥ï¼Œæ­£åœ¨å°è¯•å¤‡ç”¨æ–¹å¼...");
+                            Log("ä¸»ä¸‹è½½åœ°å€å‡å¤±è´¥ï¼Œå°è¯•PowerShellæ–¹å¼...");
                             try
                             {
                                 string psUrl = $"https://mediaarea.net/download/binary/mediainfo/{version}/MediaInfo_CLI_{version}_Windows_{arch}.zip";
                                 downloadedFile = await DownloadViaPowerShellWithUrl(zipPath, psUrl, Log, SetStatus, SetProgress);
                             }
-                            catch (Exception pex) { Log("PowerShellÏÂÔØÊ§°Ü: " + pex.Message); }
+                            catch (Exception pex) { Log("PowerShellä¸‹è½½å¤±è´¥: " + pex.Message); }
                         }
 
                         if (downloadedFile == null || !File.Exists(downloadedFile))
                         {
-                            Log("ËùÓĞÏÂÔØ·½Ê½¾ùÊ§°Ü");
-                            DarkMessageBox.Show(dlg, "MediaInfo ×Ô¶¯ÏÂÔØÊ§°Ü£¬ÇëÊÖ¶¯ÏÂÔØ MediaInfo CLI ²¢½« mediainfo.exe ·Åµ½³ÌĞò¸ùÄ¿Â¼¡£\nÏÂÔØµØÖ·£ºhttps://mediaarea.net/zh-CN/MediaInfo/Download/Windows", "ÏÂÔØÊ§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            Log("æ‰€æœ‰ä¸‹è½½æ–¹å¼å‡å¤±è´¥");
+                            DarkMessageBox.Show(dlg, "MediaInfo è‡ªåŠ¨ä¸‹è½½å¤±è´¥ï¼Œè¯·æ‰‹åŠ¨ä¸‹è½½ MediaInfo CLI å¹¶å°† mediainfo.exe æ”¾åˆ°ç¨‹åºæ ¹ç›®å½•ã€‚\nä¸‹è½½åœ°å€ï¼šhttps://mediaarea.net/zh-CN/MediaInfo/Download/Windows", "ä¸‹è½½å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             dlg.DialogResult = DialogResult.Cancel;
                             dlg.Close();
                             return;
                         }
 
-                        SetStatus("ÕıÔÚ½âÑ¹...");
+                        SetStatus("æ­£åœ¨è§£å‹...");
                         SetProgress(92);
-                        Log("¿ªÊ¼½âÑ¹ÎÄ¼ş...");
+                        Log("å¼€å§‹è§£å‹æ–‡ä»¶...");
                         Directory.CreateDirectory(extractDir);
                         try { await ExtractZipAsync(downloadedFile, extractDir, Log); }
-                        catch (Exception zex) { Log("½âÑ¹Ê§°Ü: " + zex.Message); }
+                        catch (Exception zex) { Log("è§£å‹å¤±è´¥: " + zex.Message); }
 
-                        SetStatus("ÕıÔÚ²éÕÒ×é¼ş...");
+                        SetStatus("æ­£åœ¨æŸ¥æ‰¾ç»„ä»¶...");
                         SetProgress(97);
-                        Log("²éÕÒ mediainfo.exe...");
+                        Log("æŸ¥æ‰¾ mediainfo.exe...");
                         string mi = FindFileInDir(extractDir, "mediainfo.exe");
                         if (string.IsNullOrEmpty(mi))
                         {
-                            Log("Î´ÔÚ½âÑ¹Ä¿Â¼ÕÒµ½mediainfo.exe£¡");
+                            Log("æœªåœ¨è§£å‹ç›®å½•æ‰¾åˆ°mediainfo.exeï¼");
                             try
                             {
                                 string allFiles = string.Join(", ", Directory.GetFiles(extractDir, "*.exe", SearchOption.AllDirectories).Select(f => Path.GetFileName(f)).Take(20));
-                                Log("ÕÒµ½µÄexe£º" + allFiles);
+                                Log("æ‰¾åˆ°çš„exeï¼š" + allFiles);
                             }
                             catch { }
-                            DarkMessageBox.Show(dlg, "ÒÑÏÂÔØµ«Î´ÄÜÔÚÑ¹Ëõ°üÖĞÕÒµ½ mediainfo.exe£¬ÇëÊÖ¶¯½« mediainfo.exe ¸´ÖÆµ½³ÌĞòÄ¿Â¼£º\n" + appDir, "°²×°Ê§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            DarkMessageBox.Show(dlg, "å·²ä¸‹è½½ä½†æœªèƒ½åœ¨å‹ç¼©åŒ…ä¸­æ‰¾åˆ° mediainfo.exeï¼Œè¯·æ‰‹åŠ¨å°† mediainfo.exe å¤åˆ¶åˆ°ç¨‹åºç›®å½•ï¼š\n" + appDir, "å®‰è£…å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             dlg.DialogResult = DialogResult.Cancel;
                             dlg.Close();
                             return;
@@ -2812,7 +2812,7 @@ namespace IPTVLiveChecker
 
                         string miDir = Path.GetDirectoryName(mi);
                         File.Copy(mi, Path.Combine(appDir, "mediainfo.exe"), true);
-                        Log("ÒÑ¸´ÖÆ mediainfo.exe µ½£º" + appDir);
+                        Log("å·²å¤åˆ¶ mediainfo.exe åˆ°ï¼š" + appDir);
 
                         int dllCount = 0;
                         try
@@ -2823,16 +2823,16 @@ namespace IPTVLiveChecker
                                 string dllName = Path.GetFileName(dllFile);
                                 File.Copy(dllFile, Path.Combine(appDir, dllName), true);
                                 dllCount++;
-                                Log("ÒÑ¸´ÖÆÒÀÀµ£º" + dllName);
+                                Log("å·²å¤åˆ¶ä¾èµ–ï¼š" + dllName);
                             }
                         }
-                        catch (Exception dllEx) { Log("¸´ÖÆDLLÊ±³ö´í: " + dllEx.Message); }
-                        Log($"¹²¸´ÖÆ {dllCount} ¸öÒÀÀµ DLL ÎÄ¼ş");
+                        catch (Exception dllEx) { Log("å¤åˆ¶DLLæ—¶å‡ºé”™: " + dllEx.Message); }
+                        Log($"å…±å¤åˆ¶ {dllCount} ä¸ªä¾èµ– DLL æ–‡ä»¶");
 
                         FindFFplay();
                         SetProgress(100);
-                        SetStatus("? °²×°Íê³É£¡");
-                        Log("MediaInfo ×é¼ş°²×°³É¹¦£¡");
+                        SetStatus("âœ… å®‰è£…å®Œæˆï¼");
+                        Log("MediaInfo ç»„ä»¶å®‰è£…æˆåŠŸï¼");
                         downloadSuccess = true;
                         await Task.Delay(500);
                         dlg.DialogResult = DialogResult.OK;
@@ -2840,10 +2840,10 @@ namespace IPTVLiveChecker
                     }
                     catch (Exception ex)
                     {
-                        Log("°²×°Òì³££º" + ex.Message);
+                        Log("å®‰è£…å¼‚å¸¸ï¼š" + ex.Message);
                         try
                         {
-                            DarkMessageBox.Show(dlg, "MediaInfo °²×°¹ı³Ì³ö´í£º\n" + ex.Message + "\n\nÇëÊÖ¶¯´Ó https://mediaarea.net/zh-CN/MediaInfo/Download/Windows ÏÂÔØ²¢½âÑ¹µ½³ÌĞòÄ¿Â¼¡£", "°²×°´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            DarkMessageBox.Show(dlg, "MediaInfo å®‰è£…è¿‡ç¨‹å‡ºé”™ï¼š\n" + ex.Message + "\n\nè¯·æ‰‹åŠ¨ä» https://mediaarea.net/zh-CN/MediaInfo/Download/Windows ä¸‹è½½å¹¶è§£å‹åˆ°ç¨‹åºç›®å½•ã€‚", "å®‰è£…é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                         catch { }
                         dlg.DialogResult = DialogResult.Cancel;
@@ -2868,8 +2868,8 @@ namespace IPTVLiveChecker
         {
             try
             {
-                setStatus("Í¨¹ı PowerShell ÏÂÔØ...");
-                log("³¢ÊÔÍ¨¹ı PowerShell Invoke-WebRequest ÏÂÔØ...");
+                setStatus("é€šè¿‡ PowerShell ä¸‹è½½...");
+                log("å°è¯•é€šè¿‡ PowerShell Invoke-WebRequest ä¸‹è½½...");
                 setProgress(5);
                 string psUrl = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip";
                 string script = $"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '{psUrl}' -OutFile '{destPath}' -UseBasicParsing";
@@ -2888,12 +2888,12 @@ namespace IPTVLiveChecker
                     proc.Start();
                     string err = await proc.StandardError.ReadToEndAsync();
                     await Task.Run(() => proc.WaitForExit());
-                    if (!string.IsNullOrEmpty(err)) log("PSÈÕÖ¾: " + err.Substring(0, Math.Min(300, err.Length)));
+                    if (!string.IsNullOrEmpty(err)) log("PSæ—¥å¿—: " + err.Substring(0, Math.Min(300, err.Length)));
                 }
                 if (File.Exists(destPath) && new FileInfo(destPath).Length > 1024 * 1024)
                     return destPath;
             }
-            catch (Exception ex) { log("PowerShellÏÂÔØÊ§°Ü: " + ex.Message); }
+            catch (Exception ex) { log("PowerShellä¸‹è½½å¤±è´¥: " + ex.Message); }
             return null;
         }
 
@@ -2901,8 +2901,8 @@ namespace IPTVLiveChecker
         {
             try
             {
-                setStatus("Í¨¹ı PowerShell ÏÂÔØ...");
-                log("³¢ÊÔÍ¨¹ı PowerShell Invoke-WebRequest ÏÂÔØ...");
+                setStatus("é€šè¿‡ PowerShell ä¸‹è½½...");
+                log("å°è¯•é€šè¿‡ PowerShell Invoke-WebRequest ä¸‹è½½...");
                 setProgress(5);
                 string script = $"[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '{url}' -OutFile '{destPath}' -UseBasicParsing";
                 using (var proc = new Process())
@@ -2920,12 +2920,12 @@ namespace IPTVLiveChecker
                     proc.Start();
                     string err = await proc.StandardError.ReadToEndAsync();
                     await Task.Run(() => proc.WaitForExit());
-                    if (!string.IsNullOrEmpty(err)) log("PSÈÕÖ¾: " + err.Substring(0, Math.Min(300, err.Length)));
+                    if (!string.IsNullOrEmpty(err)) log("PSæ—¥å¿—: " + err.Substring(0, Math.Min(300, err.Length)));
                 }
                 if (File.Exists(destPath) && new FileInfo(destPath).Length > 100 * 1024)
                     return destPath;
             }
-            catch (Exception ex) { log("PowerShellÏÂÔØÊ§°Ü: " + ex.Message); }
+            catch (Exception ex) { log("PowerShellä¸‹è½½å¤±è´¥: " + ex.Message); }
             return null;
         }
 
@@ -2947,14 +2947,14 @@ namespace IPTVLiveChecker
                     proc.Start();
                     await Task.Run(() => proc.WaitForExit());
                 }
-                log("½âÑ¹Íê³É");
+                log("è§£å‹å®Œæˆ");
             }
             catch (Exception ex)
             {
-                log("PowerShell½âÑ¹Ê§°Ü£º" + ex.Message + "£¬³¢ÊÔ±¸ÓÃ·½Ê½...");
+                log("PowerShellè§£å‹å¤±è´¥ï¼š" + ex.Message + "ï¼Œå°è¯•å¤‡ç”¨æ–¹å¼...");
                 try
                 {
-                    log("³¢ÊÔÊ¹ÓÃ.NETÄÚÖÃ½âÑ¹...");
+                    log("å°è¯•ä½¿ç”¨.NETå†…ç½®è§£å‹...");
                     if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
                     string psScript2 = $"Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory('{zipPath}', '{destDir}')";
                     using (var proc2 = new Process())
@@ -2970,11 +2970,11 @@ namespace IPTVLiveChecker
                         proc2.Start();
                         proc2.WaitForExit();
                     }
-                    log(".NET ZipFile½âÑ¹Íê³É");
+                    log(".NET ZipFileè§£å‹å®Œæˆ");
                 }
                 catch (Exception ex2)
                 {
-                    log(".NET½âÑ¹Ò²Ê§°Ü£º" + ex2.Message);
+                    log(".NETè§£å‹ä¹Ÿå¤±è´¥ï¼š" + ex2.Message);
                     throw;
                 }
             }
@@ -3005,7 +3005,7 @@ namespace IPTVLiveChecker
                     if (b.Length == 4)
                     {
                         if (b[0] == 10 || (b[0] == 172 && b[1] >= 16 && b[1] <= 31) || (b[0] == 192 && b[1] == 168) || b[0] == 127 || (b[0] == 100 && b[1] >= 64 && b[1] <= 127) || b[0] == 169 && b[1] == 254)
-                            return "ÄÚÍø";
+                            return "å†…ç½‘";
                         return "";
                     }
                     return "IPv6";
@@ -3021,51 +3021,51 @@ namespace IPTVLiveChecker
 
                     var provinceMap = new Dictionary<string, string>
                     {
-                        {"beijing","±±¾©"},{"bj","±±¾©"},
-                        {"shanghai","ÉÏº£"},{"sh","ÉÏº£"},
-                        {"guangzhou","¹ãÖİ"},{"gz","¹ãÖİ"},{"gd","¹ã¶«"},
-                        {"shenzhen","ÉîÛÚ"},{"sz","ÉîÛÚ"},
-                        {"hangzhou","º¼Öİ"},{"hz","º¼Öİ"},{"zj","Õã½­"},
-                        {"nanjing","ÄÏ¾©"},{"nj","ÄÏ¾©"},{"js","½­ËÕ"},
-                        {"chengdu","³É¶¼"},{"cd","³É¶¼"},{"sc","ËÄ´¨"},
-                        {"wuhan","Îäºº"},{"wh","Îäºº"},{"hb","ºş±±"},
-                        {"xian","Î÷°²"},{"xa","Î÷°²"},{"sn","ÉÂÎ÷"},
-                        {"chongqing","ÖØÇì"},{"cq","ÖØÇì"},
-                        {"tianjin","Ìì½ò"},{"tj","Ìì½ò"},
-                        {"shenyang","ÉòÑô"},{"sy","ÉòÑô"},{"ln","ÁÉÄş"},
-                        {"qingdao","Çàµº"},{"qd","Çàµº"},{"sd","É½¶«"},
-                        {"zhengzhou","Ö£Öİ"},{"zz","Ö£Öİ"},{"hn","ºÓÄÏ"},
-                        {"changsha","³¤É³"},{"cs","³¤É³"},
-                        {"hefei","ºÏ·Ê"},{"hf","ºÏ·Ê"},{"ah","°²»Õ"},
-                        {"fuzhou","¸£Öİ"},{"fz","¸£Öİ"},{"fj","¸£½¨"},
-                        {"xiamen","ÏÃÃÅ"},{"xm","ÏÃÃÅ"},
-                        {"kunming","À¥Ã÷"},{"km","À¥Ã÷"},{"yn","ÔÆÄÏ"},
-                        {"guiyang","¹óÑô"},{"gy","¹óÑô"},{"gz2","¹óÖİ"},
-                        {"nanning","ÄÏÄş"},{"nn","ÄÏÄş"},{"gx","¹ãÎ÷"},
-                        {"haikou","º£¿Ú"},{"hk","º£¿Ú"},{"hi","º£ÄÏ"},
-                        {"harbin","¹ş¶û±õ"},{"heb","¹ş¶û±õ"},{"hlj","ºÚÁú½­"},
-                        {"changchun","³¤´º"},{"cc","³¤´º"},{"jl","¼ªÁÖ"},
-                        {"huhehot","ºôºÍºÆÌØ"},{"nm","ÄÚÃÉ¹Å"},
-                        {"wulumuqi","ÎÚÂ³Ä¾Æë"},{"xj","ĞÂ½®"},
-                        {"nmg","ÄÚÃÉ¹Å"},{"neimenggu","ÄÚÃÉ¹Å"},{"cnmg","ÄÚÃÉ¹Å"},
-                        {"lasa","À­Èø"},{"xz","Î÷²Ø"},
-                        {"lanzhou","À¼Öİ"},{"gs","¸ÊËà"},
-                        {"yinchuan","Òø´¨"},{"nx","ÄşÏÄ"},
-                        {"xining","Î÷Äş"},{"qh","Çàº£"},
-                        {"nanchang","ÄÏ²ı"},{"jx","½­Î÷"},
-                        {"taiyuan","Ì«Ô­"},{"ty","Ì«Ô­"},{"sx","É½Î÷"},
-                        {"shijiazhuang","Ê¯¼Ò×¯"},{"sjz","Ê¯¼Ò×¯"},{"he","ºÓ±±"},
+                        {"beijing","åŒ—äº¬"},{"bj","åŒ—äº¬"},
+                        {"shanghai","ä¸Šæµ·"},{"sh","ä¸Šæµ·"},
+                        {"guangzhou","å¹¿å·"},{"gz","å¹¿å·"},{"gd","å¹¿ä¸œ"},
+                        {"shenzhen","æ·±åœ³"},{"sz","æ·±åœ³"},
+                        {"hangzhou","æ­å·"},{"hz","æ­å·"},{"zj","æµ™æ±Ÿ"},
+                        {"nanjing","å—äº¬"},{"nj","å—äº¬"},{"js","æ±Ÿè‹"},
+                        {"chengdu","æˆéƒ½"},{"cd","æˆéƒ½"},{"sc","å››å·"},
+                        {"wuhan","æ­¦æ±‰"},{"wh","æ­¦æ±‰"},{"hb","æ¹–åŒ—"},
+                        {"xian","è¥¿å®‰"},{"xa","è¥¿å®‰"},{"sn","é™•è¥¿"},
+                        {"chongqing","é‡åº†"},{"cq","é‡åº†"},
+                        {"tianjin","å¤©æ´¥"},{"tj","å¤©æ´¥"},
+                        {"shenyang","æ²ˆé˜³"},{"sy","æ²ˆé˜³"},{"ln","è¾½å®"},
+                        {"qingdao","é’å²›"},{"qd","é’å²›"},{"sd","å±±ä¸œ"},
+                        {"zhengzhou","éƒ‘å·"},{"zz","éƒ‘å·"},{"hn","æ²³å—"},
+                        {"changsha","é•¿æ²™"},{"cs","é•¿æ²™"},
+                        {"hefei","åˆè‚¥"},{"hf","åˆè‚¥"},{"ah","å®‰å¾½"},
+                        {"fuzhou","ç¦å·"},{"fz","ç¦å·"},{"fj","ç¦å»º"},
+                        {"xiamen","å¦é—¨"},{"xm","å¦é—¨"},
+                        {"kunming","æ˜†æ˜"},{"km","æ˜†æ˜"},{"yn","äº‘å—"},
+                        {"guiyang","è´µé˜³"},{"gy","è´µé˜³"},{"gz2","è´µå·"},
+                        {"nanning","å—å®"},{"nn","å—å®"},{"gx","å¹¿è¥¿"},
+                        {"haikou","æµ·å£"},{"hk","æµ·å£"},{"hi","æµ·å—"},
+                        {"harbin","å“ˆå°”æ»¨"},{"heb","å“ˆå°”æ»¨"},{"hlj","é»‘é¾™æ±Ÿ"},
+                        {"changchun","é•¿æ˜¥"},{"cc","é•¿æ˜¥"},{"jl","å‰æ—"},
+                        {"huhehot","å‘¼å’Œæµ©ç‰¹"},{"nm","å†…è’™å¤"},
+                        {"wulumuqi","ä¹Œé²æœ¨é½"},{"xj","æ–°ç–†"},
+                        {"nmg","å†…è’™å¤"},{"neimenggu","å†…è’™å¤"},{"cnmg","å†…è’™å¤"},
+                        {"lasa","æ‹‰è¨"},{"xz","è¥¿è—"},
+                        {"lanzhou","å…°å·"},{"gs","ç”˜è‚ƒ"},
+                        {"yinchuan","é“¶å·"},{"nx","å®å¤"},
+                        {"xining","è¥¿å®"},{"qh","é’æµ·"},
+                        {"nanchang","å—æ˜Œ"},{"jx","æ±Ÿè¥¿"},
+                        {"taiyuan","å¤ªåŸ"},{"ty","å¤ªåŸ"},{"sx","å±±è¥¿"},
+                        {"shijiazhuang","çŸ³å®¶åº„"},{"sjz","çŸ³å®¶åº„"},{"he","æ²³åŒ—"},
                     };
                     var ispMap = new Dictionary<string, string>
                     {
-                        {"cmcc","ÒÆ¶¯"},{"mobile","ÒÆ¶¯"},{"chinamobile","ÒÆ¶¯"},{"migu","ÒÆ¶¯"},
-                        {"unicom","ÁªÍ¨"},{"chinaunicom","ÁªÍ¨"},{"cu","ÁªÍ¨"},{"wo","ÁªÍ¨"},
-                        {"telecom","µçĞÅ"},{"chinatelecom","µçĞÅ"},{"ct","µçĞÅ"},{"tianyi","µçĞÅ"},{"189","µçĞÅ"},
-                        {"cernet","½ÌÓıÍø"},{"edu","½ÌÓıÍø"},
-                        {"aliyun","°¢ÀïÔÆ"},{"ali","°¢ÀïÔÆ"},{"alibaba","°¢ÀïÔÆ"},
-                        {"tencent","ÌÚÑ¶ÔÆ"},{"tenc","ÌÚÑ¶ÔÆ"},{"qcloud","ÌÚÑ¶ÔÆ"},{"wechat","ÌÚÑ¶ÔÆ"},
-                        {"baidu","°Ù¶ÈÔÆ"},{"bce","°Ù¶ÈÔÆ"},
-                        {"huawei","»ªÎªÔÆ"},{"hwcloud","»ªÎªÔÆ"},
+                        {"cmcc","ç§»åŠ¨"},{"mobile","ç§»åŠ¨"},{"chinamobile","ç§»åŠ¨"},{"migu","ç§»åŠ¨"},
+                        {"unicom","è”é€š"},{"chinaunicom","è”é€š"},{"cu","è”é€š"},{"wo","è”é€š"},
+                        {"telecom","ç”µä¿¡"},{"chinatelecom","ç”µä¿¡"},{"ct","ç”µä¿¡"},{"tianyi","ç”µä¿¡"},{"189","ç”µä¿¡"},
+                        {"cernet","æ•™è‚²ç½‘"},{"edu","æ•™è‚²ç½‘"},
+                        {"aliyun","é˜¿é‡Œäº‘"},{"ali","é˜¿é‡Œäº‘"},{"alibaba","é˜¿é‡Œäº‘"},
+                        {"tencent","è…¾è®¯äº‘"},{"tenc","è…¾è®¯äº‘"},{"qcloud","è…¾è®¯äº‘"},{"wechat","è…¾è®¯äº‘"},
+                        {"baidu","ç™¾åº¦äº‘"},{"bce","ç™¾åº¦äº‘"},
+                        {"huawei","åä¸ºäº‘"},{"hwcloud","åä¸ºäº‘"},
                         {"aws","AWS"},{"cloudfront","AWS"},{"amazon","AWS"},
                         {"cloudflare","Cloudflare"},{"cf","Cloudflare"},
                         {"google","Google"},{"gstatic","Google"},
@@ -3075,22 +3075,22 @@ namespace IPTVLiveChecker
                     var cctvMap = new Dictionary<string, string>
                     {
                         {"cctv","CCTV"},{"cntv","CCTV"},{"cctvnews","CCTV"},{"cctv5","CCTV"},
-                        {"cmg","ÑëÊÓ"},{"chinacert","ÑëÊÓ"},{"cnr","Ñë¹ã"},{"cri","¹ú¼ÊÌ¨"},
-                        {"wasu","»ªÊı"},{"wasu","»ªÊı"},
-                        {"hunan","ºşÄÏ"},{"mgtv","Ã¢¹ûTV"},{"hunantv","ºşÄÏ"},
-                        {"zhejiang","Õã½­ÎÀÊÓ"},{"zjstv","Õã½­"},
-                        {"jiangsu","½­ËÕÎÀÊÓ"},{"jstv","½­ËÕ"},
-                        {"dongfang","¶«·½"},{"dragon","¶«·½"},
-                        {"beijingtv","±±¾©ÎÀÊÓ"},{"brtn","±±¾©"},
-                        {"shmedia","ÉÏº£Ì¨"},{"smg","ÉÏº£"},
-                        {"satv","ÉîÛÚÎÀÊÓ"},{"sztv","ÉîÛÚ"},
-                        {"guangdong","¹ã¶«ÎÀÊÓ"},{"gdtv","¹ã¶«"},
-                        {"scs","ËÄ´¨ÎÀÊÓ"},{"sctv","ËÄ´¨"},
-                        {"hbtv","ºş±±ÎÀÊÓ"},
-                        {"sdtv","É½¶«ÎÀÊÓ"},
-                        {"hntv","ºÓÄÏÎÀÊÓ"},
-                        {"ahtv","°²»ÕÎÀÊÓ"},
-                        {"fjrtv","¸£½¨ÎÀÊÓ"},{"fjtv","¶«ÄÏ"},
+                        {"cmg","å¤®è§†"},{"chinacert","å¤®è§†"},{"cnr","å¤®å¹¿"},{"cri","å›½é™…å°"},
+                        {"wasu","åæ•°"},{"wasu","åæ•°"},
+                        {"hunan","æ¹–å—"},{"mgtv","èŠ’æœTV"},{"hunantv","æ¹–å—"},
+                        {"zhejiang","æµ™æ±Ÿå«è§†"},{"zjstv","æµ™æ±Ÿ"},
+                        {"jiangsu","æ±Ÿè‹å«è§†"},{"jstv","æ±Ÿè‹"},
+                        {"dongfang","ä¸œæ–¹"},{"dragon","ä¸œæ–¹"},
+                        {"beijingtv","åŒ—äº¬å«è§†"},{"brtn","åŒ—äº¬"},
+                        {"shmedia","ä¸Šæµ·å°"},{"smg","ä¸Šæµ·"},
+                        {"satv","æ·±åœ³å«è§†"},{"sztv","æ·±åœ³"},
+                        {"guangdong","å¹¿ä¸œå«è§†"},{"gdtv","å¹¿ä¸œ"},
+                        {"scs","å››å·å«è§†"},{"sctv","å››å·"},
+                        {"hbtv","æ¹–åŒ—å«è§†"},
+                        {"sdtv","å±±ä¸œå«è§†"},
+                        {"hntv","æ²³å—å«è§†"},
+                        {"ahtv","å®‰å¾½å«è§†"},
+                        {"fjrtv","ç¦å»ºå«è§†"},{"fjtv","ä¸œå—"},
                     };
 
                     foreach (var kv in provinceMap)
@@ -3110,9 +3110,9 @@ namespace IPTVLiveChecker
                     }
 
                     if (tld == "cn" || tld == "com.cn" || tld == "net.cn" || tld == "org.cn" || tld == "gov.cn")
-                        return "¹úÄÚ";
+                        return "å›½å†…";
                     if (tld == "tv" || tld == "live" || tld == "me" || tld == "cc" || tld == "io" || tld == "top" || tld == "xyz")
-                        return "º£Íâ";
+                        return "æµ·å¤–";
                     if (tld == "com" || tld == "net" || tld == "org")
                     {
                         return host.Length > 18 ? host.Substring(0, 15) + "..." : host;
@@ -3126,17 +3126,17 @@ namespace IPTVLiveChecker
         private string GuessIpLocation(byte a, byte b)
         {
             if (a == 36 || a == 39 || a == 42 || a == 43 || (a == 49 && b >= 64 && b <= 95) || a == 58 || a == 59 || a == 60 || a == 61 || a == 101 || a == 103 || a == 106 || a == 110 || a == 111 || a == 112 || a == 113 || a == 114 || a == 115 || a == 116 || a == 117 || a == 118 || a == 119 || a == 120 || a == 121 || a == 122 || a == 123 || a == 124 || a == 125 || a == 126 || (a >= 1 && a <= 22))
-                return "¹úÄÚ";
-            if (a == 8 || a == 9) return "±±ÃÀ";
-            if (a >= 23 && a <= 33) return "±±ÃÀ";
-            if (a >= 64 && a <= 77) return "±±ÃÀ";
-            if (a >= 96 && a <= 100) return "±±ÃÀ";
+                return "å›½å†…";
+            if (a == 8 || a == 9) return "åŒ—ç¾";
+            if (a >= 23 && a <= 33) return "åŒ—ç¾";
+            if (a >= 64 && a <= 77) return "åŒ—ç¾";
+            if (a >= 96 && a <= 100) return "åŒ—ç¾";
             if (a >= 128 && a <= 191)
             {
-                if (b >= 0 && b <= 99) return "±±ÃÀ";
-                if (b >= 100 && b <= 159) return "Å·ÖŞ";
-                if (b >= 160 && b <= 199) return "±±ÃÀ";
-                if (b >= 200 && b <= 255) return "ÆäËû";
+                if (b >= 0 && b <= 99) return "åŒ—ç¾";
+                if (b >= 100 && b <= 159) return "æ¬§æ´²";
+                if (b >= 160 && b <= 199) return "åŒ—ç¾";
+                if (b >= 200 && b <= 255) return "å…¶ä»–";
             }
             return "";
         }
@@ -3157,7 +3157,7 @@ namespace IPTVLiveChecker
             {
                 if (b[0] == 10 || (b[0] == 172 && b[1] >= 16 && b[1] <= 31) || (b[0] == 192 && b[1] == 168) || b[0] == 127 || (b[0] == 100 && b[1] >= 64 && b[1] <= 127) || b[0] == 169 && b[1] == 254)
                 {
-                    string lan = "ÄÚÍø";
+                    string lan = "å†…ç½‘";
                     lock (ipLocationCache) { ipLocationCache[ip] = lan; }
                     return lan;
                 }
@@ -3166,7 +3166,7 @@ namespace IPTVLiveChecker
             {
                 if (IPAddress.IsLoopback(addr) || addr.IsIPv6LinkLocal || addr.IsIPv6SiteLocal)
                 {
-                    string lan = "ÄÚÍø";
+                    string lan = "å†…ç½‘";
                     lock (ipLocationCache) { ipLocationCache[ip] = lan; }
                     return lan;
                 }
@@ -3199,11 +3199,11 @@ namespace IPTVLiveChecker
                 if (!isV6)
                 {
                     result = GuessIpLocation(b[0], b[1]);
-                    if (string.IsNullOrEmpty(result)) result = "º£Íâ";
+                    if (string.IsNullOrEmpty(result)) result = "æµ·å¤–";
                 }
                 else
                 {
-                    result = "º£Íâ";
+                    result = "æµ·å¤–";
                 }
             }
             lock (ipLocationCache)
@@ -3243,7 +3243,7 @@ namespace IPTVLiveChecker
                         string isp = ExtractJsonField(body, "isp");
                         if (string.IsNullOrEmpty(country)) return "";
                         string loc = "";
-                        if (country.Contains("ÖĞ¹ú"))
+                        if (country.Contains("ä¸­å›½"))
                         {
                             loc = region;
                             if (!string.IsNullOrEmpty(city) && city != region) loc += city;
@@ -3289,7 +3289,7 @@ namespace IPTVLiveChecker
                         if (string.IsNullOrEmpty(isp) && orgM.Success) isp = orgM.Groups[1].Value;
                         if (string.IsNullOrEmpty(country)) return "";
                         string loc = "";
-                        if (country.Contains("ÖĞ¹ú"))
+                        if (country.Contains("ä¸­å›½"))
                         {
                             loc = region;
                             if (!string.IsNullOrEmpty(city) && city != region) loc += city;
@@ -3316,14 +3316,14 @@ namespace IPTVLiveChecker
             if (string.IsNullOrEmpty(isp)) return "";
             var rules = new Dictionary<string, string>
             {
-                {"µçĞÅ", "µçĞÅ"},{"ÁªÍ¨", "ÁªÍ¨"},{"ÒÆ¶¯", "ÒÆ¶¯"},
-                {"China Telecom", "µçĞÅ"},{"China Unicom", "ÁªÍ¨"},{"China Mobile", "ÒÆ¶¯"},
-                {"CHINANET", "µçĞÅ"},{"UNICOM", "ÁªÍ¨"},{"CMNET", "ÒÆ¶¯"},
-                {"°¢ÀïÔÆ", "°¢ÀïÔÆ"},{"ÌÚÑ¶ÔÆ", "ÌÚÑ¶ÔÆ"},{"»ªÎªÔÆ", "»ªÎªÔÆ"},
-                {"Alibaba", "°¢ÀïÔÆ"},{"Tencent", "ÌÚÑ¶ÔÆ"},{"Huawei", "»ªÎªÔÆ"},
+                {"ç”µä¿¡", "ç”µä¿¡"},{"è”é€š", "è”é€š"},{"ç§»åŠ¨", "ç§»åŠ¨"},
+                {"China Telecom", "ç”µä¿¡"},{"China Unicom", "è”é€š"},{"China Mobile", "ç§»åŠ¨"},
+                {"CHINANET", "ç”µä¿¡"},{"UNICOM", "è”é€š"},{"CMNET", "ç§»åŠ¨"},
+                {"é˜¿é‡Œäº‘", "é˜¿é‡Œäº‘"},{"è…¾è®¯äº‘", "è…¾è®¯äº‘"},{"åä¸ºäº‘", "åä¸ºäº‘"},
+                {"Alibaba", "é˜¿é‡Œäº‘"},{"Tencent", "è…¾è®¯äº‘"},{"Huawei", "åä¸ºäº‘"},
                 {"Amazon", "AWS"},{"Cloudflare", "CF"},{"Google", "Google"},
-                {"½ÌÓıÍø", "½ÌÓıÍø"},{"CERNET", "½ÌÓıÍø"},{"¹ãµç", "¹ãµç"},
-                {"ÌúÍ¨", "ÌúÍ¨"},{"³¤³Ç", "³¤³Ç¿í´ø"},{"Åô²©Ê¿", "Åô²©Ê¿"},
+                {"æ•™è‚²ç½‘", "æ•™è‚²ç½‘"},{"CERNET", "æ•™è‚²ç½‘"},{"å¹¿ç”µ", "å¹¿ç”µ"},
+                {"é“é€š", "é“é€š"},{"é•¿åŸ", "é•¿åŸå®½å¸¦"},{"é¹åšå£«", "é¹åšå£«"},
             };
             foreach (var kv in rules)
             {
@@ -3358,9 +3358,9 @@ namespace IPTVLiveChecker
                                 return ipStr;
                             }
                         }
-                        // IPv6¹¦ÄÜÒÑÒÆ³ı
-                    } // foreachÑ­»·½áÊø
-                } // using½áÊø
+                        // IPv6åŠŸèƒ½å·²ç§»é™¤
+                    } // foreachå¾ªç¯ç»“æŸ
+                } // usingç»“æŸ
             }
             catch { }
             lock (domainIpCache) { domainIpFailed.Add(host); }
@@ -3372,7 +3372,7 @@ namespace IPTVLiveChecker
             try
             {
                 string domainLoc = ExtractLocationFromUrl("http://" + host + "/");
-                if (!string.IsNullOrWhiteSpace(domainLoc) && domainLoc != "¹úÄÚ" && domainLoc != "º£Íâ")
+                if (!string.IsNullOrWhiteSpace(domainLoc) && domainLoc != "å›½å†…" && domainLoc != "æµ·å¤–")
                     return domainLoc;
                 string ip = await ResolveDomainToIpAsync(host, token);
                 if (!string.IsNullOrEmpty(ip))
@@ -3400,13 +3400,13 @@ namespace IPTVLiveChecker
                     {
                         if (!resp.IsSuccessStatusCode) return "";
                         string html = await resp.Content.ReadAsStringAsync();
-                        int idx = html.IndexOf("IP Î»ÖÃ");
+                        int idx = html.IndexOf("IP ä½ç½®");
                         if (idx < 0) return "";
                         string snippet = html.Substring(idx, Math.Min(500, html.Length - idx));
                         string clean = Regex.Replace(snippet, "<[^>]+>", "");
                         clean = System.Net.WebUtility.HtmlDecode(clean);
-                        clean = clean.Replace("IP Î»ÖÃ", "").Replace("´íÎóÌá½»", "").Trim();
-                        int flagEnd = clean.IndexOfAny(new char[] { 'ÖĞ', 'ÃÀ', 'ÈÕ', 'º«', 'Ó¢', 'µÂ', '·¨', '¶í', 'ĞÂ', 'Âí', 'Ì©', 'Ô½', 'Ó¡', '·Æ', '¼Ó', '°Ä', 'Ïã', 'Ì¨', '°Ä' });
+                        clean = clean.Replace("IP ä½ç½®", "").Replace("é”™è¯¯æäº¤", "").Trim();
+                        int flagEnd = clean.IndexOfAny(new char[] { 'ä¸­', 'ç¾', 'æ—¥', 'éŸ©', 'è‹±', 'å¾·', 'æ³•', 'ä¿„', 'æ–°', 'é©¬', 'æ³°', 'è¶Š', 'å°', 'è²', 'åŠ ', 'æ¾³', 'é¦™', 'å°', 'æ¾³' });
                         if (flagEnd > 0) clean = clean.Substring(flagEnd);
                         else
                         {
@@ -3429,17 +3429,17 @@ namespace IPTVLiveChecker
         {
             if (string.IsNullOrEmpty(loc)) return "";
             loc = loc.Trim();
-            if (loc.StartsWith("ÖĞ¹ú ")) loc = loc.Substring(3).TrimStart();
-            else if (loc.StartsWith("ÖĞ¹ú")) loc = loc.Substring(2).TrimStart();
+            if (loc.StartsWith("ä¸­å›½ ")) loc = loc.Substring(3).TrimStart();
+            else if (loc.StartsWith("ä¸­å›½")) loc = loc.Substring(2).TrimStart();
             var ispRules = new Dictionary<string, string>
             {
-                {"ÖĞ¹úÒÆ¶¯", "ÒÆ¶¯"},{"ÖĞ¹úÁªÍ¨", "ÁªÍ¨"},{"ÖĞ¹úµçĞÅ", "µçĞÅ"},
-                {"CHINA MOBILE", "ÒÆ¶¯"},{"CHINA UNICOM", "ÁªÍ¨"},{"CHINA TELECOM", "µçĞÅ"},
-                {"China Mobile", "ÒÆ¶¯"},{"China Unicom", "ÁªÍ¨"},{"China Telecom", "µçĞÅ"},
-                {"China Mobile Communications", "ÒÆ¶¯"},
-                {"China United Network", "ÁªÍ¨"},
-                {"China Telecom Group", "µçĞÅ"},
-                {"CT", "µçĞÅ"},{"CU", "ÁªÍ¨"},{"CM", "ÒÆ¶¯"},
+                {"ä¸­å›½ç§»åŠ¨", "ç§»åŠ¨"},{"ä¸­å›½è”é€š", "è”é€š"},{"ä¸­å›½ç”µä¿¡", "ç”µä¿¡"},
+                {"CHINA MOBILE", "ç§»åŠ¨"},{"CHINA UNICOM", "è”é€š"},{"CHINA TELECOM", "ç”µä¿¡"},
+                {"China Mobile", "ç§»åŠ¨"},{"China Unicom", "è”é€š"},{"China Telecom", "ç”µä¿¡"},
+                {"China Mobile Communications", "ç§»åŠ¨"},
+                {"China United Network", "è”é€š"},
+                {"China Telecom Group", "ç”µä¿¡"},
+                {"CT", "ç”µä¿¡"},{"CU", "è”é€š"},{"CM", "ç§»åŠ¨"},
             };
             foreach (var kv in ispRules)
             {
@@ -3450,8 +3450,8 @@ namespace IPTVLiveChecker
                     break;
                 }
             }
-            loc = loc.Replace("Ê¡", "").Replace("ÊĞ", "").Replace("×ÔÖÎÇø", "").Replace("ÌØ±ğĞĞÕşÇø", "");
-            string[] knownIsp = { "ÒÆ¶¯","ÁªÍ¨","µçĞÅ","½ÌÓıÍø","°¢ÀïÔÆ","ÌÚÑ¶ÔÆ","»ªÎªÔÆ","°Ù¶ÈÔÆ","Cloudflare","Google","AWS","Akamai","CDN" };
+            loc = loc.Replace("çœ", "").Replace("å¸‚", "").Replace("è‡ªæ²»åŒº", "").Replace("ç‰¹åˆ«è¡Œæ”¿åŒº", "");
+            string[] knownIsp = { "ç§»åŠ¨","è”é€š","ç”µä¿¡","æ•™è‚²ç½‘","é˜¿é‡Œäº‘","è…¾è®¯äº‘","åä¸ºäº‘","ç™¾åº¦äº‘","Cloudflare","Google","AWS","Akamai","CDN" };
             string isp = "";
             foreach (var k in knownIsp)
             {
@@ -3586,8 +3586,8 @@ namespace IPTVLiveChecker
                         string[] patterns = new string[]
                         {
                             @"(\d{2,5})x(\d{2,5})",
-                            @"(\d{2,5})\s*[x¡Á]\s*(\d{2,5})",
-                            @"Stream.*Video.*?(\d{2,5})[x¡Á](\d{2,5})",
+                            @"(\d{2,5})\s*[xÃ—]\s*(\d{2,5})",
+                            @"Stream.*Video.*?(\d{2,5})[xÃ—](\d{2,5})",
                             @"Video:.*?(\d{2,5})x(\d{2,5})",
                             @"width\s*[=:]\s*(\d{2,5}).*?height\s*[=:]\s*(\d{2,5})",
                         };
@@ -3647,7 +3647,7 @@ namespace IPTVLiveChecker
                     string allText = output + "\n" + error;
                     if (!string.IsNullOrWhiteSpace(allText))
                     {
-                        // ÓÅÏÈ´Ó Video ¶Î½âÎö Width/Height
+                        // ä¼˜å…ˆä» Video æ®µè§£æ Width/Height
                         var wMatch = System.Text.RegularExpressions.Regex.Match(allText, @"Width\s*:\s*(\d{2,5})");
                         var hMatch = System.Text.RegularExpressions.Regex.Match(allText, @"Height\s*:\s*(\d{2,5})");
                         if (wMatch.Success && hMatch.Success)
@@ -3657,12 +3657,12 @@ namespace IPTVLiveChecker
                             if (w > 0 && h > 0 && w < 8000 && h < 8000)
                                 return $"{w}x{h}";
                         }
-                        // ±¸ÓÃ£º´ÓÍêÕûÊä³öÖĞÆ¥Åä NxN ¸ñÊ½
+                        // å¤‡ç”¨ï¼šä»å®Œæ•´è¾“å‡ºä¸­åŒ¹é… NxN æ ¼å¼
                         var lines = allText.Trim().Split('\n', '\r');
                         foreach (var line in lines)
                         {
                             if (string.IsNullOrWhiteSpace(line)) continue;
-                            var match = System.Text.RegularExpressions.Regex.Match(line.Trim(), @"(\d{2,5})\s*[x¡Á]\s*(\d{2,5})");
+                            var match = System.Text.RegularExpressions.Regex.Match(line.Trim(), @"(\d{2,5})\s*[xÃ—]\s*(\d{2,5})");
                             if (match.Success && int.TryParse(match.Groups[1].Value, out int w2) && int.TryParse(match.Groups[2].Value, out int h2) && w2 > 0 && h2 > 0 && w2 < 8000 && h2 < 8000)
                                 return $"{w2}x{h2}";
                         }
@@ -3883,7 +3883,7 @@ namespace IPTVLiveChecker
                         if (!string.IsNullOrEmpty(channelLayout))
                             _currentAudioChannels = channelLayout;
                         else
-                            _currentAudioChannels = $"{ch}ÉùµÀ";
+                            _currentAudioChannels = $"{ch}å£°é“";
                     }
                     if (!string.IsNullOrEmpty(sampleFmt))
                         _currentAudioBitdepth = sampleFmt;
@@ -4215,14 +4215,14 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÏÔÊ¾ÉèÖÃ¶Ô»°¿ò
-        /// ´°¿Ú´óĞ¡: 860 x 860
-        /// ²¼¾Ö·½Ê½: Ê¹ÓÃPanel×÷ÎªÈİÆ÷£¬Ã¿¸öÉèÖÃÏîÒ»ĞĞ£¬´øÊó±ê»¬¹ı¸ßÁÁĞ§¹û
-        /// ĞŞ¸ÄËµÃ÷: Ö±½ÓĞŞ¸ÄÏÂ·½²¼¾Ö³£Á¿¼´¿Éµ÷ÕûÕûÌå²¼¾Ö
+        /// æ˜¾ç¤ºè®¾ç½®å¯¹è¯æ¡†
+        /// çª—å£å¤§å°: 860 x 860
+        /// å¸ƒå±€æ–¹å¼: ä½¿ç”¨Panelä½œä¸ºå®¹å™¨ï¼Œæ¯ä¸ªè®¾ç½®é¡¹ä¸€è¡Œï¼Œå¸¦é¼ æ ‡æ»‘è¿‡é«˜äº®æ•ˆæœ
+        /// ä¿®æ”¹è¯´æ˜: ç›´æ¥ä¿®æ”¹ä¸‹æ–¹å¸ƒå±€å¸¸é‡å³å¯è°ƒæ•´æ•´ä½“å¸ƒå±€
         /// </summary>
         private void ShowSettingsDialog()
         {
-            bool isDark = theme.Name == "ÉîÉ«";
+            bool isDark = theme.Name == "æ·±è‰²";
             Color bgColor = isDark ? Color.FromArgb(28, 32, 42) : Color.White;
             Color textColor = isDark ? Color.FromArgb(220, 225, 235) : Color.FromArgb(35, 40, 50);
             Color subTextColor = isDark ? Color.FromArgb(160, 168, 185) : Color.FromArgb(100, 110, 125);
@@ -4241,34 +4241,34 @@ namespace IPTVLiveChecker
             Color customCardBg = isDark ? Color.FromArgb(50, 40, 60) : Color.FromArgb(250, 245, 255);
             Color customCardBorder = isDark ? Color.FromArgb(90, 65, 110) : Color.FromArgb(220, 190, 240);
 
-            // ========== ÆÁÄ»·Ö±æÂÊ×ÔÊÊÓ¦ ==========
-            // ¸ù¾İÆÁÄ»¹¤×÷Çø¶¯Ì¬¼ÆËã´°¿Ú´óĞ¡£¬È·±£ÄÚÈİÍêÕûÏÔÊ¾
+            // ========== å±å¹•åˆ†è¾¨ç‡è‡ªé€‚åº” ==========
+            // æ ¹æ®å±å¹•å·¥ä½œåŒºåŠ¨æ€è®¡ç®—çª—å£å¤§å°ï¼Œç¡®ä¿å†…å®¹å®Œæ•´æ˜¾ç¤º
             Rectangle screenWorkArea = Screen.GetWorkingArea(this);
             int screenWidth = screenWorkArea.Width;
             int screenHeight = screenWorkArea.Height;
 
-            // ¿¨Æ¬ÄÚÈİËùĞè¸ß¶È£¨DPIËõ·Åºó£©
-            int scrollTopPad = SY(20);        // ¹ö¶¯ÈİÆ÷¶¥²¿ÄÚ±ß¾à
-            int scrollBottomPad = SY(8);      // ¹ö¶¯ÈİÆ÷µ×²¿ÄÚ±ß¾à£¨¼õÉÙÁô°×£©
-            int scrollRightPad = SX(20);      // ¹ö¶¯ÈİÆ÷ÓÒ²àÄÚ±ß¾à£¨²¹³¥¹ö¶¯Ìõ¿í¶È£¬Ê¹¿¨Æ¬×óÓÒÁô°×¶Ô³Æ£©
-            int cardStartY = SY(15);          // µÚÒ»¸ö¿¨Æ¬µÄÆğÊ¼Y×ø±ê
-            int engineCardH = SY(105);        // ¼ì²âÒıÇæ¿¨Æ¬
-            int perfCardH = SY(125);          // ĞÔÄÜÉèÖÃ¿¨Æ¬£¨2ĞĞ²¼¾Ö£©
-            int funcCardH = SY(270);          // ¹¦ÄÜ¿ª¹Ø¿¨Æ¬£¨Ôö¼ÓÁËËÑË÷¹¦ÄÜ¿ª¹Ø£©
-            int customCardH = SY(130);        // ¸öĞÔ»¯¿¨Æ¬£¨¼õÉÙµ×²¿Áô°×£©
-            int cardGap = SY(12);             // ¿¨Æ¬¼ä¾à
-            int btnPanelH = SY(65);           // µ×²¿°´Å¥Ãæ°å£¨¼õÉÙ¸ß¶È£©
-            // Ä¬ÈÏ¹¦ÄÜ¿ª¹Ø¿¨Æ¬Òş²ØÊ±µÄÄÚÈİ¸ß¶È£¨3¸ö¿¨Æ¬£¬2¸ö¼ä¾à£©
+            // å¡ç‰‡å†…å®¹æ‰€éœ€é«˜åº¦ï¼ˆDPIç¼©æ”¾åï¼‰
+            int scrollTopPad = SY(20);        // æ»šåŠ¨å®¹å™¨é¡¶éƒ¨å†…è¾¹è·
+            int scrollBottomPad = SY(8);      // æ»šåŠ¨å®¹å™¨åº•éƒ¨å†…è¾¹è·ï¼ˆå‡å°‘ç•™ç™½ï¼‰
+            int scrollRightPad = SX(20);      // æ»šåŠ¨å®¹å™¨å³ä¾§å†…è¾¹è·ï¼ˆè¡¥å¿æ»šåŠ¨æ¡å®½åº¦ï¼Œä½¿å¡ç‰‡å·¦å³ç•™ç™½å¯¹ç§°ï¼‰
+            int cardStartY = SY(15);          // ç¬¬ä¸€ä¸ªå¡ç‰‡çš„èµ·å§‹Yåæ ‡
+            int engineCardH = SY(105);        // æ£€æµ‹å¼•æ“å¡ç‰‡
+            int perfCardH = SY(125);          // æ€§èƒ½è®¾ç½®å¡ç‰‡ï¼ˆ2è¡Œå¸ƒå±€ï¼‰
+            int funcCardH = SY(270);          // åŠŸèƒ½å¼€å…³å¡ç‰‡ï¼ˆå¢åŠ äº†æœç´¢åŠŸèƒ½å¼€å…³ï¼‰
+            int customCardH = SY(130);        // ä¸ªæ€§åŒ–å¡ç‰‡ï¼ˆå‡å°‘åº•éƒ¨ç•™ç™½ï¼‰
+            int cardGap = SY(12);             // å¡ç‰‡é—´è·
+            int btnPanelH = SY(65);           // åº•éƒ¨æŒ‰é’®é¢æ¿ï¼ˆå‡å°‘é«˜åº¦ï¼‰
+            // é»˜è®¤åŠŸèƒ½å¼€å…³å¡ç‰‡éšè—æ—¶çš„å†…å®¹é«˜åº¦ï¼ˆ3ä¸ªå¡ç‰‡ï¼Œ2ä¸ªé—´è·ï¼‰
             int contentTotalH = cardStartY + engineCardH + perfCardH + customCardH + cardGap * 2 + scrollBottomPad;
             int requiredHeight = scrollTopPad + contentTotalH + btnPanelH;
 
-            // ´°¿Ú´óĞ¡£ºÈ¡ËùĞè¸ß¶ÈºÍÆÁÄ»95%µÄ½ÏĞ¡Öµ£¬µ«ÖÁÉÙÄÜÈİÄÉÄÚÈİ
+            // çª—å£å¤§å°ï¼šå–æ‰€éœ€é«˜åº¦å’Œå±å¹•95%çš„è¾ƒå°å€¼ï¼Œä½†è‡³å°‘èƒ½å®¹çº³å†…å®¹
             int windowWidth = Math.Min(SX(820), (int)(screenWidth * 0.9));
             int windowHeight = Math.Min(Math.Max(requiredHeight, SY(450)), (int)(screenHeight * 0.95));
 
             Form dlg = new Form
             {
-                Text = "ÉèÖÃ",
+                Text = "è®¾ç½®",
                 Size = new Size(windowWidth, windowHeight),
                 StartPosition = FormStartPosition.CenterScreen,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
@@ -4278,13 +4278,13 @@ namespace IPTVLiveChecker
             };
             SetFormDarkModeTitleBar(dlg, isDark);
 
-            int cardHMargin = SX(30);            // ¿¨Æ¬×óÓÒ±ß¾à
+            int cardHMargin = SX(30);            // å¡ç‰‡å·¦å³è¾¹è·
             int cardWidth = windowWidth - cardHMargin * 2;
             int cardX = cardHMargin;
             int cardY = cardStartY;
 
-            // ========== ÄÚÈİ¹ö¶¯ÈİÆ÷ ==========
-            // µ±´°¿Ú¸ß¶È²»×ãÊ±£¬×Ô¶¯ÏÔÊ¾¹ö¶¯Ìõ
+            // ========== å†…å®¹æ»šåŠ¨å®¹å™¨ ==========
+            // å½“çª—å£é«˜åº¦ä¸è¶³æ—¶ï¼Œè‡ªåŠ¨æ˜¾ç¤ºæ»šåŠ¨æ¡
             Panel scrollContainer = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -4320,13 +4320,13 @@ namespace IPTVLiveChecker
                 };
             }
 
-            // ========== ¼ì²âÒıÇæ¿¨Æ¬ ==========
+            // ========== æ£€æµ‹å¼•æ“å¡ç‰‡ ==========
             Panel engineCard = CreateCard(engineCardBg, engineCardBorder);
             PaintCardBorder(engineCard, engineCardBorder);
 
             Label engineTitle = new Label
             {
-                Text = "?? ¼ì²âÒıÇæ",
+                Text = "âš™ï¸ æ£€æµ‹å¼•æ“",
                 Font = GetFont(11, FontStyle.Bold),
                 ForeColor = isDark ? Color.FromArgb(100, 180, 255) : Color.FromArgb(30, 100, 180),
                 Size = new Size(cardWidth - SY(30), 28),
@@ -4358,7 +4358,7 @@ namespace IPTVLiveChecker
 
             Label engineTip = new Label
             {
-                Text = "ÌáÊ¾£ºHTTPÄ£Ê½²»Ö§³Ö·Ö±æÂÊ¼ì²â",
+                Text = "æç¤ºï¼šHTTPæ¨¡å¼ä¸æ”¯æŒåˆ†è¾¨ç‡æ£€æµ‹",
                 Font = GetFont(8.5f),
                 ForeColor = isDark ? Color.FromArgb(200, 100, 100) : Color.FromArgb(200, 80, 80),
                 Size = new Size(cardWidth - SY(30), 22),
@@ -4370,13 +4370,13 @@ namespace IPTVLiveChecker
             scrollContainer.Controls.Add(engineCard);
             cardY += engineCardH + cardGap;
 
-            // ========== ĞÔÄÜÉèÖÃ¿¨Æ¬ ==========
+            // ========== æ€§èƒ½è®¾ç½®å¡ç‰‡ ==========
             Panel perfCard = CreateCard(perfCardBg, perfCardBorder);
             PaintCardBorder(perfCard, perfCardBorder);
 
             Label perfTitle = new Label
             {
-                Text = "?? ĞÔÄÜÉèÖÃ",
+                Text = "ğŸš€ æ€§èƒ½è®¾ç½®",
                 Font = GetFont(11, FontStyle.Bold),
                 ForeColor = isDark ? Color.FromArgb(255, 160, 80) : Color.FromArgb(200, 100, 30),
                 Size = new Size(cardWidth - SY(30), 28),
@@ -4384,12 +4384,12 @@ namespace IPTVLiveChecker
             };
             perfCard.Controls.Add(perfTitle);
 
-            // ĞÔÄÜÉèÖÃÑÕÉ«£ºÌáÊ¾ĞÅÏ¢Ê¹ÓÃ³ÈÉ«¸ßÁÁ
+            // æ€§èƒ½è®¾ç½®é¢œè‰²ï¼šæç¤ºä¿¡æ¯ä½¿ç”¨æ©™è‰²é«˜äº®
             Color perfTipColor = isDark ? Color.FromArgb(255, 180, 100) : Color.FromArgb(200, 100, 30);
 
             Label concurrencyLabel = new Label
             {
-                Text = "²¢·¢¼ì²âÊıÁ¿",
+                Text = "å¹¶å‘æ£€æµ‹æ•°é‡",
                 Font = GetFont(9.5f),
                 ForeColor = textColor,
                 Size = new Size(SY(120), 24),
@@ -4399,7 +4399,7 @@ namespace IPTVLiveChecker
 
             Label concurrencyTip = new Label
             {
-                Text = "£¨·¶Î§£º1-20£¬¹ı´ó¿ÉÄÜµ¼ÖÂ¼ì²â²»×¼È·£©",
+                Text = "ï¼ˆèŒƒå›´ï¼š1-20ï¼Œè¿‡å¤§å¯èƒ½å¯¼è‡´æ£€æµ‹ä¸å‡†ç¡®ï¼‰",
                 Font = GetFont(8.5f),
                 ForeColor = perfTipColor,
                 AutoSize = true,
@@ -4422,7 +4422,7 @@ namespace IPTVLiveChecker
 
             Label timeoutLabel = new Label
             {
-                Text = "³¬Ê±Ê±¼ä£¨Ãë£©",
+                Text = "è¶…æ—¶æ—¶é—´ï¼ˆç§’ï¼‰",
                 Font = GetFont(9.5f),
                 ForeColor = textColor,
                 Size = new Size(SY(120), 24),
@@ -4432,7 +4432,7 @@ namespace IPTVLiveChecker
 
             Label timeoutTip = new Label
             {
-                Text = "£¨·¶Î§£º1-60Ãë£©",
+                Text = "ï¼ˆèŒƒå›´ï¼š1-60ç§’ï¼‰",
                 Font = GetFont(8.5f),
                 ForeColor = perfTipColor,
                 AutoSize = true,
@@ -4457,13 +4457,13 @@ namespace IPTVLiveChecker
             scrollContainer.Controls.Add(perfCard);
             cardY += perfCardH + cardGap;
 
-            // ========== ¹¦ÄÜ¿ª¹Ø¿¨Æ¬ ==========
+            // ========== åŠŸèƒ½å¼€å…³å¡ç‰‡ ==========
             Panel funcCard = CreateCard(funcCardBg, funcCardBorder);
             PaintCardBorder(funcCard, funcCardBorder);
 
             Label funcTitle = new Label
             {
-                Text = "?? ¹¦ÄÜ¿ª¹Ø",
+                Text = "ğŸ¯ åŠŸèƒ½å¼€å…³",
                 Font = GetFont(11, FontStyle.Bold),
                 ForeColor = isDark ? Color.FromArgb(120, 220, 150) : Color.FromArgb(40, 160, 80),
                 Size = new Size(cardWidth - SY(30), 28),
@@ -4473,7 +4473,7 @@ namespace IPTVLiveChecker
 
             Label autoClearLabel = new Label
             {
-                Text = "×Ô¶¯Çå³ıÎŞĞ§Ô´",
+                Text = "è‡ªåŠ¨æ¸…é™¤æ— æ•ˆæº",
                 Font = GetFont(9.5f),
                 ForeColor = textColor,
                 Size = new Size(SY(180), 24),
@@ -4486,7 +4486,7 @@ namespace IPTVLiveChecker
 
             Label persistLabel = new Label
             {
-                Text = "¼ì²âÁĞ±í³Ö¾Ã»¯",
+                Text = "æ£€æµ‹åˆ—è¡¨æŒä¹…åŒ–",
                 Font = GetFont(9.5f),
                 ForeColor = textColor,
                 Size = new Size(SY(180), 24),
@@ -4499,7 +4499,7 @@ namespace IPTVLiveChecker
 
             Label watchLabel = new Label
             {
-                Text = "¹Ø±ÕËÑË÷ÌáÊ¾¿ò",
+                Text = "å…³é—­æœç´¢æç¤ºæ¡†",
                 Font = GetFont(9.5f),
                 ForeColor = textColor,
                 Size = new Size(SY(180), 24),
@@ -4512,7 +4512,7 @@ namespace IPTVLiveChecker
 
             Label autoParseLabel = new Label
             {
-                Text = "×Ô¶¯½âÎöÁ´½Ó",
+                Text = "è‡ªåŠ¨è§£æé“¾æ¥",
                 Font = GetFont(9.5f),
                 ForeColor = textColor,
                 Size = new Size(SY(180), 24),
@@ -4525,7 +4525,7 @@ namespace IPTVLiveChecker
 
             Label searchBtnLabel = new Label
             {
-                Text = "ËÑË÷¹¦ÄÜ",
+                Text = "æœç´¢åŠŸèƒ½",
                 Font = GetFont(9.5f),
                 ForeColor = textColor,
                 Size = new Size(SY(180), 24),
@@ -4536,10 +4536,10 @@ namespace IPTVLiveChecker
             ToggleSwitch toggleSearchBtn = new ToggleSwitch { Checked = showSearchButton, Size = new Size(SY(80), SY(30)), Location = new Point(cardWidth - SY(110), SY(195)) };
             funcCard.Controls.Add(toggleSearchBtn);
 
-            // ÏÂ´Î²»ÔÙÌáÊ¾ÃâÔğÉùÃ÷£¨Òş²ØÔÚ¸ß¼¶¹¦ÄÜÖĞ£©
+            // ä¸‹æ¬¡ä¸å†æç¤ºå…è´£å£°æ˜ï¼ˆéšè—åœ¨é«˜çº§åŠŸèƒ½ä¸­ï¼‰
             Label skipDisclaimerLabel = new Label
             {
-                Text = "ÏÂ´ÎÆô¶¯²»ÔÙÌáÊ¾ÃâÔğÉùÃ÷",
+                Text = "ä¸‹æ¬¡å¯åŠ¨ä¸å†æç¤ºå…è´£å£°æ˜",
                 Font = GetFont(9.5f),
                 ForeColor = textColor,
                 Size = new Size(SY(240), 24),
@@ -4554,13 +4554,13 @@ namespace IPTVLiveChecker
             scrollContainer.Controls.Add(funcCard);
             cardY += funcCardH + cardGap;
 
-            // ========== ¸öĞÔ»¯ÉèÖÃ¿¨Æ¬ ==========
+            // ========== ä¸ªæ€§åŒ–è®¾ç½®å¡ç‰‡ ==========
             Panel customCard = CreateCard(customCardBg, customCardBorder);
             PaintCardBorder(customCard, customCardBorder);
 
             Label customTitle = new Label
             {
-                Text = "?? ¸öĞÔ»¯",
+                Text = "ğŸ¨ ä¸ªæ€§åŒ–",
                 Font = GetFont(11, FontStyle.Bold),
                 ForeColor = isDark ? Color.FromArgb(200, 150, 255) : Color.FromArgb(120, 60, 180),
                 Size = new Size(cardWidth - SY(30), 28),
@@ -4570,7 +4570,7 @@ namespace IPTVLiveChecker
 
             Label fontLabel = new Label
             {
-                Text = "×ÖÌåÉèÖÃ",
+                Text = "å­—ä½“è®¾ç½®",
                 Font = GetFont(9.5f),
                 ForeColor = textColor,
                 Size = new Size(SY(120), 24),
@@ -4604,7 +4604,7 @@ namespace IPTVLiveChecker
 
             Button btnFontApply = new Button
             {
-                Text = "Ó¦ÓÃ",
+                Text = "åº”ç”¨",
                 Font = GetFont(9),
                 ForeColor = Color.White,
                 BackColor = accentColor,
@@ -4634,7 +4634,7 @@ namespace IPTVLiveChecker
 
             Label playerLabel = new Label
             {
-                Text = "µÚÈı·½²¥·ÅÆ÷",
+                Text = "ç¬¬ä¸‰æ–¹æ’­æ”¾å™¨",
                 Font = GetFont(9.5f),
                 ForeColor = textColor,
                 Size = new Size(SY(100), 24),
@@ -4660,7 +4660,7 @@ namespace IPTVLiveChecker
 
             Button btnBrowsePlayer = new Button
             {
-                Text = "ä¯ÀÀ...",
+                Text = "æµè§ˆ...",
                 Font = GetFont(9),
                 ForeColor = Color.White,
                 BackColor = accentColor,
@@ -4675,8 +4675,8 @@ namespace IPTVLiveChecker
             {
                 using (OpenFileDialog ofd = new OpenFileDialog())
                 {
-                    ofd.Filter = "¿ÉÖ´ĞĞÎÄ¼ş|*.exe|ËùÓĞÎÄ¼ş|*.*";
-                    ofd.Title = "Ñ¡ÔñµÚÈı·½²¥·ÅÆ÷";
+                    ofd.Filter = "å¯æ‰§è¡Œæ–‡ä»¶|*.exe|æ‰€æœ‰æ–‡ä»¶|*.*";
+                    ofd.Title = "é€‰æ‹©ç¬¬ä¸‰æ–¹æ’­æ”¾å™¨";
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
                         txtPlayerPath.Text = ofd.FileName;
@@ -4689,10 +4689,10 @@ namespace IPTVLiveChecker
             scrollContainer.Controls.Add(customCard);
             cardY += customCardH + cardGap;
 
-            // ÉèÖÃ¹ö¶¯ÈİÆ÷µÄ×îĞ¡¹ö¶¯ÇøÓò´óĞ¡£¬È·±£ËùÓĞÄÚÈİ¶¼ÄÜ¹ö¶¯µ½
+            // è®¾ç½®æ»šåŠ¨å®¹å™¨çš„æœ€å°æ»šåŠ¨åŒºåŸŸå¤§å°ï¼Œç¡®ä¿æ‰€æœ‰å†…å®¹éƒ½èƒ½æ»šåŠ¨åˆ°
             scrollContainer.AutoScrollMinSize = new Size(cardWidth, contentTotalH);
 
-            // ========== µ×²¿°´Å¥Ãæ°å ==========
+            // ========== åº•éƒ¨æŒ‰é’®é¢æ¿ ==========
             Panel btnPanel = new Panel
             {
                 Dock = DockStyle.Bottom,
@@ -4701,14 +4701,14 @@ namespace IPTVLiveChecker
                 Padding = new Padding(0, SY(12), 0, SY(12))
             };
             
-            // ÏÈÌí¼Ó°´Å¥Ãæ°å£¨Dock=Bottom£©£¬ÔÙÌí¼Ó¹ö¶¯ÈİÆ÷£¨Dock=Fill£©
-            // ÕâÑù Dock=Bottom µÄ°´Å¥Ãæ°å»áÏÈÕ¼µ×²¿¿Õ¼ä£¬È»ºó scrollContainer Ìî³äÊ£Óà¿Õ¼ä
+            // å…ˆæ·»åŠ æŒ‰é’®é¢æ¿ï¼ˆDock=Bottomï¼‰ï¼Œå†æ·»åŠ æ»šåŠ¨å®¹å™¨ï¼ˆDock=Fillï¼‰
+            // è¿™æ · Dock=Bottom çš„æŒ‰é’®é¢æ¿ä¼šå…ˆå åº•éƒ¨ç©ºé—´ï¼Œç„¶å scrollContainer å¡«å……å‰©ä½™ç©ºé—´
             dlg.Controls.Add(btnPanel);
             dlg.Controls.Add(scrollContainer);
 
             Button btnReset = new Button
             {
-                Text = "»Ö¸´Ä¬ÈÏ",
+                Text = "æ¢å¤é»˜è®¤",
                 Font = GetFont(10),
                 ForeColor = textColor,
                 BackColor = Color.Transparent,
@@ -4719,7 +4719,7 @@ namespace IPTVLiveChecker
             StyleOutlineButton(btnReset, 17, borderColor, textColor);
             btnReset.Click += (s, e) =>
             {
-                if (DarkMessageBox.Show("È·¶¨Òª»Ö¸´ËùÓĞÉèÖÃÎªÄ¬ÈÏÖµÂğ£¿", "»Ö¸´Ä¬ÈÏ", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (DarkMessageBox.Show("ç¡®å®šè¦æ¢å¤æ‰€æœ‰è®¾ç½®ä¸ºé»˜è®¤å€¼å—ï¼Ÿ", "æ¢å¤é»˜è®¤", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     detectEngine = "HTTP";
                     detectConcurrency = 10;
@@ -4730,7 +4730,7 @@ namespace IPTVLiveChecker
                     customPlayerPath = "";
                     watchSearchWindow = false;
                     customFontFamily = "Microsoft YaHei";
-                    themePreference = "¸úËæÏµÍ³";
+                    themePreference = "è·Ÿéšç³»ç»Ÿ";
                     theme = AppTheme.GetAutoTheme();
 
                     rbHttp.Checked = true;
@@ -4757,7 +4757,7 @@ namespace IPTVLiveChecker
 
             Button btnOK = new Button
             {
-                Text = "È·¶¨",
+                Text = "ç¡®å®š",
                 Font = GetFont(10, FontStyle.Bold),
                 ForeColor = Color.White,
                 BackColor = accentColor,
@@ -4804,7 +4804,7 @@ namespace IPTVLiveChecker
 
             Button btnCancel = new Button
             {
-                Text = "È¡Ïû",
+                Text = "å–æ¶ˆ",
                 Font = GetFont(10),
                 ForeColor = textColor,
                 BackColor = Color.Transparent,
@@ -4815,7 +4815,7 @@ namespace IPTVLiveChecker
             StyleOutlineButton(btnCancel, 17, borderColor, textColor);
             btnCancel.Click += (s, e) => dlg.Close();
 
-            // ¶¯Ì¬¸üĞÂ¿¨Æ¬²¼¾Ö£¨Óë¹ØÓÚ´°¿Ú¹«ÖÚºÅÍÆ¹ã²¼¾ÖÂß¼­Ò»ÖÂ£©
+            // åŠ¨æ€æ›´æ–°å¡ç‰‡å¸ƒå±€ï¼ˆä¸å…³äºçª—å£å…¬ä¼—å·æ¨å¹¿å¸ƒå±€é€»è¾‘ä¸€è‡´ï¼‰
             Action UpdateCardsLayout = () =>
             {
                 int curY = cardStartY;
@@ -4838,7 +4838,7 @@ namespace IPTVLiveChecker
                 int newContentH = curY - cardStartY + scrollBottomPad;
                 scrollContainer.AutoScrollMinSize = new Size(cardWidth, newContentH);
 
-                // ¶¯Ì¬µ÷Õû´°¿Ú¸ß¶È
+                // åŠ¨æ€è°ƒæ•´çª—å£é«˜åº¦
                 int newRequiredHeight = scrollTopPad + newContentH + btnPanelH;
                 int newWindowHeight = Math.Min(Math.Max(newRequiredHeight, SY(450)), (int)(screenHeight * 0.95));
                 if (dlg.ClientSize.Height != newWindowHeight)
@@ -4847,11 +4847,11 @@ namespace IPTVLiveChecker
                 }
             };
 
-            // ========== ¸ß¼¶¹¦ÄÜ°´Å¥£¨²Êµ°£©==========
-            // Óë¹ØÓÚ´°¿Ú¹«ÖÚºÅÍÆ¹ã²Êµ°Âß¼­Ò»ÖÂ£º¸²¸ÇÔÚ»Ö¸´Ä¬ÈÏ°´Å¥ÉÏ
+            // ========== é«˜çº§åŠŸèƒ½æŒ‰é’®ï¼ˆå½©è›‹ï¼‰==========
+            // ä¸å…³äºçª—å£å…¬ä¼—å·æ¨å¹¿å½©è›‹é€»è¾‘ä¸€è‡´ï¼šè¦†ç›–åœ¨æ¢å¤é»˜è®¤æŒ‰é’®ä¸Š
             Button btnAdvanced = new Button
             {
-                Text = "¸ß¼¶¹¦ÄÜ",
+                Text = "é«˜çº§åŠŸèƒ½",
                 Font = GetFont(10),
                 ForeColor = accentColor,
                 BackColor = Color.Transparent,
@@ -4873,7 +4873,7 @@ namespace IPTVLiveChecker
             btnPanel.Controls.Add(btnOK);
             btnPanel.Controls.Add(btnCancel);
 
-            // ²Êµ°£ºÊó±êĞüÍ£»Ö¸´Ä¬ÈÏ°´Å¥3ÃëºóÏÔÊ¾¸ß¼¶¹¦ÄÜ°´Å¥£¬Âß¼­Óë¹ØÓÚ´°¿Ú¹«ÖÚºÅÍÆ¹ã²Êµ°Ò»ÖÂ
+            // å½©è›‹ï¼šé¼ æ ‡æ‚¬åœæ¢å¤é»˜è®¤æŒ‰é’®3ç§’åæ˜¾ç¤ºé«˜çº§åŠŸèƒ½æŒ‰é’®ï¼Œé€»è¾‘ä¸å…³äºçª—å£å…¬ä¼—å·æ¨å¹¿å½©è›‹ä¸€è‡´
             using (System.Windows.Forms.Timer advEggTimer = new System.Windows.Forms.Timer { Interval = 3000 })
             using (System.Windows.Forms.Timer advHideTimer = new System.Windows.Forms.Timer { Interval = 1000 })
             {
@@ -4890,7 +4890,7 @@ namespace IPTVLiveChecker
                     btnAdvanced.Visible = false;
                 };
 
-                // Êó±êĞüÍ£»Ö¸´Ä¬ÈÏ°´Å¥´¥·¢²Êµ°
+                // é¼ æ ‡æ‚¬åœæ¢å¤é»˜è®¤æŒ‰é’®è§¦å‘å½©è›‹
                 Action<Control> resetWireUpWithEgg = null;
                 resetWireUpWithEgg = (ctrl) =>
                 {
@@ -4901,7 +4901,7 @@ namespace IPTVLiveChecker
                 };
                 resetWireUpWithEgg(btnReset);
 
-                // Êó±ê½øÈë¸ß¼¶¹¦ÄÜ°´Å¥Ê±Í£Ö¹Òş²Ø¼ÆÊ±Æ÷
+                // é¼ æ ‡è¿›å…¥é«˜çº§åŠŸèƒ½æŒ‰é’®æ—¶åœæ­¢éšè—è®¡æ—¶å™¨
                 Action<Control> advWireUpWithHide = null;
                 advWireUpWithHide = (ctrl) =>
                 {
@@ -4912,7 +4912,7 @@ namespace IPTVLiveChecker
                 };
                 advWireUpWithHide(btnAdvanced);
 
-                // ³õÊ¼»¯¹¦ÄÜ¿ª¹Ø¿¨Æ¬ÎªÒş²Ø×´Ì¬
+                // åˆå§‹åŒ–åŠŸèƒ½å¼€å…³å¡ç‰‡ä¸ºéšè—çŠ¶æ€
                 funcCard.Visible = false;
                 UpdateCardsLayout();
 
@@ -4920,7 +4920,7 @@ namespace IPTVLiveChecker
                 {
                     int contentRightX = cardX + cardWidth;
                     btnReset.Location = new Point(cardX, SY(15));
-                    btnAdvanced.Location = new Point(cardX, SY(15)); // ¸²¸ÇÔÚ»Ö¸´Ä¬ÈÏ°´Å¥ÉÏ
+                    btnAdvanced.Location = new Point(cardX, SY(15)); // è¦†ç›–åœ¨æ¢å¤é»˜è®¤æŒ‰é’®ä¸Š
                     btnOK.Location = new Point(contentRightX - SX(250), SY(15));
                     btnCancel.Location = new Point(contentRightX - SX(115), SY(15));
                 };
@@ -4930,11 +4930,11 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÏÔÊ¾¹ØÓÚ¶Ô»°¿ò
+        /// æ˜¾ç¤ºå…³äºå¯¹è¯æ¡†
         /// </summary>
         private void ShowAboutDialog()
         {
-            bool isDark = theme != null && theme.Name == "ÉîÉ«";
+            bool isDark = theme != null && theme.Name == "æ·±è‰²";
             
             Color bgColor = isDark ? Color.FromArgb(28, 32, 42) : Color.White;
             Color textColor = isDark ? Color.FromArgb(220, 225, 235) : Color.FromArgb(35, 40, 50);
@@ -4955,17 +4955,17 @@ namespace IPTVLiveChecker
             
             string version = "v1.0-beta";
             
-            // ========== ´°¿Ú»ù´¡³ß´ç²ÎÊı ==========
-            int dlgW = SX(860);                // ´°¿Ú×Ü¿í¶È£¨SX() ÎªË®Æ½·½Ïò DPI Ëõ·Åº¯Êı£©
-            int dlgH = SY(400);                // ´°¿Ú³õÊ¼¸ß¶È£¨SY() Îª´¹Ö±·½Ïò DPI Ëõ·Åº¯Êı£©
-            int cx = SX(10);                   // ÄÚÈİÇøÓò×ó±ß¾à
-            int cw = SX(840);                  // ÄÚÈİÇøÓò¿í¶È£¨´°¿Ú¿í¶È - Á½²à±ß¾à£©
-            int cardRadius = SX(8);            // ¿¨Æ¬Ô²½Ç°ë¾¶
-            int cardGap = SY(10);              // ¿¨Æ¬Ö®¼äµÄ´¹Ö±¼ä¾à
+            // ========== çª—å£åŸºç¡€å°ºå¯¸å‚æ•° ==========
+            int dlgW = SX(860);                // çª—å£æ€»å®½åº¦ï¼ˆSX() ä¸ºæ°´å¹³æ–¹å‘ DPI ç¼©æ”¾å‡½æ•°ï¼‰
+            int dlgH = SY(400);                // çª—å£åˆå§‹é«˜åº¦ï¼ˆSY() ä¸ºå‚ç›´æ–¹å‘ DPI ç¼©æ”¾å‡½æ•°ï¼‰
+            int cx = SX(10);                   // å†…å®¹åŒºåŸŸå·¦è¾¹è·
+            int cw = SX(840);                  // å†…å®¹åŒºåŸŸå®½åº¦ï¼ˆçª—å£å®½åº¦ - ä¸¤ä¾§è¾¹è·ï¼‰
+            int cardRadius = SX(8);            // å¡ç‰‡åœ†è§’åŠå¾„
+            int cardGap = SY(10);              // å¡ç‰‡ä¹‹é—´çš„å‚ç›´é—´è·
             
             using (Form dlg = new Form())
             {
-                dlg.Text = "¹ØÓÚ";
+                dlg.Text = "å…³äº";
                 dlg.StartPosition = FormStartPosition.CenterParent;
                 dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
                 dlg.MaximizeBox = false;
@@ -4992,9 +4992,9 @@ namespace IPTVLiveChecker
                     }
                 };
                 
-                // ========== ¶¥²¿±êÌâÇøÓò²ÎÊı ==========
-                int y = SY(16);                  // µ±Ç°²¼¾ÖY×ø±êÆğÊ¼Î»ÖÃ£¨¶¥²¿±ß¾à£©
-                int topCardH = SY(88);           // ¶¥²¿±êÌâ¿¨Æ¬¸ß¶È
+                // ========== é¡¶éƒ¨æ ‡é¢˜åŒºåŸŸå‚æ•° ==========
+                int y = SY(16);                  // å½“å‰å¸ƒå±€Yåæ ‡èµ·å§‹ä½ç½®ï¼ˆé¡¶éƒ¨è¾¹è·ï¼‰
+                int topCardH = SY(88);           // é¡¶éƒ¨æ ‡é¢˜å¡ç‰‡é«˜åº¦
                 
                 Panel topCard = new Panel
                 {
@@ -5004,23 +5004,23 @@ namespace IPTVLiveChecker
                 };
                 dlg.Controls.Add(topCard);
                 
-                // ÎÄ×Ö×ÖÌå´óĞ¡²ÎÊı
-                Font topTitleFont = GetFont(SF(15f), FontStyle.Bold);  // Ö÷±êÌâ×ÖÌå£¨SF() Îª×ÖÌå´óĞ¡ DPI Ëõ·Å£©
-                Font verFont = GetFont(SF(9.5f));                       // °æ±¾ºÅ×ÖÌå
+                // æ–‡å­—å­—ä½“å¤§å°å‚æ•°
+                Font topTitleFont = GetFont(SF(15f), FontStyle.Bold);  // ä¸»æ ‡é¢˜å­—ä½“ï¼ˆSF() ä¸ºå­—ä½“å¤§å° DPI ç¼©æ”¾ï¼‰
+                Font verFont = GetFont(SF(9.5f));                       // ç‰ˆæœ¬å·å­—ä½“
                 
-                // Í¼±êºÍÎÄ×Ö²¼¾Ö²ÎÊı
-                int iconSize = SX(56);          // Ó¦ÓÃÍ¼±ê³ß´ç£¨Õı·½ĞÎ£©
-                var topTitleSize = TextRenderer.MeasureText("IPTV Ö±²¥Ô´¼ì²â¹¤¾ß", topTitleFont);
-                var versionSize = TextRenderer.MeasureText("°æ±¾ " + version, verFont);
-                int gap1 = SX(18);              // Í¼±êÓëÎÄ×ÖÖ®¼äµÄË®Æ½¼ä¾à
+                // å›¾æ ‡å’Œæ–‡å­—å¸ƒå±€å‚æ•°
+                int iconSize = SX(56);          // åº”ç”¨å›¾æ ‡å°ºå¯¸ï¼ˆæ­£æ–¹å½¢ï¼‰
+                var topTitleSize = TextRenderer.MeasureText("IPTV ç›´æ’­æºæ£€æµ‹å·¥å…·", topTitleFont);
+                var versionSize = TextRenderer.MeasureText("ç‰ˆæœ¬ " + version, verFont);
+                int gap1 = SX(18);              // å›¾æ ‡ä¸æ–‡å­—ä¹‹é—´çš„æ°´å¹³é—´è·
                 int totalW = iconSize + gap1 + topTitleSize.Width;
-                int startX = (cw - totalW) / 2; // ÄÚÈİ¾ÓÖĞÆğÊ¼X×ø±ê
+                int startX = (cw - totalW) / 2; // å†…å®¹å±…ä¸­èµ·å§‹Xåæ ‡
                 
-                // ´¹Ö±¾ÓÖĞ¼ÆËã²ÎÊı
-                int contentH = iconSize;                                        // Í¼±êºÍÎÄ×ÖÇøÓòµÄ×î´ó¸ß¶È
-                int contentY = (topCardH - contentH) / 2;                       // ÄÚÈİ´¹Ö±¾ÓÖĞÆ«ÒÆ
-                int iconY = contentY + (contentH - iconSize) / 2;               // Í¼±ê´¹Ö±Î»ÖÃ
-                int titleY = contentY + (contentH - topTitleSize.Height) / 2;   // ±êÌâ´¹Ö±¾ÓÖĞÎ»ÖÃ
+                // å‚ç›´å±…ä¸­è®¡ç®—å‚æ•°
+                int contentH = iconSize;                                        // å›¾æ ‡å’Œæ–‡å­—åŒºåŸŸçš„æœ€å¤§é«˜åº¦
+                int contentY = (topCardH - contentH) / 2;                       // å†…å®¹å‚ç›´å±…ä¸­åç§»
+                int iconY = contentY + (contentH - iconSize) / 2;               // å›¾æ ‡å‚ç›´ä½ç½®
+                int titleY = contentY + (contentH - topTitleSize.Height) / 2;   // æ ‡é¢˜å‚ç›´å±…ä¸­ä½ç½®
                 
                 Panel iconPanel = new Panel
                 {
@@ -5052,7 +5052,7 @@ namespace IPTVLiveChecker
                 int textStartX = startX + iconSize + gap1;
                 Label lblTitle = new Label
                 {
-                    Text = "IPTV Ö±²¥Ô´¼ì²â¹¤¾ß",
+                    Text = "IPTV ç›´æ’­æºæ£€æµ‹å·¥å…·",
                     Font = topTitleFont,
                     Location = new Point(textStartX, titleY),
                     AutoSize = true,
@@ -5062,10 +5062,10 @@ namespace IPTVLiveChecker
                 topCard.Controls.Add(lblTitle);
                 
                 Font verFontSmall = GetFont(SF(6f));
-                var versionSizeSmall = TextRenderer.MeasureText("°æ±¾ " + version, verFontSmall);
+                var versionSizeSmall = TextRenderer.MeasureText("ç‰ˆæœ¬ " + version, verFontSmall);
                 Label lblVersion = new Label
                 {
-                    Text = "°æ±¾ " + version,
+                    Text = "ç‰ˆæœ¬ " + version,
                     Font = verFontSmall,
                     Location = new Point(textStartX + topTitleSize.Width - versionSizeSmall.Width, titleY + topTitleSize.Height + SY(2)),
                     AutoSize = true,
@@ -5077,9 +5077,9 @@ namespace IPTVLiveChecker
                 
 
                 
-                // ========== ¹¦ÄÜ¸ÅÊöÇøÓò²ÎÊı ==========
-                y += topCardH + cardGap;           // ¸üĞÂY×ø±êµ½ÏÂÒ»¸ö¿¨Æ¬Î»ÖÃ
-                int featCardH = SY(150);          // ¹¦ÄÜ¸ÅÊö¿¨Æ¬¸ß¶È
+                // ========== åŠŸèƒ½æ¦‚è¿°åŒºåŸŸå‚æ•° ==========
+                y += topCardH + cardGap;           // æ›´æ–°Yåæ ‡åˆ°ä¸‹ä¸€ä¸ªå¡ç‰‡ä½ç½®
+                int featCardH = SY(150);          // åŠŸèƒ½æ¦‚è¿°å¡ç‰‡é«˜åº¦
                 
                 Panel featCard = new Panel
                 {
@@ -5103,9 +5103,9 @@ namespace IPTVLiveChecker
                 
                 Label lblFeatTitle = new Label
                 {
-                    Text = "¹¦ÄÜ¸ÅÊö",
-                    Font = GetFont(SF(10.5f), FontStyle.Bold), // ¹¦ÄÜ¿¨Æ¬±êÌâ×ÖÌå´óĞ¡
-                    Location = new Point(SX(16), SY(14)),      // ±êÌâÎ»ÖÃ£¨×óËõ½ø16£¬ÉÏËõ½ø14£©
+                    Text = "åŠŸèƒ½æ¦‚è¿°",
+                    Font = GetFont(SF(10.5f), FontStyle.Bold), // åŠŸèƒ½å¡ç‰‡æ ‡é¢˜å­—ä½“å¤§å°
+                    Location = new Point(SX(16), SY(14)),      // æ ‡é¢˜ä½ç½®ï¼ˆå·¦ç¼©è¿›16ï¼Œä¸Šç¼©è¿›14ï¼‰
                     AutoSize = true,
                     ForeColor = textColor,
                     BackColor = Color.Transparent
@@ -5114,31 +5114,31 @@ namespace IPTVLiveChecker
                 
                 string[][] features = new string[][]
                 {
-                    new[] { "??", "ÅúÁ¿¼ì²â IPTV Ö±²¥Ô´¿ÉÓÃĞÔ" },
-                    new[] { "??", "×Ô¶¯Ê¶±ğÊÓÆµ·Ö±æÂÊºÍ±àÂë¸ñÊ½" },
-                    new[] { "??", "Ö§³Ö ffprobe/ffmpeg/MediaInfo" },
-                    new[] { "??", "ÄÚÖÃÁ´½Ó½âÎö¡¢ËÑË÷¡¢·Ö×é¹ÜÀí" },
-                    new[] { "??", "Ö§³ÖºÏ²¢µ¼³ö¡¢Ô´Éú³ÉÆ÷ÅúÁ¿Éú³É" },
-                    new[] { "??", "Ö§³Ö IP ¹éÊôµØ¡¢ÏìÓ¦ËÙ¶È²âÊÔ" }
+                    new[] { "ğŸ”", "æ‰¹é‡æ£€æµ‹ IPTV ç›´æ’­æºå¯ç”¨æ€§" },
+                    new[] { "ğŸ“º", "è‡ªåŠ¨è¯†åˆ«è§†é¢‘åˆ†è¾¨ç‡å’Œç¼–ç æ ¼å¼" },
+                    new[] { "ğŸ¬", "æ”¯æŒ ffprobe/ffmpeg/MediaInfo" },
+                    new[] { "ğŸ“‹", "å†…ç½®é“¾æ¥è§£æã€æœç´¢ã€åˆ†ç»„ç®¡ç†" },
+                    new[] { "ğŸ“¤", "æ”¯æŒåˆå¹¶å¯¼å‡ºã€æºç”Ÿæˆå™¨æ‰¹é‡ç”Ÿæˆ" },
+                    new[] { "ğŸŒ", "æ”¯æŒ IP å½’å±åœ°ã€å“åº”é€Ÿåº¦æµ‹è¯•" }
                 };
                 
-                // ¹¦ÄÜÁĞ±íÍø¸ñ²¼¾Ö²ÎÊı
-                int colCount = 2;                // ÁĞÊı£¨2ÁĞ²¼¾Ö£©
-                int itemH = SY(30);             // Ã¿¸ö¹¦ÄÜÏîµÄ¸ß¶È
-                int startYFeat = SY(42);        // ¹¦ÄÜÁĞ±íÆğÊ¼Y×ø±ê£¨±êÌâÏÂ·½£©
-                int colW = (cw - SX(32)) / colCount; // Ã¿ÁĞ¿í¶È£¨×Ü¿í¶È-×óÓÒ±ß¾àºó¾ù·Ö£©
+                // åŠŸèƒ½åˆ—è¡¨ç½‘æ ¼å¸ƒå±€å‚æ•°
+                int colCount = 2;                // åˆ—æ•°ï¼ˆ2åˆ—å¸ƒå±€ï¼‰
+                int itemH = SY(30);             // æ¯ä¸ªåŠŸèƒ½é¡¹çš„é«˜åº¦
+                int startYFeat = SY(42);        // åŠŸèƒ½åˆ—è¡¨èµ·å§‹Yåæ ‡ï¼ˆæ ‡é¢˜ä¸‹æ–¹ï¼‰
+                int colW = (cw - SX(32)) / colCount; // æ¯åˆ—å®½åº¦ï¼ˆæ€»å®½åº¦-å·¦å³è¾¹è·åå‡åˆ†ï¼‰
                 
                 for (int i = 0; i < features.Length; i++)
                 {
-                    int col = i % colCount;       // µ±Ç°ÁĞË÷Òı
-                    int row = i / colCount;       // µ±Ç°ĞĞË÷Òı
-                    int itemX = SX(16) + col * colW; // ÏîX×ø±ê£¨×ó±ß¾à+ÁĞÆ«ÒÆ£©
-                    int itemY = startYFeat + row * itemH; // ÏîY×ø±ê£¨ÆğÊ¼Y+ĞĞÆ«ÒÆ£©
+                    int col = i % colCount;       // å½“å‰åˆ—ç´¢å¼•
+                    int row = i / colCount;       // å½“å‰è¡Œç´¢å¼•
+                    int itemX = SX(16) + col * colW; // é¡¹Xåæ ‡ï¼ˆå·¦è¾¹è·+åˆ—åç§»ï¼‰
+                    int itemY = startYFeat + row * itemH; // é¡¹Yåæ ‡ï¼ˆèµ·å§‹Y+è¡Œåç§»ï¼‰
                     
                     Panel itemPanel = new Panel
                     {
                         Location = new Point(itemX, itemY),
-                        Size = new Size(colW - SX(8), itemH - SY(4)), // Ïî³ß´ç£¨¼õÈ¥ÄÚ±ß¾à£©
+                        Size = new Size(colW - SX(8), itemH - SY(4)), // é¡¹å°ºå¯¸ï¼ˆå‡å»å†…è¾¹è·ï¼‰
                         BackColor = Color.Transparent
                     };
                     itemPanel.MouseEnter += (s, e) =>
@@ -5154,9 +5154,9 @@ namespace IPTVLiveChecker
                     Label lblIcon = new Label
                     {
                         Text = features[i][0],
-                        Font = GetFont(SF(10f)),       // Í¼±ê×ÖÌå´óĞ¡
+                        Font = GetFont(SF(10f)),       // å›¾æ ‡å­—ä½“å¤§å°
                         Location = new Point(SX(4), SY(3)),
-                        Size = new Size(SX(24), SY(22)), // Í¼±êÇøÓò³ß´ç
+                        Size = new Size(SX(24), SY(22)), // å›¾æ ‡åŒºåŸŸå°ºå¯¸
                         ForeColor = textColor,
                         BackColor = Color.Transparent,
                         TextAlign = ContentAlignment.MiddleCenter
@@ -5166,9 +5166,9 @@ namespace IPTVLiveChecker
                     Label lblDesc = new Label
                     {
                         Text = features[i][1],
-                        Font = GetFont(SF(9f)),        // ¹¦ÄÜÃèÊö×ÖÌå´óĞ¡
+                        Font = GetFont(SF(9f)),        // åŠŸèƒ½æè¿°å­—ä½“å¤§å°
                         Location = new Point(SX(32), SY(2)),
-                        Size = new Size(colW - SX(42), SY(22)), // ÃèÊöÎÄ±¾ÇøÓò³ß´ç
+                        Size = new Size(colW - SX(42), SY(22)), // æè¿°æ–‡æœ¬åŒºåŸŸå°ºå¯¸
                         ForeColor = subTextColor,
                         BackColor = Color.Transparent,
                         TextAlign = ContentAlignment.MiddleLeft
@@ -5176,9 +5176,9 @@ namespace IPTVLiveChecker
                     itemPanel.Controls.Add(lblDesc);
                 }
                 
-                // ========== ¹«ÖÚºÅÍÆ¹ã¿¨Æ¬²ÎÊı£¨²Êµ°¹¦ÄÜ£©==========
-                y += featCardH + cardGap;           // ¸üĞÂY×ø±ê
-                int promoCardH = SY(220);          // ÍÆ¹ã¿¨Æ¬¸ß¶È£¨°üº¬±êÌâÀ¸ºÍÍ¼Æ¬£©
+                // ========== å…¬ä¼—å·æ¨å¹¿å¡ç‰‡å‚æ•°ï¼ˆå½©è›‹åŠŸèƒ½ï¼‰==========
+                y += featCardH + cardGap;           // æ›´æ–°Yåæ ‡
+                int promoCardH = SY(220);          // æ¨å¹¿å¡ç‰‡é«˜åº¦ï¼ˆåŒ…å«æ ‡é¢˜æ å’Œå›¾ç‰‡ï¼‰
                 
                 Panel promoCard = new Panel
                 {
@@ -5186,7 +5186,7 @@ namespace IPTVLiveChecker
                     Size = new Size(cw, promoCardH),
                     BackColor = promoCardBg,
                     Cursor = Cursors.Hand,
-                    Visible = false                // Ä¬ÈÏÒş²Ø£¬Í¨¹ı²Êµ°´¥·¢ÏÔÊ¾
+                    Visible = false                // é»˜è®¤éšè—ï¼Œé€šè¿‡å½©è›‹è§¦å‘æ˜¾ç¤º
                 };
                 promoCard.Paint += (s, e) =>
                 {
@@ -5202,27 +5202,27 @@ namespace IPTVLiveChecker
                 };
                 dlg.Controls.Add(promoCard);
                 
-                // ÍÆ¹ã¿¨Æ¬×ÖÌå²ÎÊı
-                Font promoLeftFont = GetFont(SF(12f), FontStyle.Bold);   // ×ó²à±êÌâ×ÖÌå£¨¼Ó´Ö£©
-                Font promoMidFont = GetFont(SF(10f));                     // ÖĞ¼äÃèÊö×ÖÌå
-                Font promoRightFont = GetFont(SF(9.5f), FontStyle.Italic); // ÓÒ²àÌáÊ¾×ÖÌå£¨Ğ±Ìå£©
+                // æ¨å¹¿å¡ç‰‡å­—ä½“å‚æ•°
+                Font promoLeftFont = GetFont(SF(12f), FontStyle.Bold);   // å·¦ä¾§æ ‡é¢˜å­—ä½“ï¼ˆåŠ ç²—ï¼‰
+                Font promoMidFont = GetFont(SF(10f));                     // ä¸­é—´æè¿°å­—ä½“
+                Font promoRightFont = GetFont(SF(9.5f), FontStyle.Italic); // å³ä¾§æç¤ºå­—ä½“ï¼ˆæ–œä½“ï¼‰
                 
-                // ÍÆ¹ã¿¨Æ¬ÎÄ±¾ÄÚÈİ
-                string promoLeftText = "?? ¹Ø×¢¹«ÖÚºÅ";
-                string promoMidText = "Î¢ĞÅËÑÒ»ËÑ¡¸ÎÄÓé²è»°»á¡¹";
-                string promoRightText = "µã»÷¸´ÖÆ";
+                // æ¨å¹¿å¡ç‰‡æ–‡æœ¬å†…å®¹
+                string promoLeftText = "ğŸ¯ å…³æ³¨å…¬ä¼—å·";
+                string promoMidText = "å¾®ä¿¡æœä¸€æœã€Œæ–‡å¨±èŒ¶è¯ä¼šã€";
+                string promoRightText = "ç‚¹å‡»å¤åˆ¶";
                 
-                // ²âÁ¿¸÷ÎÄ±¾³ß´ç
+                // æµ‹é‡å„æ–‡æœ¬å°ºå¯¸
                 var promoLeftSize = TextRenderer.MeasureText(promoLeftText, promoLeftFont);
                 var promoMidSize = TextRenderer.MeasureText(promoMidText, promoMidFont);
                 var promoRightSize = TextRenderer.MeasureText(promoRightText, promoRightFont);
                 
-                // ÎÄ×ÖÀ¸²¼¾Ö²ÎÊı£¨µ¥ĞĞºáÏòÅÅÁĞ£©
-                int textBarHeight = SY(32);        // ÎÄ×ÖÀ¸¸ß¶È
-                int textBarPadding = SY(14);       // ÎÄ×ÖÀ¸×óÓÒÄÚ±ß¾à
-                int textBarY = SY(2);              // ÎÄ×ÖÀ¸¶¥²¿Y×ø±ê
+                // æ–‡å­—æ å¸ƒå±€å‚æ•°ï¼ˆå•è¡Œæ¨ªå‘æ’åˆ—ï¼‰
+                int textBarHeight = SY(32);        // æ–‡å­—æ é«˜åº¦
+                int textBarPadding = SY(14);       // æ–‡å­—æ å·¦å³å†…è¾¹è·
+                int textBarY = SY(2);              // æ–‡å­—æ é¡¶éƒ¨Yåæ ‡
                 
-                // ×ó²à£º¹Ø×¢¹«ÖÚºÅ
+                // å·¦ä¾§ï¼šå…³æ³¨å…¬ä¼—å·
                 Label lblPromoLeft = new Label
                 {
                     Text = promoLeftText,
@@ -5235,7 +5235,7 @@ namespace IPTVLiveChecker
                 lblPromoLeft.Location = new Point(textBarPadding, textBarY + (textBarHeight - promoLeftSize.Height) / 2);
                 promoCard.Controls.Add(lblPromoLeft);
                 
-                // ÖĞ¼ä£ºÎ¢ĞÅËÑÒ»ËÑ¡¸ÎÄÓé²è»°»á¡¹
+                // ä¸­é—´ï¼šå¾®ä¿¡æœä¸€æœã€Œæ–‡å¨±èŒ¶è¯ä¼šã€
                 Label lblPromoMid = new Label
                 {
                     Text = promoMidText,
@@ -5248,7 +5248,7 @@ namespace IPTVLiveChecker
                 lblPromoMid.Location = new Point((cw - promoMidSize.Width) / 2, textBarY + (textBarHeight - promoMidSize.Height) / 2);
                 promoCard.Controls.Add(lblPromoMid);
                 
-                // ÓÒ²à£ºµã»÷¸´ÖÆ
+                // å³ä¾§ï¼šç‚¹å‡»å¤åˆ¶
                 Label lblPromoRight = new Label
                 {
                     Text = promoRightText,
@@ -5261,14 +5261,14 @@ namespace IPTVLiveChecker
                 lblPromoRight.Location = new Point(cw - textBarPadding - promoRightSize.Width, textBarY + (textBarHeight - promoRightSize.Height) / 2);
                 promoCard.Controls.Add(lblPromoRight);
                 
-                // ÍÆ¹ã¿¨Æ¬Í¼Æ¬ÇøÓò²ÎÊı£¨Í¼Æ¬ÌîÂúÏÂ·½ÇøÓò£©
-                int imgAreaTopPad = SY(2);           // Í¼Æ¬ÇøÓò¶¥²¿ÄÚ±ß¾à
-                int imgAreaBottomPad = SY(8);       // Í¼Æ¬ÇøÓòµ×²¿ÄÚ±ß¾à
-                int imgAreaLeftPad = SX(40);         // Í¼Æ¬ÇøÓò×ó²àÄÚ±ß¾à
-                int imgAreaRightPad = SX(40);        // Í¼Æ¬ÇøÓòÓÒ²àÄÚ±ß¾à
-                int imgAreaY = textBarY + textBarHeight + imgAreaTopPad; // Í¼Æ¬ÇøÓòÆğÊ¼Y×ø±ê
-                int promoImgTargetW = cw - imgAreaLeftPad - imgAreaRightPad; // Í¼Æ¬Ä¿±ê¿í¶È£¨¿¨Æ¬¿í¶È¼õÈ¥×óÓÒÄÚ±ß¾à£©
-                int borderSize = SX(2);              // Í¼Æ¬±ß¿ò¿í¶È
+                // æ¨å¹¿å¡ç‰‡å›¾ç‰‡åŒºåŸŸå‚æ•°ï¼ˆå›¾ç‰‡å¡«æ»¡ä¸‹æ–¹åŒºåŸŸï¼‰
+                int imgAreaTopPad = SY(2);           // å›¾ç‰‡åŒºåŸŸé¡¶éƒ¨å†…è¾¹è·
+                int imgAreaBottomPad = SY(8);       // å›¾ç‰‡åŒºåŸŸåº•éƒ¨å†…è¾¹è·
+                int imgAreaLeftPad = SX(40);         // å›¾ç‰‡åŒºåŸŸå·¦ä¾§å†…è¾¹è·
+                int imgAreaRightPad = SX(40);        // å›¾ç‰‡åŒºåŸŸå³ä¾§å†…è¾¹è·
+                int imgAreaY = textBarY + textBarHeight + imgAreaTopPad; // å›¾ç‰‡åŒºåŸŸèµ·å§‹Yåæ ‡
+                int promoImgTargetW = cw - imgAreaLeftPad - imgAreaRightPad; // å›¾ç‰‡ç›®æ ‡å®½åº¦ï¼ˆå¡ç‰‡å®½åº¦å‡å»å·¦å³å†…è¾¹è·ï¼‰
+                int borderSize = SX(2);              // å›¾ç‰‡è¾¹æ¡†å®½åº¦
                 
                 Bitmap promoImg = LoadWechatPromoImage(promoImgTargetW);
                 
@@ -5289,7 +5289,7 @@ namespace IPTVLiveChecker
                 
                 Color greenBorderColor = isDark ? Color.FromArgb(60, 160, 90) : Color.FromArgb(80, 180, 110);
                 
-                // Í¼Æ¬ÈİÆ÷Ãæ°å£ºÖ±½ÓÔÚ Paint ÊÂ¼şÖĞ»æÖÆÍ¼Æ¬£¬±ÜÃâ PictureBox µÄ¸÷ÖÖÎÊÌâ
+                // å›¾ç‰‡å®¹å™¨é¢æ¿ï¼šç›´æ¥åœ¨ Paint äº‹ä»¶ä¸­ç»˜åˆ¶å›¾ç‰‡ï¼Œé¿å… PictureBox çš„å„ç§é—®é¢˜
                 Panel imgPanel = new Panel
                 {
                     Location = new Point(promoImgX - borderSize, promoImgY - borderSize),
@@ -5303,7 +5303,7 @@ namespace IPTVLiveChecker
                     g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                     g.PixelOffsetMode = PixelOffsetMode.HighQuality;
                     
-                    // 1. »æÖÆ°×É«±³¾°£¨Ô²½Ç£©
+                    // 1. ç»˜åˆ¶ç™½è‰²èƒŒæ™¯ï¼ˆåœ†è§’ï¼‰
                     using (var bgPath = CreateRoundedRectPath(new Rectangle(0, 0, imgPanel.Width - 1, imgPanel.Height - 1), SX(8)))
                     {
                         using (var bgBrush = new SolidBrush(Color.White))
@@ -5312,7 +5312,7 @@ namespace IPTVLiveChecker
                         }
                     }
                     
-                    // 2. »æÖÆÍ¼Æ¬£¨¾ÓÖĞ£©
+                    // 2. ç»˜åˆ¶å›¾ç‰‡ï¼ˆå±…ä¸­ï¼‰
                     if (promoImg != null)
                     {
                         int imgDrawX = borderSize;
@@ -5322,7 +5322,7 @@ namespace IPTVLiveChecker
                         g.DrawImage(promoImg, imgDrawX, imgDrawY, imgDrawW, imgDrawH);
                     }
                     
-                    // 3. »æÖÆÂÌÉ«Ô²½Ç±ß¿ò
+                    // 3. ç»˜åˆ¶ç»¿è‰²åœ†è§’è¾¹æ¡†
                     using (var borderPath = CreateRoundedRectPath(new Rectangle(1, 1, imgPanel.Width - 3, imgPanel.Height - 3), SX(8)))
                     {
                         using (var borderPen = new Pen(greenBorderColor, borderSize))
@@ -5368,7 +5368,7 @@ namespace IPTVLiveChecker
                     {
                         try
                         {
-                            Clipboard.SetText("ÎÄÓé²è»°»á");
+                            Clipboard.SetText("æ–‡å¨±èŒ¶è¯ä¼š");
                             promoCard.BackColor = promoPressBg;
                             await Task.Delay(100);
                             promoCard.BackColor = promoIsHover ? promoHoverBg : promoNormalBg;
@@ -5380,9 +5380,9 @@ namespace IPTVLiveChecker
                 };
                 promoWireUp(promoCard);
                 
-                // ========== ·´À¡¿¨Æ¬²ÎÊı ==========
-                y += promoCardH + cardGap;           // ¸üĞÂY×ø±ê
-                int fbCardH = SY(110);             // ·´À¡¿¨Æ¬¸ß¶È£¨°üº¬ÓÊÏäºÍTGÁ½¸ö×Ó¿¨Æ¬£©
+                // ========== åé¦ˆå¡ç‰‡å‚æ•° ==========
+                y += promoCardH + cardGap;           // æ›´æ–°Yåæ ‡
+                int fbCardH = SY(110);             // åé¦ˆå¡ç‰‡é«˜åº¦ï¼ˆåŒ…å«é‚®ç®±å’ŒTGä¸¤ä¸ªå­å¡ç‰‡ï¼‰
                 
                 Panel fbCard = new Panel
                 {
@@ -5406,19 +5406,19 @@ namespace IPTVLiveChecker
                 
                 Label lblBugTitle = new Label
                 {
-                    Text = "ÎÊÌâ·´À¡ & ½»Á÷",
-                    Font = GetFont(SF(10.5f), FontStyle.Bold), // ·´À¡¿¨Æ¬±êÌâ×ÖÌå
-                    Location = new Point(SX(16), SY(14)),      // ±êÌâÎ»ÖÃ
+                    Text = "é—®é¢˜åé¦ˆ & äº¤æµ",
+                    Font = GetFont(SF(10.5f), FontStyle.Bold), // åé¦ˆå¡ç‰‡æ ‡é¢˜å­—ä½“
+                    Location = new Point(SX(16), SY(14)),      // æ ‡é¢˜ä½ç½®
                     AutoSize = true,
                     ForeColor = textColor,
                     BackColor = Color.Transparent
                 };
                 fbCard.Controls.Add(lblBugTitle);
                 
-                // ×Ó¿¨Æ¬£¨ÓÊÏä/TG£©²¼¾Ö²ÎÊı
-                int infoCardW = (cw - SX(32) - SX(12)) / 2; // Ã¿¸ö×Ó¿¨Æ¬¿í¶È£¨×Ü¿í-±ß¾à-¼ä¸ôºó¾ù·Ö£©
-                int infoCardH = SY(54);                     // Ã¿¸ö×Ó¿¨Æ¬¸ß¶È
-                int infoCardY = SY(44);                     // ×Ó¿¨Æ¬ÆğÊ¼Y×ø±ê£¨±êÌâÏÂ·½£©
+                // å­å¡ç‰‡ï¼ˆé‚®ç®±/TGï¼‰å¸ƒå±€å‚æ•°
+                int infoCardW = (cw - SX(32) - SX(12)) / 2; // æ¯ä¸ªå­å¡ç‰‡å®½åº¦ï¼ˆæ€»å®½-è¾¹è·-é—´éš”åå‡åˆ†ï¼‰
+                int infoCardH = SY(54);                     // æ¯ä¸ªå­å¡ç‰‡é«˜åº¦
+                int infoCardY = SY(44);                     // å­å¡ç‰‡èµ·å§‹Yåæ ‡ï¼ˆæ ‡é¢˜ä¸‹æ–¹ï¼‰
                 
                 Label lblEmail = null;
                 Panel emailCard = new Panel
@@ -5481,7 +5481,7 @@ namespace IPTVLiveChecker
                             emailCard.BackColor = emailPressBg;
                             await Task.Delay(80);
                             emailCard.BackColor = emailIsHover ? emailHoverBg : emailNormalBg;
-                            System.Diagnostics.Process.Start("mailto:xiaomiren0510@gmail.com?subject=IPTVÖ±²¥Ô´¼ì²â¹¤¾ß - BUG·´À¡");
+                            System.Diagnostics.Process.Start("mailto:xiaomiren0510@gmail.com?subject=IPTVç›´æ’­æºæ£€æµ‹å·¥å…· - BUGåé¦ˆ");
                         }
                         catch { }
                     };
@@ -5492,10 +5492,10 @@ namespace IPTVLiveChecker
                 
                 Label lblEmailIcon = new Label
                 {
-                    Text = "??",
-                    Font = GetFont(SF(14f)),           // ÓÊÏäÍ¼±ê×ÖÌå´óĞ¡
+                    Text = "ğŸ“§",
+                    Font = GetFont(SF(14f)),           // é‚®ç®±å›¾æ ‡å­—ä½“å¤§å°
                     Location = new Point(SX(12), SY(13)),
-                    Size = new Size(SX(28), SY(28)),   // Í¼±êÇøÓò³ß´ç
+                    Size = new Size(SX(28), SY(28)),   // å›¾æ ‡åŒºåŸŸå°ºå¯¸
                     ForeColor = textColor,
                     BackColor = Color.Transparent,
                     TextAlign = ContentAlignment.MiddleCenter
@@ -5504,9 +5504,9 @@ namespace IPTVLiveChecker
                 
                 Label lblEmailTitle = new Label
                 {
-                    Text = "ÓÊÏä·´À¡",
-                    Font = GetFont(SF(8.5f), FontStyle.Bold), // ÓÊÏä±êÌâ×ÖÌå
-                    Location = new Point(SX(46), SY(8)),      // ±êÌâÎ»ÖÃ£¨Í¼±êÓÒ²à£©
+                    Text = "é‚®ç®±åé¦ˆ",
+                    Font = GetFont(SF(8.5f), FontStyle.Bold), // é‚®ç®±æ ‡é¢˜å­—ä½“
+                    Location = new Point(SX(46), SY(8)),      // æ ‡é¢˜ä½ç½®ï¼ˆå›¾æ ‡å³ä¾§ï¼‰
                     AutoSize = true,
                     ForeColor = subTextColor,
                     BackColor = Color.Transparent
@@ -5516,8 +5516,8 @@ namespace IPTVLiveChecker
                 lblEmail = new Label
                 {
                     Text = "xiaomiren0510@gmail.com",
-                    Font = GetFont(SF(8.5f)),          // ÓÊÏäµØÖ·×ÖÌå´óĞ¡
-                    Location = new Point(SX(46), SY(26)), // ÓÊÏäµØÖ·Î»ÖÃ£¨±êÌâÏÂ·½£©
+                    Font = GetFont(SF(8.5f)),          // é‚®ç®±åœ°å€å­—ä½“å¤§å°
+                    Location = new Point(SX(46), SY(26)), // é‚®ç®±åœ°å€ä½ç½®ï¼ˆæ ‡é¢˜ä¸‹æ–¹ï¼‰
                     AutoSize = true,
                     ForeColor = accentColor,
                     BackColor = Color.Transparent,
@@ -5526,11 +5526,11 @@ namespace IPTVLiveChecker
                 emailCard.Controls.Add(lblEmail);
                 emailWireUp(emailCard);
                 
-                // TG/GitHub ¿¨Æ¬£¨²Êµ°£ºÊó±êĞüÍ£3ÃëÏÔÊ¾TGÆµµÀ£©
+                // TG/GitHub å¡ç‰‡ï¼ˆå½©è›‹ï¼šé¼ æ ‡æ‚¬åœ3ç§’æ˜¾ç¤ºTGé¢‘é“ï¼‰
                 Label lblTgChannel = null;
                 Panel tgCard = new Panel
                 {
-                    Location = new Point(SX(16) + infoCardW + SX(12), infoCardY), // ÓÒ²à×Ó¿¨Æ¬Î»ÖÃ
+                    Location = new Point(SX(16) + infoCardW + SX(12), infoCardY), // å³ä¾§å­å¡ç‰‡ä½ç½®
                     Size = new Size(infoCardW, infoCardH),
                     BackColor = Color.Transparent,
                     Cursor = Cursors.Hand
@@ -5602,10 +5602,10 @@ namespace IPTVLiveChecker
                 
                 Label lblTgIcon = new Label
                 {
-                    Text = "??",                         // Ä¬ÈÏÏÔÊ¾ GitHub Í¼±ê£¨²Êµ°ÇĞ»»Îª??£©
-                    Font = GetFont(SF(14f)),           // TG/GitHub Í¼±ê×ÖÌå´óĞ¡
+                    Text = "ğŸ’»",                         // é»˜è®¤æ˜¾ç¤º GitHub å›¾æ ‡ï¼ˆå½©è›‹åˆ‡æ¢ä¸ºğŸ“¢ï¼‰
+                    Font = GetFont(SF(14f)),           // TG/GitHub å›¾æ ‡å­—ä½“å¤§å°
                     Location = new Point(SX(12), SY(13)),
-                    Size = new Size(SX(28), SY(28)),   // Í¼±êÇøÓò³ß´ç
+                    Size = new Size(SX(28), SY(28)),   // å›¾æ ‡åŒºåŸŸå°ºå¯¸
                     ForeColor = textColor,
                     BackColor = Color.Transparent,
                     TextAlign = ContentAlignment.MiddleCenter
@@ -5614,9 +5614,9 @@ namespace IPTVLiveChecker
                 
                 Label lblTgTitle = new Label
                 {
-                    Text = "GitHub",                     // Ä¬ÈÏÏÔÊ¾ GitHub£¨²Êµ°ÇĞ»»Îª"TG ÆµµÀ"£©
-                    Font = GetFont(SF(8.5f), FontStyle.Bold), // ±êÌâ×ÖÌå
-                    Location = new Point(SX(46), SY(8)),      // ±êÌâÎ»ÖÃ
+                    Text = "GitHub",                     // é»˜è®¤æ˜¾ç¤º GitHubï¼ˆå½©è›‹åˆ‡æ¢ä¸º"TG é¢‘é“"ï¼‰
+                    Font = GetFont(SF(8.5f), FontStyle.Bold), // æ ‡é¢˜å­—ä½“
+                    Location = new Point(SX(46), SY(8)),      // æ ‡é¢˜ä½ç½®
                     AutoSize = true,
                     ForeColor = subTextColor,
                     BackColor = Color.Transparent
@@ -5625,9 +5625,9 @@ namespace IPTVLiveChecker
                 
                 lblTgChannel = new Label
                 {
-                    Text = "github.com/281761526/IPTVLiveChecker", // Ä¬ÈÏÏÔÊ¾ GitHub µØÖ·
-                    Font = GetFont(SF(8.5f)),                       // Á´½Ó×ÖÌå´óĞ¡
-                    Location = new Point(SX(46), SY(26)),           // Á´½ÓÎ»ÖÃ
+                    Text = "github.com/281761526/IPTVLiveChecker", // é»˜è®¤æ˜¾ç¤º GitHub åœ°å€
+                    Font = GetFont(SF(8.5f)),                       // é“¾æ¥å­—ä½“å¤§å°
+                    Location = new Point(SX(46), SY(26)),           // é“¾æ¥ä½ç½®
                     AutoSize = true,
                     ForeColor = accentColor,
                     BackColor = Color.Transparent,
@@ -5637,10 +5637,10 @@ namespace IPTVLiveChecker
                 tgWireUp(tgCard);
                 
                 
-                // ÃâÔğÉùÃ÷Èë¿Ú
+                // å…è´£å£°æ˜å…¥å£
                 Label lblDisclaimerLink = new Label
                 {
-                    Text = "ÃâÔğÉùÃ÷",
+                    Text = "å…è´£å£°æ˜",
                     Font = GetFont(SF(8.5f), FontStyle.Underline),
                     Location = new Point(SX(16), SY(14)),
                     AutoSize = true,
@@ -5654,11 +5654,11 @@ namespace IPTVLiveChecker
                 fbCard.Controls.Add(lblDisclaimerLink);
                 
                 Font authorFont = GetFont(SF(8f));
-                var authorSize = TextRenderer.MeasureText("¡ª Designed by °ë²½²×É£ ¡ª", authorFont);
+                var authorSize = TextRenderer.MeasureText("â€” Designed by åŠæ­¥æ²§æ¡‘ â€”", authorFont);
                 int authorH = authorSize.Height + SY(4);
                 Label lblAuthor = new Label
                 {
-                    Text = "¡ª Designed by °ë²½²×É£ ¡ª",
+                    Text = "â€” Designed by åŠæ­¥æ²§æ¡‘ â€”",
                     Font = authorFont,
                     AutoSize = true,
                     ForeColor = isDark ? Color.FromArgb(110, 120, 135) : Color.FromArgb(170, 180, 195),
@@ -5710,8 +5710,8 @@ namespace IPTVLiveChecker
                     {
                         tgEggTimer.Stop();
                         isTgRevealed = true;
-                        lblTgIcon.Text = "??";
-                        lblTgTitle.Text = "TG ÆµµÀ";
+                        lblTgIcon.Text = "ğŸ“¢";
+                        lblTgTitle.Text = "TG é¢‘é“";
                         lblTgChannel.Text = "t.me/+jTncKg0Vbrg5YjI1";
                     };
                     
@@ -5751,7 +5751,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// µ÷ÓÃ¶ÀÁ¢UpdaterÉı¼¶Æ÷¸üĞÂ
+        /// è°ƒç”¨ç‹¬ç«‹Updaterå‡çº§å™¨æ›´æ–°
         /// </summary>
         private void StartUpdater(string downloadUrl, string md5 = "")
         {
@@ -5760,7 +5760,7 @@ namespace IPTVLiveChecker
 
             if (!File.Exists(updaterPath))
             {
-                DarkMessageBox.Show(this, "Éı¼¶³ÌĞò Updater.exe ²»´æÔÚ£¬ÎŞ·¨½øĞĞ×Ô¶¯¸üĞÂ¡£\nÇëÈ·±£ Updater.exe ÓëÖ÷³ÌĞòÔÚÍ¬Ò»Ä¿Â¼¡£", "¸üĞÂÊ§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DarkMessageBox.Show(this, "æ‰¾ä¸åˆ° Updater.exe æ–‡ä»¶ï¼Œæ— æ³•å¯åŠ¨è‡ªåŠ¨æ›´æ–°ã€‚\nè¯·ç¡®ä¿ Updater.exe ä¸ä¸»ç¨‹åºåœ¨åŒä¸€ç›®å½•ã€‚", "æ›´æ–°å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -5768,22 +5768,25 @@ namespace IPTVLiveChecker
             {
                 string args = $"\"{mainExe}\" \"{downloadUrl}\" \"{md5}\"";
                 var proc = new System.Diagnostics.ProcessStartInfo(updaterPath, args);
+                proc.UseShellExecute = false;
+                proc.StandardOutputEncoding = System.Text.Encoding.UTF8;
+                proc.StandardErrorEncoding = System.Text.Encoding.UTF8;
                 System.Diagnostics.Process.Start(proc);
                 Application.Exit();
             }
             catch (Exception ex)
             {
-                DarkMessageBox.Show(this, "Æô¶¯Éı¼¶³ÌĞòÊ§°Ü£º" + ex.Message, "¸üĞÂÊ§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DarkMessageBox.Show(this, "å¯åŠ¨æ›´æ–°ç¨‹åºå¤±è´¥ï¼š" + ex.Message, "æ›´æ–°å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         /// <summary>
-        /// ¼ì²éÈí¼ş¸üĞÂ
+        /// æ£€æŸ¥è½¯ä»¶æ›´æ–°
         /// </summary>
         private async void CheckForUpdate()
         {
             string updateUrl = "https://raw.githubusercontent.com/281761526/IPTVLiveChecker/master/update.json";
-            string currentVersion = "v1.0-beta";
+            string currentVersion = AppVersion.Version;
 
             try
             {
@@ -5798,11 +5801,11 @@ namespace IPTVLiveChecker
 
                     if (jsonObj == null)
                     {
-                        DarkMessageBox.Show(this, "¸üĞÂÅäÖÃ¸ñÊ½´íÎó", "¸üĞÂ´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        DarkMessageBox.Show(this, "æ›´æ–°ä¿¡æ¯æ ¼å¼é”™è¯¯", "æ›´æ–°å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
 
-                    int localVersionCode = 100;
+                    int localVersionCode = AppVersion.VersionCode;
                     string latestVersion = jsonObj.ContainsKey("latestVersion") ? jsonObj["latestVersion"]?.ToString() ?? "" : "";
                     string downloadUrl = jsonObj.ContainsKey("downloadUrl") ? jsonObj["downloadUrl"]?.ToString() ?? "" : "";
                     string md5Checksum = jsonObj.ContainsKey("md5Checksum") ? jsonObj["md5Checksum"]?.ToString() ?? "" : "";
@@ -5825,41 +5828,41 @@ namespace IPTVLiveChecker
                     if (hasUpdate)
                     {
                         string updateNotice = jsonObj.ContainsKey("updateNotice") ? jsonObj["updateNotice"]?.ToString() ?? "" : "";
-                        string msg = $"·¢ÏÖĞÂ°æ±¾£º{latestVersion}\n\n" +
-                                     $"µ±Ç°°æ±¾£º{currentVersion}\n\n" +
-                                     $"¸üĞÂÄÚÈİ£º\n{changelog}\n" +
-                                     (string.IsNullOrEmpty(updateNotice) ? "" : $"ËµÃ÷£º{updateNotice}\n\n") +
-                                     (isForceUpdate ? "´Ë¸üĞÂÎªÇ¿ÖÆ¸üĞÂ£¬±ØĞëÉı¼¶ºó²ÅÄÜ¼ÌĞøÊ¹ÓÃ¡£" : "ÊÇ·ñÁ¢¼´¸üĞÂ£¿");
+                        string msg = $"å‘ç°æ–°ç‰ˆæœ¬ï¼š{latestVersion}\n\n" +
+                                     $"å½“å‰ç‰ˆæœ¬ï¼š{currentVersion}\n\n" +
+                                     $"æ›´æ–°æ—¥å¿—ï¼š\n{changelog}\n" +
+                                     (string.IsNullOrEmpty(updateNotice) ? "" : $"è¯´æ˜ï¼š{updateNotice}\n\n") +
+                                     (isForceUpdate ? "è¯·ç«‹å³æ›´æ–°åç»§ç»­ä½¿ç”¨ã€‚" : "æ˜¯å¦ç«‹å³æ›´æ–°ï¼Ÿ");
 
                         if (isForceUpdate)
                         {
-                            DarkMessageBox.Show(this, msg, "Ç¿ÖÆ¸üĞÂ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            DarkMessageBox.Show(this, msg, "æ›´æ–°", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             StartUpdater(downloadUrl, md5Checksum);
                         }
                         else
                         {
-                            var result = DarkMessageBox.Show(this, msg, "·¢ÏÖĞÂ°æ±¾", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                            var result = DarkMessageBox.Show(this, msg, "å‘ç°æ–°ç‰ˆæœ¬", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                             if (result == DialogResult.Yes)
                                 StartUpdater(downloadUrl, md5Checksum);
                         }
                     }
                     else
                     {
-                        DarkMessageBox.Show(this, $"µ±Ç°ÒÑÊÇ×îĞÂ°æ±¾£¡\n\n°æ±¾£º{currentVersion}", "¼ì²é¸üĞÂ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DarkMessageBox.Show(this, $"å½“å‰å·²æ˜¯æœ€æ–°ç‰ˆæœ¬ã€‚\n\nç‰ˆæœ¬ï¼š{currentVersion}", "æ£€æŸ¥æ›´æ–°", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }
             catch (Exception ex)
             {
-                DarkMessageBox.Show(this, "¼ì²é¸üĞÂÊ§°Ü£º" + ex.Message, "¸üĞÂ´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DarkMessageBox.Show(this, "æ£€æŸ¥æ›´æ–°å¤±è´¥ï¼š" + ex.Message, "æ›´æ–°å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         
         
         /// <summary>
-        /// Æô¶¯Ç°ÏÔÊ¾ÃâÔğÉùÃ÷¶Ô»°¿ò£¨ÔÚÖ÷´°¿ÚÏÔÊ¾Ö®Ç°µ÷ÓÃ£©
+        /// å¯åŠ¨å‰æ˜¾ç¤ºå…è´£å£°æ˜å¯¹è¯æ¡†ï¼ˆåœ¨ä¸»çª—å£æ˜¾ç¤ºä¹‹å‰è°ƒç”¨ï¼‰
         /// </summary>
-        /// <returns>ÓÃ»§ÊÇ·ñÍ¬ÒâÌõ¿î</returns>
+        /// <returns>ç”¨æˆ·æ˜¯å¦åŒæ„æ¡æ¬¾</returns>
         public bool ShowDisclaimerBeforeStart()
         {
             if (!this.IsHandleCreated)
@@ -5880,280 +5883,280 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÏÔÊ¾Ê×´ÎÆô¶¯ÃâÔğÉùÃ÷µ¯´°£¨Ç¿ÖÆÍ¬Òâ·½¿É½øÈë£©
+        /// æ˜¾ç¤ºé¦–æ¬¡å¯åŠ¨å…è´£å£°æ˜å¼¹çª—ï¼ˆå¼ºåˆ¶åŒæ„æ–¹å¯è¿›å…¥ï¼‰
         /// </summary>
-        /// <returns>ÓÃ»§ÊÇ·ñÍ¬ÒâÌõ¿î</returns>
+        /// <returns>ç”¨æˆ·æ˜¯å¦åŒæ„æ¡æ¬¾</returns>
         private bool ShowDisclaimerDialog()
         {
-            // ========== ¾Ö²¿·µ»ØÖµ£º½öÔÚÓÃ»§µã»÷"½øÈëÈí¼ş"°´Å¥Ê±ÖÃÎª true ==========
+            // ========== å±€éƒ¨è¿”å›å€¼ï¼šä»…åœ¨ç”¨æˆ·ç‚¹å‡»"è¿›å…¥è½¯ä»¶"æŒ‰é’®æ—¶ç½®ä¸º true ==========
             bool dialogResult = false;
 
-            // ==================== Ö÷ÌâÑÕÉ«ÅäÖÃ£¨ÉîÉ«/Ç³É«×Ô¶¯ÊÊÅä£© ====================
-            bool isDark = theme != null && theme.Name == "ÉîÉ«";
+            // ==================== ä¸»é¢˜é¢œè‰²é…ç½®ï¼ˆæ·±è‰²/æµ…è‰²è‡ªåŠ¨é€‚é…ï¼‰ ====================
+            bool isDark = theme != null && theme.Name == "æ·±è‰²";
 
-            // ´°¿Ú±³¾°É«£ºÉîÉ«ÎªÉî»ÒÀ¶£¬Ç³É«Îª½ü°×
+            // çª—å£èƒŒæ™¯è‰²ï¼šæ·±è‰²ä¸ºæ·±ç°è“ï¼Œæµ…è‰²ä¸ºè¿‘ç™½
             Color bgColor = isDark ? Color.FromArgb(24, 27, 36) : Color.FromArgb(250, 251, 253);
-            // Ö÷ÎÄ×ÖÑÕÉ«£ºÉîÉ«ÎªÇ³»Ò°×£¬Ç³É«ÎªÉî»Ò
+            // ä¸»æ–‡å­—é¢œè‰²ï¼šæ·±è‰²ä¸ºæµ…ç°ç™½ï¼Œæµ…è‰²ä¸ºæ·±ç°
             Color textColor = isDark ? Color.FromArgb(220, 226, 238) : Color.FromArgb(28, 32, 44);
-            // ¸±±êÌâÎÄ×ÖÑÕÉ«£º±ÈÖ÷ÎÄ×ÖÂÔ°µ£¬ÓÃÓÚÌáÊ¾ĞÔÎÄ×Ö
+            // å‰¯æ ‡é¢˜æ–‡å­—é¢œè‰²ï¼šæ¯”ä¸»æ–‡å­—ç•¥æš—ï¼Œç”¨äºæç¤ºæ€§æ–‡å­—
             Color subTextColor = isDark ? Color.FromArgb(148, 156, 172) : Color.FromArgb(120, 128, 145);
-            // Ç¿µ÷É«£ºÓÃÓÚ°´Å¥¸ßÁÁ¡¢Á´½ÓµÈ£¬ÉîÉ«ÎªÁÁÀ¶£¬Ç³É«Îª±ê×¼À¶
+            // å¼ºè°ƒè‰²ï¼šç”¨äºæŒ‰é’®é«˜äº®ã€é“¾æ¥ç­‰ï¼Œæ·±è‰²ä¸ºäº®è“ï¼Œæµ…è‰²ä¸ºæ ‡å‡†è“
             Color accentColor = isDark ? Color.FromArgb(82, 160, 250) : Color.FromArgb(46, 135, 245);
-            // °´Å¥ÆôÓÃÊ±µÄ±³¾°É«£¨ÓëÇ¿µ÷É«ÏàÍ¬£©
+            // æŒ‰é’®å¯ç”¨æ—¶çš„èƒŒæ™¯è‰²ï¼ˆä¸å¼ºè°ƒè‰²ç›¸åŒï¼‰
             Color btnEnabledBg = accentColor;
-            // °´Å¥½ûÓÃÊ±µÄ±³¾°É«£ºÉîÉ«Îª°µ»Ò£¬Ç³É«ÎªÇ³»Ò
+            // æŒ‰é’®ç¦ç”¨æ—¶çš„èƒŒæ™¯è‰²ï¼šæ·±è‰²ä¸ºæš—ç°ï¼Œæµ…è‰²ä¸ºæµ…ç°
             Color btnDisabledBg = isDark ? Color.FromArgb(50, 54, 66) : Color.FromArgb(225, 228, 234);
-            // °´Å¥ÆôÓÃÊ±µÄÎÄ×ÖÑÕÉ«£º°×É«
+            // æŒ‰é’®å¯ç”¨æ—¶çš„æ–‡å­—é¢œè‰²ï¼šç™½è‰²
             Color btnEnabledText = Color.White;
-            // °´Å¥½ûÓÃÊ±µÄÎÄ×ÖÑÕÉ«£ºÉîÉ«ÎªÖĞ»Ò£¬Ç³É«ÎªÇ³»Ò
+            // æŒ‰é’®ç¦ç”¨æ—¶çš„æ–‡å­—é¢œè‰²ï¼šæ·±è‰²ä¸ºä¸­ç°ï¼Œæµ…è‰²ä¸ºæµ…ç°
             Color btnDisabledText = isDark ? Color.FromArgb(115, 118, 132) : Color.FromArgb(170, 175, 185);
-            // ·Ö¸îÏßÑÕÉ«£ºÉîÉ«ÎªÉî»Ò£¬Ç³É«ÎªÇ³»Ò
+            // åˆ†å‰²çº¿é¢œè‰²ï¼šæ·±è‰²ä¸ºæ·±ç°ï¼Œæµ…è‰²ä¸ºæµ…ç°
             Color dividerColor = isDark ? Color.FromArgb(48, 52, 64) : Color.FromArgb(230, 233, 238);
-            // ÄÚÈİÇøÓò±³¾°É«£¨ÃâÔğÉùÃ÷ÎÄ±¾¿òËùÔÚÃæ°å£©
+            // å†…å®¹åŒºåŸŸèƒŒæ™¯è‰²ï¼ˆå…è´£å£°æ˜æ–‡æœ¬æ¡†æ‰€åœ¨é¢æ¿ï¼‰
             Color contentBg = isDark ? Color.FromArgb(32, 36, 46) : Color.FromArgb(255, 255, 255);
-            // ÌáÊ¾ÎÄ×ÖÑÕÉ«£ºÓÃÓÚµ¹¼ÆÊ±ÌáÊ¾µÈ
+            // æç¤ºæ–‡å­—é¢œè‰²ï¼šç”¨äºå€’è®¡æ—¶æç¤ºç­‰
             Color hintColor = isDark ? Color.FromArgb(120, 128, 145) : Color.FromArgb(140, 148, 165);
-            // ³É¹¦ÌáÊ¾ÑÕÉ«£ºµ¹¼ÆÊ±½áÊøºóÌáÊ¾ÎÄ×Ö±äÂÌ
+            // æˆåŠŸæç¤ºé¢œè‰²ï¼šå€’è®¡æ—¶ç»“æŸåæç¤ºæ–‡å­—å˜ç»¿
             Color successColor = isDark ? Color.FromArgb(56, 196, 106) : Color.FromArgb(36, 176, 86);
-            // ¾¯¸æÌáÊ¾ÑÕÉ«£ºµ¹¼ÆÊ±½øĞĞÖĞÌáÊ¾ÎÄ×Ö±ä³È
+            // è­¦å‘Šæç¤ºé¢œè‰²ï¼šå€’è®¡æ—¶è¿›è¡Œä¸­æç¤ºæ–‡å­—å˜æ©™
             Color warningColor = isDark ? Color.FromArgb(252, 176, 54) : Color.FromArgb(235, 145, 18);
 
-            // ==================== ´°¿Ú²¼¾Ö³ß´ç²ÎÊı£¨SX/SYÎªDPI×ÔÊÊÓ¦Ëõ·Å£© ====================
-            int padX = SX(36);       // ×óÓÒÄÚ±ß¾à£º¿Ø¼şÓë´°¿Ú±ßÔµµÄË®Æ½¼ä¾à
-            int contentW = SX(688);   // ÄÚÈİÇøÓò¿í¶È£º±êÌâ¡¢·Ö¸îÏß¡¢ÄÚÈİÃæ°å¡¢°´Å¥µÄÍ³Ò»¿í¶È
+            // ==================== çª—å£å¸ƒå±€å°ºå¯¸å‚æ•°ï¼ˆSX/SYä¸ºDPIè‡ªé€‚åº”ç¼©æ”¾ï¼‰ ====================
+            int padX = SX(36);       // å·¦å³å†…è¾¹è·ï¼šæ§ä»¶ä¸çª—å£è¾¹ç¼˜çš„æ°´å¹³é—´è·
+            int contentW = SX(688);   // å†…å®¹åŒºåŸŸå®½åº¦ï¼šæ ‡é¢˜ã€åˆ†å‰²çº¿ã€å†…å®¹é¢æ¿ã€æŒ‰é’®çš„ç»Ÿä¸€å®½åº¦
 
             using (Form dlg = new Form())
             {
-                // ==================== ´°¿Ú»ù±¾ÊôĞÔ ====================
-                dlg.Text = "ÃâÔğÉùÃ÷";                              // ´°¿Ú±êÌâÀ¸ÎÄ×Ö
-                dlg.StartPosition = FormStartPosition.CenterScreen; // ´°¿Ú¾ÓÖĞÏÔÊ¾
-                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;  // ¹Ì¶¨¶Ô»°¿ò±ß¿ò£¨²»¿Éµ÷Õû´óĞ¡£©
-                dlg.MaximizeBox = false;                             // ½ûÓÃ×î´ó»¯°´Å¥
-                dlg.MinimizeBox = false;                             // ½ûÓÃ×îĞ¡»¯°´Å¥
-                dlg.ControlBox = true;                               // ÏÔÊ¾ÓÒÉÏ½Ç¹Ø±Õ°´Å¥
-                dlg.ShowInTaskbar = true;                            // ÔÚÈÎÎñÀ¸ÏÔÊ¾´°¿ÚÍ¼±ê
-                dlg.TopMost = false;                                 // ·ÇÖÃ¶¥£¨ÔÊĞíÇĞ»»µ½ÆäËû´°¿Ú£©
-                dlg.BackColor = bgColor;                             // ´°¿Ú±³¾°É«
-                dlg.ForeColor = textColor;                           // ´°¿ÚÄ¬ÈÏÎÄ×ÖÑÕÉ«
-                dlg.Font = GetFont(SF(9f));                          // ´°¿ÚÄ¬ÈÏ×ÖÌå£¨9pt£¬DPI×ÔÊÊÓ¦£©
-                dlg.ClientSize = new Size(SX(760), SY(640));        // ´°¿Ú¿Í»§Çø´óĞ¡£º¿í760¡Á¸ß640£¨DPIËõ·Åºó£¬ÄÚÈİÃæ°å¸ß¶È¼õÉÙ£¬´°¿Ú¸ß¶ÈÏàÓ¦¼õĞ¡£©
+                // ==================== çª—å£åŸºæœ¬å±æ€§ ====================
+                dlg.Text = "å…è´£å£°æ˜";                              // çª—å£æ ‡é¢˜æ æ–‡å­—
+                dlg.StartPosition = FormStartPosition.CenterScreen; // çª—å£å±…ä¸­æ˜¾ç¤º
+                dlg.FormBorderStyle = FormBorderStyle.FixedDialog;  // å›ºå®šå¯¹è¯æ¡†è¾¹æ¡†ï¼ˆä¸å¯è°ƒæ•´å¤§å°ï¼‰
+                dlg.MaximizeBox = false;                             // ç¦ç”¨æœ€å¤§åŒ–æŒ‰é’®
+                dlg.MinimizeBox = false;                             // ç¦ç”¨æœ€å°åŒ–æŒ‰é’®
+                dlg.ControlBox = true;                               // æ˜¾ç¤ºå³ä¸Šè§’å…³é—­æŒ‰é’®
+                dlg.ShowInTaskbar = true;                            // åœ¨ä»»åŠ¡æ æ˜¾ç¤ºçª—å£å›¾æ ‡
+                dlg.TopMost = false;                                 // éç½®é¡¶ï¼ˆå…è®¸åˆ‡æ¢åˆ°å…¶ä»–çª—å£ï¼‰
+                dlg.BackColor = bgColor;                             // çª—å£èƒŒæ™¯è‰²
+                dlg.ForeColor = textColor;                           // çª—å£é»˜è®¤æ–‡å­—é¢œè‰²
+                dlg.Font = GetFont(SF(9f));                          // çª—å£é»˜è®¤å­—ä½“ï¼ˆ9ptï¼ŒDPIè‡ªé€‚åº”ï¼‰
+                dlg.ClientSize = new Size(SX(760), SY(640));        // çª—å£å®¢æˆ·åŒºå¤§å°ï¼šå®½760Ã—é«˜640ï¼ˆDPIç¼©æ”¾åï¼Œå†…å®¹é¢æ¿é«˜åº¦å‡å°‘ï¼Œçª—å£é«˜åº¦ç›¸åº”å‡å°ï¼‰
 
-                // ==================== ²¼¾ÖÓÎ±ê y£º´ÓÉÏÍùÏÂÒÀ´ÎÅÅÁĞ¸÷¿Ø¼ş ====================
-                int y = SY(36);  // ÆğÊ¼Y×ø±ê£º¾à´°¿Ú¶¥²¿36px£¨DPIËõ·Åºó£©
+                // ==================== å¸ƒå±€æ¸¸æ ‡ yï¼šä»ä¸Šå¾€ä¸‹ä¾æ¬¡æ’åˆ—å„æ§ä»¶ ====================
+                int y = SY(36);  // èµ·å§‹Yåæ ‡ï¼šè·çª—å£é¡¶éƒ¨36pxï¼ˆDPIç¼©æ”¾åï¼‰
 
-                // ==================== ±êÌâ±êÇ©"ÃâÔğÉùÃ÷" ====================
+                // ==================== æ ‡é¢˜æ ‡ç­¾"å…è´£å£°æ˜" ====================
                 Label lblTitle = new Label
                 {
-                    Text = "ÃâÔğÉùÃ÷",                                    // ±êÌâÎÄ×Ö
-                    Font = GetFont(SF(14f), FontStyle.Bold),             // ×ÖÌå£º14pt¼Ó´Ö£¨DPI×ÔÊÊÓ¦£©
-                    Location = new Point(0, y-30),                     // Î»ÖÃ£ºË®Æ½¾ÓÖĞ£¨¿í¶È=´°¿Ú¿í¶È£©£¬´¹Ö±Æ«ÒÆ-30Î¢µ÷
-                    Size = new Size(dlg.ClientSize.Width, SY(40)),       // ´óĞ¡£º¿í=´°¿Ú¿í¶È£¬¸ß=40px£¨Ôö´ó¸ß¶È±ÜÃâÎÄ×Ö½Ø¶Ï£©
-                    TextAlign = ContentAlignment.MiddleCenter,           // ÎÄ×Ö¾ÓÖĞ¶ÔÆë
-                    ForeColor = textColor,                               // ÎÄ×ÖÑÕÉ«£ºÖ÷ÎÄ×ÖÉ«
-                    BackColor = Color.Transparent                        // ±³¾°Í¸Ã÷
+                    Text = "å…è´£å£°æ˜",                                    // æ ‡é¢˜æ–‡å­—
+                    Font = GetFont(SF(14f), FontStyle.Bold),             // å­—ä½“ï¼š14ptåŠ ç²—ï¼ˆDPIè‡ªé€‚åº”ï¼‰
+                    Location = new Point(0, y-30),                     // ä½ç½®ï¼šæ°´å¹³å±…ä¸­ï¼ˆå®½åº¦=çª—å£å®½åº¦ï¼‰ï¼Œå‚ç›´åç§»-30å¾®è°ƒ
+                    Size = new Size(dlg.ClientSize.Width, SY(40)),       // å¤§å°ï¼šå®½=çª—å£å®½åº¦ï¼Œé«˜=40pxï¼ˆå¢å¤§é«˜åº¦é¿å…æ–‡å­—æˆªæ–­ï¼‰
+                    TextAlign = ContentAlignment.MiddleCenter,           // æ–‡å­—å±…ä¸­å¯¹é½
+                    ForeColor = textColor,                               // æ–‡å­—é¢œè‰²ï¼šä¸»æ–‡å­—è‰²
+                    BackColor = Color.Transparent                        // èƒŒæ™¯é€æ˜
                 };
                 dlg.Controls.Add(lblTitle);
 
-                // yÏÂÒÆ32px£¬Îª¸±±êÌâÁô³ö¿Õ¼ä
+                // yä¸‹ç§»32pxï¼Œä¸ºå‰¯æ ‡é¢˜ç•™å‡ºç©ºé—´
                 y += SY(32);
 
-                // ==================== ¸±±êÌâ±êÇ©"Ê¹ÓÃ±¾Èí¼şÇ°Çë×ĞÏ¸ÔÄ¶ÁÒÔÏÂÌõ¿î" ====================
+                // ==================== å‰¯æ ‡é¢˜æ ‡ç­¾"ä½¿ç”¨æœ¬è½¯ä»¶å‰è¯·ä»”ç»†é˜…è¯»ä»¥ä¸‹æ¡æ¬¾" ====================
                 Label lblSubtitle = new Label
                 {
-                    Text = "Ê¹ÓÃ±¾Èí¼şÇ°Çë×ĞÏ¸ÔÄ¶ÁÒÔÏÂÌõ¿î",               // ¸±±êÌâÎÄ×Ö
-                    Font = GetFont(SF(9f)),                              // ×ÖÌå£º9pt³£¹æ£¨DPI×ÔÊÊÓ¦£©
-                    Location = new Point(0, y-10),                          // Î»ÖÃ£ºË®Æ½¾ÓÖĞ£¬Y=µ±Ç°ÓÎ±ê-10Î¢µ÷
-                    Size = new Size(dlg.ClientSize.Width, SY(20)),       // ´óĞ¡£º¿í=´°¿Ú¿í¶È£¬¸ß=20px
-                    TextAlign = ContentAlignment.MiddleCenter,            // ÎÄ×Ö¾ÓÖĞ¶ÔÆë
-                    ForeColor = subTextColor,                            // ÎÄ×ÖÑÕÉ«£º¸±ÎÄ×ÖÉ«£¨ÂÔ°µ£©
-                    BackColor = Color.Transparent                        // ±³¾°Í¸Ã÷
+                    Text = "ä½¿ç”¨æœ¬è½¯ä»¶å‰è¯·ä»”ç»†é˜…è¯»ä»¥ä¸‹æ¡æ¬¾",               // å‰¯æ ‡é¢˜æ–‡å­—
+                    Font = GetFont(SF(9f)),                              // å­—ä½“ï¼š9ptå¸¸è§„ï¼ˆDPIè‡ªé€‚åº”ï¼‰
+                    Location = new Point(0, y-10),                          // ä½ç½®ï¼šæ°´å¹³å±…ä¸­ï¼ŒY=å½“å‰æ¸¸æ ‡-10å¾®è°ƒ
+                    Size = new Size(dlg.ClientSize.Width, SY(20)),       // å¤§å°ï¼šå®½=çª—å£å®½åº¦ï¼Œé«˜=20px
+                    TextAlign = ContentAlignment.MiddleCenter,            // æ–‡å­—å±…ä¸­å¯¹é½
+                    ForeColor = subTextColor,                            // æ–‡å­—é¢œè‰²ï¼šå‰¯æ–‡å­—è‰²ï¼ˆç•¥æš—ï¼‰
+                    BackColor = Color.Transparent                        // èƒŒæ™¯é€æ˜
                 };
                 dlg.Controls.Add(lblSubtitle);
 
-                // yÏÂÒÆ24px£¬Îª·Ö¸îÏßÁô³ö¿Õ¼ä
+                // yä¸‹ç§»24pxï¼Œä¸ºåˆ†å‰²çº¿ç•™å‡ºç©ºé—´
                 y += SY(24);
 
-                // ==================== ¶¥²¿·Ö¸îÏß ====================
+                // ==================== é¡¶éƒ¨åˆ†å‰²çº¿ ====================
                 Panel dividerTop = new Panel
                 {
-                    Location = new Point(padX, y),           // Î»ÖÃ£º×ó±ß¾à=padX£¬Y=µ±Ç°ÓÎ±ê
-                    Size = new Size(contentW, 1),            // ´óĞ¡£º¿í=ÄÚÈİ¿í¶È£¬¸ß=1px
-                    BackColor = dividerColor                 // ±³¾°É«£º·Ö¸îÏßÑÕÉ«
+                    Location = new Point(padX, y),           // ä½ç½®ï¼šå·¦è¾¹è·=padXï¼ŒY=å½“å‰æ¸¸æ ‡
+                    Size = new Size(contentW, 1),            // å¤§å°ï¼šå®½=å†…å®¹å®½åº¦ï¼Œé«˜=1px
+                    BackColor = dividerColor                 // èƒŒæ™¯è‰²ï¼šåˆ†å‰²çº¿é¢œè‰²
                 };
                 dlg.Controls.Add(dividerTop);
-                // yÏÂÒÆ18px£¬ÎªÄÚÈİÃæ°åÁô³ö¼ä¾à
+                // yä¸‹ç§»18pxï¼Œä¸ºå†…å®¹é¢æ¿ç•™å‡ºé—´è·
                 y += SY(18);
 
-                // ==================== ÃâÔğÉùÃ÷ÕıÎÄÄÚÈİ ====================
+                // ==================== å…è´£å£°æ˜æ­£æ–‡å†…å®¹ ====================
                 string disclaimerText =
-@"µÚÒ»Ìõ  Èí¼şĞÔÖÊ
+@"ç¬¬ä¸€æ¡  è½¯ä»¶æ€§è´¨
 
-±¾Èí¼ş½öÎª¡¸Á÷Ã½ÌåÁ´½Ó¼¼Êõ¼ì²â¹¤¾ß¡¹£¬½öÌá¹©Á´½ÓÁ¬Í¨ĞÔ¡¢Ã½Ìå±àÂë¡¢ÍøÂçÑÓ³Ù¼ì²â¹¦ÄÜ¡£Èí¼ş±¾Éí²»Éú²ú¡¢²»´æ´¢¡¢²»Ìá¹©ÈÎºÎ IPTV Ö±²¥Ô´¡¢Ó°ÊÓ²¥·ÅµØÖ·¡¢µçÊÓ½ÚÄ¿×ÊÔ´¡£
+æœ¬è½¯ä»¶ä»…ä¸ºã€Œæµåª’ä½“é“¾æ¥æŠ€æœ¯æ£€æµ‹å·¥å…·ã€ï¼Œä»…æä¾›é“¾æ¥è¿é€šæ€§ã€åª’ä½“ç¼–ç ã€ç½‘ç»œå»¶è¿Ÿæ£€æµ‹åŠŸèƒ½ã€‚è½¯ä»¶æœ¬èº«ä¸ç”Ÿäº§ã€ä¸å­˜å‚¨ã€ä¸æä¾›ä»»ä½• IPTV ç›´æ’­æºã€å½±è§†æ’­æ”¾åœ°å€ã€ç”µè§†èŠ‚ç›®èµ„æºã€‚
 
-µÚ¶şÌõ  ÔğÈÎ¹éÊô
+ç¬¬äºŒæ¡  è´£ä»»å½’å±
 
-ËùÓĞ´ı¼ì²âÁ÷Ã½ÌåÁ´½Ó¡¢ÆµµÀµØÖ·¾ùÓÉÊ¹ÓÃÕß×ÔĞĞµ¼Èë¡¢×ÔĞĞ»ñÈ¡¡£ÓÃ»§·ÃÎÊ¡¢¼ì²âµÚÈı·½Á÷Ã½ÌåµØÖ·²úÉúµÄÒ»ÇĞÖø×÷È¨¾À·×¡¢ĞĞÕş´¦·£¡¢·¨ÂÉÔğÈÎ£¬È«²¿ÓÉÊ¹ÓÃÕß¶ÀÁ¢³Ğµ££¬ÓëÈí¼ş¿ª·¢ÕßÎŞ¹Ø¡£
+æ‰€æœ‰å¾…æ£€æµ‹æµåª’ä½“é“¾æ¥ã€é¢‘é“åœ°å€å‡ç”±ä½¿ç”¨è€…è‡ªè¡Œå¯¼å…¥ã€è‡ªè¡Œè·å–ã€‚ç”¨æˆ·è®¿é—®ã€æ£€æµ‹ç¬¬ä¸‰æ–¹æµåª’ä½“åœ°å€äº§ç”Ÿçš„ä¸€åˆ‡è‘—ä½œæƒçº çº·ã€è¡Œæ”¿å¤„ç½šã€æ³•å¾‹è´£ä»»ï¼Œå…¨éƒ¨ç”±ä½¿ç”¨è€…ç‹¬ç«‹æ‰¿æ‹…ï¼Œä¸è½¯ä»¶å¼€å‘è€…æ— å…³ã€‚
 
-µÚÈıÌõ  ½ûÖ¹ĞĞÎª
+ç¬¬ä¸‰æ¡  ç¦æ­¢è¡Œä¸º
 
-ÑÏ½ûÊ¹ÓÃ±¾Èí¼ş´ÓÊÂÒÔÏÂĞĞÎª£º
-    1. ÇÔÈ¡¡¢ÆÆ½âÔËÓªÉÌ×¨Íø IPTV ×é²¥ĞÅºÅ
-    2. ÅÀÈ¡¡¢ÊÛÂô¡¢·Ö·¢ÎŞ°æÈ¨Ö±²¥Ô´
-    3. ´î½¨ÉÌÓÃ·Ç·¨ÊÓÌı¡¢Ö±²¥·şÎñ
-    4. ÈÆ¹ı°æÈ¨±£»¤ÊÕ¿´¸¶·ÑÓ°ÊÓ¡¢ÓĞÏßµçÊÓ½ÚÄ¿
+ä¸¥ç¦ä½¿ç”¨æœ¬è½¯ä»¶ä»äº‹ä»¥ä¸‹è¡Œä¸ºï¼š
+    1. çªƒå–ã€ç ´è§£è¿è¥å•†ä¸“ç½‘ IPTV ç»„æ’­ä¿¡å·
+    2. çˆ¬å–ã€å”®å–ã€åˆ†å‘æ— ç‰ˆæƒç›´æ’­æº
+    3. æ­å»ºå•†ç”¨éæ³•è§†å¬ã€ç›´æ’­æœåŠ¡
+    4. ç»•è¿‡ç‰ˆæƒä¿æŠ¤æ”¶çœ‹ä»˜è´¹å½±è§†ã€æœ‰çº¿ç”µè§†èŠ‚ç›®
 
-µÚËÄÌõ  ºÏ¹æÊ¹ÓÃ
+ç¬¬å››æ¡  åˆè§„ä½¿ç”¨
 
-Ê¹ÓÃÕßÓ¦µ±ÑÏ¸ñ×ñÊØ¡¶ÖĞ»ªÈËÃñ¹²ºÍ¹úÍøÂç°²È«·¨¡·¡¶ÖĞ»ªÈËÃñ¹²ºÍ¹úÖø×÷È¨·¨¡·¡¶»¥ÁªÍøÊÓÌı½ÚÄ¿·şÎñ¹ÜÀí¹æ¶¨¡·µÈ·¨ÂÉ·¨¹æ£¬½ö¼ì²â×ÔÉíÓµÓĞºÏ·¨ÊÚÈ¨µÄÁ÷Ã½ÌåÁ´½Ó¡£
+ä½¿ç”¨è€…åº”å½“ä¸¥æ ¼éµå®ˆã€Šä¸­åäººæ°‘å…±å’Œå›½ç½‘ç»œå®‰å…¨æ³•ã€‹ã€Šä¸­åäººæ°‘å…±å’Œå›½è‘—ä½œæƒæ³•ã€‹ã€Šäº’è”ç½‘è§†å¬èŠ‚ç›®æœåŠ¡ç®¡ç†è§„å®šã€‹ç­‰æ³•å¾‹æ³•è§„ï¼Œä»…æ£€æµ‹è‡ªèº«æ‹¥æœ‰åˆæ³•æˆæƒçš„æµåª’ä½“é“¾æ¥ã€‚
 
-µÚÎåÌõ  ÃâÔğÌõ¿î
+ç¬¬äº”æ¡  å…è´£æ¡æ¬¾
 
-±¾³ÌĞò°´ÏÖ×´Ãâ·ÑÌá¹©£¬²»Ìá¹©ÈÎºÎÃ÷Ê¾»òÒşº¬µ£±£¡£ÒòÊ¹ÓÃ±¾Èí¼şÔì³É IP ·â½û¡¢ÍøÂçÏŞÖÆ¡¢Éè±¸¹ÊÕÏµÈËğÊ§£¬¿ª·¢Õß²»³Ğµ£ÈÎºÎÅâ³¥ÔğÈÎ¡£";
+æœ¬ç¨‹åºæŒ‰ç°çŠ¶å…è´¹æä¾›ï¼Œä¸æä¾›ä»»ä½•æ˜ç¤ºæˆ–éšå«æ‹…ä¿ã€‚å› ä½¿ç”¨æœ¬è½¯ä»¶é€ æˆ IP å°ç¦ã€ç½‘ç»œé™åˆ¶ã€è®¾å¤‡æ•…éšœç­‰æŸå¤±ï¼Œå¼€å‘è€…ä¸æ‰¿æ‹…ä»»ä½•èµ”å¿è´£ä»»ã€‚";
 
-                // ==================== ÄÚÈİÃæ°å£¨°ü¹üRichTextBox£¬´ø±ß¿ò£© ====================
+                // ==================== å†…å®¹é¢æ¿ï¼ˆåŒ…è£¹RichTextBoxï¼Œå¸¦è¾¹æ¡†ï¼‰ ====================
                 Panel contentPanel = new Panel
                 {
-                    Location = new Point(padX, y),               // Î»ÖÃ£º×ó±ß¾à=padX£¬Y=µ±Ç°ÓÎ±ê
-                    Size = new Size(contentW, SY(400)),           // ´óĞ¡£º¿í=ÄÚÈİ¿í¶È£¬¸ß=400px£¨¶ÎÂä¼ä¾à¼õÉÙ£¬¸ß¶ÈÏàÓ¦¼õĞ¡£©
-                    BackColor = contentBg,                        // ±³¾°É«£ºÄÚÈİÇøÓò±³¾°É«
-                    BorderStyle = BorderStyle.FixedSingle         // ±ß¿ò£ºµ¥Ïß±ß¿ò
+                    Location = new Point(padX, y),               // ä½ç½®ï¼šå·¦è¾¹è·=padXï¼ŒY=å½“å‰æ¸¸æ ‡
+                    Size = new Size(contentW, SY(400)),           // å¤§å°ï¼šå®½=å†…å®¹å®½åº¦ï¼Œé«˜=400pxï¼ˆæ®µè½é—´è·å‡å°‘ï¼Œé«˜åº¦ç›¸åº”å‡å°ï¼‰
+                    BackColor = contentBg,                        // èƒŒæ™¯è‰²ï¼šå†…å®¹åŒºåŸŸèƒŒæ™¯è‰²
+                    BorderStyle = BorderStyle.FixedSingle         // è¾¹æ¡†ï¼šå•çº¿è¾¹æ¡†
                 };
 
-                // ==================== ÃâÔğÉùÃ÷ÎÄ±¾¿ò£¨RichTextBox£¬Ö§³Ö¹ö¶¯£© ====================
+                // ==================== å…è´£å£°æ˜æ–‡æœ¬æ¡†ï¼ˆRichTextBoxï¼Œæ”¯æŒæ»šåŠ¨ï¼‰ ====================
                 RichTextBox txtDisclaimer = new RichTextBox
                 {
-                    Text = disclaimerText,                                    // ÎÄ±¾ÄÚÈİ
-                    Multiline = true,                                         // ¶àĞĞÄ£Ê½
-                    ReadOnly = true,                                          // Ö»¶Á
-                    ScrollBars = RichTextBoxScrollBars.Vertical,              // ´¹Ö±¹ö¶¯Ìõ
-                    Location = new Point(SX(12), SY(12)),                     // Î»ÖÃ£º¾àÃæ°å×óÉÏ½Ç¸÷12pxÄÚ±ß¾à£¨Ôö´ó2px¸üÃÀ¹Û£©
-                    Size = new Size(contentW - SX(24), SY(376)),             // ´óĞ¡£º¿í=ÄÚÈİ¿í¶È-24pxÄÚ±ß¾à£¬¸ß=376px£¨ÅäºÏÃæ°å¸ß¶Èµ÷Õû£©
-                    Font = GetFont(SF(9f)),                                   // ×ÖÌå£º9pt£¨DPI×ÔÊÊÓ¦£¬Ôö´ó0.5pt¸üÇåÎú£©
-                    BackColor = contentBg,                                    // ±³¾°É«£ºÓëÃæ°åÒ»ÖÂ
-                    ForeColor = textColor,                                    // ÎÄ×ÖÑÕÉ«£ºÖ÷ÎÄ×ÖÉ«
-                    BorderStyle = BorderStyle.None,                           // ÎŞ±ß¿ò£¨ÓÉÃæ°åÌá¹©±ß¿ò£©
-                    WordWrap = true,                                          // ×Ô¶¯»»ĞĞ
-                    DetectUrls = false,                                       // ²»×Ô¶¯¼ì²âURL
-                    SelectionTabs = new int[] { SX(20) }                      // ÉèÖÃËõ½ø£ºÌõ¿îÏîËõ½ø20px
+                    Text = disclaimerText,                                    // æ–‡æœ¬å†…å®¹
+                    Multiline = true,                                         // å¤šè¡Œæ¨¡å¼
+                    ReadOnly = true,                                          // åªè¯»
+                    ScrollBars = RichTextBoxScrollBars.Vertical,              // å‚ç›´æ»šåŠ¨æ¡
+                    Location = new Point(SX(12), SY(12)),                     // ä½ç½®ï¼šè·é¢æ¿å·¦ä¸Šè§’å„12pxå†…è¾¹è·ï¼ˆå¢å¤§2pxæ›´ç¾è§‚ï¼‰
+                    Size = new Size(contentW - SX(24), SY(376)),             // å¤§å°ï¼šå®½=å†…å®¹å®½åº¦-24pxå†…è¾¹è·ï¼Œé«˜=376pxï¼ˆé…åˆé¢æ¿é«˜åº¦è°ƒæ•´ï¼‰
+                    Font = GetFont(SF(9f)),                                   // å­—ä½“ï¼š9ptï¼ˆDPIè‡ªé€‚åº”ï¼Œå¢å¤§0.5ptæ›´æ¸…æ™°ï¼‰
+                    BackColor = contentBg,                                    // èƒŒæ™¯è‰²ï¼šä¸é¢æ¿ä¸€è‡´
+                    ForeColor = textColor,                                    // æ–‡å­—é¢œè‰²ï¼šä¸»æ–‡å­—è‰²
+                    BorderStyle = BorderStyle.None,                           // æ— è¾¹æ¡†ï¼ˆç”±é¢æ¿æä¾›è¾¹æ¡†ï¼‰
+                    WordWrap = true,                                          // è‡ªåŠ¨æ¢è¡Œ
+                    DetectUrls = false,                                       // ä¸è‡ªåŠ¨æ£€æµ‹URL
+                    SelectionTabs = new int[] { SX(20) }                      // è®¾ç½®ç¼©è¿›ï¼šæ¡æ¬¾é¡¹ç¼©è¿›20px
                 };
-                // ÉèÖÃÎÄ±¾¾ÓÖĞ¶ÔÆë£¨±êÌâºÍÁĞ±íÏî¾ÓÖĞ£¬¸üÃÀ¹Û£©
+                // è®¾ç½®æ–‡æœ¬å±…ä¸­å¯¹é½ï¼ˆæ ‡é¢˜å’Œåˆ—è¡¨é¡¹å±…ä¸­ï¼Œæ›´ç¾è§‚ï¼‰
                 txtDisclaimer.SelectAll();
                 txtDisclaimer.SelectionAlignment = HorizontalAlignment.Center;
                 txtDisclaimer.DeselectAll();
 
-                // ÊÖ¶¯ÉèÖÃÌõ¿î±êÌâ¼Ó´Ö£¨"µÚÒ»Ìõ"¡¢"µÚ¶şÌõ"µÈ±êÌâ¸üĞÑÄ¿£©
+                // æ‰‹åŠ¨è®¾ç½®æ¡æ¬¾æ ‡é¢˜åŠ ç²—ï¼ˆ"ç¬¬ä¸€æ¡"ã€"ç¬¬äºŒæ¡"ç­‰æ ‡é¢˜æ›´é†’ç›®ï¼‰
                 ApplyDisclaimerFormatting(txtDisclaimer, accentColor);
 
                 contentPanel.Controls.Add(txtDisclaimer);
                 dlg.Controls.Add(contentPanel);
 
-                // ÔÚ¿Ø¼şÌí¼Óµ½¸¸ÈİÆ÷ºó£¬ÉèÖÃ¹ö¶¯Î»ÖÃµ½¶¥²¿£¨È·±£´ÓµÚÒ»Ìõ¿ªÊ¼ÏÔÊ¾£©
+                // åœ¨æ§ä»¶æ·»åŠ åˆ°çˆ¶å®¹å™¨åï¼Œè®¾ç½®æ»šåŠ¨ä½ç½®åˆ°é¡¶éƒ¨ï¼ˆç¡®ä¿ä»ç¬¬ä¸€æ¡å¼€å§‹æ˜¾ç¤ºï¼‰
                 txtDisclaimer.SelectionStart = 0;
                 txtDisclaimer.ScrollToCaret();
 
-                // yÏÂÒÆ418px£¨ÄÚÈİÃæ°å¸ß¶È400+¼ä¾à18£©£¬ÎªÌáÊ¾ÎÄ×ÖÁô³ö¿Õ¼ä
+                // yä¸‹ç§»418pxï¼ˆå†…å®¹é¢æ¿é«˜åº¦400+é—´è·18ï¼‰ï¼Œä¸ºæç¤ºæ–‡å­—ç•™å‡ºç©ºé—´
                 y += SY(418);
 
-                // ==================== ÌáÊ¾ÎÄ×Ö±êÇ©£¨µ¹¼ÆÊ±/×´Ì¬ÌáÊ¾£© ====================
+                // ==================== æç¤ºæ–‡å­—æ ‡ç­¾ï¼ˆå€’è®¡æ—¶/çŠ¶æ€æç¤ºï¼‰ ====================
                 Label lblHint = new Label
                 {
-                    Text = "Çë¹ö¶¯ÔÄ¶ÁÖÁµ×²¿²¢µÈ´ıµ¹¼ÆÊ±½áÊø",                  // ³õÊ¼ÌáÊ¾ÎÄ×Ö
-                    Font = GetFont(SF(8.5f)),                                 // ×ÖÌå£º8.5pt£¨DPI×ÔÊÊÓ¦£©
-                    Location = new Point(0, y),                               // Î»ÖÃ£ºË®Æ½¾ÓÖĞ£¬Y=µ±Ç°ÓÎ±ê
-                    Size = new Size(dlg.ClientSize.Width, SY(20)),            // ´óĞ¡£º¿í=´°¿Ú¿í¶È£¬¸ß=20px
-                    TextAlign = ContentAlignment.MiddleCenter,                // ÎÄ×Ö¾ÓÖĞ¶ÔÆë
-                    ForeColor = hintColor,                                    // ÎÄ×ÖÑÕÉ«£ºÌáÊ¾É«
-                    BackColor = Color.Transparent                             // ±³¾°Í¸Ã÷
+                    Text = "è¯·æ»šåŠ¨é˜…è¯»è‡³åº•éƒ¨å¹¶ç­‰å¾…å€’è®¡æ—¶ç»“æŸ",                  // åˆå§‹æç¤ºæ–‡å­—
+                    Font = GetFont(SF(8.5f)),                                 // å­—ä½“ï¼š8.5ptï¼ˆDPIè‡ªé€‚åº”ï¼‰
+                    Location = new Point(0, y),                               // ä½ç½®ï¼šæ°´å¹³å±…ä¸­ï¼ŒY=å½“å‰æ¸¸æ ‡
+                    Size = new Size(dlg.ClientSize.Width, SY(20)),            // å¤§å°ï¼šå®½=çª—å£å®½åº¦ï¼Œé«˜=20px
+                    TextAlign = ContentAlignment.MiddleCenter,                // æ–‡å­—å±…ä¸­å¯¹é½
+                    ForeColor = hintColor,                                    // æ–‡å­—é¢œè‰²ï¼šæç¤ºè‰²
+                    BackColor = Color.Transparent                             // èƒŒæ™¯é€æ˜
                 };
                 dlg.Controls.Add(lblHint);
 
-                // yÏÂÒÆ26px£¬Îª¸´Ñ¡¿òÁô³ö¿Õ¼ä
+                // yä¸‹ç§»26pxï¼Œä¸ºå¤é€‰æ¡†ç•™å‡ºç©ºé—´
                 y += SY(26);
 
-                // ==================== Í¬ÒâÌõ¿î¸´Ñ¡¿ò ====================
+                // ==================== åŒæ„æ¡æ¬¾å¤é€‰æ¡† ====================
                 CheckBox cbAgree = new CheckBox
                 {
-                    Text = "ÎÒÒÑ×ĞÏ¸ÔÄ¶Á²¢Í¬ÒâÒÔÉÏÈ«²¿Ìõ¿î",                    // ¸´Ñ¡¿òÎÄ×Ö
-                    AutoSize = true,                                          // ×Ô¶¯´óĞ¡£¨¸ù¾İÎÄ×ÖÄÚÈİ£©
-                    TextAlign = ContentAlignment.MiddleLeft,                  // ÎÄ×Ö×óÖĞ¶ÔÆë
-                    CheckAlign = ContentAlignment.MiddleLeft,                 // ¹´Ñ¡¿ò×óÖĞ¶ÔÆë
-                    ForeColor = textColor,                                    // ÎÄ×ÖÑÕÉ«£ºÖ÷ÎÄ×ÖÉ«
-                    BackColor = Color.Transparent,                            // ±³¾°Í¸Ã÷
-                    Font = GetFont(SF(9.5f)),                                 // ×ÖÌå£º9.5pt£¨DPI×ÔÊÊÓ¦£©
-                    Enabled = false                                           // ³õÊ¼½ûÓÃ£¨ĞèÂú×ãÌõ¼şºóÆôÓÃ£©
+                    Text = "æˆ‘å·²ä»”ç»†é˜…è¯»å¹¶åŒæ„ä»¥ä¸Šå…¨éƒ¨æ¡æ¬¾",                    // å¤é€‰æ¡†æ–‡å­—
+                    AutoSize = true,                                          // è‡ªåŠ¨å¤§å°ï¼ˆæ ¹æ®æ–‡å­—å†…å®¹ï¼‰
+                    TextAlign = ContentAlignment.MiddleLeft,                  // æ–‡å­—å·¦ä¸­å¯¹é½
+                    CheckAlign = ContentAlignment.MiddleLeft,                 // å‹¾é€‰æ¡†å·¦ä¸­å¯¹é½
+                    ForeColor = textColor,                                    // æ–‡å­—é¢œè‰²ï¼šä¸»æ–‡å­—è‰²
+                    BackColor = Color.Transparent,                            // èƒŒæ™¯é€æ˜
+                    Font = GetFont(SF(9.5f)),                                 // å­—ä½“ï¼š9.5ptï¼ˆDPIè‡ªé€‚åº”ï¼‰
+                    Enabled = false                                           // åˆå§‹ç¦ç”¨ï¼ˆéœ€æ»¡è¶³æ¡ä»¶åå¯ç”¨ï¼‰
                 };
                 dlg.Controls.Add(cbAgree);
-                // ¸´Ñ¡¿òË®Æ½¾ÓÖĞ£ºX = (´°¿Ú¿í¶È - ¸´Ñ¡¿ò¿í¶È) / 2
+                // å¤é€‰æ¡†æ°´å¹³å±…ä¸­ï¼šX = (çª—å£å®½åº¦ - å¤é€‰æ¡†å®½åº¦) / 2
                 cbAgree.Location = new Point((dlg.ClientSize.Width - cbAgree.Width) / 2, y);
 
-                // yÏÂÒÆ32px£¬Îª°´Å¥Áô³ö¿Õ¼ä
+                // yä¸‹ç§»32pxï¼Œä¸ºæŒ‰é’®ç•™å‡ºç©ºé—´
                 y += SY(32);
 
-                // ==================== "½øÈëÈí¼ş"°´Å¥ ====================
+                // ==================== "è¿›å…¥è½¯ä»¶"æŒ‰é’® ====================
                 Button btnEnter = new Button
                 {
-                    Text = "½øÈëÈí¼ş",                                        // °´Å¥ÎÄ×Ö
-                    Location = new Point(padX, y),                           // Î»ÖÃ£º×ó±ß¾à=padX£¬Y=µ±Ç°ÓÎ±ê
-                    Size = new Size(contentW, SY(40)),                       // ´óĞ¡£º¿í=ÄÚÈİ¿í¶È£¬¸ß=40px£¨DPIËõ·Åºó£©
-                    Font = GetFont(SF(10f), FontStyle.Regular),              // ×ÖÌå£º10pt³£¹æ£¨DPI×ÔÊÊÓ¦£©
-                    FlatStyle = FlatStyle.Flat,                              // ±âÆ½ÑùÊ½
-                    Enabled = false,                                         // ³õÊ¼½ûÓÃ£¨Ğè¹´Ñ¡Í¬ÒâºóÆôÓÃ£©
-                    BackColor = btnDisabledBg,                               // ±³¾°É«£º½ûÓÃÌ¬ÑÕÉ«
-                    ForeColor = btnDisabledText,                             // ÎÄ×ÖÑÕÉ«£º½ûÓÃÌ¬ÑÕÉ«
-                    Cursor = Cursors.No,                                     // Êó±ê¹â±ê£º½ûÖ¹ÑùÊ½
-                    UseVisualStyleBackColor = false                          // ½ûÓÃÏµÍ³ÊÓ¾õÑùÊ½£¨Ê¹ÓÃ×Ô¶¨ÒåÑÕÉ«£©
+                    Text = "è¿›å…¥è½¯ä»¶",                                        // æŒ‰é’®æ–‡å­—
+                    Location = new Point(padX, y),                           // ä½ç½®ï¼šå·¦è¾¹è·=padXï¼ŒY=å½“å‰æ¸¸æ ‡
+                    Size = new Size(contentW, SY(40)),                       // å¤§å°ï¼šå®½=å†…å®¹å®½åº¦ï¼Œé«˜=40pxï¼ˆDPIç¼©æ”¾åï¼‰
+                    Font = GetFont(SF(10f), FontStyle.Regular),              // å­—ä½“ï¼š10ptå¸¸è§„ï¼ˆDPIè‡ªé€‚åº”ï¼‰
+                    FlatStyle = FlatStyle.Flat,                              // æ‰å¹³æ ·å¼
+                    Enabled = false,                                         // åˆå§‹ç¦ç”¨ï¼ˆéœ€å‹¾é€‰åŒæ„åå¯ç”¨ï¼‰
+                    BackColor = btnDisabledBg,                               // èƒŒæ™¯è‰²ï¼šç¦ç”¨æ€é¢œè‰²
+                    ForeColor = btnDisabledText,                             // æ–‡å­—é¢œè‰²ï¼šç¦ç”¨æ€é¢œè‰²
+                    Cursor = Cursors.No,                                     // é¼ æ ‡å…‰æ ‡ï¼šç¦æ­¢æ ·å¼
+                    UseVisualStyleBackColor = false                          // ç¦ç”¨ç³»ç»Ÿè§†è§‰æ ·å¼ï¼ˆä½¿ç”¨è‡ªå®šä¹‰é¢œè‰²ï¼‰
                 };
-                btnEnter.FlatAppearance.BorderSize = 0;                      // ±âÆ½ÑùÊ½±ß¿ò¿í¶È£º0£¨ÎŞ±ß¿ò£©
-                // °´Å¥Êó±êĞüÍ£Ê±µÄ±³¾°É«£ºÉîÉ«ÎªÁÁÀ¶£¬Ç³É«ÎªÉîÀ¶
+                btnEnter.FlatAppearance.BorderSize = 0;                      // æ‰å¹³æ ·å¼è¾¹æ¡†å®½åº¦ï¼š0ï¼ˆæ— è¾¹æ¡†ï¼‰
+                // æŒ‰é’®é¼ æ ‡æ‚¬åœæ—¶çš„èƒŒæ™¯è‰²ï¼šæ·±è‰²ä¸ºäº®è“ï¼Œæµ…è‰²ä¸ºæ·±è“
                 btnEnter.FlatAppearance.MouseOverBackColor = isDark ? Color.FromArgb(68, 145, 238) : Color.FromArgb(36, 118, 225);
                 dlg.Controls.Add(btnEnter);
 
-                // ==================== µ¹¼ÆÊ±Óë½»»¥×´Ì¬¿ØÖÆ ====================
-                bool canAgree = false;              // ÊÇ·ñÔÊĞí¹´Ñ¡Í¬Òâ£¨ĞèÍ¬Ê±Âú×ã£º¹ö¶¯µ½µ×+µ¹¼ÆÊ±½áÊø£©
-                bool hasScrolledToBottom = false;    // ÓÃ»§ÊÇ·ñÒÑ¹ö¶¯µ½ÎÄ±¾µ×²¿
-                bool timerStarted = false;           // µ¹¼ÆÊ±ÊÇ·ñÒÑÆô¶¯£¨Ê×´Î¹ö¶¯Ê±Æô¶¯£©
-                int countdownSeconds = 8;            // µ¹¼ÆÊ±ÃëÊı£ºÓÃ»§ĞèÔÄ¶Á8Ãëºó·½¿É¹´Ñ¡Í¬Òâ
+                // ==================== å€’è®¡æ—¶ä¸äº¤äº’çŠ¶æ€æ§åˆ¶ ====================
+                bool canAgree = false;              // æ˜¯å¦å…è®¸å‹¾é€‰åŒæ„ï¼ˆéœ€åŒæ—¶æ»¡è¶³ï¼šæ»šåŠ¨åˆ°åº•+å€’è®¡æ—¶ç»“æŸï¼‰
+                bool hasScrolledToBottom = false;    // ç”¨æˆ·æ˜¯å¦å·²æ»šåŠ¨åˆ°æ–‡æœ¬åº•éƒ¨
+                bool timerStarted = false;           // å€’è®¡æ—¶æ˜¯å¦å·²å¯åŠ¨ï¼ˆé¦–æ¬¡æ»šåŠ¨æ—¶å¯åŠ¨ï¼‰
+                int countdownSeconds = 8;            // å€’è®¡æ—¶ç§’æ•°ï¼šç”¨æˆ·éœ€é˜…è¯»8ç§’åæ–¹å¯å‹¾é€‰åŒæ„
 
-                // µ¹¼ÆÊ±¶¨Ê±Æ÷£ºÃ¿Ãë´¥·¢Ò»´Î
+                // å€’è®¡æ—¶å®šæ—¶å™¨ï¼šæ¯ç§’è§¦å‘ä¸€æ¬¡
                 System.Windows.Forms.Timer countdownTimer = new System.Windows.Forms.Timer { Interval = 1000 };
                 countdownTimer.Tick += (s, e) =>
                 {
                     countdownSeconds--;
                     if (countdownSeconds <= 0)
                     {
-                        // µ¹¼ÆÊ±½áÊø£º¸üĞÂÌáÊ¾ÎÄ×ÖÎª³É¹¦×´Ì¬
+                        // å€’è®¡æ—¶ç»“æŸï¼šæ›´æ–°æç¤ºæ–‡å­—ä¸ºæˆåŠŸçŠ¶æ€
                         countdownSeconds = 0;
                         countdownTimer.Stop();
-                        lblHint.Text = "? ÔÄ¶ÁÊ±¼äÒÑÂú×ã£¬Çë¹´Ñ¡Í¬ÒâÌõ¿îºó½øÈëÈí¼ş";
+                        lblHint.Text = "âœ“ é˜…è¯»æ—¶é—´å·²æ»¡è¶³ï¼Œè¯·å‹¾é€‰åŒæ„æ¡æ¬¾åè¿›å…¥è½¯ä»¶";
                         lblHint.ForeColor = successColor;
                         UpdateAgreeState();
                     }
                     else
                     {
-                        // µ¹¼ÆÊ±½øĞĞÖĞ£º¸üĞÂÌáÊ¾ÎÄ×ÖÏÔÊ¾Ê£ÓàÃëÊı
-                        lblHint.Text = $"? ÔÄ¶Áµ¹¼ÆÊ± {countdownSeconds} Ãë ¡¤ Çë¹ö¶¯ÖÁµ×²¿";
+                        // å€’è®¡æ—¶è¿›è¡Œä¸­ï¼šæ›´æ–°æç¤ºæ–‡å­—æ˜¾ç¤ºå‰©ä½™ç§’æ•°
+                        lblHint.Text = $"â³ é˜…è¯»å€’è®¡æ—¶ {countdownSeconds} ç§’ Â· è¯·æ»šåŠ¨è‡³åº•éƒ¨";
                     }
                 };
 
-                // ÎÄ±¾¿ò¹ö¶¯ÊÂ¼ş£ºÊ×´Î¹ö¶¯Æô¶¯µ¹¼ÆÊ±£¬¹ö¶¯µ½µ×²¿Ê±¸üĞÂ×´Ì¬
+                // æ–‡æœ¬æ¡†æ»šåŠ¨äº‹ä»¶ï¼šé¦–æ¬¡æ»šåŠ¨å¯åŠ¨å€’è®¡æ—¶ï¼Œæ»šåŠ¨åˆ°åº•éƒ¨æ—¶æ›´æ–°çŠ¶æ€
                 txtDisclaimer.VScroll += (s, e) =>
                 {
-                    // Ê×´Î¹ö¶¯Ê±Æô¶¯µ¹¼ÆÊ±£¬ÌáÊ¾ÎÄ×Ö±äÎª¾¯¸æÉ«
+                    // é¦–æ¬¡æ»šåŠ¨æ—¶å¯åŠ¨å€’è®¡æ—¶ï¼Œæç¤ºæ–‡å­—å˜ä¸ºè­¦å‘Šè‰²
                     if (!timerStarted)
                     {
                         timerStarted = true;
                         countdownTimer.Start();
-                        lblHint.Text = $"? ÔÄ¶Áµ¹¼ÆÊ± {countdownSeconds} Ãë ¡¤ Çë¹ö¶¯ÖÁµ×²¿";
+                        lblHint.Text = $"â³ é˜…è¯»å€’è®¡æ—¶ {countdownSeconds} ç§’ Â· è¯·æ»šåŠ¨è‡³åº•éƒ¨";
                         lblHint.ForeColor = warningColor;
                     }
 
-                    // Í¨¹ıWin32 API»ñÈ¡¹ö¶¯ÌõÎ»ÖÃ£¬ÅĞ¶ÏÊÇ·ñ¹ö¶¯µ½µ×²¿
+                    // é€šè¿‡Win32 APIè·å–æ»šåŠ¨æ¡ä½ç½®ï¼Œåˆ¤æ–­æ˜¯å¦æ»šåŠ¨åˆ°åº•éƒ¨
                     var scrollInfo = new SCROLLINFO();
                     scrollInfo.cbSize = (uint)Marshal.SizeOf(typeof(SCROLLINFO));
                     scrollInfo.fMask = 7;  // SIF_RANGE | SIF_PAGE | SIF_POS
                     GetScrollInfo(txtDisclaimer.Handle, 1, ref scrollInfo);
 
-                    // ÅĞ¶ÏÊÇ·ñµ½´ïµ×²¿£ºµ±Ç°Î»ÖÃ + ¿É¼ûÒ³¸ß¶È >= ×î´ó¹ö¶¯·¶Î§ - 2£¨Èİ²î£©
+                    // åˆ¤æ–­æ˜¯å¦åˆ°è¾¾åº•éƒ¨ï¼šå½“å‰ä½ç½® + å¯è§é¡µé«˜åº¦ >= æœ€å¤§æ»šåŠ¨èŒƒå›´ - 2ï¼ˆå®¹å·®ï¼‰
                     bool atBottom = scrollInfo.nPos + (int)scrollInfo.nPage >= scrollInfo.nMax - 2;
                     if (atBottom && !hasScrolledToBottom)
                     {
@@ -6162,18 +6165,18 @@ namespace IPTVLiveChecker
                     }
                 };
 
-                // ¸üĞÂÍ¬Òâ¸´Ñ¡¿òµÄ¿ÉÓÃ×´Ì¬
+                // æ›´æ–°åŒæ„å¤é€‰æ¡†çš„å¯ç”¨çŠ¶æ€
                 void UpdateAgreeState()
                 {
-                    // ½öµ±"ÒÑ¹ö¶¯µ½µ×"ÇÒ"µ¹¼ÆÊ±½áÊø"Ê±²ÅÔÊĞí¹´Ñ¡
+                    // ä»…å½“"å·²æ»šåŠ¨åˆ°åº•"ä¸”"å€’è®¡æ—¶ç»“æŸ"æ—¶æ‰å…è®¸å‹¾é€‰
                     canAgree = hasScrolledToBottom && countdownSeconds <= 0;
                     cbAgree.Enabled = canAgree;
-                    // Èç¹ûÌõ¼ş²»Âú×ãµ«ÒÑ¹´Ñ¡£¬ÔòÈ¡Ïû¹´Ñ¡
+                    // å¦‚æœæ¡ä»¶ä¸æ»¡è¶³ä½†å·²å‹¾é€‰ï¼Œåˆ™å–æ¶ˆå‹¾é€‰
                     if (!canAgree && cbAgree.Checked)
                         cbAgree.Checked = false;
                 }
 
-                // ¸´Ñ¡¿ò×´Ì¬±ä»¯ÊÂ¼ş£º¿ØÖÆ"½øÈëÈí¼ş"°´Å¥µÄÆôÓÃ/½ûÓÃ
+                // å¤é€‰æ¡†çŠ¶æ€å˜åŒ–äº‹ä»¶ï¼šæ§åˆ¶"è¿›å…¥è½¯ä»¶"æŒ‰é’®çš„å¯ç”¨/ç¦ç”¨
                 cbAgree.CheckedChanged += (s, e) =>
                 {
                     bool ready = cbAgree.Checked && canAgree;
@@ -6183,28 +6186,28 @@ namespace IPTVLiveChecker
                     btnEnter.Cursor = ready ? Cursors.Hand : Cursors.No;
                 };
 
-                // "½øÈëÈí¼ş"°´Å¥µã»÷ÊÂ¼ş£ºÓÃ»§Í¬ÒâÌõ¿î£¬±£´æÅäÖÃ²¢¹Ø±Õ´°¿Ú
+                // "è¿›å…¥è½¯ä»¶"æŒ‰é’®ç‚¹å‡»äº‹ä»¶ï¼šç”¨æˆ·åŒæ„æ¡æ¬¾ï¼Œä¿å­˜é…ç½®å¹¶å…³é—­çª—å£
                 btnEnter.Click += (s, e) =>
                 {
-                    dialogResult = true;           // ÉèÖÃ·µ»ØÖµÎªtrue
-                    disclaimerAgreed = true;       // ±£´æµ½ÊµÀı×Ö¶Î
-                    countdownTimer.Stop();         // Í£Ö¹µ¹¼ÆÊ±
-                    SaveConfig();                  // ³Ö¾Ã»¯±£´æÍ¬Òâ×´Ì¬
-                    dlg.DialogResult = DialogResult.OK;  // ÉèÖÃ¶Ô»°¿ò·µ»ØÖµÎªOK
-                    dlg.Close();                   // ¹Ø±Õ´°¿Ú
+                    dialogResult = true;           // è®¾ç½®è¿”å›å€¼ä¸ºtrue
+                    disclaimerAgreed = true;       // ä¿å­˜åˆ°å®ä¾‹å­—æ®µ
+                    countdownTimer.Stop();         // åœæ­¢å€’è®¡æ—¶
+                    SaveConfig();                  // æŒä¹…åŒ–ä¿å­˜åŒæ„çŠ¶æ€
+                    dlg.DialogResult = DialogResult.OK;  // è®¾ç½®å¯¹è¯æ¡†è¿”å›å€¼ä¸ºOK
+                    dlg.Close();                   // å…³é—­çª—å£
                 };
 
-                // ´°¿Ú¹Ø±ÕÊÂ¼ş£ºÍ£Ö¹µ¹¼ÆÊ±£¬¸ù¾İ·µ»ØÖµÉèÖÃ¶Ô»°¿ò½á¹û
+                // çª—å£å…³é—­äº‹ä»¶ï¼šåœæ­¢å€’è®¡æ—¶ï¼Œæ ¹æ®è¿”å›å€¼è®¾ç½®å¯¹è¯æ¡†ç»“æœ
                 dlg.FormClosing += (s, e) =>
                 {
                     countdownTimer.Stop();
                     if (!dialogResult)
                     {
-                        dlg.DialogResult = DialogResult.Cancel;  // Î´Í¬ÒâÔò·µ»ØCancel
+                        dlg.DialogResult = DialogResult.Cancel;  // æœªåŒæ„åˆ™è¿”å›Cancel
                     }
                 };
 
-                // ÔÚ¶Ô»°¿òÏÔÊ¾ºóÁ¢¼´ÉèÖÃ¹ö¶¯Î»ÖÃµ½¶¥²¿£¨È·±£´ÓµÚÒ»Ìõ¿ªÊ¼ÏÔÊ¾£©
+                // åœ¨å¯¹è¯æ¡†æ˜¾ç¤ºåç«‹å³è®¾ç½®æ»šåŠ¨ä½ç½®åˆ°é¡¶éƒ¨ï¼ˆç¡®ä¿ä»ç¬¬ä¸€æ¡å¼€å§‹æ˜¾ç¤ºï¼‰
                 dlg.Shown += (s, e) =>
                 {
                     txtDisclaimer.SelectionStart = 0;
@@ -6218,13 +6221,13 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÎªÃâÔğÉùÃ÷ÎÄ±¾¿òÓ¦ÓÃ¸ñÊ½»¯£ºÌõ¿î±êÌâ¼Ó´Ö²¢Ê¹ÓÃÇ¿µ÷É«
+        /// ä¸ºå…è´£å£°æ˜æ–‡æœ¬æ¡†åº”ç”¨æ ¼å¼åŒ–ï¼šæ¡æ¬¾æ ‡é¢˜åŠ ç²—å¹¶ä½¿ç”¨å¼ºè°ƒè‰²
         /// </summary>
-        /// <param name="rtb">RichTextBox¿Ø¼ş</param>
-        /// <param name="accentColor">Ç¿µ÷É«£¨ÓÃÓÚ±êÌâ¸ßÁÁ£©</param>
+        /// <param name="rtb">RichTextBoxæ§ä»¶</param>
+        /// <param name="accentColor">å¼ºè°ƒè‰²ï¼ˆç”¨äºæ ‡é¢˜é«˜äº®ï¼‰</param>
         private void ApplyDisclaimerFormatting(RichTextBox rtb, Color accentColor)
         {
-            string[] titles = { "µÚÒ»Ìõ", "µÚ¶şÌõ", "µÚÈıÌõ", "µÚËÄÌõ", "µÚÎåÌõ" };
+            string[] titles = { "ç¬¬ä¸€æ¡", "ç¬¬äºŒæ¡", "ç¬¬ä¸‰æ¡", "ç¬¬å››æ¡", "ç¬¬äº”æ¡" };
 
             foreach (string title in titles)
             {
@@ -6377,7 +6380,7 @@ namespace IPTVLiveChecker
                 {
                     float baseFontSize = SF(8.5f);
                     Font baseFont = GetFont(baseFontSize);
-                    SizeF textSize = g.MeasureString("ËÑ Ë÷ :", baseFont);
+                    SizeF textSize = g.MeasureString("æœ ç´¢ :", baseFont);
                     int requiredHeight = (int)(textSize.Height * 1.6) + 8;
                     requiredHeight = Math.Max(requiredHeight, SY(32));
                     
@@ -6385,7 +6388,7 @@ namespace IPTVLiveChecker
                     
                     foreach (Control ctrl in searchPanelRef.Controls)
                     {
-                        if (ctrl is Label lbl && (lbl.Text == "ËÑ Ë÷ :" || lbl.Text == "·Ö×é:"))
+                        if (ctrl is Label lbl && (lbl.Text == "æœ ç´¢ :" || lbl.Text == "åˆ†ç»„:"))
                         {
                             lbl.Height = (int)textSize.Height + 4;
                             lbl.Top = (searchPanelRef.Height - lbl.Height) / 2;
@@ -6415,7 +6418,7 @@ namespace IPTVLiveChecker
                 using (Graphics g = Graphics.FromHwnd(this.Handle))
                 {
                     Font statusFont = GetFont(SF(9.5f));
-                    SizeF textSize = g.MeasureString("ÒÑ¼ì²â: 0/0", statusFont);
+                    SizeF textSize = g.MeasureString("å·²æ£€æµ‹: 0/0", statusFont);
                     int requiredHeight = (int)(textSize.Height * 1.6) + 4;
                     requiredHeight = Math.Max(requiredHeight, SY(24));
                     
@@ -6430,14 +6433,14 @@ namespace IPTVLiveChecker
                 using (Graphics g = Graphics.FromHwnd(this.Handle))
                 {
                     Font rowFont = GetFont(SF(6.7f));
-                    SizeF textSize = g.MeasureString("²âÊÔÎÄ×Ö", rowFont);
+                    SizeF textSize = g.MeasureString("æµ‹è¯•æ–‡å­—", rowFont);
                     int requiredRowHeight = (int)(textSize.Height * 1.4) + 4;
                     requiredRowHeight = Math.Max(requiredRowHeight, SY(28));
                     
                     dgvData.RowTemplate.Height = requiredRowHeight;
                     
                     Font headerFont = GetFont(SF(9f));
-                    SizeF headerSize = g.MeasureString("Ãû³Æ", headerFont);
+                    SizeF headerSize = g.MeasureString("åç§°", headerFont);
                     int requiredHeaderHeight = (int)(headerSize.Height * 1.4) + 4;
                     requiredHeaderHeight = Math.Max(requiredHeaderHeight, SY(30));
                     
@@ -6486,7 +6489,7 @@ namespace IPTVLiveChecker
                 {
                     if (ctrl is Label lbl)
                     {
-                        lbl.Font = lbl.Text == "?" ? GetFont(SF(11f), FontStyle.Bold) : GetFont(SF(9f), FontStyle.Bold);
+                        lbl.Font = lbl.Text == "âœ“" ? GetFont(SF(11f), FontStyle.Bold) : GetFont(SF(9f), FontStyle.Bold);
                     }
                 }
             }
@@ -6549,8 +6552,8 @@ namespace IPTVLiveChecker
                     if (_checked != value)
                     {
                         _targetChecked = value;
-                        // ³õÊ¼»¯½×¶Î£¨¿Ø¼ş¾ä±úÎ´´´½¨£©Ö±½ÓÉèÖÃ×´Ì¬£¬²»²¥·Å¶¯»­
-                        // ±ÜÃâTimerÎŞ·¨´¥·¢µ¼ÖÂÊ×´ÎÏÔÊ¾Ê±¶¯»­Òì³£
+                        // åˆå§‹åŒ–é˜¶æ®µï¼ˆæ§ä»¶å¥æŸ„æœªåˆ›å»ºï¼‰ç›´æ¥è®¾ç½®çŠ¶æ€ï¼Œä¸æ’­æ”¾åŠ¨ç”»
+                        // é¿å…Timeræ— æ³•è§¦å‘å¯¼è‡´é¦–æ¬¡æ˜¾ç¤ºæ—¶åŠ¨ç”»å¼‚å¸¸
                         if (!this.IsHandleCreated)
                         {
                             _checked = value;
@@ -6570,8 +6573,8 @@ namespace IPTVLiveChecker
                 }
             }
 
-            public string OnText { get; set; } = "¿ª";
-            public string OffText { get; set; } = "¹Ø";
+            public string OnText { get; set; } = "å¼€";
+            public string OffText { get; set; } = "å…³";
             public Color OnColor { get; set; } = Color.FromArgb(46, 169, 92);
             public Color OffColor { get; set; } = Color.FromArgb(205, 205, 210);
             public event EventHandler CheckedChanged;
@@ -6719,7 +6722,7 @@ namespace IPTVLiveChecker
             }
             catch { this.Icon = GenerateAppIcon(512); }
             BuildUI();
-            // Ê¹ÓÃ Func<Task> ±ÜÃâ async void Òì³£´«²¥ÎÊÌâ
+            // ä½¿ç”¨ Func<Task> é¿å… async void å¼‚å¸¸ä¼ æ’­é—®é¢˜
             var initTask = new Func<Task>(async () =>
             {
                 await Task.Delay(300);
@@ -6728,23 +6731,23 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ´´½¨×Ô¶¨Òå±êÌâÀ¸
-        /// °üº¬´°¿ÚÍ¼±ê¡¢µ¼º½°´Å¥£¨½âÎö¡¢ËÑË÷¡¢ÉèÖÃ¡¢¹ØÓÚ£©ºÍ´°¿Ú¿ØÖÆ°´Å¥£¨Ö÷ÌâÇĞ»»¡¢×îĞ¡»¯¡¢×î´ó»¯¡¢¹Ø±Õ£©
-        /// ËùÓĞ³ß´çÒÑÊÊÅäDPIËõ·Å£¬×Ô¶¯¸ù¾İÖ÷ÌâÇĞ»»ÑÕÉ«
+        /// åˆ›å»ºè‡ªå®šä¹‰æ ‡é¢˜æ 
+        /// åŒ…å«çª—å£å›¾æ ‡ã€å¯¼èˆªæŒ‰é’®ï¼ˆè§£æã€æœç´¢ã€è®¾ç½®ã€å…³äºï¼‰å’Œçª—å£æ§åˆ¶æŒ‰é’®ï¼ˆä¸»é¢˜åˆ‡æ¢ã€æœ€å°åŒ–ã€æœ€å¤§åŒ–ã€å…³é—­ï¼‰
+        /// æ‰€æœ‰å°ºå¯¸å·²é€‚é…DPIç¼©æ”¾ï¼Œè‡ªåŠ¨æ ¹æ®ä¸»é¢˜åˆ‡æ¢é¢œè‰²
         /// </summary>
         private void CreateTitleBar()
         {
-            // ========== ±êÌâÀ¸Ãæ°å ==========
-            // [Î»ÖÃ] ¶¥²¿DockÌî³ä [¸ß¶È] 40px [±³¾°] Ê¹ÓÃÖ÷Ìâ±³¾°É«
+            // ========== æ ‡é¢˜æ é¢æ¿ ==========
+            // [ä½ç½®] é¡¶éƒ¨Dockå¡«å…… [é«˜åº¦] 40px [èƒŒæ™¯] ä½¿ç”¨ä¸»é¢˜èƒŒæ™¯è‰²
             titleBarPanel = new Panel
             {
-                Dock = DockStyle.Top,           // ¶¥²¿Í£¿¿
-                Height = SY(40),               // ±êÌâÀ¸¸ß¶È£¨40px * DPIËõ·Å£©
-                BackColor = theme.Bg            // ±³¾°É«¸úËæÖ÷Ìâ
+                Dock = DockStyle.Top,           // é¡¶éƒ¨åœé 
+                Height = SY(40),               // æ ‡é¢˜æ é«˜åº¦ï¼ˆ40px * DPIç¼©æ”¾ï¼‰
+                BackColor = theme.Bg            // èƒŒæ™¯è‰²è·Ÿéšä¸»é¢˜
             };
 
-            // ========== ´°¿ÚÍ¼±ê£¨×ó²à£© ==========
-            // [Î»ÖÃ] (12, 9) [´óĞ¡] 22x22 [»æÖÆ] ×Ô¶¨ÒåµçÊÓÍ¼±ê£¨Ê¹ÓÃÖ÷ÌâÖ÷É«£©
+            // ========== çª—å£å›¾æ ‡ï¼ˆå·¦ä¾§ï¼‰ ==========
+            // [ä½ç½®] (12, 9) [å¤§å°] 22x22 [ç»˜åˆ¶] è‡ªå®šä¹‰ç”µè§†å›¾æ ‡ï¼ˆä½¿ç”¨ä¸»é¢˜ä¸»è‰²ï¼‰
             PictureBox titleIcon = new PictureBox
             {
                 Size = new Size(SX(22), SY(22)),
@@ -6753,48 +6756,48 @@ namespace IPTVLiveChecker
                 SizeMode = PictureBoxSizeMode.CenterImage
             };
             titleIconRef = titleIcon;
-            // ×Ô¶¨Òå»æÖÆµçÊÓÍ¼±ê
+            // è‡ªå®šä¹‰ç»˜åˆ¶ç”µè§†å›¾æ ‡
             titleIcon.Paint += (s, e) =>
             {
                 Graphics g = e.Graphics;
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 using (SolidBrush tvBrush = new SolidBrush(theme.Primary))
                 {
-                    // »æÖÆµçÊÓÖ÷Ìå£¨Ô²½Ç¾ØĞÎ£©
+                    // ç»˜åˆ¶ç”µè§†ä¸»ä½“ï¼ˆåœ†è§’çŸ©å½¢ï¼‰
                     using (GraphicsPath tvPath = RoundedRectPath(new Rectangle(SX(2), SY(4), SX(18), SY(13)), SX(3)))
                         g.FillPath(tvBrush, tvPath);
-                    // »æÖÆÆÁÄ»£¨ÄÚ²¿¾ØĞÎ£©
+                    // ç»˜åˆ¶å±å¹•ï¼ˆå†…éƒ¨çŸ©å½¢ï¼‰
                     using (SolidBrush screenBrush = new SolidBrush(theme.Bg))
                         g.FillRectangle(screenBrush, new Rectangle(SX(4), SY(6), SX(14), SY(9)));
-                    // »æÖÆµ××ù
+                    // ç»˜åˆ¶åº•åº§
                     g.FillRectangle(tvBrush, SX(7), SY(17), SX(7), SY(2));
                     g.FillRectangle(tvBrush, SX(5), SY(19), SX(12), SY(2));
                 }
             };
             titleBarPanel.Controls.Add(titleIcon);
 
-            // ========== ´°¿Ú¿ØÖÆ°´Å¥ÅäÖÃ£¨ÓÒÉÏ½Ç£© ==========
-            // ¿ØÖÆ°´Å¥£ºÖ÷ÌâÇĞ»»¡¢×îĞ¡»¯¡¢×î´ó»¯¡¢¹Ø±Õ£¬Ã¿¸ö°´Å¥40x40px£¬Ô²½Ç8px
-            int btnSize = SY(40);                              // ¿ØÖÆ°´Å¥³ß´ç£¨40px * DPIËõ·Å£©
-            Color titleBtnBg = theme.Bg;                      // ¿ØÖÆ°´Å¥±³¾°É«
-            Color titleBtnFg = theme.TextSecondary;           // ¿ØÖÆ°´Å¥ÎÄ×ÖÑÕÉ«
-            Color titleBtnHover = theme.Name == "ÉîÉ«" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(230, 230, 235); // ¿ØÖÆ°´Å¥ĞüÍ£É«
-            Color closeBtnHover = Color.FromArgb(232, 17, 35); // ¹Ø±Õ°´Å¥ĞüÍ£É«£¨ºìÉ«£©
-            Color closeBtnFg = Color.White;                   // ¹Ø±Õ°´Å¥ÎÄ×ÖÑÕÉ«
+            // ========== çª—å£æ§åˆ¶æŒ‰é’®é…ç½®ï¼ˆå³ä¸Šè§’ï¼‰ ==========
+            // æ§åˆ¶æŒ‰é’®ï¼šä¸»é¢˜åˆ‡æ¢ã€æœ€å°åŒ–ã€æœ€å¤§åŒ–ã€å…³é—­ï¼Œæ¯ä¸ªæŒ‰é’®40x40pxï¼Œåœ†è§’8px
+            int btnSize = SY(40);                              // æ§åˆ¶æŒ‰é’®å°ºå¯¸ï¼ˆ40px * DPIç¼©æ”¾ï¼‰
+            Color titleBtnBg = theme.Bg;                      // æ§åˆ¶æŒ‰é’®èƒŒæ™¯è‰²
+            Color titleBtnFg = theme.TextSecondary;           // æ§åˆ¶æŒ‰é’®æ–‡å­—é¢œè‰²
+            Color titleBtnHover = theme.Name == "æ·±è‰²" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(230, 230, 235); // æ§åˆ¶æŒ‰é’®æ‚¬åœè‰²
+            Color closeBtnHover = Color.FromArgb(232, 17, 35); // å…³é—­æŒ‰é’®æ‚¬åœè‰²ï¼ˆçº¢è‰²ï¼‰
+            Color closeBtnFg = Color.White;                   // å…³é—­æŒ‰é’®æ–‡å­—é¢œè‰²
 
-            // ========== µ¼º½°´Å¥ÅäÖÃ£¨×ó²àÍ¼±êÓÒ²à£© ==========
-            // µ¼º½°´Å¥£º½âÎö(P)¡¢ËÑË÷(F)¡¢ÉèÖÃ(S)¡¢¹ØÓÚ(A)£¬´øĞüÍ£¸ßÁÁĞ§¹û
-            int navBtnWidth = SX(75);                          // µ¼º½°´Å¥¿í¶È£¨75px * DPIËõ·Å£©
-            int navBtnHeight = (int)(titleBarPanel.Height * 0.6); // µ¼º½°´Å¥¸ß¶È = ±êÌâÀ¸¸ß¶ÈµÄ60%
-            int navBtnY = (titleBarPanel.Height - navBtnHeight) / 2; // µ¼º½°´Å¥´¹Ö±¾ÓÖĞ
-            int navBtnGap = 1;                                 // µ¼º½°´Å¥Ö®¼ä¼ä¾à
-            int navBtnRadius = 4;                              // µ¼º½°´Å¥Ô²½Ç°ë¾¶£¨4px£©
+            // ========== å¯¼èˆªæŒ‰é’®é…ç½®ï¼ˆå·¦ä¾§å›¾æ ‡å³ä¾§ï¼‰ ==========
+            // å¯¼èˆªæŒ‰é’®ï¼šè§£æ(P)ã€æœç´¢(F)ã€è®¾ç½®(S)ã€å…³äº(A)ï¼Œå¸¦æ‚¬åœé«˜äº®æ•ˆæœ
+            int navBtnWidth = SX(75);                          // å¯¼èˆªæŒ‰é’®å®½åº¦ï¼ˆ75px * DPIç¼©æ”¾ï¼‰
+            int navBtnHeight = (int)(titleBarPanel.Height * 0.6); // å¯¼èˆªæŒ‰é’®é«˜åº¦ = æ ‡é¢˜æ é«˜åº¦çš„60%
+            int navBtnY = (titleBarPanel.Height - navBtnHeight) / 2; // å¯¼èˆªæŒ‰é’®å‚ç›´å±…ä¸­
+            int navBtnGap = 1;                                 // å¯¼èˆªæŒ‰é’®ä¹‹é—´é—´è·
+            int navBtnRadius = 4;                              // å¯¼èˆªæŒ‰é’®åœ†è§’åŠå¾„ï¼ˆ4pxï¼‰
 
-            Color navBtnText = IsDarkColor(theme.Bg) ? Color.White : Color.Black;             // µ¼º½°´Å¥ÎÄ×ÖÑÕÉ«
-            navBtnHoverBg = IsDarkColor(theme.Bg) ? Color.FromArgb(60, 60, 60) : Color.FromArgb(230, 230, 230); // µ¼º½°´Å¥ĞüÍ£±³¾°É«
+            Color navBtnText = IsDarkColor(theme.Bg) ? Color.White : Color.Black;             // å¯¼èˆªæŒ‰é’®æ–‡å­—é¢œè‰²
+            navBtnHoverBg = IsDarkColor(theme.Bg) ? Color.FromArgb(60, 60, 60) : Color.FromArgb(230, 230, 230); // å¯¼èˆªæŒ‰é’®æ‚¬åœèƒŒæ™¯è‰²
 
-            // ========== µ¼º½°´Å¥Í¨ÓÃ»æÖÆ·½·¨ ==========
-            // ÊµÏÖµ¼º½°´Å¥µÄ×Ô¶¨Òå»æÖÆÂß¼­£ºĞüÍ£Ê±ÏÔÊ¾±³¾°¸ßÁÁ£¬ÎÄ×Ö¾ÓÖĞÏÔÊ¾
+            // ========== å¯¼èˆªæŒ‰é’®é€šç”¨ç»˜åˆ¶æ–¹æ³• ==========
+            // å®ç°å¯¼èˆªæŒ‰é’®çš„è‡ªå®šä¹‰ç»˜åˆ¶é€»è¾‘ï¼šæ‚¬åœæ—¶æ˜¾ç¤ºèƒŒæ™¯é«˜äº®ï¼Œæ–‡å­—å±…ä¸­æ˜¾ç¤º
             void PaintNavButton(object sender, PaintEventArgs e)
             {
                 Button btn = (Button)sender;
@@ -6802,15 +6805,15 @@ namespace IPTVLiveChecker
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                // Çå³ı±³¾°£¨Ê¹ÓÃ¸¸ÈİÆ÷±³¾°É«Ìî³ä£¬ÊµÏÖÍ¸Ã÷Ğ§¹û£©
+                // æ¸…é™¤èƒŒæ™¯ï¼ˆä½¿ç”¨çˆ¶å®¹å™¨èƒŒæ™¯è‰²å¡«å……ï¼Œå®ç°é€æ˜æ•ˆæœï¼‰
                 Color parentBg = btn.Parent != null ? btn.Parent.BackColor : Color.White;
                 using (SolidBrush clearBrush = new SolidBrush(parentBg))
                     g.FillRectangle(clearBrush, 0, 0, btn.Width, btn.Height);
 
-                // ÅĞ¶ÏÊÇ·ñĞüÍ££¨Êó±êÔÚ°´Å¥ÇøÓòÄÚ£©
+                // åˆ¤æ–­æ˜¯å¦æ‚¬åœï¼ˆé¼ æ ‡åœ¨æŒ‰é’®åŒºåŸŸå†…ï¼‰
                 bool isHover = btn.ClientRectangle.Contains(btn.PointToClient(Cursor.Position));
 
-                // »æÖÆ±³¾°£¨ĞüÍ£Ê±ÏÔÊ¾Ô²½Ç¾ØĞÎ¸ßÁÁ£©
+                // ç»˜åˆ¶èƒŒæ™¯ï¼ˆæ‚¬åœæ—¶æ˜¾ç¤ºåœ†è§’çŸ©å½¢é«˜äº®ï¼‰
                 if (isHover)
                 {
                     Rectangle rect = new Rectangle(0, 0, btn.Width - 1, btn.Height - 1);
@@ -6819,7 +6822,7 @@ namespace IPTVLiveChecker
                         g.FillPath(bgBrush, path);
                 }
 
-                // »æÖÆÎÄ×Ö£¨´ø8px×óÓÒÄÚ±ß¾à£¬·ÀÖ¹ÎÄ×Ö³¬³öÔ²½ÇÇøÓò£©
+                // ç»˜åˆ¶æ–‡å­—ï¼ˆå¸¦8pxå·¦å³å†…è¾¹è·ï¼Œé˜²æ­¢æ–‡å­—è¶…å‡ºåœ†è§’åŒºåŸŸï¼‰
                 Rectangle textRect = new Rectangle(8, 0, btn.Width - 16, btn.Height);
                 using (SolidBrush textBrush = new SolidBrush(btn.ForeColor))
                 using (StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
@@ -6828,8 +6831,8 @@ namespace IPTVLiveChecker
                 }
             }
 
-            // ========== µ¼º½°´Å¥Í¨ÓÃÊÂ¼ş°ó¶¨·½·¨ ==========
-            // ÉèÖÃµ¼º½°´Å¥ÑùÊ½ÎªÎŞ±ß¿ò±âÆ½°´Å¥£¬°ó¶¨Êó±êÊÂ¼şÊµÏÖĞüÍ£Ğ§¹ûºÍÔ²½Ç×ÔÊÊÓ¦
+            // ========== å¯¼èˆªæŒ‰é’®é€šç”¨äº‹ä»¶ç»‘å®šæ–¹æ³• ==========
+            // è®¾ç½®å¯¼èˆªæŒ‰é’®æ ·å¼ä¸ºæ— è¾¹æ¡†æ‰å¹³æŒ‰é’®ï¼Œç»‘å®šé¼ æ ‡äº‹ä»¶å®ç°æ‚¬åœæ•ˆæœå’Œåœ†è§’è‡ªé€‚åº”
             void AttachNavButtonEvents(Button btn)
             {
                 btn.FlatStyle = FlatStyle.Flat;
@@ -6837,18 +6840,18 @@ namespace IPTVLiveChecker
                 btn.FlatAppearance.MouseOverBackColor = Color.Empty;
                 btn.FlatAppearance.MouseDownBackColor = Color.Empty;
 
-                // ÉèÖÃÔ²½ÇRegion£¨²Ã¼ô°´Å¥ÇøÓòÎªÔ²½Ç¾ØĞÎ£©
+                // è®¾ç½®åœ†è§’Regionï¼ˆè£å‰ªæŒ‰é’®åŒºåŸŸä¸ºåœ†è§’çŸ©å½¢ï¼‰
                 btn.Region?.Dispose();
                 using (GraphicsPath path = RoundedRectPath(new Rectangle(0, 0, btn.Width, btn.Height), navBtnRadius))
                     btn.Region = new Region(path);
 
-                // °ó¶¨»æÖÆºÍÊó±êÊÂ¼ş
-                btn.Paint += PaintNavButton;                          // ×Ô¶¨Òå»æÖÆ
-                btn.MouseEnter += (s, e) => btn.Invalidate();        // Êó±ê½øÈëÊ±ÖØ»æ
-                btn.MouseLeave += (s, e) => btn.Invalidate();        // Êó±êÀë¿ªÊ±ÖØ»æ
+                // ç»‘å®šç»˜åˆ¶å’Œé¼ æ ‡äº‹ä»¶
+                btn.Paint += PaintNavButton;                          // è‡ªå®šä¹‰ç»˜åˆ¶
+                btn.MouseEnter += (s, e) => btn.Invalidate();        // é¼ æ ‡è¿›å…¥æ—¶é‡ç»˜
+                btn.MouseLeave += (s, e) => btn.Invalidate();        // é¼ æ ‡ç¦»å¼€æ—¶é‡ç»˜
                 btn.Resize += (s, e) =>
                 {
-                    // °´Å¥´óĞ¡±ä»¯Ê±ÖØĞÂÉèÖÃÔ²½ÇRegion
+                    // æŒ‰é’®å¤§å°å˜åŒ–æ—¶é‡æ–°è®¾ç½®åœ†è§’Region
                     btn.Region?.Dispose();
                     using (GraphicsPath path = RoundedRectPath(new Rectangle(0, 0, btn.Width, btn.Height), navBtnRadius))
                         btn.Region = new Region(path);
@@ -6856,36 +6859,36 @@ namespace IPTVLiveChecker
                 };
             }
 
-            // ========== µ¼º½°´Å¥£º½âÎö (P) ==========
-            // [Î»ÖÃ] (42, navBtnY) [´óĞ¡] (navBtnWidth+20) x navBtnHeight [×ÖÌå] YaHei 9pt [¿ì½İ¼ü] P
+            // ========== å¯¼èˆªæŒ‰é’®ï¼šè§£æ (P) ==========
+            // [ä½ç½®] (42, navBtnY) [å¤§å°] (navBtnWidth+20) x navBtnHeight [å­—ä½“] YaHei 9pt [å¿«æ·é”®] P
             btnNavDetect = new Button
             {
-                Text = "½âÎö (P)",
+                Text = "è§£æ (P)",
                 Size = new Size(navBtnWidth + 20, navBtnHeight),
                 Location = new Point(SX(42), navBtnY),
                 BackColor = Color.Transparent,
                 ForeColor = navBtnText,
                 Font = GetFont(SF(9f), FontStyle.Regular),
                 Cursor = Cursors.Hand,
-                Tag = "nav:½âÎö",
+                Tag = "nav:è§£æ",
                 TabStop = false
             };
             AttachNavButtonEvents(btnNavDetect);
             btnNavDetect.Click += (s, e) => ShowIptvParserDialog();
             titleBarPanel.Controls.Add(btnNavDetect);
 
-            // ========== µ¼º½°´Å¥£ºËÑË÷ (F) ==========
-            // [Î»ÖÃ] ÔÚ½âÎö°´Å¥ÓÒ²à£¬¼ä¾ànavBtnGap [´óĞ¡] Í¬½âÎö°´Å¥ [×ÖÌå] YaHei 9pt [¿ì½İ¼ü] F
+            // ========== å¯¼èˆªæŒ‰é’®ï¼šæœç´¢ (F) ==========
+            // [ä½ç½®] åœ¨è§£ææŒ‰é’®å³ä¾§ï¼Œé—´è·navBtnGap [å¤§å°] åŒè§£ææŒ‰é’® [å­—ä½“] YaHei 9pt [å¿«æ·é”®] F
             btnNavSearch = new Button
             {
-                Text = "ËÑË÷ (F)",
+                Text = "æœç´¢ (F)",
                 Size = new Size(navBtnWidth + 20, navBtnHeight),
                 Location = new Point(SX(42) + navBtnWidth + 20 + navBtnGap, navBtnY),
                 BackColor = Color.Transparent,
                 ForeColor = navBtnText,
                 Font = GetFont(SF(9f), FontStyle.Regular),
                 Cursor = Cursors.Hand,
-                Tag = "nav:ËÑË÷",
+                Tag = "nav:æœç´¢",
                 TabStop = false,
                 Visible = showSearchButton
             };
@@ -6894,7 +6897,7 @@ namespace IPTVLiveChecker
             {
                 if (watchSearchWindow)
                 {
-                    string searchRule = "title=\"IPTV\" || title=\"Ö±²¥\"";
+                    string searchRule = "title=\"IPTV\" || title=\"ç›´æ’­\"";
                     string baseUrl = "https://fofa.info/result?qbase64=";
                     string url = baseUrl + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(searchRule));
                     try
@@ -6910,11 +6913,11 @@ namespace IPTVLiveChecker
             };
             titleBarPanel.Controls.Add(btnNavSearch);
 
-            // ========== µ¼º½°´Å¥£ºÉèÖÃ (S) ==========
-            // [Î»ÖÃ] ÔÚËÑË÷°´Å¥ÓÒ²à£¬¼ä¾ànavBtnGap [´óĞ¡] Í¬½âÎö°´Å¥ [×ÖÌå] YaHei 9pt [¿ì½İ¼ü] S
+            // ========== å¯¼èˆªæŒ‰é’®ï¼šè®¾ç½® (S) ==========
+            // [ä½ç½®] åœ¨æœç´¢æŒ‰é’®å³ä¾§ï¼Œé—´è·navBtnGap [å¤§å°] åŒè§£ææŒ‰é’® [å­—ä½“] YaHei 9pt [å¿«æ·é”®] S
             btnNavSettings = new Button
             {
-                Text = "ÉèÖÃ (S)",
+                Text = "è®¾ç½® (S)",
                 Size = new Size(navBtnWidth + 20, navBtnHeight),
                 Location = new Point(SX(42) + (navBtnWidth + 20) * 2 + navBtnGap * 2, navBtnY ),
                 BackColor = Color.Transparent,
@@ -6927,27 +6930,27 @@ namespace IPTVLiveChecker
             btnNavSettings.Click += (s, e) => ShowSettingsDialog();
             titleBarPanel.Controls.Add(btnNavSettings);
 
-            // ========== µ¼º½°´Å¥£º¹ØÓÚ (A) ==========
-            // [Î»ÖÃ] ÔÚÉèÖÃ°´Å¥ÓÒ²à£¬¼ä¾ànavBtnGap [´óĞ¡] Í¬½âÎö°´Å¥ [×ÖÌå] YaHei 9pt [¿ì½İ¼ü] A
+            // ========== å¯¼èˆªæŒ‰é’®ï¼šå…³äº (A) ==========
+            // [ä½ç½®] åœ¨è®¾ç½®æŒ‰é’®å³ä¾§ï¼Œé—´è·navBtnGap [å¤§å°] åŒè§£ææŒ‰é’® [å­—ä½“] YaHei 9pt [å¿«æ·é”®] A
             btnNavAbout = new Button
             {
-                Text = "¹ØÓÚ (A)",
+                Text = "å…³äº (A)",
                 Size = new Size(navBtnWidth + 20, navBtnHeight),
                 Location = new Point(SX(42) + (navBtnWidth + 20) * 3 + navBtnGap * 3, navBtnY),
                 BackColor = Color.Transparent,
                 ForeColor = navBtnText,
                 Font = GetFont(SF(9f), FontStyle.Regular),
                 Cursor = Cursors.Hand,
-                Tag = "nav:¹ØÓÚ",
+                Tag = "nav:å…³äº",
                 TabStop = false
             };
             AttachNavButtonEvents(btnNavAbout);
             btnNavAbout.Click += (s, e) => ShowAboutDialog();
             titleBarPanel.Controls.Add(btnNavAbout);
 
-            // ========== ±êÌâÀ¸²¼¾Ö¸üĞÂ·½·¨ ==========
-            // ´°¿Ú´óĞ¡±ä»¯Ê±£¬ÖØĞÂ¼ÆËãµ¼º½°´Å¥ºÍ¿ØÖÆ°´Å¥µÄÎ»ÖÃ
-            // µ¼º½°´Å¥¹Ì¶¨ÔÚ×ó²à£¬¿ØÖÆ°´Å¥ÓÒ¶ÔÆë
+            // ========== æ ‡é¢˜æ å¸ƒå±€æ›´æ–°æ–¹æ³• ==========
+            // çª—å£å¤§å°å˜åŒ–æ—¶ï¼Œé‡æ–°è®¡ç®—å¯¼èˆªæŒ‰é’®å’Œæ§åˆ¶æŒ‰é’®çš„ä½ç½®
+            // å¯¼èˆªæŒ‰é’®å›ºå®šåœ¨å·¦ä¾§ï¼Œæ§åˆ¶æŒ‰é’®å³å¯¹é½
             void UpdateTitleAndNav()
             {
                 RefreshNavButtonSizes();
@@ -6986,9 +6989,9 @@ namespace IPTVLiveChecker
                 btnClose.Left = startX + btnSize * 3;
             }
 
-            // ========== ´°¿Ú¿ØÖÆ°´Å¥¹¤³§·½·¨ ==========
-            // ´´½¨Í³Ò»·ç¸ñµÄ´°¿Ú¿ØÖÆ°´Å¥£¨Ö÷ÌâÇĞ»»¡¢×îĞ¡»¯¡¢×î´ó»¯¡¢¹Ø±Õ£©
-            // [´óĞ¡] 40x40px [Ô²½Ç] 8px [ÑùÊ½] ±âÆ½ÎŞ±ß¿ò
+            // ========== çª—å£æ§åˆ¶æŒ‰é’®å·¥å‚æ–¹æ³• ==========
+            // åˆ›å»ºç»Ÿä¸€é£æ ¼çš„çª—å£æ§åˆ¶æŒ‰é’®ï¼ˆä¸»é¢˜åˆ‡æ¢ã€æœ€å°åŒ–ã€æœ€å¤§åŒ–ã€å…³é—­ï¼‰
+            // [å¤§å°] 40x40px [åœ†è§’] 8px [æ ·å¼] æ‰å¹³æ— è¾¹æ¡†
             Button CreateTitleButton()
             {
                 Button b = new Button
@@ -7002,10 +7005,10 @@ namespace IPTVLiveChecker
                 b.FlatAppearance.BorderSize = 0;
                 b.FlatAppearance.MouseOverBackColor = titleBtnHover;
                 b.FlatAppearance.CheckedBackColor = titleBtnHover;
-                // ÉèÖÃÔ²½ÇRegion£¨8pxÔ²½Ç£¬Ê¹°´Å¥¿´ÆğÀ´Ô²Èó£©
+                // è®¾ç½®åœ†è§’Regionï¼ˆ8pxåœ†è§’ï¼Œä½¿æŒ‰é’®çœ‹èµ·æ¥åœ†æ¶¦ï¼‰
                 using (GraphicsPath path = RoundedRectPath(new Rectangle(0, 0, btnSize, btnSize), 8))
                     b.Region = new Region(path);
-                // °´Å¥´óĞ¡±ä»¯Ê±ÖØĞÂÉèÖÃÔ²½ÇRegion
+                // æŒ‰é’®å¤§å°å˜åŒ–æ—¶é‡æ–°è®¾ç½®åœ†è§’Region
                 b.Resize += (s, e) =>
                 {
                     Button btn = (Button)s;
@@ -7016,14 +7019,14 @@ namespace IPTVLiveChecker
                 return b;
             }
 
-            // ========== ¿ØÖÆ°´Å¥£ºÖ÷ÌâÇĞ»» ==========
-            // [Î»ÖÃ] ÓÒÉÏ½Ç×î×ó²à [Í¼±ê] ÉîÉ«ÏÔÊ¾Ì«Ñô£¬Ç³É«ÏÔÊ¾ÔÂÁÁ [¹¦ÄÜ] ÇĞ»»ÉîÉ«/Ç³É«Ö÷Ìâ
+            // ========== æ§åˆ¶æŒ‰é’®ï¼šä¸»é¢˜åˆ‡æ¢ ==========
+            // [ä½ç½®] å³ä¸Šè§’æœ€å·¦ä¾§ [å›¾æ ‡] æ·±è‰²æ˜¾ç¤ºå¤ªé˜³ï¼Œæµ…è‰²æ˜¾ç¤ºæœˆäº® [åŠŸèƒ½] åˆ‡æ¢æ·±è‰²/æµ…è‰²ä¸»é¢˜
             btnThemeToggle = CreateTitleButton();
             btnThemeToggle.Tag = "theme";
             btnThemeToggle.Paint += (s, e) =>
             {
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                bool isDark = theme.Name == "ÉîÉ«";
+                bool isDark = theme.Name == "æ·±è‰²";
                 bool isHover = btnThemeToggle.ClientRectangle.Contains(btnThemeToggle.PointToClient(Cursor.Position));
                 Color iconColor = isHover ? theme.TextPrimary : theme.TextSecondary;
                 int baseSize = 40;
@@ -7032,7 +7035,7 @@ namespace IPTVLiveChecker
                 bool currentIsDark = IsDarkColor(theme.Bg);
                 if (currentIsDark)
                 {
-                    // ÉîÉ«Ö÷ÌâÏÔÊ¾Ì«ÑôÍ¼±ê£¨Ô²ĞÎ+8ÌõÉäÏß£©
+                    // æ·±è‰²ä¸»é¢˜æ˜¾ç¤ºå¤ªé˜³å›¾æ ‡ï¼ˆåœ†å½¢+8æ¡å°„çº¿ï¼‰
                     using (Pen pen = new Pen(iconColor, 1.6f))
                     using (SolidBrush br = new SolidBrush(iconColor))
                     {
@@ -7051,7 +7054,7 @@ namespace IPTVLiveChecker
                 }
                 else
                 {
-                    // Ç³É«Ö÷ÌâÏÔÊ¾ÔÂÁÁÍ¼±ê£¨Á½¸öÖØµşÔ²£©
+                    // æµ…è‰²ä¸»é¢˜æ˜¾ç¤ºæœˆäº®å›¾æ ‡ï¼ˆä¸¤ä¸ªé‡å åœ†ï¼‰
                     using (SolidBrush br = new SolidBrush(iconColor))
                     {
                         int r = 8;
@@ -7063,30 +7066,30 @@ namespace IPTVLiveChecker
             };
             btnThemeToggle.Click += (s, e) =>
             {
-                string nextTheme = themePreference == "Ç³É«" ? "ÉîÉ«" : "Ç³É«";
+                string nextTheme = themePreference == "æµ…è‰²" ? "æ·±è‰²" : "æµ…è‰²";
                 themePreference = nextTheme;
-                AppTheme newTheme = nextTheme == "ÉîÉ«" ? AppTheme.Dark : AppTheme.Light;
+                AppTheme newTheme = nextTheme == "æ·±è‰²" ? AppTheme.Dark : AppTheme.Light;
                 SetTheme(newTheme);
             };
             titleBarPanel.Controls.Add(btnThemeToggle);
 
-            // ========== ¿ØÖÆ°´Å¥£º×îĞ¡»¯ ==========
-            // [Î»ÖÃ] Ö÷Ìâ°´Å¥ÓÒ²à [Í¼±ê] Ë®Æ½Ïß [¹¦ÄÜ] ½«´°¿Ú×îĞ¡»¯µ½ÈÎÎñÀ¸
+            // ========== æ§åˆ¶æŒ‰é’®ï¼šæœ€å°åŒ– ==========
+            // [ä½ç½®] ä¸»é¢˜æŒ‰é’®å³ä¾§ [å›¾æ ‡] æ°´å¹³çº¿ [åŠŸèƒ½] å°†çª—å£æœ€å°åŒ–åˆ°ä»»åŠ¡æ 
             btnMin = CreateTitleButton();
             btnMin.Paint += (s, e) =>
             {
                 bool isHover = btnMin.ClientRectangle.Contains(btnMin.PointToClient(Cursor.Position));
                 Color ic = isHover ? theme.TextPrimary : theme.TextSecondary;
                 int baseSize = 40;
-                // »æÖÆË®Æ½ÏßÍ¼±ê£¨¾ÓÖĞÆ«ÏÂ£©
+                // ç»˜åˆ¶æ°´å¹³çº¿å›¾æ ‡ï¼ˆå±…ä¸­åä¸‹ï¼‰
                 using (Pen pen = new Pen(ic, 1.5f))
                     e.Graphics.DrawLine(pen, baseSize / 2 - 8, baseSize / 2 + 6, baseSize / 2 + 8, baseSize / 2 + 6);
             };
             btnMin.Click += (s, e) => { this.WindowState = FormWindowState.Minimized; };
             titleBarPanel.Controls.Add(btnMin);
 
-            // ========== ¿ØÖÆ°´Å¥£º×î´ó»¯/»¹Ô­ ==========
-            // [Î»ÖÃ] ×îĞ¡»¯°´Å¥ÓÒ²à [Í¼±ê] ×î´ó»¯Ê±ÏÔÊ¾»¹Ô­Í¼±ê£¬»¹Ô­Ê±ÏÔÊ¾×î´ó»¯Í¼±ê [¹¦ÄÜ] ÇĞ»»´°¿Ú×î´ó»¯/»¹Ô­×´Ì¬
+            // ========== æ§åˆ¶æŒ‰é’®ï¼šæœ€å¤§åŒ–/è¿˜åŸ ==========
+            // [ä½ç½®] æœ€å°åŒ–æŒ‰é’®å³ä¾§ [å›¾æ ‡] æœ€å¤§åŒ–æ—¶æ˜¾ç¤ºè¿˜åŸå›¾æ ‡ï¼Œè¿˜åŸæ—¶æ˜¾ç¤ºæœ€å¤§åŒ–å›¾æ ‡ [åŠŸèƒ½] åˆ‡æ¢çª—å£æœ€å¤§åŒ–/è¿˜åŸçŠ¶æ€
             btnMax = CreateTitleButton();
             btnMax.Paint += (s, e) =>
             {
@@ -7098,13 +7101,13 @@ namespace IPTVLiveChecker
                 {
                     if (isMaximized)
                     {
-                        // ×î´ó»¯×´Ì¬£ºÏÔÊ¾»¹Ô­Í¼±ê£¨Á½¸öĞ¡¾ØĞÎ£©
+                        // æœ€å¤§åŒ–çŠ¶æ€ï¼šæ˜¾ç¤ºè¿˜åŸå›¾æ ‡ï¼ˆä¸¤ä¸ªå°çŸ©å½¢ï¼‰
                         e.Graphics.DrawRectangle(pen, baseSize / 2 - 7, baseSize / 2 - 5, 9, 9);
                         e.Graphics.DrawRectangle(pen, baseSize / 2 - 4, baseSize / 2 - 8, 9, 9);
                     }
                     else
                     {
-                        // »¹Ô­×´Ì¬£ºÏÔÊ¾×î´ó»¯Í¼±ê£¨Ò»¸ö´ó¾ØĞÎ£©
+                        // è¿˜åŸçŠ¶æ€ï¼šæ˜¾ç¤ºæœ€å¤§åŒ–å›¾æ ‡ï¼ˆä¸€ä¸ªå¤§çŸ©å½¢ï¼‰
                         e.Graphics.DrawRectangle(pen, baseSize / 2 - 7, baseSize / 2 - 7, 14, 14);
                     }
                 }
@@ -7119,9 +7122,9 @@ namespace IPTVLiveChecker
             };
             titleBarPanel.Controls.Add(btnMax);
 
-            // ========== ¿ØÖÆ°´Å¥£º¹Ø±Õ ==========
-            // [Î»ÖÃ] ×î´ó»¯°´Å¥ÓÒ²à [Í¼±ê] XĞÎ [¹¦ÄÜ] ¹Ø±ÕÓ¦ÓÃ³ÌĞò
-            // [ÌØÊâĞ§¹û] ĞüÍ£Ê±ÏÔÊ¾ºìÉ«±³¾°£¬°´ÏÂÊ±ÑÕÉ«¼ÓÉî
+            // ========== æ§åˆ¶æŒ‰é’®ï¼šå…³é—­ ==========
+            // [ä½ç½®] æœ€å¤§åŒ–æŒ‰é’®å³ä¾§ [å›¾æ ‡] Xå½¢ [åŠŸèƒ½] å…³é—­åº”ç”¨ç¨‹åº
+            // [ç‰¹æ®Šæ•ˆæœ] æ‚¬åœæ—¶æ˜¾ç¤ºçº¢è‰²èƒŒæ™¯ï¼ŒæŒ‰ä¸‹æ—¶é¢œè‰²åŠ æ·±
             btnClose = CreateTitleButton();
             btnClose.FlatAppearance.MouseOverBackColor = closeBtnHover;
             btnClose.FlatAppearance.MouseDownBackColor = Color.FromArgb(200, 15, 30);
@@ -7130,17 +7133,17 @@ namespace IPTVLiveChecker
                 bool isHover = btnClose.ClientRectangle.Contains(btnClose.PointToClient(Cursor.Position));
                 bool isDown = MouseButtons == MouseButtons.Left && isHover;
                 int baseSize = 40;
-                // ¸ù¾İ×´Ì¬È·¶¨±³¾°É«£¨°´ÏÂ>ĞüÍ£>Õı³££©
+                // æ ¹æ®çŠ¶æ€ç¡®å®šèƒŒæ™¯è‰²ï¼ˆæŒ‰ä¸‹>æ‚¬åœ>æ­£å¸¸ï¼‰
                 Color bgColor = isDown ? Color.FromArgb(200, 15, 30) : (isHover ? closeBtnHover : btnClose.BackColor);
-                // »æÖÆÔ²½Ç±³¾°
+                // ç»˜åˆ¶åœ†è§’èƒŒæ™¯
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 using (GraphicsPath path = RoundedRectPath(new Rectangle(0, 0, baseSize, baseSize), 8))
                 using (SolidBrush bgBr = new SolidBrush(bgColor))
                     e.Graphics.FillPath(bgBr, path);
-                // ¸ù¾İ×´Ì¬È·¶¨Í¼±êÑÕÉ«£¨ĞüÍ£Ê±°×É«£¬·ñÔòÎª´ÎÒªÎÄ×ÖÉ«£©
+                // æ ¹æ®çŠ¶æ€ç¡®å®šå›¾æ ‡é¢œè‰²ï¼ˆæ‚¬åœæ—¶ç™½è‰²ï¼Œå¦åˆ™ä¸ºæ¬¡è¦æ–‡å­—è‰²ï¼‰
                 Color ic = isHover ? closeBtnFg : theme.TextSecondary;
-                int offset = isDown ? 1 : 0; // °´ÏÂÊ±Í¼±êÇáÎ¢Æ«ÒÆ
-                // »æÖÆXĞÎÍ¼±ê£¨Á½Ìõ¶Ô½ÇÏß£©
+                int offset = isDown ? 1 : 0; // æŒ‰ä¸‹æ—¶å›¾æ ‡è½»å¾®åç§»
+                // ç»˜åˆ¶Xå½¢å›¾æ ‡ï¼ˆä¸¤æ¡å¯¹è§’çº¿ï¼‰
                 using (Pen pen = new Pen(ic, 1.6f))
                 {
                     e.Graphics.DrawLine(pen, baseSize / 2 - 7 + offset, baseSize / 2 - 7 + offset, baseSize / 2 + 7 + offset, baseSize / 2 + 7 + offset);
@@ -7154,11 +7157,11 @@ namespace IPTVLiveChecker
             btnClose.Click += (s, e) => this.Close();
             titleBarPanel.Controls.Add(btnClose);
 
-            // ========== ±êÌâÀ¸ÊÂ¼ş°ó¶¨ ==========
-            // ´°¿Ú´óĞ¡±ä»¯Ê±¸üĞÂ²¼¾Ö
+            // ========== æ ‡é¢˜æ äº‹ä»¶ç»‘å®š ==========
+            // çª—å£å¤§å°å˜åŒ–æ—¶æ›´æ–°å¸ƒå±€
             titleBarPanel.Resize += (s, e) => UpdateTitleAndNav();
 
-            // ±êÌâÀ¸Êó±êÍÏ×§£¨ÊµÏÖ×Ô¶¨Òå±êÌâÀ¸ÍÏ¶¯£©
+            // æ ‡é¢˜æ é¼ æ ‡æ‹–æ‹½ï¼ˆå®ç°è‡ªå®šä¹‰æ ‡é¢˜æ æ‹–åŠ¨ï¼‰
             titleBarPanel.MouseDown += (s, e) =>
             {
                 if (e.Button == MouseButtons.Left)
@@ -7167,7 +7170,7 @@ namespace IPTVLiveChecker
                     SendMessage(this.Handle, 0xA1, 0x2, 0);
                 }
             };
-            // Í¼±êÇøÓòÊó±êÍÏ×§£¨Í¬±êÌâÀ¸£©
+            // å›¾æ ‡åŒºåŸŸé¼ æ ‡æ‹–æ‹½ï¼ˆåŒæ ‡é¢˜æ ï¼‰
             titleIcon.MouseDown += (s, e) =>
             {
                 if (e.Button == MouseButtons.Left)
@@ -7177,14 +7180,14 @@ namespace IPTVLiveChecker
                 }
             };
 
-            // ±êÌâÀ¸Ë«»÷£¨ÇĞ»»×î´ó»¯/»¹Ô­£©
+            // æ ‡é¢˜æ åŒå‡»ï¼ˆåˆ‡æ¢æœ€å¤§åŒ–/è¿˜åŸï¼‰
             titleBarPanel.DoubleClick += (s, e) =>
             {
                 if (this.WindowState == FormWindowState.Maximized)
                     this.WindowState = FormWindowState.Normal;
                 else
                     this.WindowState = FormWindowState.Maximized;
-                btnMax.Text = this.WindowState == FormWindowState.Maximized ? "?" : "?";
+                btnMax.Text = this.WindowState == FormWindowState.Maximized ? "â" : "â˜";
             };
         }
 
@@ -7333,7 +7336,7 @@ namespace IPTVLiveChecker
         {
             try
             {
-                // ´ÓÄÚÇ¶µÄBase64×Ö·û´®¼ÓÔØÍ¼Æ¬£¬ÎŞĞèÍâ²¿ÎÄ¼ş
+                // ä»å†…åµŒçš„Base64å­—ç¬¦ä¸²åŠ è½½å›¾ç‰‡ï¼Œæ— éœ€å¤–éƒ¨æ–‡ä»¶
                 byte[] imageBytes = Convert.FromBase64String(IPTVLiveChecker.Resources.WechatPromoResource.Base64Data);
                 using (MemoryStream ms = new MemoryStream(imageBytes))
                 {
@@ -7471,9 +7474,9 @@ namespace IPTVLiveChecker
                 }
                 using (Font proFont = new Font("Arial", proFontSize, FontStyle.Bold))
                 {
-                    string proLabel = "¹¤¾ßÏä PRO";
+                    string proLabel = "å·¥å…·ç®± PRO";
                     if (size < 64) proLabel = "PRO";
-                    else if (size < 128) proLabel = "¹¤¾ßÏä";
+                    else if (size < 128) proLabel = "å·¥å…·ç®±";
                     SizeF proSize = g.MeasureString(proLabel, proFont);
                     using (SolidBrush proBrush = new SolidBrush(Color.FromArgb(220, 210, 240)))
                         g.DrawString(proLabel, proFont, proBrush, (size - proSize.Width) / 2, tvY + tvH + (int)(72 * scale));
@@ -7632,7 +7635,7 @@ namespace IPTVLiveChecker
         private const int DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_24H2 = 19;
         private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
-        // ÊÖ¶¯¾ÓÖĞµ¯´°£¨CenterParent ÔÚÎŞ±ß¿ò¸¸´°¿ÚÏÂÊ§Ğ§£©
+        // æ‰‹åŠ¨å±…ä¸­å¼¹çª—ï¼ˆCenterParent åœ¨æ— è¾¹æ¡†çˆ¶çª—å£ä¸‹å¤±æ•ˆï¼‰
         private static void CenterForm(Form form, Form owner = null)
         {
             Rectangle screen = Screen.PrimaryScreen.WorkingArea;
@@ -7803,7 +7806,7 @@ namespace IPTVLiveChecker
                 menu.BackColor = Color.Transparent;
                 menu.ForeColor = theme.TextPrimary;
 
-                var showInfoItem = new ToolStripMenuItem("ÏÔÊ¾Á÷Ã½ÌåĞÅÏ¢");
+                var showInfoItem = new ToolStripMenuItem("æ˜¾ç¤ºæµåª’ä½“ä¿¡æ¯");
                 showInfoItem.Checked = _showStreamInfoOverlay;
                 showInfoItem.Click += (s, e) =>
                 {
@@ -7964,31 +7967,31 @@ namespace IPTVLiveChecker
                 }
 
                 StringBuilder info = new StringBuilder();
-                if (!string.IsNullOrEmpty(_currentChannelName)) info.Append($"Ãû³Æ: {_currentChannelName}\n");
-                if (!string.IsNullOrEmpty(_currentFormat)) info.Append($"¸ñÊ½: {_currentFormat}\n");
-                if (!string.IsNullOrEmpty(_currentCodec)) info.Append($"±àÂë: {_currentCodec}\n");
-                if (!string.IsNullOrEmpty(_currentResolution)) info.Append($"·Ö±æÂÊ: {_currentResolution}\n");
+                if (!string.IsNullOrEmpty(_currentChannelName)) info.Append($"åç§°: {_currentChannelName}\n");
+                if (!string.IsNullOrEmpty(_currentFormat)) info.Append($"æ ¼å¼: {_currentFormat}\n");
+                if (!string.IsNullOrEmpty(_currentCodec)) info.Append($"ç¼–ç : {_currentCodec}\n");
+                if (!string.IsNullOrEmpty(_currentResolution)) info.Append($"åˆ†è¾¨ç‡: {_currentResolution}\n");
                 if (!string.IsNullOrEmpty(_currentSar)) info.Append($"SAR: {_currentSar}\n");
                 if (!string.IsNullOrEmpty(_currentDar)) info.Append($"DAR: {_currentDar}\n");
-                if (!string.IsNullOrEmpty(_currentFps)) info.Append($"Ö¡ÂÊ: {_currentFps}\n");
-                if (!string.IsNullOrEmpty(_currentPixFmt)) info.Append($"ÏñËØ¸ñÊ½: {_currentPixFmt}\n");
-                if (!string.IsNullOrEmpty(_currentLevel)) info.Append($"¼¶±ğ: {_currentLevel}\n");
-                if (!string.IsNullOrEmpty(_currentColorSpace)) info.Append($"É«²Ê¿Õ¼ä: {_currentColorSpace}\n");
-                if (!string.IsNullOrEmpty(_currentColorPrimaries)) info.Append($"É«»ù: {_currentColorPrimaries}\n");
-                if (!string.IsNullOrEmpty(_currentColorTransfer)) info.Append($"´«µİº¯Êı: {_currentColorTransfer}\n");
-                if (!string.IsNullOrEmpty(_currentAudioChannels)) info.Append($"ÉùµÀ: {_currentAudioChannels}\n");
-                if (!string.IsNullOrEmpty(_currentAudioSampleRate)) info.Append($"²ÉÑùÂÊ: {_currentAudioSampleRate}\n");
-                if (!string.IsNullOrEmpty(_currentAudioBitdepth)) info.Append($"Î»Éî: {_currentAudioBitdepth}\n");
-                if (!string.IsNullOrEmpty(_currentBitrate)) info.Append($"ÂëÂÊ: {_currentBitrate}\n");
-                if (!string.IsNullOrEmpty(_currentDuration)) info.Append($"Ê±³¤: {_currentDuration}\n");
-                if (!string.IsNullOrEmpty(_currentDelay)) info.Append($"ÑÓÊ±: {_currentDelay}\n");
-                if (!string.IsNullOrEmpty(_currentTime)) info.Append($"Ê±¼ä: {_currentTime}\n");
-                if (!string.IsNullOrEmpty(_currentSpeed)) info.Append($"ËÙ¶È: {_currentSpeed}\n");
-                if (!string.IsNullOrEmpty(_currentFrameCount)) info.Append($"Ö¡¼ÆÊı: {_currentFrameCount}\n");
+                if (!string.IsNullOrEmpty(_currentFps)) info.Append($"å¸§ç‡: {_currentFps}\n");
+                if (!string.IsNullOrEmpty(_currentPixFmt)) info.Append($"åƒç´ æ ¼å¼: {_currentPixFmt}\n");
+                if (!string.IsNullOrEmpty(_currentLevel)) info.Append($"çº§åˆ«: {_currentLevel}\n");
+                if (!string.IsNullOrEmpty(_currentColorSpace)) info.Append($"è‰²å½©ç©ºé—´: {_currentColorSpace}\n");
+                if (!string.IsNullOrEmpty(_currentColorPrimaries)) info.Append($"è‰²åŸº: {_currentColorPrimaries}\n");
+                if (!string.IsNullOrEmpty(_currentColorTransfer)) info.Append($"ä¼ é€’å‡½æ•°: {_currentColorTransfer}\n");
+                if (!string.IsNullOrEmpty(_currentAudioChannels)) info.Append($"å£°é“: {_currentAudioChannels}\n");
+                if (!string.IsNullOrEmpty(_currentAudioSampleRate)) info.Append($"é‡‡æ ·ç‡: {_currentAudioSampleRate}\n");
+                if (!string.IsNullOrEmpty(_currentAudioBitdepth)) info.Append($"ä½æ·±: {_currentAudioBitdepth}\n");
+                if (!string.IsNullOrEmpty(_currentBitrate)) info.Append($"ç ç‡: {_currentBitrate}\n");
+                if (!string.IsNullOrEmpty(_currentDuration)) info.Append($"æ—¶é•¿: {_currentDuration}\n");
+                if (!string.IsNullOrEmpty(_currentDelay)) info.Append($"å»¶æ—¶: {_currentDelay}\n");
+                if (!string.IsNullOrEmpty(_currentTime)) info.Append($"æ—¶é—´: {_currentTime}\n");
+                if (!string.IsNullOrEmpty(_currentSpeed)) info.Append($"é€Ÿåº¦: {_currentSpeed}\n");
+                if (!string.IsNullOrEmpty(_currentFrameCount)) info.Append($"å¸§è®¡æ•°: {_currentFrameCount}\n");
                 if (!string.IsNullOrEmpty(_currentDecodedFrames)) info.Append($"{_currentDecodedFrames}\n");
                 if (!string.IsNullOrEmpty(_currentDisplayedFrames)) info.Append($"{_currentDisplayedFrames}\n");
-                if (!string.IsNullOrEmpty(_currentBuffer)) info.Append($"»º³å: {_currentBuffer}\n");
-                if (_droppedFrames > 0) info.Append($"¶ªÖ¡: {_droppedFrames}/{_totalFrames}");
+                if (!string.IsNullOrEmpty(_currentBuffer)) info.Append($"ç¼“å†²: {_currentBuffer}\n");
+                if (_droppedFrames > 0) info.Append($"ä¸¢å¸§: {_droppedFrames}/{_totalFrames}");
 
                 _streamInfoLabel.Text = info.ToString();
                 _streamInfoLabel.Location = new Point(0, 0);
@@ -8064,45 +8067,45 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ¹¹½¨Ö÷½çÃæUI£¨ÍêÕûµÄ½çÃæ³õÊ¼»¯Èë¿Ú£©
-        /// °üº¬´°¿Ú×ÔÊÊÓ¦¡¢Ö÷Ìâ³õÊ¼»¯¡¢DPIËõ·ÅÅäÖÃ¡¢ÕûÌå²¼¾Ö½á¹¹´î½¨
-        /// ²¼¾Ö½á¹¹£ºÍâ²ã±ß¿òÈİÆ÷ ¡ú ±êÌâÀ¸(Dock=Top) ¡ú Ö÷ÄÚÈİÇø(Dock=Fill)
-        /// Ö÷ÄÚÈİÇø£º×ó²àµ¼º½À¸ ¡ú ÖĞ¼ä²Ù×÷Çø ¡ú ÓÒ²àÊı¾İ±í¸ñÇø
+        /// æ„å»ºä¸»ç•Œé¢UIï¼ˆå®Œæ•´çš„ç•Œé¢åˆå§‹åŒ–å…¥å£ï¼‰
+        /// åŒ…å«çª—å£è‡ªé€‚åº”ã€ä¸»é¢˜åˆå§‹åŒ–ã€DPIç¼©æ”¾é…ç½®ã€æ•´ä½“å¸ƒå±€ç»“æ„æ­å»º
+        /// å¸ƒå±€ç»“æ„ï¼šå¤–å±‚è¾¹æ¡†å®¹å™¨ â†’ æ ‡é¢˜æ (Dock=Top) â†’ ä¸»å†…å®¹åŒº(Dock=Fill)
+        /// ä¸»å†…å®¹åŒºï¼šå·¦ä¾§å¯¼èˆªæ  â†’ ä¸­é—´æ“ä½œåŒº â†’ å³ä¾§æ•°æ®è¡¨æ ¼åŒº
         /// </summary>
         private void BuildUI()
         {
-            // ========== Ö÷Ìâ³õÊ¼»¯ ==========
-            if (themePreference == "ÉîÉ«") theme = AppTheme.Dark;
-            else if (themePreference == "¸úËæÏµÍ³") theme = AppTheme.GetAutoTheme();
+            // ========== ä¸»é¢˜åˆå§‹åŒ– ==========
+            if (themePreference == "æ·±è‰²") theme = AppTheme.Dark;
+            else if (themePreference == "è·Ÿéšç³»ç»Ÿ") theme = AppTheme.GetAutoTheme();
             else theme = AppTheme.Light;
 
-            // ========== ´°¿Ú»ù´¡ÅäÖÃ ==========
-            this.Text = "";                                    // Çå¿ÕÄ¬ÈÏ±êÌâ£¨Ê¹ÓÃ×Ô¶¨Òå±êÌâÀ¸£©
-            this.AutoScaleMode = AutoScaleMode.None;           // ½ûÓÃÏµÍ³×Ô¶¯Ëõ·Å£¨Ê¹ÓÃ×Ô¶¨ÒåDPIËõ·Å£©
-            // »ñÈ¡µ±Ç°DPIËõ·Å±ÈÀı£¨96dpiÎª100%Ëõ·Å»ù×¼£©
+            // ========== çª—å£åŸºç¡€é…ç½® ==========
+            this.Text = "";                                    // æ¸…ç©ºé»˜è®¤æ ‡é¢˜ï¼ˆä½¿ç”¨è‡ªå®šä¹‰æ ‡é¢˜æ ï¼‰
+            this.AutoScaleMode = AutoScaleMode.None;           // ç¦ç”¨ç³»ç»Ÿè‡ªåŠ¨ç¼©æ”¾ï¼ˆä½¿ç”¨è‡ªå®šä¹‰DPIç¼©æ”¾ï¼‰
+            // è·å–å½“å‰DPIç¼©æ”¾æ¯”ä¾‹ï¼ˆ96dpiä¸º100%ç¼©æ”¾åŸºå‡†ï¼‰
             using (Graphics g = this.CreateGraphics())
                 dpiScale = g.DpiX / 96f;
             config.Initialize(dpiScale);
             DarkMessageBox.DpiScale = dpiScale;
 
-            // ========== ´°¿Ú´óĞ¡×ÔÊÊÓ¦£¨¸ù¾İÆÁÄ»·Ö±æÂÊ£© ==========
-            // ´°¿Ú´óĞ¡ = ÆÁÄ»¹¤×÷ÇøµÄ88%£¬×îĞ¡1280x800£¬È·±£ÔÚ²»Í¬·Ö±æÂÊÏÂ¶¼ÄÜÍêÕûÏÔÊ¾
+            // ========== çª—å£å¤§å°è‡ªé€‚åº”ï¼ˆæ ¹æ®å±å¹•åˆ†è¾¨ç‡ï¼‰ ==========
+            // çª—å£å¤§å° = å±å¹•å·¥ä½œåŒºçš„88%ï¼Œæœ€å°1280x800ï¼Œç¡®ä¿åœ¨ä¸åŒåˆ†è¾¨ç‡ä¸‹éƒ½èƒ½å®Œæ•´æ˜¾ç¤º
             int screenW = Screen.PrimaryScreen.WorkingArea.Width;
             int screenH = Screen.PrimaryScreen.WorkingArea.Height;
-            int winW = Math.Max(1280, (int)(screenW * 0.88)); // ´°¿Ú¿í¶È
-            int winH = Math.Max(800, (int)(screenH * 0.88));  // ´°¿Ú¸ß¶È
+            int winW = Math.Max(1280, (int)(screenW * 0.88)); // çª—å£å®½åº¦
+            int winH = Math.Max(800, (int)(screenH * 0.88));  // çª—å£é«˜åº¦
             this.Size = new Size(winW, winH);
-            this.StartPosition = FormStartPosition.Manual;     // ÊÖ¶¯¶¨Î»£¨¾ÓÖĞÏÔÊ¾£©
+            this.StartPosition = FormStartPosition.Manual;     // æ‰‹åŠ¨å®šä½ï¼ˆå±…ä¸­æ˜¾ç¤ºï¼‰
             this.Location = new Point(
-                (screenW - winW) / 2,                          // Ë®Æ½¾ÓÖĞ
-                (screenH - winH) / 2                           // ´¹Ö±¾ÓÖĞ
+                (screenW - winW) / 2,                          // æ°´å¹³å±…ä¸­
+                (screenH - winH) / 2                           // å‚ç›´å±…ä¸­
             );
-            this.Font = GetFont(SF(11f));                      // È«¾Ö×ÖÌå£¨YaHei 11pt * DPIËõ·Å£©
-            this.MinimumSize = new Size(SX(900), SY(600));     // ´°¿Ú×îĞ¡³ß´ç£¨900x600 * DPIËõ·Å£©
-            this.BackColor = theme.Border;                     // ´°¿Ú±³¾°É«£¨±ß¿òÉ«£©
+            this.Font = GetFont(SF(11f));                      // å…¨å±€å­—ä½“ï¼ˆYaHei 11pt * DPIç¼©æ”¾ï¼‰
+            this.MinimumSize = new Size(SX(900), SY(600));     // çª—å£æœ€å°å°ºå¯¸ï¼ˆ900x600 * DPIç¼©æ”¾ï¼‰
+            this.BackColor = theme.Border;                     // çª—å£èƒŒæ™¯è‰²ï¼ˆè¾¹æ¡†è‰²ï¼‰
 
-            // ========== Íâ²ã±ß¿òÈİÆ÷ ==========
-            // [×÷ÓÃ] ÊµÏÖÏ¸±ß¿òĞ§¹û£¬padding=1pxÊ¹ÄÚÈİÓë´°¿Ú±ßÔµÓĞ1px¼ä¸ô
+            // ========== å¤–å±‚è¾¹æ¡†å®¹å™¨ ==========
+            // [ä½œç”¨] å®ç°ç»†è¾¹æ¡†æ•ˆæœï¼Œpadding=1pxä½¿å†…å®¹ä¸çª—å£è¾¹ç¼˜æœ‰1pxé—´éš”
             outerWrap = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -8111,16 +8114,16 @@ namespace IPTVLiveChecker
             };
             this.Controls.Add(outerWrap);
 
-            // ========== ×Ô¶¨Òå±êÌâÀ¸ ==========
+            // ========== è‡ªå®šä¹‰æ ‡é¢˜æ  ==========
             CreateTitleBar();
 
             // ================================================================
-            //  WinForms Dock²¼¾Ö¹æÔò: Dock=LeftÊ±,×îºóAddµÄ¿Ø¼şÔÚ×î×ó±ß
-            //  Ä¿±êË³Ğò(´Ó×óµ½ÓÒ): navPanel ¡ú navSep ¡ú actionArea ¡ú actionSep ¡ú mainArea(Fill)
+            //  WinForms Dockå¸ƒå±€è§„åˆ™: Dock=Leftæ—¶,æœ€åAddçš„æ§ä»¶åœ¨æœ€å·¦è¾¹
+            //  ç›®æ ‡é¡ºåº(ä»å·¦åˆ°å³): navPanel â†’ navSep â†’ actionArea â†’ actionSep â†’ mainArea(Fill)
             // ================================================================
 
-            // ========== ÓÒ²àÖ÷Êı¾İÇø(Dock=Fill,×îÏÈAdd) ==========
-            // [Î»ÖÃ] Ìî³äÊ£Óà¿Õ¼ä [±³¾°] Ö÷Ìâ´ÎÒª±³¾°É« [¹¦ÄÜ] °üº¬ËÑË÷À¸ºÍÊı¾İ±í¸ñ
+            // ========== å³ä¾§ä¸»æ•°æ®åŒº(Dock=Fill,æœ€å…ˆAdd) ==========
+            // [ä½ç½®] å¡«å……å‰©ä½™ç©ºé—´ [èƒŒæ™¯] ä¸»é¢˜æ¬¡è¦èƒŒæ™¯è‰² [åŠŸèƒ½] åŒ…å«æœç´¢æ å’Œæ•°æ®è¡¨æ ¼
             mainArea = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -8128,39 +8131,39 @@ namespace IPTVLiveChecker
             };
             mainArea.Resize += (s, e) =>
             {
-                UpdateScrollBarTheme(mainArea); // ´°¿Ú´óĞ¡±ä»¯Ê±¸üĞÂ¹ö¶¯ÌõÖ÷Ìâ
+                UpdateScrollBarTheme(mainArea); // çª—å£å¤§å°å˜åŒ–æ—¶æ›´æ–°æ»šåŠ¨æ¡ä¸»é¢˜
             };
 
-            // ========== Êı¾İ±í¸ñÈİÆ÷(Dock=Fill,ÔÚmainAreaÄÚ×îÏÈAdd) ==========
-            // [Î»ÖÃ] Ìî³ämainAreaÊ£Óà¿Õ¼ä [±³¾°] Ö÷Ìâ´ÎÒª±³¾°É« [¹¦ÄÜ] °üº¬DataGridViewºÍ¿Õ×´Ì¬Ãæ°å
+            // ========== æ•°æ®è¡¨æ ¼å®¹å™¨(Dock=Fill,åœ¨mainAreaå†…æœ€å…ˆAdd) ==========
+            // [ä½ç½®] å¡«å……mainAreaå‰©ä½™ç©ºé—´ [èƒŒæ™¯] ä¸»é¢˜æ¬¡è¦èƒŒæ™¯è‰² [åŠŸèƒ½] åŒ…å«DataGridViewå’Œç©ºçŠ¶æ€é¢æ¿
             gridContainerRef = new Panel
             {
                 Dock = DockStyle.Fill,
                 BackColor = theme.BgAlt
             };
 
-            // ========== Êı¾İ±í¸ñ(DataGridView) ==========
-            // [Î»ÖÃ] Ìî³ägridContainerRef [×ÖÌå] YaHei 6.7pt * DPIËõ·Å [ĞĞ¸ß] 36px * DPIËõ·Å
-            // [¹¦ÄÜ] ÏÔÊ¾ÆµµÀÁĞ±í£¬Ö§³ÖË«»÷²¥·Å¡¢±à¼­Ãû³Æ¡¢ÅÅĞò¡¢ÅúÁ¿²Ù×÷
+            // ========== æ•°æ®è¡¨æ ¼(DataGridView) ==========
+            // [ä½ç½®] å¡«å……gridContainerRef [å­—ä½“] YaHei 6.7pt * DPIç¼©æ”¾ [è¡Œé«˜] 36px * DPIç¼©æ”¾
+            // [åŠŸèƒ½] æ˜¾ç¤ºé¢‘é“åˆ—è¡¨ï¼Œæ”¯æŒåŒå‡»æ’­æ”¾ã€ç¼–è¾‘åç§°ã€æ’åºã€æ‰¹é‡æ“ä½œ
             dgvData = new DataGridView();
             dgvData.Dock = DockStyle.Fill;
-            dgvData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // ÁĞ×Ô¶¯Ìî³ä
-            dgvData.BackgroundColor = theme.BgAlt;                            // ±³¾°É«
-            dgvData.RowHeadersVisible = false;                                 // Òş²ØĞĞÍ·
-            dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;   // ÕûĞĞÑ¡Ôñ
-            dgvData.ReadOnly = false;                                          // ÔÊĞí±à¼­
-            dgvData.AllowUserToAddRows = false;                                // ½ûÖ¹ÓÃ»§Ìí¼ÓĞĞ
-            dgvData.AllowUserToDeleteRows = false;                             // ½ûÖ¹ÓÃ»§É¾³ıĞĞ
-            dgvData.AllowUserToResizeColumns = false;                          // ½ûÖ¹ÓÃ»§µ÷ÕûÁĞ¿í
-            dgvData.AllowUserToResizeRows = false;                             // ½ûÖ¹ÓÃ»§µ÷ÕûĞĞ¸ß
-            dgvData.AllowUserToOrderColumns = false;                           // ½ûÖ¹ÓÃ»§ÅÅĞòÁĞ
-            dgvData.EditMode = DataGridViewEditMode.EditOnF2;                  // °´F2±à¼­
-            dgvData.Font = GetFont(SF(6.7f));                                  // µ¥Ôª¸ñ×ÖÌå£¨6.7pt * DPIËõ·Å£©
-            dgvData.RowTemplate.Height = SY(42);                               // ĞĞ¸ß£¨42px * DPIËõ·Å£©
-            // °ó¶¨ÊÂ¼ş
-            dgvData.CellDoubleClick += DgvData_CellDoubleClick;                // Ë«»÷²¥·Å
-            dgvData.CellEndEdit += DgvData_CellEndEdit;                        // ±à¼­½áÊø
-            // ¿ì½İ¼ü£ºCtrl+AÈ«Ñ¡£¬Ctrl+Shift+C¸´ÖÆËùÓĞÁ´½Ó
+            dgvData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // åˆ—è‡ªåŠ¨å¡«å……
+            dgvData.BackgroundColor = theme.BgAlt;                            // èƒŒæ™¯è‰²
+            dgvData.RowHeadersVisible = false;                                 // éšè—è¡Œå¤´
+            dgvData.SelectionMode = DataGridViewSelectionMode.FullRowSelect;   // æ•´è¡Œé€‰æ‹©
+            dgvData.ReadOnly = false;                                          // å…è®¸ç¼–è¾‘
+            dgvData.AllowUserToAddRows = false;                                // ç¦æ­¢ç”¨æˆ·æ·»åŠ è¡Œ
+            dgvData.AllowUserToDeleteRows = false;                             // ç¦æ­¢ç”¨æˆ·åˆ é™¤è¡Œ
+            dgvData.AllowUserToResizeColumns = false;                          // ç¦æ­¢ç”¨æˆ·è°ƒæ•´åˆ—å®½
+            dgvData.AllowUserToResizeRows = false;                             // ç¦æ­¢ç”¨æˆ·è°ƒæ•´è¡Œé«˜
+            dgvData.AllowUserToOrderColumns = false;                           // ç¦æ­¢ç”¨æˆ·æ’åºåˆ—
+            dgvData.EditMode = DataGridViewEditMode.EditOnF2;                  // æŒ‰F2ç¼–è¾‘
+            dgvData.Font = GetFont(SF(6.7f));                                  // å•å…ƒæ ¼å­—ä½“ï¼ˆ6.7pt * DPIç¼©æ”¾ï¼‰
+            dgvData.RowTemplate.Height = SY(42);                               // è¡Œé«˜ï¼ˆ42px * DPIç¼©æ”¾ï¼‰
+            // ç»‘å®šäº‹ä»¶
+            dgvData.CellDoubleClick += DgvData_CellDoubleClick;                // åŒå‡»æ’­æ”¾
+            dgvData.CellEndEdit += DgvData_CellEndEdit;                        // ç¼–è¾‘ç»“æŸ
+            // å¿«æ·é”®ï¼šCtrl+Aå…¨é€‰ï¼ŒCtrl+Shift+Cå¤åˆ¶æ‰€æœ‰é“¾æ¥
             dgvData.KeyDown += (s, e) =>
             {
                 if (e.Control && e.KeyCode == Keys.A)
@@ -8174,42 +8177,42 @@ namespace IPTVLiveChecker
                     e.SuppressKeyPress = true;
                 }
             };
-            // ÑùÊ½ÅäÖÃ
-            dgvData.EnableHeadersVisualStyles = false;                         // ½ûÓÃÏµÍ³Ä¬ÈÏ±íÍ·ÑùÊ½
-            dgvData.GridColor = theme.Border;                                  // Íø¸ñÏßÑÕÉ«
-            dgvData.BorderStyle = BorderStyle.None;                            // ÎŞ±ß¿ò
-            dgvData.CellBorderStyle = DataGridViewCellBorderStyle.SingleVertical; // ½öÏÔÊ¾´¹Ö±·Ö¸ôÏß
-            dgvData.ColumnHeadersVisible = true;                               // ÏÔÊ¾±íÍ·
-            dgvData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing; // ¹Ì¶¨±íÍ·¸ß¶È
-            dgvData.ColumnHeadersHeight = SY(36);                              // ±íÍ·¸ß¶È£¨36px * DPIËõ·Å£©
-            dgvData.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None; // ±íÍ·ÎŞ±ß¿ò
-            dgvData.DefaultCellStyle.SelectionBackColor = theme.SelectRow;    // Ñ¡ÖĞĞĞ±³¾°É«
-            dgvData.DefaultCellStyle.SelectionForeColor = theme.SelectRowText; // Ñ¡ÖĞĞĞÎÄ×ÖÉ«
-            dgvData.RowTemplate.Height = SY(36);                               // ĞĞ¸ß£¨36px * DPIËõ·Å£©
+            // æ ·å¼é…ç½®
+            dgvData.EnableHeadersVisualStyles = false;                         // ç¦ç”¨ç³»ç»Ÿé»˜è®¤è¡¨å¤´æ ·å¼
+            dgvData.GridColor = theme.Border;                                  // ç½‘æ ¼çº¿é¢œè‰²
+            dgvData.BorderStyle = BorderStyle.None;                            // æ— è¾¹æ¡†
+            dgvData.CellBorderStyle = DataGridViewCellBorderStyle.SingleVertical; // ä»…æ˜¾ç¤ºå‚ç›´åˆ†éš”çº¿
+            dgvData.ColumnHeadersVisible = true;                               // æ˜¾ç¤ºè¡¨å¤´
+            dgvData.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing; // å›ºå®šè¡¨å¤´é«˜åº¦
+            dgvData.ColumnHeadersHeight = SY(36);                              // è¡¨å¤´é«˜åº¦ï¼ˆ36px * DPIç¼©æ”¾ï¼‰
+            dgvData.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None; // è¡¨å¤´æ— è¾¹æ¡†
+            dgvData.DefaultCellStyle.SelectionBackColor = theme.SelectRow;    // é€‰ä¸­è¡ŒèƒŒæ™¯è‰²
+            dgvData.DefaultCellStyle.SelectionForeColor = theme.SelectRowText; // é€‰ä¸­è¡Œæ–‡å­—è‰²
+            dgvData.RowTemplate.Height = SY(36);                               // è¡Œé«˜ï¼ˆ36px * DPIç¼©æ”¾ï¼‰
 
-            // ========== ±íÍ·ÑùÊ½ ==========
-            // [±³¾°] Ö÷Ìâ±íÍ·±³¾°É« [ÎÄ×Ö] ´ÎÒªÎÄ×ÖÉ« [×ÖÌå] YaHei 9pt * DPIËõ·Å [¶ÔÆë] ×ó¶ÔÆë
+            // ========== è¡¨å¤´æ ·å¼ ==========
+            // [èƒŒæ™¯] ä¸»é¢˜è¡¨å¤´èƒŒæ™¯è‰² [æ–‡å­—] æ¬¡è¦æ–‡å­—è‰² [å­—ä½“] YaHei 9pt * DPIç¼©æ”¾ [å¯¹é½] å·¦å¯¹é½
             DataGridViewCellStyle headerStyle = new DataGridViewCellStyle();
-            headerStyle.BackColor = theme.HeaderBg;        // ±íÍ·±³¾°É«
-            headerStyle.ForeColor = theme.TextSecondary;   // ±íÍ·ÎÄ×ÖÉ«
-            headerStyle.Font = GetFont(SF(9f));            // ±íÍ·×ÖÌå£¨9pt * DPIËõ·Å£©
-            headerStyle.Alignment = DataGridViewContentAlignment.MiddleLeft; // ×ó¶ÔÆë
-            headerStyle.Padding = new Padding(SX(10), 0, 0, 0); // ×óÄÚ±ß¾à£¨10px * DPIËõ·Å£©
-            headerStyle.SelectionBackColor = theme.HeaderBg;    // Ñ¡ÖĞÊ±±³¾°É«²»±ä
-            headerStyle.SelectionForeColor = theme.TextSecondary; // Ñ¡ÖĞÊ±ÎÄ×ÖÉ«²»±ä
+            headerStyle.BackColor = theme.HeaderBg;        // è¡¨å¤´èƒŒæ™¯è‰²
+            headerStyle.ForeColor = theme.TextSecondary;   // è¡¨å¤´æ–‡å­—è‰²
+            headerStyle.Font = GetFont(SF(9f));            // è¡¨å¤´å­—ä½“ï¼ˆ9pt * DPIç¼©æ”¾ï¼‰
+            headerStyle.Alignment = DataGridViewContentAlignment.MiddleLeft; // å·¦å¯¹é½
+            headerStyle.Padding = new Padding(SX(10), 0, 0, 0); // å·¦å†…è¾¹è·ï¼ˆ10px * DPIç¼©æ”¾ï¼‰
+            headerStyle.SelectionBackColor = theme.HeaderBg;    // é€‰ä¸­æ—¶èƒŒæ™¯è‰²ä¸å˜
+            headerStyle.SelectionForeColor = theme.TextSecondary; // é€‰ä¸­æ—¶æ–‡å­—è‰²ä¸å˜
             dgvData.ColumnHeadersDefaultCellStyle = headerStyle;
 
-            // ========== ĞĞÑùÊ½ ==========
-            // [±³¾°] Ö÷Ìâ±íÃæÉ« [ÎÄ×Ö] Ö÷ÎÄ×ÖÉ« [×ÖÌå] YaHei 6.7pt * DPIËõ·Å [ÄÚ±ß¾à] ×ó10pxÓÒ6px
+            // ========== è¡Œæ ·å¼ ==========
+            // [èƒŒæ™¯] ä¸»é¢˜è¡¨é¢è‰² [æ–‡å­—] ä¸»æ–‡å­—è‰² [å­—ä½“] YaHei 6.7pt * DPIç¼©æ”¾ [å†…è¾¹è·] å·¦10pxå³6px
             DataGridViewCellStyle rowStyle = new DataGridViewCellStyle();
-            rowStyle.BackColor = theme.Surface;           // ĞĞ±³¾°É«
-            rowStyle.ForeColor = theme.TextPrimary;       // ĞĞÎÄ×ÖÉ«
-            rowStyle.SelectionBackColor = theme.SelectRow; // Ñ¡ÖĞĞĞ±³¾°É«
-            rowStyle.SelectionForeColor = theme.SelectRowText; // Ñ¡ÖĞĞĞÎÄ×ÖÉ«
-            rowStyle.Padding = new Padding(SX(10), SY(0), SX(6), SY(0)); // ÄÚ±ß¾à£¨×ó10px,ÓÒ6px * DPIËõ·Å£©
-            rowStyle.Font = GetFont(SF(6.7f));            // ĞĞ×ÖÌå£¨6.7pt * DPIËõ·Å£©
+            rowStyle.BackColor = theme.Surface;           // è¡ŒèƒŒæ™¯è‰²
+            rowStyle.ForeColor = theme.TextPrimary;       // è¡Œæ–‡å­—è‰²
+            rowStyle.SelectionBackColor = theme.SelectRow; // é€‰ä¸­è¡ŒèƒŒæ™¯è‰²
+            rowStyle.SelectionForeColor = theme.SelectRowText; // é€‰ä¸­è¡Œæ–‡å­—è‰²
+            rowStyle.Padding = new Padding(SX(10), SY(0), SX(6), SY(0)); // å†…è¾¹è·ï¼ˆå·¦10px,å³6px * DPIç¼©æ”¾ï¼‰
+            rowStyle.Font = GetFont(SF(6.7f));            // è¡Œå­—ä½“ï¼ˆ6.7pt * DPIç¼©æ”¾ï¼‰
             dgvData.RowsDefaultCellStyle = rowStyle;
-            // ½»ÌæĞĞÑùÊ½£¨ÓëÆÕÍ¨ĞĞÏàÍ¬£¬ÎŞ°ßÂíÎÆĞ§¹û£©
+            // äº¤æ›¿è¡Œæ ·å¼ï¼ˆä¸æ™®é€šè¡Œç›¸åŒï¼Œæ— æ–‘é©¬çº¹æ•ˆæœï¼‰
             DataGridViewCellStyle altStyle = new DataGridViewCellStyle();
             altStyle.BackColor = theme.Surface;
             altStyle.ForeColor = theme.TextPrimary;
@@ -8219,28 +8222,28 @@ namespace IPTVLiveChecker
             altStyle.Font = GetFont(SF(6.7f));
             dgvData.AlternatingRowsDefaultCellStyle = altStyle;
 
-            // ========== ÁĞ¶¨Òå£¨8ÁĞ£© ==========
-            // [Ãû³Æ] ¿É±à¼­ [Á´½Ó] Ö»¶Á/Consolas×ÖÌå [¹éÊôµØ] Ö»¶Á [·Ö±æÂÊ] Ö»¶Á
-            // [ÏìÓ¦ËÙ¶È] Ò©ÍèÑùÊ½/Ö»¶Á [·Ö×é] Ö»¶Á [×´Ì¬] Ò©ÍèÑùÊ½/Ö»¶Á [²Ù×÷] ×Ô»æË«°´Å¥/Ö»¶Á
-            dgvData.Columns.Add("colName", "Ãû³Æ");       // ÆµµÀÃû³Æ£¨¿É±à¼­£©
-            dgvData.Columns.Add("colUrl", "Á´½Ó");        // ²¥·ÅÁ´½Ó£¨Ö»¶Á£¬Consolas×ÖÌå£©
-            dgvData.Columns.Add("colLocation", "¹éÊôµØ"); // ¹éÊôµØĞÅÏ¢
-            dgvData.Columns.Add("colResolution", "·Ö±æÂÊ"); // ÊÓÆµ·Ö±æÂÊ
-            dgvData.Columns.Add("colSpeed", "ÏìÓ¦ËÙ¶È");   // ÏìÓ¦ËÙ¶È£¨Ò©ÍèÑùÊ½£©
-            dgvData.Columns.Add("colGroup", "·Ö×é");      // ·Ö×éĞÅÏ¢
-            dgvData.Columns.Add("colStatus", "×´Ì¬");      // ×´Ì¬£¨Ò©ÍèÑùÊ½£©
-            dgvData.Columns.Add("colAction", "²Ù×÷");      // ²Ù×÷ÁĞ£¨×Ô»æ²¥·Å/¸´ÖÆ°´Å¥£©
+            // ========== åˆ—å®šä¹‰ï¼ˆ8åˆ—ï¼‰ ==========
+            // [åç§°] å¯ç¼–è¾‘ [é“¾æ¥] åªè¯»/Consolaså­—ä½“ [å½’å±åœ°] åªè¯» [åˆ†è¾¨ç‡] åªè¯»
+            // [å“åº”é€Ÿåº¦] è¯ä¸¸æ ·å¼/åªè¯» [åˆ†ç»„] åªè¯» [çŠ¶æ€] è¯ä¸¸æ ·å¼/åªè¯» [æ“ä½œ] è‡ªç»˜åŒæŒ‰é’®/åªè¯»
+            dgvData.Columns.Add("colName", "åç§°");       // é¢‘é“åç§°ï¼ˆå¯ç¼–è¾‘ï¼‰
+            dgvData.Columns.Add("colUrl", "é“¾æ¥");        // æ’­æ”¾é“¾æ¥ï¼ˆåªè¯»ï¼ŒConsolaså­—ä½“ï¼‰
+            dgvData.Columns.Add("colLocation", "å½’å±åœ°"); // å½’å±åœ°ä¿¡æ¯
+            dgvData.Columns.Add("colResolution", "åˆ†è¾¨ç‡"); // è§†é¢‘åˆ†è¾¨ç‡
+            dgvData.Columns.Add("colSpeed", "å“åº”é€Ÿåº¦");   // å“åº”é€Ÿåº¦ï¼ˆè¯ä¸¸æ ·å¼ï¼‰
+            dgvData.Columns.Add("colGroup", "åˆ†ç»„");      // åˆ†ç»„ä¿¡æ¯
+            dgvData.Columns.Add("colStatus", "çŠ¶æ€");      // çŠ¶æ€ï¼ˆè¯ä¸¸æ ·å¼ï¼‰
+            dgvData.Columns.Add("colAction", "æ“ä½œ");      // æ“ä½œåˆ—ï¼ˆè‡ªç»˜æ’­æ”¾/å¤åˆ¶æŒ‰é’®ï¼‰
 
-            // ========== ±í¸ñÊÂ¼ş°ó¶¨ ==========
-            dgvData.CellClick += DgvData_CellClick;                          // µ¥Ôª¸ñµã»÷£¨²Ù×÷°´Å¥£©
-            dgvData.ColumnHeaderMouseClick += DgvData_ColumnHeaderMouseClick; // ±íÍ·µã»÷£¨ÅÅĞò£©
-            dgvData.CellPainting += DgvData_CellPainting;                    // µ¥Ôª¸ñ×Ô»æ£¨Ò©Íè¡¢°´Å¥£©
-            dgvData.CellFormatting += DgvData_CellFormatting;                // µ¥Ôª¸ñ¸ñÊ½»¯
-            dgvData.CellMouseMove += DgvData_CellMouseMove;                  // Êó±êÒÆ¶¯£¨ĞüÍ£°´Å¥£©
-            dgvData.CellMouseDown += DgvData_CellMouseDown;                  // Êó±ê°´ÏÂ
-            dgvData.CellMouseUp += DgvData_CellMouseUp;                      // Êó±êÊÍ·Å
-            dgvData.ShowCellToolTips = true;                                 // ÏÔÊ¾µ¥Ôª¸ñ¹¤¾ßÌáÊ¾
-            // ¹¤¾ßÌáÊ¾£ºµ±µ¥Ôª¸ñÄÚÈİ¹ı³¤Ê±ÏÔÊ¾ÍêÕûÄÚÈİ
+            // ========== è¡¨æ ¼äº‹ä»¶ç»‘å®š ==========
+            dgvData.CellClick += DgvData_CellClick;                          // å•å…ƒæ ¼ç‚¹å‡»ï¼ˆæ“ä½œæŒ‰é’®ï¼‰
+            dgvData.ColumnHeaderMouseClick += DgvData_ColumnHeaderMouseClick; // è¡¨å¤´ç‚¹å‡»ï¼ˆæ’åºï¼‰
+            dgvData.CellPainting += DgvData_CellPainting;                    // å•å…ƒæ ¼è‡ªç»˜ï¼ˆè¯ä¸¸ã€æŒ‰é’®ï¼‰
+            dgvData.CellFormatting += DgvData_CellFormatting;                // å•å…ƒæ ¼æ ¼å¼åŒ–
+            dgvData.CellMouseMove += DgvData_CellMouseMove;                  // é¼ æ ‡ç§»åŠ¨ï¼ˆæ‚¬åœæŒ‰é’®ï¼‰
+            dgvData.CellMouseDown += DgvData_CellMouseDown;                  // é¼ æ ‡æŒ‰ä¸‹
+            dgvData.CellMouseUp += DgvData_CellMouseUp;                      // é¼ æ ‡é‡Šæ”¾
+            dgvData.ShowCellToolTips = true;                                 // æ˜¾ç¤ºå•å…ƒæ ¼å·¥å…·æç¤º
+            // å·¥å…·æç¤ºï¼šå½“å•å…ƒæ ¼å†…å®¹è¿‡é•¿æ—¶æ˜¾ç¤ºå®Œæ•´å†…å®¹
             dgvData.CellToolTipTextNeeded += (s, e) =>
             {
                 if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
@@ -8253,270 +8256,270 @@ namespace IPTVLiveChecker
                     }
                 }
             };
-            // Êó±êÀë¿ª±í¸ñÊ±ÖØÖÃĞüÍ£×´Ì¬
+            // é¼ æ ‡ç¦»å¼€è¡¨æ ¼æ—¶é‡ç½®æ‚¬åœçŠ¶æ€
             dgvData.MouseLeave += (s, e) => { if (_hoverRow != -1) { _hoverRow = -1; _hoverBtn = -1; dgvData.Invalidate(); } };
 
-            // ========== ÁĞ¿íÈ¨ÖØÅäÖÃ£¨FillWeight£© ==========
-            // È¨ÖØ×ÜºÍ = 323£¬Á´½ÓÁĞÕ¼×î´ó±ÈÖØ£¨160/323 ¡Ö 50%£©
-            dgvData.Columns["colName"].FillWeight = 15;       // Ãû³ÆÁĞÈ¨ÖØ
-            dgvData.Columns["colUrl"].FillWeight = 160;      // Á´½ÓÁĞÈ¨ÖØ£¨×î¿í£©
-            dgvData.Columns["colLocation"].FillWeight = 35;   // ¹éÊôµØÁĞÈ¨ÖØ
-            dgvData.Columns["colResolution"].FillWeight = 22; // ·Ö±æÂÊÁĞÈ¨ÖØ
-            dgvData.Columns["colSpeed"].FillWeight = 25;      // ÏìÓ¦ËÙ¶ÈÁĞÈ¨ÖØ
-            dgvData.Columns["colGroup"].FillWeight = 18;      // ·Ö×éÁĞÈ¨ÖØ
-            dgvData.Columns["colStatus"].FillWeight = 20;     // ×´Ì¬ÁĞÈ¨ÖØ
-            dgvData.Columns["colAction"].FillWeight = 28;     // ²Ù×÷ÁĞÈ¨ÖØ
+            // ========== åˆ—å®½æƒé‡é…ç½®ï¼ˆFillWeightï¼‰ ==========
+            // æƒé‡æ€»å’Œ = 323ï¼Œé“¾æ¥åˆ—å æœ€å¤§æ¯”é‡ï¼ˆ160/323 â‰ˆ 50%ï¼‰
+            dgvData.Columns["colName"].FillWeight = 15;       // åç§°åˆ—æƒé‡
+            dgvData.Columns["colUrl"].FillWeight = 160;      // é“¾æ¥åˆ—æƒé‡ï¼ˆæœ€å®½ï¼‰
+            dgvData.Columns["colLocation"].FillWeight = 35;   // å½’å±åœ°åˆ—æƒé‡
+            dgvData.Columns["colResolution"].FillWeight = 22; // åˆ†è¾¨ç‡åˆ—æƒé‡
+            dgvData.Columns["colSpeed"].FillWeight = 25;      // å“åº”é€Ÿåº¦åˆ—æƒé‡
+            dgvData.Columns["colGroup"].FillWeight = 18;      // åˆ†ç»„åˆ—æƒé‡
+            dgvData.Columns["colStatus"].FillWeight = 20;     // çŠ¶æ€åˆ—æƒé‡
+            dgvData.Columns["colAction"].FillWeight = 28;     // æ“ä½œåˆ—æƒé‡
 
-            // ========== ÁĞ×îĞ¡¿í¶ÈÅäÖÃ£¨È·±£ÄÚÈİÍêÕûÏÔÊ¾£© ==========
-            // [Á´½ÓÁĞ] ×îĞ¡600px£¨·ÀÖ¹URL±»½Ø¶Ï£©[²Ù×÷ÁĞ] ×îĞ¡20px£¨Ë«°´Å¥¿Õ¼ä£©
-            dgvData.Columns["colName"].MinimumWidth = SX(12);       // Ãû³ÆÁĞ×îĞ¡¿í¶È
-            dgvData.Columns["colUrl"].MinimumWidth = SX(600);      // Á´½ÓÁĞ×îĞ¡¿í¶È£¨È·±£URLÍêÕû£©
-            dgvData.Columns["colLocation"].MinimumWidth = SX(20);   // ¹éÊôµØÁĞ×îĞ¡¿í¶È
-            dgvData.Columns["colResolution"].MinimumWidth = SX(15); // ·Ö±æÂÊÁĞ×îĞ¡¿í¶È
-            dgvData.Columns["colSpeed"].MinimumWidth = SX(20);      // ÏìÓ¦ËÙ¶ÈÁĞ×îĞ¡¿í¶È
-            dgvData.Columns["colGroup"].MinimumWidth = SX(18);      // ·Ö×éÁĞ×îĞ¡¿í¶È
-            dgvData.Columns["colStatus"].MinimumWidth = SX(18);     // ×´Ì¬ÁĞ×îĞ¡¿í¶È
-            dgvData.Columns["colAction"].MinimumWidth = SX(20);     // ²Ù×÷ÁĞ×îĞ¡¿í¶È£¨Ë«°´Å¥£©
+            // ========== åˆ—æœ€å°å®½åº¦é…ç½®ï¼ˆç¡®ä¿å†…å®¹å®Œæ•´æ˜¾ç¤ºï¼‰ ==========
+            // [é“¾æ¥åˆ—] æœ€å°600pxï¼ˆé˜²æ­¢URLè¢«æˆªæ–­ï¼‰[æ“ä½œåˆ—] æœ€å°20pxï¼ˆåŒæŒ‰é’®ç©ºé—´ï¼‰
+            dgvData.Columns["colName"].MinimumWidth = SX(12);       // åç§°åˆ—æœ€å°å®½åº¦
+            dgvData.Columns["colUrl"].MinimumWidth = SX(600);      // é“¾æ¥åˆ—æœ€å°å®½åº¦ï¼ˆç¡®ä¿URLå®Œæ•´ï¼‰
+            dgvData.Columns["colLocation"].MinimumWidth = SX(20);   // å½’å±åœ°åˆ—æœ€å°å®½åº¦
+            dgvData.Columns["colResolution"].MinimumWidth = SX(15); // åˆ†è¾¨ç‡åˆ—æœ€å°å®½åº¦
+            dgvData.Columns["colSpeed"].MinimumWidth = SX(20);      // å“åº”é€Ÿåº¦åˆ—æœ€å°å®½åº¦
+            dgvData.Columns["colGroup"].MinimumWidth = SX(18);      // åˆ†ç»„åˆ—æœ€å°å®½åº¦
+            dgvData.Columns["colStatus"].MinimumWidth = SX(18);     // çŠ¶æ€åˆ—æœ€å°å®½åº¦
+            dgvData.Columns["colAction"].MinimumWidth = SX(20);     // æ“ä½œåˆ—æœ€å°å®½åº¦ï¼ˆåŒæŒ‰é’®ï¼‰
 
-            // ========== ÁĞ¶ÔÆë·½Ê½ÅäÖÃ ==========
-            // [Ä¬ÈÏ] ¾ÓÖĞ¶ÔÆë [Ãû³Æ/Á´½Ó/¹éÊôµØ/·Ö±æÂÊ/·Ö×é] ×ó¶ÔÆë [ÏìÓ¦ËÙ¶È/×´Ì¬/²Ù×÷] ¾ÓÖĞ¶ÔÆë
+            // ========== åˆ—å¯¹é½æ–¹å¼é…ç½® ==========
+            // [é»˜è®¤] å±…ä¸­å¯¹é½ [åç§°/é“¾æ¥/å½’å±åœ°/åˆ†è¾¨ç‡/åˆ†ç»„] å·¦å¯¹é½ [å“åº”é€Ÿåº¦/çŠ¶æ€/æ“ä½œ] å±…ä¸­å¯¹é½
             foreach (DataGridViewColumn col in dgvData.Columns)
             {
-                col.SortMode = DataGridViewColumnSortMode.Programmatic; // ±à³ÌÊ½ÅÅĞò
-                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; // Ä¬ÈÏ¾ÓÖĞ
+                col.SortMode = DataGridViewColumnSortMode.Programmatic; // ç¼–ç¨‹å¼æ’åº
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; // é»˜è®¤å±…ä¸­
             }
-            // ÎÄ±¾ÁĞ×ó¶ÔÆë
+            // æ–‡æœ¬åˆ—å·¦å¯¹é½
             dgvData.Columns["colName"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dgvData.Columns["colUrl"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dgvData.Columns["colLocation"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dgvData.Columns["colResolution"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dgvData.Columns["colGroup"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            // Ò©Íè£¨ÏìÓ¦ËÙ¶È¡¢×´Ì¬£©ºÍ°´Å¥£¨²Ù×÷£©±£³Ö¾ÓÖĞ
+            // è¯ä¸¸ï¼ˆå“åº”é€Ÿåº¦ã€çŠ¶æ€ï¼‰å’ŒæŒ‰é’®ï¼ˆæ“ä½œï¼‰ä¿æŒå±…ä¸­
             dgvData.Columns["colSpeed"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgvData.Columns["colStatus"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgvData.Columns["colAction"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-            // ========== ÁĞÖ»¶ÁÅäÖÃ ==========
-            // [Ãû³Æ] ¿É±à¼­£¨ÔÊĞíÓÃ»§ĞŞ¸ÄÆµµÀÃû³Æ£©[ÆäËû] Ö»¶Á£¨Êı¾İÓÉ³ÌĞòÉú³É£©
-            dgvData.Columns["colName"].ReadOnly = false;          // Ãû³ÆÁĞ¿É±à¼­
-            dgvData.Columns["colUrl"].ReadOnly = true;            // Á´½ÓÁĞÖ»¶Á
-            dgvData.Columns["colUrl"].DefaultCellStyle.Font = new Font("Consolas", SF(6.7f)); // Á´½ÓÁĞÊ¹ÓÃµÈ¿í×ÖÌå
-            dgvData.Columns["colLocation"].ReadOnly = true;       // ¹éÊôµØÁĞÖ»¶Á
-            dgvData.Columns["colResolution"].ReadOnly = true;     // ·Ö±æÂÊÁĞÖ»¶Á
-            dgvData.Columns["colSpeed"].ReadOnly = true;          // ÏìÓ¦ËÙ¶ÈÁĞÖ»¶Á
-            dgvData.Columns["colGroup"].ReadOnly = true;          // ·Ö×éÁĞÖ»¶Á
-            dgvData.Columns["colStatus"].ReadOnly = true;         // ×´Ì¬ÁĞÖ»¶Á
-            dgvData.Columns["colAction"].ReadOnly = true;         // ²Ù×÷ÁĞÖ»¶Á£¨×Ô»æ°´Å¥£©
+            // ========== åˆ—åªè¯»é…ç½® ==========
+            // [åç§°] å¯ç¼–è¾‘ï¼ˆå…è®¸ç”¨æˆ·ä¿®æ”¹é¢‘é“åç§°ï¼‰[å…¶ä»–] åªè¯»ï¼ˆæ•°æ®ç”±ç¨‹åºç”Ÿæˆï¼‰
+            dgvData.Columns["colName"].ReadOnly = false;          // åç§°åˆ—å¯ç¼–è¾‘
+            dgvData.Columns["colUrl"].ReadOnly = true;            // é“¾æ¥åˆ—åªè¯»
+            dgvData.Columns["colUrl"].DefaultCellStyle.Font = new Font("Consolas", SF(6.7f)); // é“¾æ¥åˆ—ä½¿ç”¨ç­‰å®½å­—ä½“
+            dgvData.Columns["colLocation"].ReadOnly = true;       // å½’å±åœ°åˆ—åªè¯»
+            dgvData.Columns["colResolution"].ReadOnly = true;     // åˆ†è¾¨ç‡åˆ—åªè¯»
+            dgvData.Columns["colSpeed"].ReadOnly = true;          // å“åº”é€Ÿåº¦åˆ—åªè¯»
+            dgvData.Columns["colGroup"].ReadOnly = true;          // åˆ†ç»„åˆ—åªè¯»
+            dgvData.Columns["colStatus"].ReadOnly = true;         // çŠ¶æ€åˆ—åªè¯»
+            dgvData.Columns["colAction"].ReadOnly = true;         // æ“ä½œåˆ—åªè¯»ï¼ˆè‡ªç»˜æŒ‰é’®ï¼‰
 
-            // Ä¬ÈÏ°´Ãû³ÆÉıĞòÅÅĞò
+            // é»˜è®¤æŒ‰åç§°å‡åºæ’åº
             sortedColumn = "colName";
             sortDirection = SortOrder.Ascending;
 
             gridContainerRef.Controls.Add(dgvData);
 
-            // ========== ¿Õ×´Ì¬Ãæ°å£¨ÎŞÊı¾İÊ±ÏÔÊ¾£© ==========
-            // [Î»ÖÃ] ¾ÓÖĞÏÔÊ¾ [´óĞ¡] 140x110px * DPIËõ·Å [ÄÚÈİ] Í¼±ê + "ÎŞĞ§Õ¾"ÌáÊ¾ÎÄ×Ö
+            // ========== ç©ºçŠ¶æ€é¢æ¿ï¼ˆæ— æ•°æ®æ—¶æ˜¾ç¤ºï¼‰ ==========
+            // [ä½ç½®] å±…ä¸­æ˜¾ç¤º [å¤§å°] 140x110px * DPIç¼©æ”¾ [å†…å®¹] å›¾æ ‡ + "æ— æ•ˆç«™"æç¤ºæ–‡å­—
             emptyStatePanel = new Panel
             {
-                BackColor = Color.Transparent,  // Í¸Ã÷±³¾°
-                Size = new Size(SX(140), SY(110)) // Ãæ°å´óĞ¡£¨140x110px * DPIËõ·Å£©
+                BackColor = Color.Transparent,  // é€æ˜èƒŒæ™¯
+                Size = new Size(SX(140), SY(110)) // é¢æ¿å¤§å°ï¼ˆ140x110px * DPIç¼©æ”¾ï¼‰
             };
 
-            // ¿Õ×´Ì¬Í¼±ê£¨×Ô¶¨Òå»æÖÆµçÊÓ¹Ø±ÕÍ¼±ê£©
+            // ç©ºçŠ¶æ€å›¾æ ‡ï¼ˆè‡ªå®šä¹‰ç»˜åˆ¶ç”µè§†å…³é—­å›¾æ ‡ï¼‰
             PictureBox emptyIconBox = new PictureBox
             {
-                Size = new Size(SX(56), SY(56)),      // Í¼±ê´óĞ¡£¨56x56px * DPIËõ·Å£©
-                Location = new Point(SX(42), SY(0)),   // Í¼±êÎ»ÖÃ£¨Ë®Æ½¾ÓÖĞ£©
+                Size = new Size(SX(56), SY(56)),      // å›¾æ ‡å¤§å°ï¼ˆ56x56px * DPIç¼©æ”¾ï¼‰
+                Location = new Point(SX(42), SY(0)),   // å›¾æ ‡ä½ç½®ï¼ˆæ°´å¹³å±…ä¸­ï¼‰
                 BackColor = Color.Transparent,
                 SizeMode = PictureBoxSizeMode.CenterImage
             };
-            emptyIconBox.Paint += EmptyIcon_Paint; // °ó¶¨×Ô¶¨Òå»æÖÆÊÂ¼ş
+            emptyIconBox.Paint += EmptyIcon_Paint; // ç»‘å®šè‡ªå®šä¹‰ç»˜åˆ¶äº‹ä»¶
 
-            // ¿Õ×´Ì¬ÎÄ×ÖÌáÊ¾
+            // ç©ºçŠ¶æ€æ–‡å­—æç¤º
             emptyLabel = new Label
             {
-                Text = "ÎŞĞ§Õ¾",                        // ÌáÊ¾ÎÄ×Ö
-                Font = GetFont(SF(11f)),               // ×ÖÌå£¨11pt * DPIËõ·Å£©
-                ForeColor = Color.FromArgb(180, 180, 180), // »ÒÉ«ÎÄ×Ö
-                AutoSize = true,                        // ×Ô¶¯µ÷Õû´óĞ¡
-                TextAlign = ContentAlignment.MiddleCenter // ¾ÓÖĞ¶ÔÆë
+                Text = "æ— æ•ˆç«™",                        // æç¤ºæ–‡å­—
+                Font = GetFont(SF(11f)),               // å­—ä½“ï¼ˆ11pt * DPIç¼©æ”¾ï¼‰
+                ForeColor = Color.FromArgb(180, 180, 180), // ç°è‰²æ–‡å­—
+                AutoSize = true,                        // è‡ªåŠ¨è°ƒæ•´å¤§å°
+                TextAlign = ContentAlignment.MiddleCenter // å±…ä¸­å¯¹é½
             };
 
             emptyStatePanel.Controls.Add(emptyIconBox);
             emptyStatePanel.Controls.Add(emptyLabel);
             gridContainerRef.Controls.Add(emptyStatePanel);
-            emptyStatePanel.BringToFront(); // ÖÃÓÚ×îÉÏ²ã
+            emptyStatePanel.BringToFront(); // ç½®äºæœ€ä¸Šå±‚
 
-            // ÈİÆ÷´óĞ¡±ä»¯Ê±ÖØĞÂ¾ÓÖĞ¿Õ×´Ì¬Ãæ°å
+            // å®¹å™¨å¤§å°å˜åŒ–æ—¶é‡æ–°å±…ä¸­ç©ºçŠ¶æ€é¢æ¿
             gridContainerRef.Resize += (s, e) => CenterEmptyState();
 
-            // ========== ËÑË÷À¸(Dock=Top,ÔÚgridContainerÉÏ·½Add) ==========
-            // [Î»ÖÃ] ¶¥²¿Í£¿¿ [¸ß¶È] 38px * DPIËõ·Å [±³¾°] Ö÷Ìâ´ÎÒª±³¾°É«
-            // [ÄÚÈİ] ËÑË÷±êÇ© + ËÑË÷¿ò + ·Ö×éÉ¸Ñ¡±êÇ© + ·Ö×éÏÂÀ­¿ò
+            // ========== æœç´¢æ (Dock=Top,åœ¨gridContainerä¸Šæ–¹Add) ==========
+            // [ä½ç½®] é¡¶éƒ¨åœé  [é«˜åº¦] 38px * DPIç¼©æ”¾ [èƒŒæ™¯] ä¸»é¢˜æ¬¡è¦èƒŒæ™¯è‰²
+            // [å†…å®¹] æœç´¢æ ‡ç­¾ + æœç´¢æ¡† + åˆ†ç»„ç­›é€‰æ ‡ç­¾ + åˆ†ç»„ä¸‹æ‹‰æ¡†
             searchPanelRef = new Panel
             {
-                Dock = DockStyle.Top,           // ¶¥²¿Í£¿¿
-                Height = SY(38),                // ¸ß¶È£¨38px * DPIËõ·Å£©
-                BackColor = theme.BgAlt         // ±³¾°É«
+                Dock = DockStyle.Top,           // é¡¶éƒ¨åœé 
+                Height = SY(38),                // é«˜åº¦ï¼ˆ38px * DPIç¼©æ”¾ï¼‰
+                BackColor = theme.BgAlt         // èƒŒæ™¯è‰²
             };
 
-            // ËÑË÷±êÇ©£¨"ËÑ Ë÷ :"£©
+            // æœç´¢æ ‡ç­¾ï¼ˆ"æœ ç´¢ :"ï¼‰
             Label lblSearch = new Label
             {
-                Text = "ËÑ Ë÷ :",
-                Font = GetFont(SF(8.5f)),     // ×ÖÌå£¨8.5pt * DPIËõ·Å£©
+                Text = "æœ ç´¢ :",
+                Font = GetFont(SF(8.5f)),     // å­—ä½“ï¼ˆ8.5pt * DPIç¼©æ”¾ï¼‰
                 ForeColor = theme.TextPrimary,
                 Location = new Point(0, SY(0)),
                 AutoSize = true
             };
             lblSearch.Height = SY(26);
-            lblSearch.Top = (SY(38) - SY(26)) / 2; // ´¹Ö±¾ÓÖĞ
+            lblSearch.Top = (SY(38) - SY(26)) / 2; // å‚ç›´å±…ä¸­
             searchPanelRef.Controls.Add(lblSearch);
 
-            // ========== ·Ö×éÉ¸Ñ¡ÏÂÀ­¿ò£¨ÓÒ²à£© ==========
-            // [ÈİÆ÷] 110x26px * DPIËõ·Å [¿Ø¼ş] DarkComboBox×Ô»æÔ²½Ç
+            // ========== åˆ†ç»„ç­›é€‰ä¸‹æ‹‰æ¡†ï¼ˆå³ä¾§ï¼‰ ==========
+            // [å®¹å™¨] 110x26px * DPIç¼©æ”¾ [æ§ä»¶] DarkComboBoxè‡ªç»˜åœ†è§’
             cboGroupHost = new Panel
             {
                 BackColor = theme.BgAlt,
-                Visible = false,               // Ä¬ÈÏÒş²Ø£¨ÓĞ·Ö×éÊ±ÏÔÊ¾£©
+                Visible = false,               // é»˜è®¤éšè—ï¼ˆæœ‰åˆ†ç»„æ—¶æ˜¾ç¤ºï¼‰
                 Anchor = AnchorStyles.Top | AnchorStyles.Left,
-                Location = new Point(0, (SY(38) - SY(26)) / 2), // ´¹Ö±¾ÓÖĞ
-                Size = new Size(110, SY(26))   // ÈİÆ÷´óĞ¡£¨110x26px£©
+                Location = new Point(0, (SY(38) - SY(26)) / 2), // å‚ç›´å±…ä¸­
+                Size = new Size(110, SY(26))   // å®¹å™¨å¤§å°ï¼ˆ110x26pxï¼‰
             };
-            // ×Ô¶¨ÒåÉîÉ«ÏÂÀ­¿ò£¨Ô²½Ç6px£©
+            // è‡ªå®šä¹‰æ·±è‰²ä¸‹æ‹‰æ¡†ï¼ˆåœ†è§’6pxï¼‰
             DarkComboBox darkCbo = new DarkComboBox
             {
-                Font = GetFont(SF(8.5f)),               // ×ÖÌå£¨8.5pt * DPIËõ·Å£©
+                Font = GetFont(SF(8.5f)),               // å­—ä½“ï¼ˆ8.5pt * DPIç¼©æ”¾ï¼‰
                 Dock = DockStyle.Fill,
-                BackColor = theme.Surface,              // ±³¾°É«
-                ForeColor = theme.TextPrimary,          // ÎÄ×ÖÉ«
-                BorderColor = theme.Border,             // ±ß¿òÉ«
-                FocusBorderColor = theme.Primary,       // ¾Û½¹Ê±±ß¿òÉ«
-                ItemBackColor = theme.Surface,          // Ñ¡Ïî±³¾°É«
-                ItemSelectedBackColor = theme.BgAlt,    // Ñ¡ÖĞÑ¡Ïî±³¾°É«
-                ItemHoverBackColor = Color.FromArgb(Math.Min(255, theme.Surface.R + 10), Math.Min(255, theme.Surface.G + 10), Math.Min(255, theme.Surface.B + 10)), // ĞüÍ£Ñ¡Ïî±³¾°É«
-                CornerRadius = 6,                       // Ô²½Ç°ë¾¶£¨6px£©
-                ItemHeight = SY(22)                     // Ñ¡Ïî¸ß¶È£¨22px * DPIËõ·Å£©
+                BackColor = theme.Surface,              // èƒŒæ™¯è‰²
+                ForeColor = theme.TextPrimary,          // æ–‡å­—è‰²
+                BorderColor = theme.Border,             // è¾¹æ¡†è‰²
+                FocusBorderColor = theme.Primary,       // èšç„¦æ—¶è¾¹æ¡†è‰²
+                ItemBackColor = theme.Surface,          // é€‰é¡¹èƒŒæ™¯è‰²
+                ItemSelectedBackColor = theme.BgAlt,    // é€‰ä¸­é€‰é¡¹èƒŒæ™¯è‰²
+                ItemHoverBackColor = Color.FromArgb(Math.Min(255, theme.Surface.R + 10), Math.Min(255, theme.Surface.G + 10), Math.Min(255, theme.Surface.B + 10)), // æ‚¬åœé€‰é¡¹èƒŒæ™¯è‰²
+                CornerRadius = 6,                       // åœ†è§’åŠå¾„ï¼ˆ6pxï¼‰
+                ItemHeight = SY(22)                     // é€‰é¡¹é«˜åº¦ï¼ˆ22px * DPIç¼©æ”¾ï¼‰
             };
             cboGroup = darkCbo;
-            cboGroup.Items.Add("È«²¿");                // Ä¬ÈÏÑ¡Ïî
-            cboGroup.SelectedIndex = 0;                // Ä¬ÈÏÑ¡ÖĞ"È«²¿"
-            cboGroup.SelectedIndexChanged += CboGroup_SelectedIndexChanged; // °ó¶¨·Ö×éÉ¸Ñ¡ÊÂ¼ş
+            cboGroup.Items.Add("å…¨éƒ¨");                // é»˜è®¤é€‰é¡¹
+            cboGroup.SelectedIndex = 0;                // é»˜è®¤é€‰ä¸­"å…¨éƒ¨"
+            cboGroup.SelectedIndexChanged += CboGroup_SelectedIndexChanged; // ç»‘å®šåˆ†ç»„ç­›é€‰äº‹ä»¶
             cboGroupHost.Controls.Add(cboGroup);
             searchPanelRef.Controls.Add(cboGroupHost);
 
-            // ·Ö×éÉ¸Ñ¡±êÇ©£¨"·Ö×é:"£©
+            // åˆ†ç»„ç­›é€‰æ ‡ç­¾ï¼ˆ"åˆ†ç»„:"ï¼‰
             Label lblGroup = new Label
             {
-                Text = "·Ö×é:",
-                Font = GetFont(SF(8.5f)),     // ×ÖÌå£¨8.5pt * DPIËõ·Å£©
+                Text = "åˆ†ç»„:",
+                Font = GetFont(SF(8.5f)),     // å­—ä½“ï¼ˆ8.5pt * DPIç¼©æ”¾ï¼‰
                 ForeColor = theme.TextPrimary,
                 AutoSize = true,
                 Anchor = AnchorStyles.Top | AnchorStyles.Left,
-                Visible = false,               // Ä¬ÈÏÒş²Ø£¨ÓĞ·Ö×éÊ±ÏÔÊ¾£©
+                Visible = false,               // é»˜è®¤éšè—ï¼ˆæœ‰åˆ†ç»„æ—¶æ˜¾ç¤ºï¼‰
                 TextAlign = ContentAlignment.MiddleRight
             };
             lblGroup.Height = SY(26);
-            lblGroup.Top = (SY(38) - SY(26)) / 2; // ´¹Ö±¾ÓÖĞ
+            lblGroup.Top = (SY(38) - SY(26)) / 2; // å‚ç›´å±…ä¸­
             lblGroupFilter = lblGroup;
             searchPanelRef.Controls.Add(lblGroup);
 
-            // ========== ËÑË÷¿òÔ²½ÇÈİÆ÷ ==========
-            // [Î»ÖÃ] (98, ´¹Ö±¾ÓÖĞ) [´óĞ¡] 40x26px [±³¾°] Ö÷Ìâ±íÃæÉ«
-            // [ÄÚ²¿] TextBox£¨ÎŞ±ß¿ò£©+ Ô²½Ç±ß¿ò×Ô»æ
+            // ========== æœç´¢æ¡†åœ†è§’å®¹å™¨ ==========
+            // [ä½ç½®] (98, å‚ç›´å±…ä¸­) [å¤§å°] 40x26px [èƒŒæ™¯] ä¸»é¢˜è¡¨é¢è‰²
+            // [å†…éƒ¨] TextBoxï¼ˆæ— è¾¹æ¡†ï¼‰+ åœ†è§’è¾¹æ¡†è‡ªç»˜
             Panel searchBoxHost = new Panel
             {
-                Location = new Point(98, (SY(38) - SY(26)) / 2), // Î»ÓÚËÑË÷±êÇ©ÓÒ²à
+                Location = new Point(98, (SY(38) - SY(26)) / 2), // ä½äºæœç´¢æ ‡ç­¾å³ä¾§
                 Anchor = AnchorStyles.Top | AnchorStyles.Left,
-                Size = new Size(40, SY(26)),                     // ³õÊ¼´óĞ¡£¨40x26px£©
-                BackColor = theme.Surface                        // ±³¾°É«
+                Size = new Size(40, SY(26)),                     // åˆå§‹å¤§å°ï¼ˆ40x26pxï¼‰
+                BackColor = theme.Surface                        // èƒŒæ™¯è‰²
             };
             searchBoxHostRef = searchBoxHost;
             searchPanelRef.Controls.Add(searchBoxHost);
 
-            // ËÑË÷ÊäÈë¿ò£¨ÎŞ±ß¿ò£¬Ç¶ÈëÔ²½ÇÈİÆ÷ÄÚ£©
+            // æœç´¢è¾“å…¥æ¡†ï¼ˆæ— è¾¹æ¡†ï¼ŒåµŒå…¥åœ†è§’å®¹å™¨å†…ï¼‰
             TextBox txtSearch = new TextBox
             {
-                Font = GetFont(SF(8f)),              // ×ÖÌå£¨8pt * DPIËõ·Å£©
-                BorderStyle = BorderStyle.None,       // ÎŞ±ß¿ò£¨ÓÉÈİÆ÷»æÖÆÔ²½Ç±ß¿ò£©
-                Location = new Point(18, SY(2)),      // ÄÚ²¿Æ«ÒÆ£¨×ó18px,ÉÏ2px£©
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, // ×óÓÒ×ÔÊÊÓ¦
-                Width = searchBoxHost.Width - 20,    // ¿í¶È£¨ÈİÆ÷¿í¶È-20px£©
-                Height = SY(18),                     // ¸ß¶È£¨18px * DPIËõ·Å£©
-                Text = "ÊäÈëËÑË÷ÄÚÈİ£¬°´ÏÂ»Ø³µ¼üËÑË÷", // Õ¼Î»ÌáÊ¾ÎÄ×Ö
-                ForeColor = theme.TextSecondary,     // Õ¼Î»ÎÄ×ÖÑÕÉ«£¨´ÎÒªÎÄ×ÖÉ«£©
-                BackColor = theme.Surface            // ±³¾°É«
+                Font = GetFont(SF(8f)),              // å­—ä½“ï¼ˆ8pt * DPIç¼©æ”¾ï¼‰
+                BorderStyle = BorderStyle.None,       // æ— è¾¹æ¡†ï¼ˆç”±å®¹å™¨ç»˜åˆ¶åœ†è§’è¾¹æ¡†ï¼‰
+                Location = new Point(18, SY(2)),      // å†…éƒ¨åç§»ï¼ˆå·¦18px,ä¸Š2pxï¼‰
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, // å·¦å³è‡ªé€‚åº”
+                Width = searchBoxHost.Width - 20,    // å®½åº¦ï¼ˆå®¹å™¨å®½åº¦-20pxï¼‰
+                Height = SY(18),                     // é«˜åº¦ï¼ˆ18px * DPIç¼©æ”¾ï¼‰
+                Text = "è¾“å…¥æœç´¢å†…å®¹ï¼ŒæŒ‰ä¸‹å›è½¦é”®æœç´¢", // å ä½æç¤ºæ–‡å­—
+                ForeColor = theme.TextSecondary,     // å ä½æ–‡å­—é¢œè‰²ï¼ˆæ¬¡è¦æ–‡å­—è‰²ï¼‰
+                BackColor = theme.Surface            // èƒŒæ™¯è‰²
             };
             txtSearchBox = txtSearch;
             searchBoxHost.Controls.Add(txtSearch);
 
-            // ÒÆ³ıÏÂÀ­¿òµÄÏµÍ³Ä¬ÈÏÖ÷ÌâÑùÊ½£¨Ê¹ÆäÊ¹ÓÃ×Ô¶¨Òå»æÖÆ£©
+            // ç§»é™¤ä¸‹æ‹‰æ¡†çš„ç³»ç»Ÿé»˜è®¤ä¸»é¢˜æ ·å¼ï¼ˆä½¿å…¶ä½¿ç”¨è‡ªå®šä¹‰ç»˜åˆ¶ï¼‰
             cboGroup.HandleCreated += (s, e) =>
             {
                 SetWindowTheme(cboGroup.Handle, "", "");
             };
 
-            // ========== ËÑË÷¿ò½¹µã´¦ÀíÓëÔ²½Ç±ß¿ò»æÖÆ ==========
-            bool searchFocus = false; // ËÑË÷¿ò¾Û½¹×´Ì¬±êÖ¾
+            // ========== æœç´¢æ¡†ç„¦ç‚¹å¤„ç†ä¸åœ†è§’è¾¹æ¡†ç»˜åˆ¶ ==========
+            bool searchFocus = false; // æœç´¢æ¡†èšç„¦çŠ¶æ€æ ‡å¿—
 
-            // ËÑË÷¿ò»ñÈ¡½¹µã
+            // æœç´¢æ¡†è·å–ç„¦ç‚¹
             txtSearch.GotFocus += (s, e) =>
             {
                 searchFocus = true;
-                searchBoxHost.Invalidate(); // ´¥·¢ÖØ»æ£¨¸üĞÂ±ß¿òÑÕÉ«£©
-                // Çå¿ÕÕ¼Î»ÌáÊ¾ÎÄ×Ö£¬¸ÄÎªÖ÷ÎÄ×ÖÉ«
-                if (txtSearch.Text == "ÊäÈëËÑË÷ÄÚÈİ£¬°´ÏÂ»Ø³µ¼üËÑË÷")
+                searchBoxHost.Invalidate(); // è§¦å‘é‡ç»˜ï¼ˆæ›´æ–°è¾¹æ¡†é¢œè‰²ï¼‰
+                // æ¸…ç©ºå ä½æç¤ºæ–‡å­—ï¼Œæ”¹ä¸ºä¸»æ–‡å­—è‰²
+                if (txtSearch.Text == "è¾“å…¥æœç´¢å†…å®¹ï¼ŒæŒ‰ä¸‹å›è½¦é”®æœç´¢")
                 {
                     txtSearch.Text = "";
                     txtSearch.ForeColor = theme.TextPrimary;
                 }
             };
 
-            // ËÑË÷¿òÊ§È¥½¹µã
+            // æœç´¢æ¡†å¤±å»ç„¦ç‚¹
             txtSearch.LostFocus += (s, e) =>
             {
                 searchFocus = false;
-                searchBoxHost.Invalidate(); // ´¥·¢ÖØ»æ£¨»Ö¸´±ß¿òÑÕÉ«£©
-                // »Ö¸´Õ¼Î»ÌáÊ¾ÎÄ×Ö£¬¸ÄÎª´ÎÒªÎÄ×ÖÉ«
+                searchBoxHost.Invalidate(); // è§¦å‘é‡ç»˜ï¼ˆæ¢å¤è¾¹æ¡†é¢œè‰²ï¼‰
+                // æ¢å¤å ä½æç¤ºæ–‡å­—ï¼Œæ”¹ä¸ºæ¬¡è¦æ–‡å­—è‰²
                 if (string.IsNullOrWhiteSpace(txtSearch.Text))
                 {
-                    txtSearch.Text = "ÊäÈëËÑË÷ÄÚÈİ£¬°´ÏÂ»Ø³µ¼üËÑË÷";
+                    txtSearch.Text = "è¾“å…¥æœç´¢å†…å®¹ï¼ŒæŒ‰ä¸‹å›è½¦é”®æœç´¢";
                     txtSearch.ForeColor = theme.TextSecondary;
                 }
             };
 
-            // ËÑË÷¿òÔ²½Ç±ß¿ò»æÖÆ£¨¾Û½¹Ê±±ß¿ò±ä´Ö±äÁÁ£©
+            // æœç´¢æ¡†åœ†è§’è¾¹æ¡†ç»˜åˆ¶ï¼ˆèšç„¦æ—¶è¾¹æ¡†å˜ç²—å˜äº®ï¼‰
             searchBoxHost.Paint += (s, e) =>
             {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias; // ¿¹¾â³İ
+                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias; // æŠ—é”¯é½¿
                 Rectangle rect = new Rectangle(0, 0, searchBoxHost.Width - 1, searchBoxHost.Height - 1);
-                // ¾Û½¹Ê±Ê¹ÓÃÖ÷ÌâÖ÷É«£¨±ß¿ò1.5px£©£¬Î´¾Û½¹Ê±Ê¹ÓÃ±ß¿òÉ«£¨±ß¿ò1px£©
+                // èšç„¦æ—¶ä½¿ç”¨ä¸»é¢˜ä¸»è‰²ï¼ˆè¾¹æ¡†1.5pxï¼‰ï¼Œæœªèšç„¦æ—¶ä½¿ç”¨è¾¹æ¡†è‰²ï¼ˆè¾¹æ¡†1pxï¼‰
                 Color bc = searchFocus ? theme.Primary : theme.Border;
-                using (GraphicsPath sp = GetRoundedPath(rect, 6)) // Ô²½Ç°ë¾¶6px
+                using (GraphicsPath sp = GetRoundedPath(rect, 6)) // åœ†è§’åŠå¾„6px
                 {
                     using (SolidBrush br = new SolidBrush(theme.Surface))
-                        e.Graphics.FillPath(br, sp); // Ìî³ä±³¾°
+                        e.Graphics.FillPath(br, sp); // å¡«å……èƒŒæ™¯
                     using (Pen pen = new Pen(bc, searchFocus ? 1.5f : 1f))
-                        e.Graphics.DrawPath(pen, sp); // »æÖÆ±ß¿ò
+                        e.Graphics.DrawPath(pen, sp); // ç»˜åˆ¶è¾¹æ¡†
                 }
             };
 
-            // ¸üĞÂËÑË÷¿òRegion£¨ÒÑ·ÏÆú£¬Ô²½ÇĞ§¹ûÍ¨¹ıPaintÊÂ¼şÊµÏÖ£©
+            // æ›´æ–°æœç´¢æ¡†Regionï¼ˆå·²åºŸå¼ƒï¼Œåœ†è§’æ•ˆæœé€šè¿‡Paintäº‹ä»¶å®ç°ï¼‰
             void UpdateSearchBoxRegion()
             {
-                // ²»ÔÙÊ¹ÓÃRegion²Ã¼ô£¬±ÜÃâ²Ãµô×Ó¿Ø¼şTextBox
-                // Ô²½ÇĞ§¹ûÍ¨¹ıPaintÊÂ¼ş»æÖÆ±ß¿òÊµÏÖ
+                // ä¸å†ä½¿ç”¨Regionè£å‰ªï¼Œé¿å…è£æ‰å­æ§ä»¶TextBox
+                // åœ†è§’æ•ˆæœé€šè¿‡Paintäº‹ä»¶ç»˜åˆ¶è¾¹æ¡†å®ç°
             }
             UpdateSearchBoxRegion();
 
-            // ¸üĞÂ·Ö×éÏÂÀ­¿òRegion£¨Ô²½Ç²Ã¼ô£©
+            // æ›´æ–°åˆ†ç»„ä¸‹æ‹‰æ¡†Regionï¼ˆåœ†è§’è£å‰ªï¼‰
             void UpdateCboGroupRegion()
             {
                 if (cboGroupHost.Width > 0 && cboGroupHost.Height > 0)
                 {
                     using (GraphicsPath path = GetRoundedPath(new Rectangle(0, 0, cboGroupHost.Width - 1, cboGroupHost.Height - 1), 6))
                     {
-                        cboGroupHost.Region = new Region(path); // ²Ã¼ôÎªÔ²½Ç¾ØĞÎ
+                        cboGroupHost.Region = new Region(path); // è£å‰ªä¸ºåœ†è§’çŸ©å½¢
                     }
                 }
             }
@@ -8558,13 +8561,13 @@ namespace IPTVLiveChecker
                 ShowImageMargin = true,
                 BackColor = theme.Surface
             };
-            ToolStripMenuItem miCut = new ToolStripMenuItem("¼ôÇĞ", null, (s, e) => txtSearch.Cut()) { ShortcutKeyDisplayString = "Ctrl+X" };
-            ToolStripMenuItem miCopy = new ToolStripMenuItem("¸´ÖÆ", null, (s, e) => txtSearch.Copy()) { ShortcutKeyDisplayString = "Ctrl+C" };
-            ToolStripMenuItem miPaste = new ToolStripMenuItem("Õ³Ìù", null, (s, e) =>
+            ToolStripMenuItem miCut = new ToolStripMenuItem("å‰ªåˆ‡", null, (s, e) => txtSearch.Cut()) { ShortcutKeyDisplayString = "Ctrl+X" };
+            ToolStripMenuItem miCopy = new ToolStripMenuItem("å¤åˆ¶", null, (s, e) => txtSearch.Copy()) { ShortcutKeyDisplayString = "Ctrl+C" };
+            ToolStripMenuItem miPaste = new ToolStripMenuItem("ç²˜è´´", null, (s, e) =>
             {
                 if (Clipboard.ContainsText())
                 {
-                    if (txtSearch.Text == "ÊäÈëËÑË÷ÄÚÈİ£¬°´ÏÂ»Ø³µ¼üËÑË÷")
+                    if (txtSearch.Text == "è¾“å…¥æœç´¢å†…å®¹ï¼ŒæŒ‰ä¸‹å›è½¦é”®æœç´¢")
                     {
                         txtSearch.Text = "";
                         txtSearch.ForeColor = theme.TextPrimary;
@@ -8573,7 +8576,7 @@ namespace IPTVLiveChecker
                 }
             })
             { ShortcutKeyDisplayString = "Ctrl+V" };
-            ToolStripMenuItem miClear = new ToolStripMenuItem("Çå¿Õ", null, (s, e) =>
+            ToolStripMenuItem miClear = new ToolStripMenuItem("æ¸…ç©º", null, (s, e) =>
             {
                 txtSearch.Clear();
                 txtSearch.ForeColor = theme.TextSecondary;
@@ -8582,7 +8585,7 @@ namespace IPTVLiveChecker
             txtMenu.Opening += (s, e) =>
             {
                 bool hasSel = txtSearch.SelectionLength > 0;
-                bool canRead = !string.IsNullOrEmpty(txtSearch.Text) && txtSearch.Text != "ÊäÈëËÑË÷ÄÚÈİ£¬°´ÏÂ»Ø³µ¼üËÑË÷";
+                bool canRead = !string.IsNullOrEmpty(txtSearch.Text) && txtSearch.Text != "è¾“å…¥æœç´¢å†…å®¹ï¼ŒæŒ‰ä¸‹å›è½¦é”®æœç´¢";
                 miCut.Enabled = hasSel && !txtSearch.ReadOnly;
                 miCopy.Enabled = hasSel;
                 miPaste.Enabled = Clipboard.ContainsText() && !txtSearch.ReadOnly;
@@ -8590,7 +8593,7 @@ namespace IPTVLiveChecker
             };
             txtSearch.ContextMenuStrip = txtMenu;
 
-            // ËÑË÷À¸µ×²¿·Ö¸ôÏß
+            // æœç´¢æ åº•éƒ¨åˆ†éš”çº¿
             Panel searchSep = new Panel
             {
                 Dock = DockStyle.Bottom,
@@ -8599,7 +8602,7 @@ namespace IPTVLiveChecker
             };
             searchPanelRef.Controls.Add(searchSep);
 
-            // ---- ×´Ì¬À¸(Dock=Top,ÔÚsearchPanelRefÉÏ·½Add) Ò©ÍèĞÎ×´ ----
+            // ---- çŠ¶æ€æ (Dock=Top,åœ¨searchPanelRefä¸Šæ–¹Add) è¯ä¸¸å½¢çŠ¶ ----
             statusBarContainer = new Panel
             {
                 Dock = DockStyle.Top,
@@ -8628,7 +8631,7 @@ namespace IPTVLiveChecker
 
             lblDetected = new Label
             {
-                Text = "ÒÑ¼ì²â: 0/0",
+                Text = "å·²æ£€æµ‹: 0/0",
                 Font = GetFont(SF(9.5f)),
                 ForeColor = theme.TextPrimary,
                 AutoSize = true,
@@ -8638,7 +8641,7 @@ namespace IPTVLiveChecker
 
             lblAvailable = new Label
             {
-                Text = "¿ÉÓÃ: 0",
+                Text = "å¯ç”¨: 0",
                 Font = GetFont(SF(9.5f)),
                 ForeColor = theme.TextPrimary,
                 AutoSize = true,
@@ -8648,7 +8651,7 @@ namespace IPTVLiveChecker
 
             lblProgressText = new Label
             {
-                Text = "¼ì²â½ø¶È:",
+                Text = "æ£€æµ‹è¿›åº¦:",
                 Font = GetFont(SF(9.5f)),
                 ForeColor = theme.TextPrimary,
                 AutoSize = true,
@@ -8685,12 +8688,12 @@ namespace IPTVLiveChecker
             statusBarContainer.Controls.Add(statusBarRef);
             LayoutStatusBar(statusBarRef);
 
-            // °´DockË³ĞòÌí¼Óµ½mainArea(´ÓÏÂµ½ÉÏ:gridContainer -> statusBarContainer -> searchPanel)
+            // æŒ‰Docké¡ºåºæ·»åŠ åˆ°mainArea(ä»ä¸‹åˆ°ä¸Š:gridContainer -> statusBarContainer -> searchPanel)
             mainArea.Controls.Add(gridContainerRef);
             mainArea.Controls.Add(statusBarContainer);
             mainArea.Controls.Add(searchPanelRef);
 
-            // ==================== ÖĞ¼ä:²Ù×÷°´Å¥Çø(Dock=Left,µÚ¶ş¸öAdd) ====================
+            // ==================== ä¸­é—´:æ“ä½œæŒ‰é’®åŒº(Dock=Left,ç¬¬äºŒä¸ªAdd) ====================
             actionArea = new Panel
             {
                 Dock = DockStyle.Left,
@@ -8703,10 +8706,10 @@ namespace IPTVLiveChecker
             int btnW = SX(126);
             int leftX = SX(12);
 
-            // 1. Ñ¡Ôñm3u/txt°´Å¥
+            // 1. é€‰æ‹©m3u/txtæŒ‰é’®
             Button btnSelectFile = new Button
             {
-                Text = "??Ñ¡Ôñm3u/txt",
+                Text = "ğŸ“„é€‰æ‹©m3u/txt",
                 Location = new Point(leftX, ay),
                 Size = new Size(btnW, SY(32)),
                 FlatStyle = FlatStyle.Flat,
@@ -8734,7 +8737,7 @@ namespace IPTVLiveChecker
                     g.FillRectangle(brush, iconX + 7, iconY + 1, 3, 2);
                 }
             };
-            btnSelectFile.FlatAppearance.MouseOverBackColor = theme.Name == "ÉîÉ«" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(248, 242, 255);
+            btnSelectFile.FlatAppearance.MouseOverBackColor = theme.Name == "æ·±è‰²" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(248, 242, 255);
             btnSelectFile.FlatAppearance.BorderColor = theme.Primary;
             btnSelectFile.FlatAppearance.BorderSize = 1;
             btnSelectFile.Click += BtnSelectFile_Click;
@@ -8742,10 +8745,10 @@ namespace IPTVLiveChecker
             StyleRoundButton(btnSelectFile, 8, theme.Primary, 1, "border");
             ay += SY(32) + SY(10);
 
-            // 2. ¿ªÊ¼¼ì²â°´Å¥
+            // 2. å¼€å§‹æ£€æµ‹æŒ‰é’®
             btnStartDetect = new Button
             {
-                Text = "??¿ªÊ¼¼ì²â",
+                Text = "âš¡ï¸å¼€å§‹æ£€æµ‹",
                 Location = new Point(leftX, ay),
                 Size = new Size(btnW, SY(36)),
                 FlatStyle = FlatStyle.Flat,
@@ -8794,7 +8797,7 @@ namespace IPTVLiveChecker
 
             btnStopDetect = new Button
             {
-                Text = "? Í£Ö¹¼ì²â",
+                Text = "â¹ åœæ­¢æ£€æµ‹",
                 Location = new Point(leftX, ay),
                 Size = new Size(btnW, SY(32)),
                 FlatStyle = FlatStyle.Flat,
@@ -8814,13 +8817,13 @@ namespace IPTVLiveChecker
             btnStopDetect.FlatAppearance.BorderSize = 0;
             btnStopDetect.Click += (s, e) =>
             {
-                var result = DarkMessageBox.Show("È·¶¨ÒªÍ£Ö¹¼ì²âÂğ£¿ÒÑ¼ì²âµÄÊı¾İ½«±»±£Áô¡£", "Í£Ö¹¼ì²â", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                var result = DarkMessageBox.Show("ç¡®å®šè¦åœæ­¢æ£€æµ‹å—ï¼Ÿå·²æ£€æµ‹çš„æ•°æ®å°†è¢«ä¿ç•™ã€‚", "åœæ­¢æ£€æµ‹", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == DialogResult.Yes)
                 {
                     cts?.Cancel();
                     isDetecting = false;
                     isPaused = false;
-                    btnStartDetect.Text = "? ¿ªÊ¼¼ì²â";
+                    btnStartDetect.Text = "âº å¼€å§‹æ£€æµ‹";
                     btnStartDetect.BackColor = theme.InfoColor;
                     btnStartDetect.ForeColor = Color.White;
                     btnStopDetect.Enabled = false;
@@ -8831,11 +8834,11 @@ namespace IPTVLiveChecker
             StyleRoundButton(btnStopDetect, 8, theme.ErrorColor, 0, "error");
             ay += SY(32) + SY(10);
 
-            // 4. µ¼³ö°´Å¥
+            // 4. å¯¼å‡ºæŒ‰é’®
             Color exportBtnColor = Color.FromArgb(0xFF, 0x00, 0xFF);
             btnExport = new Button
             {
-                Text = "??ºÏ²¢µ¼³ö",
+                Text = "ğŸ“¤åˆå¹¶å¯¼å‡º",
                 Location = new Point(leftX, ay),
                 Size = new Size(btnW, SY(34)),
                 FlatStyle = FlatStyle.Flat,
@@ -8853,10 +8856,10 @@ namespace IPTVLiveChecker
             StyleRoundButton(btnExport, 8, null, 0, "export");
             ay += SY(34) + SY(10);
 
-            // 5. Ö±²¥Ô´Éú³ÉÆ÷°´Å¥
+            // 5. ç›´æ’­æºç”Ÿæˆå™¨æŒ‰é’®
             btnScanSource = new Button
             {
-                Text = "??Ô´Éú³ÉÆ÷",
+                Text = "ğŸ“¡æºç”Ÿæˆå™¨",
                 Location = new Point(leftX, ay),
                 Size = new Size(btnW, SY(34)),
                 FlatStyle = FlatStyle.Flat,
@@ -8878,7 +8881,7 @@ namespace IPTVLiveChecker
 
             btnParseLink = new Button
             {
-                Text = "?? ½âÎöÁ´½Ó",
+                Text = "ğŸ”— è§£æé“¾æ¥",
                 Location = new Point(leftX, ay),
                 Size = new Size(btnW, SY(34)),
                 FlatStyle = FlatStyle.Flat,
@@ -8903,10 +8906,10 @@ namespace IPTVLiveChecker
             {
                 if (!parseIsRunning && !parseIsPaused)
                 {
-                    var pendingChannels = allChannels.Where(c => c.Group == "½âÎö´ı´¦Àí" && c.Status == "´ı½âÎö").ToList();
+                    var pendingChannels = allChannels.Where(c => c.Group == "è§£æå¾…å¤„ç†" && c.Status == "å¾…è§£æ").ToList();
                     if (pendingChannels.Count == 0)
                     {
-                        DarkMessageBox.Show("Ã»ÓĞ´ı½âÎöµÄÁ´½Ó", "½âÎöÁ´½Ó", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DarkMessageBox.Show("æ²¡æœ‰å¾…è§£æçš„é“¾æ¥", "è§£æé“¾æ¥", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return;
                     }
                     parseIsRunning = true;
@@ -8914,7 +8917,7 @@ namespace IPTVLiveChecker
                     parseSuccessCount = 0;
                     parseTotalCount = pendingChannels.Count;
                     parseCts = new System.Threading.CancellationTokenSource();
-                    btnParseLink.Text = "? ÔİÍ£";
+                    btnParseLink.Text = "â¸ æš‚åœ";
                     btnParseLink.BackColor = Color.FromArgb(251, 146, 60);
 
                     DateTime parseTime = DateTime.Now;
@@ -8929,7 +8932,7 @@ namespace IPTVLiveChecker
                             }
                         }
                         if (parseCts.Token.IsCancellationRequested) break;
-                        if (channel.Status != "´ı½âÎö") continue;
+                        if (channel.Status != "å¾…è§£æ") continue;
 
                         bool parsedSuccess = false;
                         try
@@ -8949,7 +8952,7 @@ namespace IPTVLiveChecker
                                     {
                                         parseSuccessCount++;
                                         AddChannelToList(content, channel.Url, parseTime);
-                                        channel.Status = "ÒÑ½âÎö";
+                                        channel.Status = "å·²è§£æ";
                                         channel.ParseDateTime = parseTime;
                                         parsedSuccess = true;
                                     }
@@ -8961,7 +8964,7 @@ namespace IPTVLiveChecker
                         {
                             failedChannels.Add(channel);
                         }
-                        btnParseLink.Text = $"? ÔİÍ£ ({parseSuccessCount}/{parseTotalCount})";
+                        btnParseLink.Text = $"â¸ æš‚åœ ({parseSuccessCount}/{parseTotalCount})";
                     }
                     foreach (var failed in failedChannels)
                     {
@@ -8972,7 +8975,7 @@ namespace IPTVLiveChecker
                     parseIsPaused = false;
                     if (parseCts != null) parseCts.Dispose();
                     parseCts = null;
-                    btnParseLink.Text = "?? ½âÎöÁ´½Ó";
+                    btnParseLink.Text = "ğŸ”— è§£æé“¾æ¥";
                     btnParseLink.BackColor = Color.FromArgb(147, 51, 234);
                     RefreshGrid();
                     UpdateEmptyState();
@@ -8981,7 +8984,7 @@ namespace IPTVLiveChecker
                 else if (parseIsRunning && !parseIsPaused)
                 {
                     parseIsPaused = true;
-                    btnParseLink.Text = "? Í£Ö¹";
+                    btnParseLink.Text = "â¹ åœæ­¢";
                     btnParseLink.BackColor = Color.FromArgb(239, 68, 68);
                 }
                 else if (parseIsRunning && parseIsPaused)
@@ -8994,7 +8997,7 @@ namespace IPTVLiveChecker
                         parseCts.Dispose();
                     }
                     parseCts = null;
-                    btnParseLink.Text = "?? ½âÎöÁ´½Ó";
+                    btnParseLink.Text = "ğŸ”— è§£æé“¾æ¥";
                     btnParseLink.BackColor = Color.FromArgb(147, 51, 234);
                     RefreshGrid();
                     UpdateEmptyState();
@@ -9003,12 +9006,12 @@ namespace IPTVLiveChecker
             };
             actionArea.Controls.Add(btnParseLink);
             StyleRoundButton(btnParseLink, 8, Color.FromArgb(147, 51, 234), 0, "parse");
-            ay += SY(34) + SY(26); // °´Å¥¸ß¶È 34 + ¼ä¾à 26 = 60£¬Ê¹ tipBox Î»ÓÚ Y=160
+            ay += SY(34) + SY(26); // æŒ‰é’®é«˜åº¦ 34 + é—´è· 26 = 60ï¼Œä½¿ tipBox ä½äº Y=160
 
-            // 6. ÌáÊ¾¿ò
+            // 6. æç¤ºæ¡†
             int tipW = btnW;
-            int tipRadius = 8; // ÌáÊ¾¿òÔ²½Ç°ë¾¶
-            string tipText = "1. ÁĞ±íÎ»ÖÃ£¬µã»÷ÓÒ¼ü·¢ÏÖ¸ü¶à¹¦ÄÜ\r\n2. Ë«»÷Ãû³Æ£¬ÖØÃüÃû£¬Ë«»÷Á´½Ó£¬ĞŞ¸´Ö±²¥Ô´¡£\r\n3. ´ò¿ªÉèÖÃ·¢ÏÖ¸ü¶à¹¦ÄÜ¡£";
+            int tipRadius = 8; // æç¤ºæ¡†åœ†è§’åŠå¾„
+            string tipText = "1. åˆ—è¡¨ä½ç½®ï¼Œç‚¹å‡»å³é”®å‘ç°æ›´å¤šåŠŸèƒ½\r\n2. åŒå‡»åç§°ï¼Œé‡å‘½åï¼ŒåŒå‡»é“¾æ¥ï¼Œä¿®å¤ç›´æ’­æºã€‚\r\n3. æ‰“å¼€è®¾ç½®å‘ç°æ›´å¤šåŠŸèƒ½ã€‚";
             Font tipContentFont = GetFont(9f);
             SizeF tipTextSize;
             using (Graphics g = CreateGraphics())
@@ -9027,7 +9030,7 @@ namespace IPTVLiveChecker
             };
             Label tipTitle = new Label
             {
-                Text = "ÌáÊ¾",
+                Text = "æç¤º",
                 Font = GetFont(9.5f, FontStyle.Bold),
                 ForeColor = theme.TextPrimary,
                 AutoSize = true,
@@ -9052,10 +9055,10 @@ namespace IPTVLiveChecker
                 Rectangle rect = new Rectangle(0, 0, tipBox.Width - 1, tipBox.Height - 1);
                 using (GraphicsPath path = RoundedRectPath(rect, tipRadius))
                 {
-                    // »æÖÆ±³¾°
+                    // ç»˜åˆ¶èƒŒæ™¯
                     using (SolidBrush bgBrush = new SolidBrush(theme.TipBg))
                         e.Graphics.FillPath(bgBrush, path);
-                    // »æÖÆ±ß¿ò
+                    // ç»˜åˆ¶è¾¹æ¡†
                     using (Pen pen = new Pen(theme.Border))
                         e.Graphics.DrawPath(pen, path);
                 }
@@ -9090,7 +9093,7 @@ namespace IPTVLiveChecker
 
             UpdateActionButtonsVisibility();
 
-            // ÔÚactionAreaºÍmainAreaÖ®¼äÌí¼Ó·Ö¸ôÏß
+            // åœ¨actionAreaå’ŒmainAreaä¹‹é—´æ·»åŠ åˆ†éš”çº¿
             actionSepRef = new Panel
             {
                 Dock = DockStyle.Left,
@@ -9105,7 +9108,7 @@ namespace IPTVLiveChecker
             outerWrap.Controls.Add(bottomBarRef);
             outerWrap.Controls.Add(titleBarPanel);
 
-            // ÓÒ¼ü²Ëµ¥
+            // å³é”®èœå•
             dataGridViewContextMenu = new ContextMenuStrip();
             dataGridViewContextMenu.Font = GetFont(SF(9f));
             dataGridViewContextMenu.Renderer = new ToolStripProfessionalRenderer(new MenuColorTable(IsDarkColor(theme.Bg)));
@@ -9128,15 +9131,15 @@ namespace IPTVLiveChecker
             Image icoFixUrl = CreateMenuIcon("fix", Color.MediumSeaGreen);
             Image icoFixAll = CreateMenuIcon("fixAll", Color.DarkCyan);
 
-            ToolStripMenuItem pasteItem = new ToolStripMenuItem("´Ó¼ôÌù°åÕ³ÌùÁ´½Ó", icoPaste, (s, e) => PasteFromClipboard());
+            ToolStripMenuItem pasteItem = new ToolStripMenuItem("ä»å‰ªè´´æ¿ç²˜è´´é“¾æ¥", icoPaste, (s, e) => PasteFromClipboard());
             pasteItem.ShortcutKeyDisplayString = "Ctrl+V";
             dataGridViewContextMenu.Items.Add(pasteItem);
 
-            // ¼ì²âÄ£Ê½×Ó²Ëµ¥
-            ToolStripMenuItem detectMenuItem = new ToolStripMenuItem("¼ì²âÄ£Ê½", icoDetect);
-            ToolStripMenuItem modeNormal = new ToolStripMenuItem("ÆÕÍ¨Ä£Ê½(Öğ¸ö¼ì²â)");
-            ToolStripMenuItem modeFast = new ToolStripMenuItem("¼«ËÙÄ£Ê½(5²¢·¢)");
-            ToolStripMenuItem modeConcurrent = new ToolStripMenuItem("²¢·¢Ä£Ê½(10²¢·¢)");
+            // æ£€æµ‹æ¨¡å¼å­èœå•
+            ToolStripMenuItem detectMenuItem = new ToolStripMenuItem("æ£€æµ‹æ¨¡å¼", icoDetect);
+            ToolStripMenuItem modeNormal = new ToolStripMenuItem("æ™®é€šæ¨¡å¼(é€ä¸ªæ£€æµ‹)");
+            ToolStripMenuItem modeFast = new ToolStripMenuItem("æé€Ÿæ¨¡å¼(5å¹¶å‘)");
+            ToolStripMenuItem modeConcurrent = new ToolStripMenuItem("å¹¶å‘æ¨¡å¼(10å¹¶å‘)");
             modeNormal.Click += (s, e) => { detectConcurrency = 1; modeNormal.Checked = true; modeFast.Checked = false; modeConcurrent.Checked = false; };
             modeFast.Click += (s, e) => { detectConcurrency = 5; modeNormal.Checked = false; modeFast.Checked = true; modeConcurrent.Checked = false; };
             modeConcurrent.Click += (s, e) => { detectConcurrency = 10; modeNormal.Checked = false; modeFast.Checked = false; modeConcurrent.Checked = true; };
@@ -9146,38 +9149,38 @@ namespace IPTVLiveChecker
             detectMenuItem.DropDownItems.Add(modeConcurrent);
             dataGridViewContextMenu.Items.Add(detectMenuItem);
 
-            // ÅÅĞò×Ó²Ëµ¥
-            ToolStripMenuItem sortMenuItem = new ToolStripMenuItem("ÅÅĞò", icoSort);
-            sortMenuItem.DropDownItems.Add("°´Ãû³ÆÅÅĞò", null, (s, e) => { allChannels.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal)); RefreshGrid(); });
-            sortMenuItem.DropDownItems.Add("°´ÑÓ³ÙÅÅĞò", null, (s, e) => { allChannels.Sort((a, b) => { int ta = ParseSpeed(a.Speed), tb = ParseSpeed(b.Speed); return ta.CompareTo(tb); }); RefreshGrid(); });
-            sortMenuItem.DropDownItems.Add("°´×´Ì¬ÅÅĞò", null, (s, e) => { allChannels.Sort((a, b) => string.Compare(a.Status, b.Status, StringComparison.Ordinal)); RefreshGrid(); });
-            sortMenuItem.DropDownItems.Add("°´·Ö×éÅÅĞò", null, (s, e) => { allChannels.Sort((a, b) => string.Compare(a.Group, b.Group, StringComparison.Ordinal)); RefreshGrid(); });
+            // æ’åºå­èœå•
+            ToolStripMenuItem sortMenuItem = new ToolStripMenuItem("æ’åº", icoSort);
+            sortMenuItem.DropDownItems.Add("æŒ‰åç§°æ’åº", null, (s, e) => { allChannels.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal)); RefreshGrid(); });
+            sortMenuItem.DropDownItems.Add("æŒ‰å»¶è¿Ÿæ’åº", null, (s, e) => { allChannels.Sort((a, b) => { int ta = ParseSpeed(a.Speed), tb = ParseSpeed(b.Speed); return ta.CompareTo(tb); }); RefreshGrid(); });
+            sortMenuItem.DropDownItems.Add("æŒ‰çŠ¶æ€æ’åº", null, (s, e) => { allChannels.Sort((a, b) => string.Compare(a.Status, b.Status, StringComparison.Ordinal)); RefreshGrid(); });
+            sortMenuItem.DropDownItems.Add("æŒ‰åˆ†ç»„æ’åº", null, (s, e) => { allChannels.Sort((a, b) => string.Compare(a.Group, b.Group, StringComparison.Ordinal)); RefreshGrid(); });
             dataGridViewContextMenu.Items.Add(sortMenuItem);
 
-            // ²¥·Å×Ó²Ëµ¥
-            ToolStripMenuItem playMenuItem = new ToolStripMenuItem("²¥·Å", icoPlay);
-            playMenuItem.DropDownItems.Add("µÚÈı·½²¥·ÅÆ÷", null, (s, e) => { if (dgvData.SelectedRows.Count > 0) { string u = dgvData.SelectedRows[0].Cells[1].Value?.ToString(); if (!string.IsNullOrWhiteSpace(u)) PlayChannelCustom(u); } });
+            // æ’­æ”¾å­èœå•
+            ToolStripMenuItem playMenuItem = new ToolStripMenuItem("æ’­æ”¾", icoPlay);
+            playMenuItem.DropDownItems.Add("ç¬¬ä¸‰æ–¹æ’­æ”¾å™¨", null, (s, e) => { if (dgvData.SelectedRows.Count > 0) { string u = dgvData.SelectedRows[0].Cells[1].Value?.ToString(); if (!string.IsNullOrWhiteSpace(u)) PlayChannelCustom(u); } });
             playMenuItem.DropDownItems.Add(new ToolStripSeparator());
-            playMenuItem.DropDownItems.Add("ÉèÖÃµÚÈı·½²¥·ÅÆ÷Â·¾¶...", null, (s, e) => SetCustomPlayerPath());
+            playMenuItem.DropDownItems.Add("è®¾ç½®ç¬¬ä¸‰æ–¹æ’­æ”¾å™¨è·¯å¾„...", null, (s, e) => SetCustomPlayerPath());
             dataGridViewContextMenu.Items.Add(playMenuItem);
 
             dataGridViewContextMenu.Items.Add(new ToolStripSeparator());
 
-            ToolStripMenuItem copyItem = new ToolStripMenuItem("¸´ÖÆÁ´½Ó", icoCopy, (s, e) => CopyLink());
+            ToolStripMenuItem copyItem = new ToolStripMenuItem("å¤åˆ¶é“¾æ¥", icoCopy, (s, e) => CopyLink());
             copyItem.ShortcutKeyDisplayString = "Ctrl+C";
             dataGridViewContextMenu.Items.Add(copyItem);
 
-            ToolStripMenuItem copyAllItem = new ToolStripMenuItem("¸´ÖÆËùÓĞÁ´½Ó", icoCopyAll, (s, e) => CopyAllLinks());
+            ToolStripMenuItem copyAllItem = new ToolStripMenuItem("å¤åˆ¶æ‰€æœ‰é“¾æ¥", icoCopyAll, (s, e) => CopyAllLinks());
             copyAllItem.ShortcutKeyDisplayString = "Ctrl+Shift+C";
             dataGridViewContextMenu.Items.Add(copyAllItem);
 
-            ToolStripMenuItem selectAllItem = new ToolStripMenuItem("È«Ñ¡", icoSelectAll, (s, e) => SelectAllRows());
+            ToolStripMenuItem selectAllItem = new ToolStripMenuItem("å…¨é€‰", icoSelectAll, (s, e) => SelectAllRows());
             selectAllItem.ShortcutKeyDisplayString = "Ctrl+A";
             dataGridViewContextMenu.Items.Add(selectAllItem);
 
-            // ĞŞ¸´Ö±²¥Ô´×Ó²Ëµ¥
-            ToolStripMenuItem fixUrlMenuItem = new ToolStripMenuItem("ĞŞ¸´Ö±²¥Ô´", icoFixUrl);
-            ToolStripMenuItem fixSingleItem = new ToolStripMenuItem("ĞŞ¸´µ±Ç°Ö±²¥Ô´", null, (s, e) =>
+            // ä¿®å¤ç›´æ’­æºå­èœå•
+            ToolStripMenuItem fixUrlMenuItem = new ToolStripMenuItem("ä¿®å¤ç›´æ’­æº", icoFixUrl);
+            ToolStripMenuItem fixSingleItem = new ToolStripMenuItem("ä¿®å¤å½“å‰ç›´æ’­æº", null, (s, e) =>
             {
                 if (dgvData.SelectedRows.Count > 0)
                 {
@@ -9187,40 +9190,40 @@ namespace IPTVLiveChecker
                 }
                 else
                 {
-                    DarkMessageBox.Show("ÇëÏÈÑ¡ÖĞÒ»ÌõÖ±²¥Ô´£¡", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DarkMessageBox.Show("è¯·å…ˆé€‰ä¸­ä¸€æ¡ç›´æ’­æºï¼", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             });
             fixUrlMenuItem.DropDownItems.Add(fixSingleItem);
 
-            ToolStripMenuItem fixAllItem = new ToolStripMenuItem("Ò»¼üÈ«²¿ĞŞ¸´", null, (s, e) => ReplaceAllUrls());
+            ToolStripMenuItem fixAllItem = new ToolStripMenuItem("ä¸€é”®å…¨éƒ¨ä¿®å¤", null, (s, e) => ReplaceAllUrls());
             fixUrlMenuItem.DropDownItems.Add(fixAllItem);
             dataGridViewContextMenu.Items.Add(fixUrlMenuItem);
 
             dataGridViewContextMenu.Items.Add(new ToolStripSeparator());
 
-            ToolStripMenuItem renameItem = new ToolStripMenuItem("ÖØÃüÃû", icoRename, (s, e) => BeginRenameSelected());
+            ToolStripMenuItem renameItem = new ToolStripMenuItem("é‡å‘½å", icoRename, (s, e) => BeginRenameSelected());
             renameItem.ShortcutKeyDisplayString = "F2";
             dataGridViewContextMenu.Items.Add(renameItem);
 
-            ToolStripMenuItem deleteItem = new ToolStripMenuItem("É¾³ı´ËĞĞ", icoDelete, (s, e) => DeleteRow());
+            ToolStripMenuItem deleteItem = new ToolStripMenuItem("åˆ é™¤æ­¤è¡Œ", icoDelete, (s, e) => DeleteRow());
             deleteItem.ShortcutKeyDisplayString = "Del";
             dataGridViewContextMenu.Items.Add(deleteItem);
 
-            ToolStripMenuItem detailItem = new ToolStripMenuItem("²é¿´ÏêÇé", icoInfo, (s, e) => ViewDetails());
+            ToolStripMenuItem detailItem = new ToolStripMenuItem("æŸ¥çœ‹è¯¦æƒ…", icoInfo, (s, e) => ViewDetails());
             detailItem.ShortcutKeyDisplayString = "Enter";
             dataGridViewContextMenu.Items.Add(detailItem);
 
             dataGridViewContextMenu.Items.Add(new ToolStripSeparator());
 
-            ToolStripMenuItem clearInvalidItem = new ToolStripMenuItem("Çå¿ÕÎŞĞ§Á´½Ó", icoClearInv, (s, e) => ClearInvalidLinks());
+            ToolStripMenuItem clearInvalidItem = new ToolStripMenuItem("æ¸…ç©ºæ— æ•ˆé“¾æ¥", icoClearInv, (s, e) => ClearInvalidLinks());
             dataGridViewContextMenu.Items.Add(clearInvalidItem);
 
-            ToolStripMenuItem clearAllItem = new ToolStripMenuItem("Çå¿ÕËùÓĞÁĞ±í", icoClearAll, (s, e) => ClearAllLinks());
+            ToolStripMenuItem clearAllItem = new ToolStripMenuItem("æ¸…ç©ºæ‰€æœ‰åˆ—è¡¨", icoClearAll, (s, e) => ClearAllLinks());
             dataGridViewContextMenu.Items.Add(clearAllItem);
 
             dgvData.ContextMenuStrip = dataGridViewContextMenu;
 
-            // ´°¿ÚÊ×´ÎÏÔÊ¾ºóµ÷ÕûÓÒ²à±êÇ©Î»ÖÃ²¢Ë¢ĞÂÁĞ¿í
+            // çª—å£é¦–æ¬¡æ˜¾ç¤ºåè°ƒæ•´å³ä¾§æ ‡ç­¾ä½ç½®å¹¶åˆ·æ–°åˆ—å®½
             this.Shown += (s, e) =>
             {
                 CenterEmptyState();
@@ -9240,7 +9243,7 @@ namespace IPTVLiveChecker
                 UpdateCboGroupRegion();
                 UpdateStatusBarRegion();
                 searchPanelRef.Invalidate();
-                // ÑÓ³ÙÇ¿ÖÆË¢ĞÂDataGridViewÁĞ²¼¾Ö£¬½â¾öÊ×´Î´ò¿ªÁĞ¿í¼ÆËã²»ÕıÈ·µÄÎÊÌâ
+                // å»¶è¿Ÿå¼ºåˆ¶åˆ·æ–°DataGridViewåˆ—å¸ƒå±€ï¼Œè§£å†³é¦–æ¬¡æ‰“å¼€åˆ—å®½è®¡ç®—ä¸æ­£ç¡®çš„é—®é¢˜
                 var refreshTask = new Func<Task>(async () =>
                 {
                     try
@@ -9251,7 +9254,7 @@ namespace IPTVLiveChecker
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.WriteLine($"UIË¢ĞÂÒì³£: {ex.Message}");
+                        System.Diagnostics.Debug.WriteLine($"UIåˆ·æ–°å¼‚å¸¸: {ex.Message}");
                     }
                 });
                 this.BeginInvoke(new Action(() => { _ = refreshTask(); }));
@@ -9312,7 +9315,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// »æÖÆ¿Õ×´Ì¬Í¼±ê£¨ºìÉ«X£©
+        /// ç»˜åˆ¶ç©ºçŠ¶æ€å›¾æ ‡ï¼ˆçº¢è‰²Xï¼‰
         /// </summary>
         private void EmptyIcon_Paint(object sender, PaintEventArgs pe)
         {
@@ -9337,7 +9340,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// Ñ¡ÖĞµ¼º½Ïî£¨ÇĞ»»ÊÓÍ¼£©
+        /// é€‰ä¸­å¯¼èˆªé¡¹ï¼ˆåˆ‡æ¢è§†å›¾ï¼‰
         /// </summary>
         private void SelectNavItem(string name)
         {
@@ -9392,7 +9395,7 @@ namespace IPTVLiveChecker
 
         private void SwitchView(string name)
         {
-            bool isDetect = (name == "¼ì²â");
+            bool isDetect = (name == "æ£€æµ‹");
 
             if (statusBarRef != null) statusBarRef.Visible = isDetect;
             if (searchPanelRef != null) searchPanelRef.Visible = isDetect;
@@ -9426,7 +9429,7 @@ namespace IPTVLiveChecker
         private void ForceCreateChildHandles(Control parent)
         {
             if (parent == null) return;
-            // Ç¿ÖÆ´´½¨µ±Ç°¿Ø¼şµÄ¾ä±ú
+            // å¼ºåˆ¶åˆ›å»ºå½“å‰æ§ä»¶çš„å¥æŸ„
             var handle = parent.Handle;
             foreach (Control c in parent.Controls)
             {
@@ -9505,7 +9508,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ¿Õ×´Ì¬¾ÓÖĞ
+        /// ç©ºçŠ¶æ€å±…ä¸­
         /// </summary>
         private void CenterEmptyState()
         {
@@ -9528,7 +9531,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ¸üĞÂ¿Õ×´Ì¬ÏÔÊ¾
+        /// æ›´æ–°ç©ºçŠ¶æ€æ˜¾ç¤º
         /// </summary>
         private void UpdateEmptyState()
         {
@@ -9540,12 +9543,12 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ¸ù¾İÊı¾İÁĞ±í×´Ì¬¸üĞÂ×ó²à°´Å¥ÏÔÊ¾/Òş²Ø
+        /// æ ¹æ®æ•°æ®åˆ—è¡¨çŠ¶æ€æ›´æ–°å·¦ä¾§æŒ‰é’®æ˜¾ç¤º/éšè—
         /// </summary>
         private void UpdateActionButtonsVisibility()
         {
             bool hasData = allChannels != null && allChannels.Count > 0;
-            bool hasPendingParse = allChannels != null && allChannels.Any(c => c.Group == "½âÎö´ı´¦Àí" && c.Status == "´ı½âÎö");
+            bool hasPendingParse = allChannels != null && allChannels.Any(c => c.Group == "è§£æå¾…å¤„ç†" && c.Status == "å¾…è§£æ");
             bool canShowParseLink = hasPendingParse && hasSearchPlatformData && !autoParseLink;
             if (btnStartDetect != null) btnStartDetect.Visible = hasData;
             if (btnStopDetect != null) btnStopDetect.Visible = hasData;
@@ -9564,26 +9567,26 @@ namespace IPTVLiveChecker
             }
             if (btnScanSource != null) btnScanSource.Location = new Point(SX(12), ay);
             ay += SY(34) + SY(6);
-            // ½âÎöÁ´½Ó°´Å¥£ºÎŞÂÛÊÇ·ñ¿É¼û¶¼Õ¼ÓÃ¿Õ¼ä
-            // ²¼¾ÖËµÃ÷£º°´Å¥¸ß¶È SY(34)£¬Óë tipBox ¼ä¾à SY(26)£¬È·±£ tipBox ÔÚ Y=160 Î»ÖÃ
+            // è§£æé“¾æ¥æŒ‰é’®ï¼šæ— è®ºæ˜¯å¦å¯è§éƒ½å ç”¨ç©ºé—´
+            // å¸ƒå±€è¯´æ˜ï¼šæŒ‰é’®é«˜åº¦ SY(34)ï¼Œä¸ tipBox é—´è· SY(26)ï¼Œç¡®ä¿ tipBox åœ¨ Y=160 ä½ç½®
             if (btnParseLink != null)
             {
                 btnParseLink.Visible = canShowParseLink;
                 btnParseLink.Location = new Point(SX(12), ay);
-                ay += SY(34) + SY(26); // °´Å¥¸ß¶È 34 + ¼ä¾à 26 = 60£¬Ê¹ tipBox Î»ÓÚ Y=160
+                ay += SY(34) + SY(26); // æŒ‰é’®é«˜åº¦ 34 + é—´è· 26 = 60ï¼Œä½¿ tipBox ä½äº Y=160
             }
 
-            // ÌáÊ¾À¸¸úËæ°´Å¥Î»ÖÃ×Ô¶¯»¬¶¯²¹Õı
+            // æç¤ºæ è·ŸéšæŒ‰é’®ä½ç½®è‡ªåŠ¨æ»‘åŠ¨è¡¥æ­£
             if (tipBox != null)
             {
-                tipBox.Location = new Point(SX(12), ay); // tipBox Î»ÓÚ Y=160£¨ÔÚ½âÎöÁ´½Ó°´Å¥ÏÂ·½£©
+                tipBox.Location = new Point(SX(12), ay); // tipBox ä½äº Y=160ï¼ˆåœ¨è§£æé“¾æ¥æŒ‰é’®ä¸‹æ–¹ï¼‰
             }
         }
 
         private void UpdateTipBoxSize()
         {
             if (tipBox == null) return;
-            string tipText = "1. ÁĞ±íÎ»ÖÃ£¬µã»÷ÓÒ¼ü·¢ÏÖ¸ü¶à¹¦ÄÜ\r\n2. Ë«»÷Ãû³Æ£¬ÖØÃüÃû£¬Ë«»÷Á´½Ó£¬ĞŞ¸´Ö±²¥Ô´¡£\r\n3. ´ò¿ªÉèÖÃ·¢ÏÖ¸ü¶à¹¦ÄÜ¡£";
+            string tipText = "1. åˆ—è¡¨ä½ç½®ï¼Œç‚¹å‡»å³é”®å‘ç°æ›´å¤šåŠŸèƒ½\r\n2. åŒå‡»åç§°ï¼Œé‡å‘½åï¼ŒåŒå‡»é“¾æ¥ï¼Œä¿®å¤ç›´æ’­æºã€‚\r\n3. æ‰“å¼€è®¾ç½®å‘ç°æ›´å¤šåŠŸèƒ½ã€‚";
             Font tipContentFont = GetFont(9f);
             int tipW = tipBox.Width;
             SizeF tipTextSize;
@@ -9596,7 +9599,7 @@ namespace IPTVLiveChecker
             tipBox.Size = new Size(tipW, tipBoxHeight);
             foreach (Control ctrl in tipBox.Controls)
             {
-                if (ctrl is Label label && !ctrl.Text.Equals("ÌáÊ¾"))
+                if (ctrl is Label label && !ctrl.Text.Equals("æç¤º"))
                 {
                     label.Size = new Size(tipW - 24, tipContentHeight);
                 }
@@ -9604,7 +9607,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// µ¥Ôª¸ñ¸ñÊ½»¯£ºURLÁ´½ÓÉ«¡¢ÏìÓ¦ËÙ¶È·Ö¼¶ÅäÉ«
+        /// å•å…ƒæ ¼æ ¼å¼åŒ–ï¼šURLé“¾æ¥è‰²ã€å“åº”é€Ÿåº¦åˆ†çº§é…è‰²
         /// </summary>
         private void DgvData_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
@@ -9618,7 +9621,7 @@ namespace IPTVLiveChecker
             {
                 string speedText = e.Value?.ToString() ?? "";
                 Color speedColor;
-                if (string.IsNullOrWhiteSpace(speedText) || speedText == "³¬Ê±" || speedText == "-1")
+                if (string.IsNullOrWhiteSpace(speedText) || speedText == "è¶…æ—¶" || speedText == "-1")
                 {
                     speedColor = Color.FromArgb(150, 153, 160);
                 }
@@ -9665,12 +9668,12 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÏÔÊ¾»ªÊÓÃÀ´ïÉ¨ÃèÅäÖÃ¶Ô»°¿ò£¬·µ»Ø (scanCount, threadCount)£¬È¡Ïû·µ»Ø null
-        /// Ê¹ÓÃ Show() + TaskCompletionSource Ä£ÄâÄ£Ì¬Ğ§¹û£¬±ÜÃâ ShowDialog() Óë WebView2 ÏûÏ¢Ñ­»·³åÍ»
+        /// æ˜¾ç¤ºåè§†ç¾è¾¾æ‰«æé…ç½®å¯¹è¯æ¡†ï¼Œè¿”å› (scanCount, threadCount)ï¼Œå–æ¶ˆè¿”å› null
+        /// ä½¿ç”¨ Show() + TaskCompletionSource æ¨¡æ‹Ÿæ¨¡æ€æ•ˆæœï¼Œé¿å… ShowDialog() ä¸ WebView2 æ¶ˆæ¯å¾ªç¯å†²çª
         /// </summary>
         private async Task<Tuple<int, int>> ShowScanConfigDialogAsync()
         {
-            // Èç¹û²»ÔÚ UI Ïß³Ì£¬×ª·¢µ½ UI Ïß³ÌÖ´ĞĞ
+            // å¦‚æœä¸åœ¨ UI çº¿ç¨‹ï¼Œè½¬å‘åˆ° UI çº¿ç¨‹æ‰§è¡Œ
             if (InvokeRequired || !IsHandleCreated)
             {
                 try
@@ -9680,7 +9683,7 @@ namespace IPTVLiveChecker
                 }
                 catch (InvalidOperationException)
                 {
-                    // Èç¹û Invoke Ê§°Ü£¨¾ä±úÒÑÏú»Ù£©£¬·µ»Ø null
+                    // å¦‚æœ Invoke å¤±è´¥ï¼ˆå¥æŸ„å·²é”€æ¯ï¼‰ï¼Œè¿”å› null
                     return null;
                 }
             }
@@ -9693,7 +9696,7 @@ namespace IPTVLiveChecker
             using (var scanDlg = new Form())
             {
                 bool isDarkScan = IsDarkColor(theme.Bg);
-                scanDlg.Text = "»ªÊÓÃÀ´ïÉ¨ÃèÅäÖÃ";
+                scanDlg.Text = "åè§†ç¾è¾¾æ‰«æé…ç½®";
                 scanDlg.Size = new Size(SX(420), SY(290));
                 scanDlg.StartPosition = FormStartPosition.Manual;
                 scanDlg.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -9710,13 +9713,13 @@ namespace IPTVLiveChecker
                 int rowH = SY(45);
                 int startY = SY(30);
 
-                Label lblCount = new Label { Text = "É¨ÃèCIDÊıÁ¿:", Location = new Point(SX(25), startY), Size = new Size(labelW, SY(28)), Font = GetFont(SF(11)), ForeColor = scanDlg.ForeColor, BackColor = scanDlg.BackColor };
+                Label lblCount = new Label { Text = "æ‰«æCIDæ•°é‡:", Location = new Point(SX(25), startY), Size = new Size(labelW, SY(28)), Font = GetFont(SF(11)), ForeColor = scanDlg.ForeColor, BackColor = scanDlg.BackColor };
                 scanDlg.Controls.Add(lblCount);
 
                 TextBox txtCount = new TextBox { Text = "100", Location = new Point(inputX, startY + SY(2)), Size = new Size(inputW, SY(26)), Font = GetFont(SF(11)), BackColor = isDarkScan ? Color.FromArgb(30, 30, 38) : Color.White, ForeColor = isDarkScan ? Color.FromArgb(220, 220, 230) : Color.Black };
                 scanDlg.Controls.Add(txtCount);
 
-                Label lblThread = new Label { Text = "²¢·¢Ïß³ÌÊı:", Location = new Point(SX(25), startY + rowH), Size = new Size(labelW, SY(28)), Font = GetFont(SF(11)), ForeColor = scanDlg.ForeColor, BackColor = scanDlg.BackColor };
+                Label lblThread = new Label { Text = "å¹¶å‘çº¿ç¨‹æ•°:", Location = new Point(SX(25), startY + rowH), Size = new Size(labelW, SY(28)), Font = GetFont(SF(11)), ForeColor = scanDlg.ForeColor, BackColor = scanDlg.BackColor };
                 scanDlg.Controls.Add(lblThread);
 
                 TextBox txtThread = new TextBox { Text = "8", Location = new Point(inputX, startY + rowH + SY(2)), Size = new Size(inputW, SY(26)), Font = GetFont(SF(11)), BackColor = isDarkScan ? Color.FromArgb(30, 30, 38) : Color.White, ForeColor = isDarkScan ? Color.FromArgb(220, 220, 230) : Color.Black };
@@ -9727,13 +9730,13 @@ namespace IPTVLiveChecker
                 int btnStartX = (scanDlg.ClientSize.Width - btnGroupW) / 2;
                 int btnY = SY(195);
 
-                Button btnOK = new Button { Text = "È·¶¨", Location = new Point(btnStartX, btnY), Size = new Size(btnW, btnH), Font = GetFont(SF(11)), BackColor = isDarkScan ? Color.FromArgb(55, 55, 70) : Color.FromArgb(200, 200, 210), ForeColor = isDarkScan ? Color.White : Color.Black, FlatStyle = FlatStyle.Flat, FlatAppearance = { BorderSize = 0 } };
+                Button btnOK = new Button { Text = "ç¡®å®š", Location = new Point(btnStartX, btnY), Size = new Size(btnW, btnH), Font = GetFont(SF(11)), BackColor = isDarkScan ? Color.FromArgb(55, 55, 70) : Color.FromArgb(200, 200, 210), ForeColor = isDarkScan ? Color.White : Color.Black, FlatStyle = FlatStyle.Flat, FlatAppearance = { BorderSize = 0 } };
                 btnOK.FlatAppearance.BorderColor = isDarkScan ? Color.FromArgb(80, 80, 100) : Color.Gray;
                 btnOK.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, btnW, btnH), SX(6)));
                 btnOK.Click += (s, e) => { tcs.SetResult(DialogResult.OK); scanDlg.Close(); };
                 scanDlg.Controls.Add(btnOK);
 
-                Button btnCancel = new Button { Text = "È¡Ïû", Location = new Point(btnStartX + btnW + btnGap, btnY), Size = new Size(btnW, btnH), Font = GetFont(SF(11)), BackColor = isDarkScan ? Color.FromArgb(55, 55, 70) : Color.FromArgb(200, 200, 210), ForeColor = isDarkScan ? Color.White : Color.Black, FlatStyle = FlatStyle.Flat, FlatAppearance = { BorderSize = 0 } };
+                Button btnCancel = new Button { Text = "å–æ¶ˆ", Location = new Point(btnStartX + btnW + btnGap, btnY), Size = new Size(btnW, btnH), Font = GetFont(SF(11)), BackColor = isDarkScan ? Color.FromArgb(55, 55, 70) : Color.FromArgb(200, 200, 210), ForeColor = isDarkScan ? Color.White : Color.Black, FlatStyle = FlatStyle.Flat, FlatAppearance = { BorderSize = 0 } };
                 btnCancel.FlatAppearance.BorderColor = isDarkScan ? Color.FromArgb(80, 80, 100) : Color.Gray;
                 btnCancel.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, btnW, btnH), SX(6)));
                 btnCancel.Click += (s, e) => { tcs.SetResult(DialogResult.Cancel); scanDlg.Close(); };
@@ -9859,7 +9862,7 @@ namespace IPTVLiveChecker
                                 g.FillRectangle(bg, 6, 3, 4, 2);
                                 break;
                             case "detect":
-                                g.DrawString("?", new Font("Segoe UI Symbol", 9f), whiteB, 0, 0);
+                                g.DrawString("âš¡", new Font("Segoe UI Symbol", 9f), whiteB, 0, 0);
                                 break;
                             case "sort":
                                 g.DrawLine(white, 8, 3, 8, 13);
@@ -9918,11 +9921,11 @@ namespace IPTVLiveChecker
                                 g.DrawRectangle(white, 9, 9, 5, 6);
                                 break;
                             case "fix":
-                                g.DrawString("??", new Font("Segoe UI Symbol", 9f), whiteB, 0, 0);
+                                g.DrawString("ğŸ”§", new Font("Segoe UI Symbol", 9f), whiteB, 0, 0);
                                 break;
                             case "fixAll":
-                                g.DrawString("??", new Font("Segoe UI Symbol", 7f), whiteB, 0, 1);
-                                g.DrawString("?", new Font("Segoe UI Symbol", 7f), whiteB, 7, 1);
+                                g.DrawString("ğŸ”§", new Font("Segoe UI Symbol", 7f), whiteB, 0, 1);
+                                g.DrawString("â†»", new Font("Segoe UI Symbol", 7f), whiteB, 7, 1);
                                 break;
                             case "sub":
                                 Point[] arrow = { new Point(6, 4), new Point(11, 8), new Point(6, 12) };
@@ -10033,7 +10036,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ×Ô»æµ¥Ôª¸ñ£º±íÍ·£¨Ç³»Òµ×+×ÏÉ«ÅÅĞò¼ıÍ·£©¡¢×´Ì¬±êÇ©¡¢Ë«°´Å¥£¨¸´ÖÆ+²¥·Å£©
+        /// è‡ªç»˜å•å…ƒæ ¼ï¼šè¡¨å¤´ï¼ˆæµ…ç°åº•+ç´«è‰²æ’åºç®­å¤´ï¼‰ã€çŠ¶æ€æ ‡ç­¾ã€åŒæŒ‰é’®ï¼ˆå¤åˆ¶+æ’­æ”¾ï¼‰
         /// </summary>
         private void DgvData_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
@@ -10050,7 +10053,7 @@ namespace IPTVLiveChecker
                 using (Pen pen = new Pen(theme.Border, 1))
                     e.Graphics.DrawLine(pen, e.CellBounds.Left, e.CellBounds.Bottom - 1, e.CellBounds.Right, e.CellBounds.Bottom - 1);
 
-                // ÁĞ±êÌâÓÒ²àÊúÏß·Ö¸îÏß
+                // åˆ—æ ‡é¢˜å³ä¾§ç«–çº¿åˆ†å‰²çº¿
                 if (e.ColumnIndex < dgvData.Columns.Count - 1)
                 {
                     using (Pen sepPen = new Pen(theme.Border, 1))
@@ -10079,7 +10082,7 @@ namespace IPTVLiveChecker
 
                     if (isSorted && colName != "colAction")
                     {
-                        string arrow = sortDirection == SortOrder.Ascending ? "¡ø" : "¨‹";
+                        string arrow = sortDirection == SortOrder.Ascending ? "â–²" : "â–¼";
                         using (Font arrowFont = new Font(dgvData.Font.FontFamily, SF(7f), FontStyle.Bold))
                         {
                             Size arrowSize = TextRenderer.MeasureText(arrow, arrowFont);
@@ -10094,9 +10097,9 @@ namespace IPTVLiveChecker
             else if (e.RowIndex >= 0)
             {
                 string colName = dgvData.Columns[e.ColumnIndex].Name;
-                Color rowSepColor = theme.Name == "ÉîÉ«" ? Color.FromArgb(75, 75, 90) : Color.FromArgb(220, 220, 230);
+                Color rowSepColor = theme.Name == "æ·±è‰²" ? Color.FromArgb(75, 75, 90) : Color.FromArgb(220, 220, 230);
 
-                // ËùÓĞµ¥Ôª¸ñÓÒ²àÊúÏß·Ö¸îÏß
+                // æ‰€æœ‰å•å…ƒæ ¼å³ä¾§ç«–çº¿åˆ†å‰²çº¿
                 if (e.ColumnIndex < dgvData.Columns.Count - 1)
                 {
                     using (Pen sepPen = new Pen(rowSepColor, 1))
@@ -10106,19 +10109,35 @@ namespace IPTVLiveChecker
                 if (colName == "colStatus")
                 {
                     e.PaintBackground(e.ClipBounds, false);
+                    int r = e.RowIndex;
+                    bool isSelected = dgvData.Rows[r].Selected;
+                    bool isHover = _hoverRow == r;
+                    if (isSelected)
+                    {
+                        using (SolidBrush selBrush = new SolidBrush(theme.SelectRow))
+                            e.Graphics.FillRectangle(selBrush, e.CellBounds);
+                    }
+                    else if (isHover)
+                    {
+                        Color hoverColor = theme.Name == "æ·±è‰²"
+                            ? Color.FromArgb(65, 60, 80)
+                            : Color.FromArgb(245, 240, 252);
+                        using (SolidBrush hoverBrush = new SolidBrush(hoverColor))
+                            e.Graphics.FillRectangle(hoverBrush, e.CellBounds);
+                    }
                     string status = e.Value?.ToString() ?? "";
-                    if (status == "¿ÉÓÃ")
+                    if (status == "å¯ç”¨")
                     {
                         DrawStatusTag(e.Graphics, e.CellBounds, status, theme.StatusTagBg, theme.StatusTagBorder, theme.SuccessColor);
                     }
-                    else if (status == "²»¿ÉÓÃ")
+                    else if (status == "ä¸å¯ç”¨")
                     {
-                        Color bg = theme.Name == "ÉîÉ«" ? Color.FromArgb(80, 40, 40) : Color.FromArgb(255, 235, 235);
+                        Color bg = theme.Name == "æ·±è‰²" ? Color.FromArgb(80, 40, 40) : Color.FromArgb(255, 235, 235);
                         DrawStatusTag(e.Graphics, e.CellBounds, status, bg, theme.ErrorColor, theme.ErrorColor);
                     }
-                    else if (status == "¼ì²âÖĞ")
+                    else if (status == "æ£€æµ‹ä¸­")
                     {
-                        Color bg = theme.Name == "ÉîÉ«" ? Color.FromArgb(80, 65, 30) : Color.FromArgb(255, 248, 230);
+                        Color bg = theme.Name == "æ·±è‰²" ? Color.FromArgb(80, 65, 30) : Color.FromArgb(255, 248, 230);
                         DrawStatusTag(e.Graphics, e.CellBounds, status, bg, theme.WarnColor, theme.WarnColor);
                     }
                     else
@@ -10127,8 +10146,8 @@ namespace IPTVLiveChecker
                             TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter);
                     }
 
-                    // ĞĞµ×²¿·Ö¸ôÏß
-                    Color sepColor2 = theme.Name == "ÉîÉ«" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(242, 242, 247);
+                    // è¡Œåº•éƒ¨åˆ†éš”çº¿
+                    Color sepColor2 = theme.Name == "æ·±è‰²" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(242, 242, 247);
                     using (Pen pen2 = new Pen(sepColor2, 1))
                         e.Graphics.DrawLine(pen2, e.CellBounds.Left, e.CellBounds.Bottom - 1, e.CellBounds.Right, e.CellBounds.Bottom - 1);
 
@@ -10137,6 +10156,22 @@ namespace IPTVLiveChecker
                 else if (colName == "colAction")
                 {
                     e.PaintBackground(e.ClipBounds, false);
+                    int r = e.RowIndex;
+                    bool isSelected = dgvData.Rows[r].Selected;
+                    bool isHover = _hoverRow == r;
+                    if (isSelected)
+                    {
+                        using (SolidBrush selBrush = new SolidBrush(theme.SelectRow))
+                            e.Graphics.FillRectangle(selBrush, e.CellBounds);
+                    }
+                    else if (isHover)
+                    {
+                        Color hoverColor = theme.Name == "æ·±è‰²"
+                            ? Color.FromArgb(65, 60, 80)
+                            : Color.FromArgb(245, 240, 252);
+                        using (SolidBrush hoverBrush = new SolidBrush(hoverColor))
+                            e.Graphics.FillRectangle(hoverBrush, e.CellBounds);
+                    }
                     int cellW = e.CellBounds.Width;
                     int cellH = e.CellBounds.Height;
                     int btnH = SY(26);
@@ -10153,8 +10188,6 @@ namespace IPTVLiveChecker
                     Color copyFg = theme.CopyBtnText;
                     Color playBg = theme.PlayBtnBg;
                     Color playFg = theme.PlayBtnText;
-
-                    int r = e.RowIndex;
 
                     if (_pressRow == r && _pressBtn == 0)
                     {
@@ -10187,12 +10220,12 @@ namespace IPTVLiveChecker
                         playRect.Offset(0, 1);
                     }
 
-                    DrawRoundedButton(e.Graphics, copyRect, "¸´ÖÆ", copyBg, copyFg);
-                    DrawRoundedButton(e.Graphics, playRect, "²¥·Å", playBg, playFg);
+                    DrawRoundedButton(e.Graphics, copyRect, "å¤åˆ¶", copyBg, copyFg);
+                    DrawRoundedButton(e.Graphics, playRect, "æ’­æ”¾", playBg, playFg);
 
-                    // ĞĞµ×²¿·Ö¸ôÏß£¨ºá¿çÕûĞĞ£©
+                    // è¡Œåº•éƒ¨åˆ†éš”çº¿ï¼ˆæ¨ªè·¨æ•´è¡Œï¼‰
                     Rectangle firstCell = dgvData.GetCellDisplayRectangle(0, e.RowIndex, false);
-                    Color sepColor = theme.Name == "ÉîÉ«" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(242, 242, 247);
+                    Color sepColor = theme.Name == "æ·±è‰²" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(242, 242, 247);
                     using (Pen pen = new Pen(sepColor, 1))
                         e.Graphics.DrawLine(pen, firstCell.Left, e.CellBounds.Bottom - 1, e.CellBounds.Right, e.CellBounds.Bottom - 1);
 
@@ -10201,10 +10234,26 @@ namespace IPTVLiveChecker
                 else
                 {
                     e.PaintBackground(e.ClipBounds, false);
+                    int r = e.RowIndex;
+                    bool isSelected = dgvData.Rows[r].Selected;
+                    bool isHover = _hoverRow == r;
+                    if (isSelected)
+                    {
+                        using (SolidBrush selBrush = new SolidBrush(theme.SelectRow))
+                            e.Graphics.FillRectangle(selBrush, e.CellBounds);
+                    }
+                    else if (isHover)
+                    {
+                        Color hoverColor = theme.Name == "æ·±è‰²"
+                            ? Color.FromArgb(65, 60, 80)
+                            : Color.FromArgb(245, 240, 252);
+                        using (SolidBrush hoverBrush = new SolidBrush(hoverColor))
+                            e.Graphics.FillRectangle(hoverBrush, e.CellBounds);
+                    }
                     string cellText = e.FormattedValue?.ToString() ?? "";
                     if (!string.IsNullOrEmpty(cellText))
                     {
-                        Color textColor = e.CellStyle.ForeColor;
+                        Color textColor = isSelected ? theme.SelectRowText : e.CellStyle.ForeColor;
                         Font baseFont = e.CellStyle.Font ?? dgvData.Font;
                         int padding = SX(10);
                         Rectangle textRect = new Rectangle(
@@ -10236,7 +10285,7 @@ namespace IPTVLiveChecker
                         }
                     }
 
-                    Color sepColor2 = theme.Name == "ÉîÉ«" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(242, 242, 247);
+                    Color sepColor2 = theme.Name == "æ·±è‰²" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(242, 242, 247);
                     using (Pen pen2 = new Pen(sepColor2, 1))
                         e.Graphics.DrawLine(pen2, e.CellBounds.Left, e.CellBounds.Bottom - 1, e.CellBounds.Right, e.CellBounds.Bottom - 1);
 
@@ -10246,11 +10295,16 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// µ¥Ôª¸ñµã»÷£º´¦Àí¸´ÖÆ/²¥·ÅË«°´Å¥
+        /// å•å…ƒæ ¼ç‚¹å‡»ï¼šå¤„ç†å¤åˆ¶/æ’­æ”¾åŒæŒ‰é’®
         /// </summary>
         private void DgvData_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && e.ColumnIndex == 7)
+            if (e.RowIndex < 0) return;
+
+            dgvData.ClearSelection();
+            dgvData.Rows[e.RowIndex].Selected = true;
+
+            if (e.ColumnIndex == 7)
             {
                 Rectangle cellRect = dgvData.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, false);
                 Point mousePos = dgvData.PointToClient(Cursor.Position);
@@ -10271,8 +10325,6 @@ namespace IPTVLiveChecker
 
                 string url = dgvData.Rows[e.RowIndex].Cells[1].Value?.ToString() ?? "";
                 if (string.IsNullOrWhiteSpace(url)) return;
-
-                dgvData.Rows[e.RowIndex].Selected = true;
 
                 if (copyBtnRect.Contains(relX, relY))
                 {
@@ -10351,8 +10403,20 @@ namespace IPTVLiveChecker
                 dgvData.Cursor = btnIdx >= 0 ? Cursors.Hand : Cursors.Default;
                 if (oldHoverRow != _hoverRow || oldHoverBtn != _hoverBtn)
                 {
-                    if (oldHoverRow >= 0) dgvData.InvalidateCell(7, oldHoverRow);
-                    if (_hoverRow >= 0) dgvData.InvalidateCell(7, _hoverRow);
+                    if (oldHoverRow >= 0) dgvData.InvalidateRow(oldHoverRow);
+                    if (_hoverRow >= 0) dgvData.InvalidateRow(_hoverRow);
+                }
+            }
+            else if (e.RowIndex >= 0)
+            {
+                int oldHoverRow = _hoverRow;
+                _hoverRow = e.RowIndex;
+                _hoverBtn = -1;
+                dgvData.Cursor = Cursors.Default;
+                if (oldHoverRow != _hoverRow)
+                {
+                    if (oldHoverRow >= 0) dgvData.InvalidateRow(oldHoverRow);
+                    if (_hoverRow >= 0) dgvData.InvalidateRow(_hoverRow);
                 }
             }
             else
@@ -10363,7 +10427,7 @@ namespace IPTVLiveChecker
                     _hoverRow = -1;
                     _hoverBtn = -1;
                     dgvData.Cursor = Cursors.Default;
-                    dgvData.InvalidateCell(7, oldRow);
+                    dgvData.InvalidateRow(oldRow);
                 }
             }
         }
@@ -10423,14 +10487,14 @@ namespace IPTVLiveChecker
                 }
                 catch
                 {
-                    DarkMessageBox.Show("¸´ÖÆÊ§°Ü£¬¼ôÌù°å±»Õ¼ÓÃ", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    DarkMessageBox.Show("å¤åˆ¶å¤±è´¥ï¼Œå‰ªè´´æ¿è¢«å ç”¨", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
 
         private void ShowCopyToast(string url, int? targetY = null)
         {
-            bool isDark = theme.Name == "ÉîÉ«";
+            bool isDark = theme.Name == "æ·±è‰²";
             Color toastBg = isDark ? Color.FromArgb(60, 63, 70) : Color.FromArgb(245, 245, 245);
             Color toastBorder = isDark ? Color.FromArgb(80, 80, 90) : Color.FromArgb(200, 200, 200);
             Color toastText = isDark ? Color.White : Color.FromArgb(30, 30, 30);
@@ -10460,7 +10524,7 @@ namespace IPTVLiveChecker
 
                 Label lblIcon = new Label
                 {
-                    Text = "?",
+                    Text = "âœ“",
                     Font = GetFont(SF(11f), FontStyle.Bold),
                     ForeColor = Color.FromArgb(46, 189, 96),
                     Location = new Point(SX(18), SY(12)),
@@ -10471,7 +10535,7 @@ namespace IPTVLiveChecker
 
                 Label lblMsg = new Label
                 {
-                    Text = "¸´ÖÆ³É¹¦",
+                    Text = "å¤åˆ¶æˆåŠŸ",
                     Font = GetFont(SF(9f), FontStyle.Bold),
                     ForeColor = toastText,
                     Location = new Point(SX(46), SY(10)),
@@ -10497,8 +10561,8 @@ namespace IPTVLiveChecker
                 {
                     if (ctrl is Label lbl)
                     {
-                        lbl.ForeColor = lbl.Text == "?" ? Color.FromArgb(46, 189, 96) : toastText;
-                        lbl.Font = lbl.Text == "?" ? GetFont(SF(11f), FontStyle.Bold) : GetFont(SF(9f), FontStyle.Bold);
+                        lbl.ForeColor = lbl.Text == "âœ“" ? Color.FromArgb(46, 189, 96) : toastText;
+                        lbl.Font = lbl.Text == "âœ“" ? GetFont(SF(11f), FontStyle.Bold) : GetFont(SF(9f), FontStyle.Bold);
                     }
                 }
                 _toastPanel.Invalidate();
@@ -10528,7 +10592,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// Ë«»÷Ãû³ÆÁĞ½øÈë±à¼­ÖØÃüÃû
+        /// åŒå‡»åç§°åˆ—è¿›å…¥ç¼–è¾‘é‡å‘½å
         /// </summary>
         private void DgvData_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -10547,7 +10611,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// µ¥Ôª¸ñ±à¼­Íê³É£¨ÖØÃüÃûºóÍ¬²½µ½Êı¾İÔ´£©
+        /// å•å…ƒæ ¼ç¼–è¾‘å®Œæˆï¼ˆé‡å‘½åååŒæ­¥åˆ°æ•°æ®æºï¼‰
         /// </summary>
         private void DgvData_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
@@ -10562,7 +10626,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ´ÓURLÖĞÌáÈ¡Ğ­Òé¡¢Ö÷»ú¡¢¶Ë¿Ú¡¢Â·¾¶
+        /// ä»URLä¸­æå–åè®®ã€ä¸»æœºã€ç«¯å£ã€è·¯å¾„
         /// </summary>
         private (string protocol, string host, string port, string path) ParseUrl(string url)
         {
@@ -10584,20 +10648,20 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÏÔÊ¾Ìæ»»IP+¶Ë¿Ú¶Ô»°¿ò£¨µ¥ÌõÖ±²¥Ô´ĞŞ¸´£©
+        /// æ˜¾ç¤ºæ›¿æ¢IP+ç«¯å£å¯¹è¯æ¡†ï¼ˆå•æ¡ç›´æ’­æºä¿®å¤ï¼‰
         /// </summary>
         private void ShowReplaceUrlDialog(string originalUrl)
         {
             var (protocol, host, port, path) = ParseUrl(originalUrl);
             if (string.IsNullOrEmpty(protocol))
             {
-                DarkMessageBox.Show("ÎŞ·¨½âÎö´ËÁ´½Ó¸ñÊ½£¡", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DarkMessageBox.Show("æ— æ³•è§£ææ­¤é“¾æ¥æ ¼å¼ï¼", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             using (Form dlg = new Form())
             {
-                dlg.Text = "Ö±²¥Ô´ĞŞ¸´";
+                dlg.Text = "ç›´æ’­æºä¿®å¤";
                 dlg.StartPosition = FormStartPosition.Manual;
                 dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
                 dlg.MaximizeBox = false;
@@ -10611,7 +10675,7 @@ namespace IPTVLiveChecker
 
                 Label lblTitle = new Label
                 {
-                    Text = "½«¿ÉÓÃIP+¶Ë¿Ú»òÍøÖ·Ìæ»»ÎªĞÂµØÖ·",
+                    Text = "å°†å¯ç”¨IP+ç«¯å£æˆ–ç½‘å€æ›¿æ¢ä¸ºæ–°åœ°å€",
                     Font = GetFont(SF(10f), FontStyle.Bold),
                     ForeColor = theme.TextPrimary,
                     Location = new Point(SX(20), SY(15)),
@@ -10621,7 +10685,7 @@ namespace IPTVLiveChecker
 
                 Label lblOriginal = new Label
                 {
-                    Text = "Ô­Ê¼µØÖ·£º",
+                    Text = "åŸå§‹åœ°å€ï¼š",
                     Font = GetFont(SF(7.5f)),
                     ForeColor = theme.TextSecondary,
                     Location = new Point(SX(20), SY(50)),
@@ -10643,7 +10707,7 @@ namespace IPTVLiveChecker
 
                 Label lblHost = new Label
                 {
-                    Text = "ĞÂIP/ÓòÃû£º",
+                    Text = "æ–°IP/åŸŸåï¼š",
                     Font = GetFont(SF(7.5f)),
                     ForeColor = theme.TextPrimary,
                     Location = new Point(SX(20), SY(110)),
@@ -10664,7 +10728,7 @@ namespace IPTVLiveChecker
 
                 Label lblPort = new Label
                 {
-                    Text = "ĞÂ¶Ë¿Ú£º",
+                    Text = "æ–°ç«¯å£ï¼š",
                     Font = GetFont(SF(7.5f)),
                     ForeColor = theme.TextPrimary,
                     Location = new Point(SX(310), SY(110)),
@@ -10685,7 +10749,7 @@ namespace IPTVLiveChecker
 
                 Label lblPreview = new Label
                 {
-                    Text = "Ô¤ÀÀ£º",
+                    Text = "é¢„è§ˆï¼š",
                     Font = GetFont(SF(7.5f)),
                     ForeColor = theme.TextSecondary,
                     Location = new Point(SX(20), SY(150)),
@@ -10737,7 +10801,7 @@ namespace IPTVLiveChecker
 
                 Button btnOK = new Button
                 {
-                    Text = "È·¶¨",
+                    Text = "ç¡®å®š",
                     Font = GetFont(SF(8f)),
                     DialogResult = DialogResult.OK,
                     Location = new Point(SX(270), SY(220)),
@@ -10748,7 +10812,7 @@ namespace IPTVLiveChecker
 
                 Button btnCancel = new Button
                 {
-                    Text = "È¡Ïû",
+                    Text = "å–æ¶ˆ",
                     Font = GetFont(SF(8f)),
                     DialogResult = DialogResult.Cancel,
                     Location = new Point(SX(365), SY(220)),
@@ -10766,7 +10830,7 @@ namespace IPTVLiveChecker
                     string newPort = txtPort.Text.Trim();
                     if (string.IsNullOrEmpty(newHost))
                     {
-                        DarkMessageBox.Show("IP/ÓòÃû²»ÄÜÎª¿Õ£¡", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        DarkMessageBox.Show("IP/åŸŸåä¸èƒ½ä¸ºç©ºï¼", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
@@ -10779,23 +10843,23 @@ namespace IPTVLiveChecker
                     if (ch != null)
                     {
                         ch.Url = newUrl;
-                        ch.Status = "Î´¼ì²â";
+                        ch.Status = "æœªæ£€æµ‹";
                         ch.Speed = "";
                         RefreshGrid();
-                        DarkMessageBox.Show("Ö±²¥Ô´µØÖ·ÒÑÌæ»»³É¹¦£¡\n\nĞÂµØÖ·£º\n" + newUrl, "Ìæ»»³É¹¦", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DarkMessageBox.Show("ç›´æ’­æºåœ°å€å·²æ›¿æ¢æˆåŠŸï¼\n\næ–°åœ°å€ï¼š\n" + newUrl, "æ›¿æ¢æˆåŠŸ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }
         }
 
         /// <summary>
-        /// Ò»¼üÈ«²¿Ìæ»»IP+¶Ë¿Ú£¨ÅúÁ¿ĞŞ¸´Ö±²¥Ô´£©
+        /// ä¸€é”®å…¨éƒ¨æ›¿æ¢IP+ç«¯å£ï¼ˆæ‰¹é‡ä¿®å¤ç›´æ’­æºï¼‰
         /// </summary>
         private void ReplaceAllUrls()
         {
             if (allChannels.Count == 0)
             {
-                DarkMessageBox.Show("Ã»ÓĞ¿ÉĞŞ¸´µÄÖ±²¥Ô´£¡", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DarkMessageBox.Show("æ²¡æœ‰å¯ä¿®å¤çš„ç›´æ’­æºï¼", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -10803,13 +10867,13 @@ namespace IPTVLiveChecker
             var (protocol, host, port, path) = ParseUrl(firstCh.Url);
             if (string.IsNullOrEmpty(protocol))
             {
-                DarkMessageBox.Show("ÎŞ·¨½âÎöÖ±²¥Ô´¸ñÊ½£¡", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DarkMessageBox.Show("æ— æ³•è§£æç›´æ’­æºæ ¼å¼ï¼", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             using (Form dlg = new Form())
             {
-                dlg.Text = "Ò»¼üÈ«²¿Ìæ»»";
+                dlg.Text = "ä¸€é”®å…¨éƒ¨æ›¿æ¢";
                 dlg.StartPosition = FormStartPosition.Manual;
                 dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
                 dlg.MaximizeBox = false;
@@ -10823,7 +10887,7 @@ namespace IPTVLiveChecker
 
                 Label lblTitle = new Label
                 {
-                    Text = "Ò»¼üÌæ»»ËùÓĞÖ±²¥Ô´µÄIP+¶Ë¿Ú",
+                    Text = "ä¸€é”®æ›¿æ¢æ‰€æœ‰ç›´æ’­æºçš„IP+ç«¯å£",
                     Font = GetFont(SF(10f), FontStyle.Bold),
                     ForeColor = theme.TextPrimary,
                     Location = new Point(SX(20), SY(15)),
@@ -10833,7 +10897,7 @@ namespace IPTVLiveChecker
 
                 Label lblTip = new Label
                 {
-                    Text = $"¹² {allChannels.Count} ÌõÖ±²¥Ô´£¬½«Ìæ»»ËùÓĞÁ´½ÓµÄIPºÍ¶Ë¿Ú\n£¨±£ÁôÂ·¾¶²¿·Ö²»±ä£©",
+                    Text = $"å…± {allChannels.Count} æ¡ç›´æ’­æºï¼Œå°†æ›¿æ¢æ‰€æœ‰é“¾æ¥çš„IPå’Œç«¯å£\nï¼ˆä¿ç•™è·¯å¾„éƒ¨åˆ†ä¸å˜ï¼‰",
                     Font = GetFont(SF(7.5f)),
                     ForeColor = Color.Red,
                     Location = new Point(SX(20), SY(45)),
@@ -10843,7 +10907,7 @@ namespace IPTVLiveChecker
 
                 Label lblOriginal = new Label
                 {
-                    Text = "Ô­Ê¼µØÖ·£¨Ê¾Àı£©£º",
+                    Text = "åŸå§‹åœ°å€ï¼ˆç¤ºä¾‹ï¼‰ï¼š",
                     Font = GetFont(SF(7.5f)),
                     ForeColor = theme.TextSecondary,
                     Location = new Point(SX(20), SY(80)),
@@ -10865,7 +10929,7 @@ namespace IPTVLiveChecker
 
                 Label lblHost = new Label
                 {
-                    Text = "ĞÂIP/ÓòÃû£º",
+                    Text = "æ–°IP/åŸŸåï¼š",
                     Font = GetFont(SF(7.5f)),
                     ForeColor = theme.TextPrimary,
                     Location = new Point(SX(20), SY(140)),
@@ -10886,7 +10950,7 @@ namespace IPTVLiveChecker
 
                 Label lblPort = new Label
                 {
-                    Text = "ĞÂ¶Ë¿Ú£º",
+                    Text = "æ–°ç«¯å£ï¼š",
                     Font = GetFont(SF(7.5f)),
                     ForeColor = theme.TextPrimary,
                     Location = new Point(SX(310), SY(140)),
@@ -10907,7 +10971,7 @@ namespace IPTVLiveChecker
 
                 Label lblPreview = new Label
                 {
-                    Text = "Ìæ»»ºóÊ¾Àı£º",
+                    Text = "æ›¿æ¢åç¤ºä¾‹ï¼š",
                     Font = GetFont(SF(7.5f)),
                     ForeColor = theme.TextSecondary,
                     Location = new Point(SX(20), SY(180)),
@@ -10959,7 +11023,7 @@ namespace IPTVLiveChecker
 
                 Button btnOK = new Button
                 {
-                    Text = "È·¶¨",
+                    Text = "ç¡®å®š",
                     Font = GetFont(SF(8.5f)),
                     DialogResult = DialogResult.OK,
                     Location = new Point(SX(270), SY(250)),
@@ -10970,7 +11034,7 @@ namespace IPTVLiveChecker
 
                 Button btnCancel = new Button
                 {
-                    Text = "È¡Ïû",
+                    Text = "å–æ¶ˆ",
                     Font = GetFont(SF(8.5f)),
                     DialogResult = DialogResult.Cancel,
                     Location = new Point(SX(365), SY(250)),
@@ -10988,7 +11052,7 @@ namespace IPTVLiveChecker
                     string newPort = txtPort.Text.Trim();
                     if (string.IsNullOrEmpty(newHost))
                     {
-                        DarkMessageBox.Show("IP/ÓòÃû²»ÄÜÎª¿Õ£¡", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        DarkMessageBox.Show("IP/åŸŸåä¸èƒ½ä¸ºç©ºï¼", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
@@ -11007,22 +11071,22 @@ namespace IPTVLiveChecker
                             newUrl += ":" + newPort;
                         newUrl += path2;
                         ch.Url = newUrl;
-                        ch.Status = "Î´¼ì²â";
+                        ch.Status = "æœªæ£€æµ‹";
                         ch.Speed = "";
                         replaced++;
                     }
 
                     RefreshGrid();
-                    string msg = $"ÅúÁ¿Ìæ»»Íê³É£¡\n³É¹¦Ìæ»»: {replaced} Ìõ";
+                    string msg = $"æ‰¹é‡æ›¿æ¢å®Œæˆï¼\næˆåŠŸæ›¿æ¢: {replaced} æ¡";
                     if (failed > 0)
-                        msg += $"\nÌø¹ı(¸ñÊ½²»Ö§³Ö): {failed} Ìõ";
-                    DarkMessageBox.Show(msg, "Ìæ»»Íê³É", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        msg += $"\nè·³è¿‡(æ ¼å¼ä¸æ”¯æŒ): {failed} æ¡";
+                    DarkMessageBox.Show(msg, "æ›¿æ¢å®Œæˆ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
 
         /// <summary>
-        /// ÓÒ¼ü²Ëµ¥ÖØÃüÃû£ºÑ¡ÖĞĞĞ½øÈë±à¼­
+        /// å³é”®èœå•é‡å‘½åï¼šé€‰ä¸­è¡Œè¿›å…¥ç¼–è¾‘
         /// </summary>
         private void BeginRenameSelected()
         {
@@ -11032,23 +11096,23 @@ namespace IPTVLiveChecker
                 dgvData.CurrentCell = dgvData.Rows[idx].Cells[0];
                 dgvData.BeginEdit(true);
             }
-            else DarkMessageBox.Show("ÇëÏÈÑ¡ÔñÒ»ĞĞ", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else DarkMessageBox.Show("è¯·å…ˆé€‰æ‹©ä¸€è¡Œ", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         /// <summary>
-        /// ½âÎöÑÓ³Ù×Ö·û´®ÎªºÁÃëÊı£¨ÅÅĞòÓÃ£©
+        /// è§£æå»¶è¿Ÿå­—ç¬¦ä¸²ä¸ºæ¯«ç§’æ•°ï¼ˆæ’åºç”¨ï¼‰
         /// </summary>
         private int ParseSpeed(string speed)
         {
             if (string.IsNullOrWhiteSpace(speed)) return int.MaxValue;
-            if (speed == "³¬Ê±") return int.MaxValue - 1;
+            if (speed == "è¶…æ—¶") return int.MaxValue - 1;
             string num = new string(speed.TakeWhile(c => char.IsDigit(c)).ToArray());
             if (int.TryParse(num, out int ms)) return ms;
             return int.MaxValue;
         }
 
         /// <summary>
-        /// µ¯³ö²¥·Å·½Ê½Ñ¡Ôñ²Ëµ¥
+        /// å¼¹å‡ºæ’­æ”¾æ–¹å¼é€‰æ‹©èœå•
         /// </summary>
         private void ShowPlayMenu(string url)
         {
@@ -11057,23 +11121,23 @@ namespace IPTVLiveChecker
             playMenu.Renderer = new ToolStripProfessionalRenderer(new MenuColorTable(IsDarkColor(theme.Bg)));
             playMenu.BackColor = theme.Surface;
             playMenu.ForeColor = theme.TextPrimary;
-            playMenu.Items.Add("ÏµÍ³Ä¬ÈÏ²¥·ÅÆ÷", null, (s, ev) => PlayChannelDefault(url));
+            playMenu.Items.Add("ç³»ç»Ÿé»˜è®¤æ’­æ”¾å™¨", null, (s, ev) => PlayChannelDefault(url));
             bool hasFFplay = !string.IsNullOrWhiteSpace(ffplayPath) && File.Exists(ffplayPath);
-            var ffplayItem = new ToolStripMenuItem(hasFFplay ? $"FFplay²¥·Å ({ffplayPath})" : "FFplay²¥·Å(Î´ÕÒµ½ffplay)");
+            var ffplayItem = new ToolStripMenuItem(hasFFplay ? $"FFplayæ’­æ”¾ ({ffplayPath})" : "FFplayæ’­æ”¾(æœªæ‰¾åˆ°ffplay)");
             ffplayItem.Enabled = hasFFplay;
             ffplayItem.Click += (s, ev) => PlayChannelFFplay(url);
             playMenu.Items.Add(ffplayItem);
             bool hasCustom = !string.IsNullOrWhiteSpace(customPlayerPath) && File.Exists(customPlayerPath);
-            var customItem = new ToolStripMenuItem(hasCustom ? $"µÚÈı·½²¥·ÅÆ÷ ({Path.GetFileName(customPlayerPath)})" : "µÚÈı·½²¥·ÅÆ÷(Î´ÉèÖÃ)");
+            var customItem = new ToolStripMenuItem(hasCustom ? $"ç¬¬ä¸‰æ–¹æ’­æ”¾å™¨ ({Path.GetFileName(customPlayerPath)})" : "ç¬¬ä¸‰æ–¹æ’­æ”¾å™¨(æœªè®¾ç½®)");
             customItem.Enabled = hasCustom;
             customItem.Click += (s, ev) => PlayChannelCustom(url);
             playMenu.Items.Add(customItem);
             playMenu.Items.Add(new ToolStripSeparator());
-            playMenu.Items.Add("ÉèÖÃµÚÈı·½²¥·ÅÆ÷Â·¾¶...", null, (s, ev) => SetCustomPlayerPath());
+            playMenu.Items.Add("è®¾ç½®ç¬¬ä¸‰æ–¹æ’­æ”¾å™¨è·¯å¾„...", null, (s, ev) => SetCustomPlayerPath());
             if (hasFFplay)
             {
                 playMenu.Items.Add(new ToolStripSeparator());
-                var autoItem = new ToolStripMenuItem("×Ô¶¯(ÓÅÏÈFFplay)");
+                var autoItem = new ToolStripMenuItem("è‡ªåŠ¨(ä¼˜å…ˆFFplay)");
                 autoItem.Click += (s, ev) => { try { PlayChannelFFplay(url); } catch { PlayChannelDefault(url); } };
                 playMenu.Items.Add(autoItem);
             }
@@ -11082,7 +11146,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÏµÍ³Ä¬ÈÏ²¥·ÅÆ÷²¥·Å
+        /// ç³»ç»Ÿé»˜è®¤æ’­æ”¾å™¨æ’­æ”¾
         /// </summary>
         private void PlayChannelDefault(string url)
         {
@@ -11092,12 +11156,12 @@ namespace IPTVLiveChecker
             }
             catch (Exception ex)
             {
-                DarkMessageBox.Show($"ÎŞ·¨Ê¹ÓÃÏµÍ³²¥·ÅÆ÷´ò¿ªÁ´½Ó£º\n{ex.Message}", "²¥·ÅÊ§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DarkMessageBox.Show($"æ— æ³•ä½¿ç”¨ç³»ç»Ÿæ’­æ”¾å™¨æ‰“å¼€é“¾æ¥ï¼š\n{ex.Message}", "æ’­æ”¾å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
         /// <summary>
-        /// FFplay²¥·Å
+        /// FFplayæ’­æ”¾
         /// </summary>
         private void KillRunningPlayer()
         {
@@ -11135,7 +11199,7 @@ namespace IPTVLiveChecker
         {
             if (string.IsNullOrWhiteSpace(ffplayPath) || !File.Exists(ffplayPath))
             {
-                DarkMessageBox.Show("Î´ÕÒµ½ ffplay.exe£¬ÎŞ·¨Ô¤ÀÀ¡£ÇëÈ·±£ FFmpeg ×é¼şÒÑ°²×°¡£", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DarkMessageBox.Show("æœªæ‰¾åˆ° ffplay.exeï¼Œæ— æ³•é¢„è§ˆã€‚è¯·ç¡®ä¿ FFmpeg ç»„ä»¶å·²å®‰è£…ã€‚", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -11249,7 +11313,7 @@ namespace IPTVLiveChecker
             }
             catch (Exception ex)
             {
-                DarkMessageBox.Show("Ô¤ÀÀÊ§°Ü£º" + ex.Message, "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DarkMessageBox.Show("é¢„è§ˆå¤±è´¥ï¼š" + ex.Message, "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -11306,7 +11370,7 @@ namespace IPTVLiveChecker
                 {
                     var row = dgvData.SelectedRows[0];
                     string backupResolution = row.Cells[3].Value?.ToString() ?? "";
-                    if (!string.IsNullOrWhiteSpace(backupResolution) && backupResolution != "0x0" && backupResolution != "Î´¼ì²â")
+                    if (!string.IsNullOrWhiteSpace(backupResolution) && backupResolution != "0x0" && backupResolution != "æœªæ£€æµ‹")
                     {
                         _currentResolution = backupResolution;
                     }
@@ -11325,8 +11389,8 @@ namespace IPTVLiveChecker
                 {
                     using (OpenFileDialog ofd = new OpenFileDialog())
                     {
-                        ofd.Filter = "²¥·ÅÆ÷³ÌĞò|*.exe|ËùÓĞÎÄ¼ş|*.*";
-                        ofd.Title = "Î´ÕÒµ½FFplay£¬ÇëÑ¡Ôñ²¥·ÅÆ÷exeÎÄ¼ş£¨ffplay.exe/vlc.exe/potplayer/mpv.exeµÈ£©";
+                        ofd.Filter = "æ’­æ”¾å™¨ç¨‹åº|*.exe|æ‰€æœ‰æ–‡ä»¶|*.*";
+                        ofd.Title = "æœªæ‰¾åˆ°FFplayï¼Œè¯·é€‰æ‹©æ’­æ”¾å™¨exeæ–‡ä»¶ï¼ˆffplay.exe/vlc.exe/potplayer/mpv.exeç­‰ï¼‰";
                         if (ofd.ShowDialog() == DialogResult.OK)
                         {
                             string selected = ofd.FileName;
@@ -11388,7 +11452,7 @@ namespace IPTVLiveChecker
             args.Append("-autoexit ");
             args.Append("-stats ");
 
-            // ÊµÊ±²¥·ÅÓÅ»¯²ÎÊı - ¼õÉÙ»º³å£¬½µµÍÑÓ³Ù
+            // å®æ—¶æ’­æ”¾ä¼˜åŒ–å‚æ•° - å‡å°‘ç¼“å†²ï¼Œé™ä½å»¶è¿Ÿ
             args.Append("-fflags +fastseek+genpts+nobuffer ");
             args.Append("-flags +low_delay ");
             args.Append("-framedrop ");
@@ -11411,7 +11475,7 @@ namespace IPTVLiveChecker
 
             if (url.StartsWith("rtmp://", StringComparison.OrdinalIgnoreCase))
             {
-                // genptsÒÑÔÚfflagsÖĞ
+                // genptså·²åœ¨fflagsä¸­
             }
 
             args.Append($"\"{url}\"");
@@ -11486,11 +11550,11 @@ namespace IPTVLiveChecker
                     var match = System.Text.RegularExpressions.Regex.Match(line, @"Video:\s*([^\s,]+)");
                     if (match.Success) codec = match.Groups[1].Value.ToUpper();
 
-                    // ÏÈÅÅ³ı [0x0] µÈÁ÷Ë÷Òı±êÊ¶£¬ÔÙÆ¥ÅäÊµ¼Ê·Ö±æÂÊ
+                    // å…ˆæ’é™¤ [0x0] ç­‰æµç´¢å¼•æ ‡è¯†ï¼Œå†åŒ¹é…å®é™…åˆ†è¾¨ç‡
                     string videoPart = line;
                     int videoIdx = videoPart.IndexOf("Video:");
                     if (videoIdx >= 0) videoPart = videoPart.Substring(videoIdx);
-                    // ÒÆ³ı [0x0] ¸ñÊ½µÄÁ÷Ë÷Òı
+                    // ç§»é™¤ [0x0] æ ¼å¼çš„æµç´¢å¼•
                     videoPart = System.Text.RegularExpressions.Regex.Replace(videoPart, @"\[\d+x\d+\]", "");
                     match = System.Text.RegularExpressions.Regex.Match(videoPart, @"(\d{2,5})x(\d{2,5})");
                     if (match.Success) resolution = $"{match.Groups[1].Value}x{match.Groups[2].Value}";
@@ -11525,7 +11589,7 @@ namespace IPTVLiveChecker
                     if (string.IsNullOrEmpty(audioChannels))
                     {
                         match = System.Text.RegularExpressions.Regex.Match(line, @"(\d+)\s*channels?");
-                        if (match.Success) audioChannels = $"{match.Groups[1].Value}ÉùµÀ";
+                        if (match.Success) audioChannels = $"{match.Groups[1].Value}å£°é“";
                     }
 
                     match = System.Text.RegularExpressions.Regex.Match(line, @"(\d+)\s*bps");
@@ -11553,10 +11617,10 @@ namespace IPTVLiveChecker
                     if (match.Success) _currentSize = $"{match.Groups[1].Value} bytes";
 
                     match = System.Text.RegularExpressions.Regex.Match(line, @"decoded=\s*(\d+)");
-                    if (match.Success) _currentDecodedFrames = $"ÒÑ½âÂë: {match.Groups[1].Value}";
+                    if (match.Success) _currentDecodedFrames = $"å·²è§£ç : {match.Groups[1].Value}";
 
                     match = System.Text.RegularExpressions.Regex.Match(line, @"displayed=\s*(\d+)");
-                    if (match.Success) _currentDisplayedFrames = $"ÒÑÏÔÊ¾: {match.Groups[1].Value}";
+                    if (match.Success) _currentDisplayedFrames = $"å·²æ˜¾ç¤º: {match.Groups[1].Value}";
                 }
 
                 if (line.Contains("KB queue:"))
@@ -11610,7 +11674,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// µÚÈı·½²¥·ÅÆ÷²¥·Å
+        /// ç¬¬ä¸‰æ–¹æ’­æ”¾å™¨æ’­æ”¾
         /// </summary>
         private void PlayChannelCustom(string url)
         {
@@ -11618,7 +11682,7 @@ namespace IPTVLiveChecker
             {
                 if (string.IsNullOrWhiteSpace(customPlayerPath) || !File.Exists(customPlayerPath))
                 {
-                    DarkMessageBox.Show("Î´ÉèÖÃµÚÈı·½²¥·ÅÆ÷Â·¾¶»òÎÄ¼ş²»´æÔÚ¡£", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    DarkMessageBox.Show("æœªè®¾ç½®ç¬¬ä¸‰æ–¹æ’­æ”¾å™¨è·¯å¾„æˆ–æ–‡ä»¶ä¸å­˜åœ¨ã€‚", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     SetCustomPlayerPath();
                     return;
                 }
@@ -11631,29 +11695,29 @@ namespace IPTVLiveChecker
             }
             catch (Exception ex)
             {
-                DarkMessageBox.Show($"µÚÈı·½²¥·ÅÆ÷²¥·ÅÊ§°Ü£º\n{ex.Message}", "²¥·ÅÊ§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DarkMessageBox.Show($"ç¬¬ä¸‰æ–¹æ’­æ”¾å™¨æ’­æ”¾å¤±è´¥ï¼š\n{ex.Message}", "æ’­æ”¾å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
         /// <summary>
-        /// ÉèÖÃµÚÈı·½²¥·ÅÆ÷Â·¾¶
+        /// è®¾ç½®ç¬¬ä¸‰æ–¹æ’­æ”¾å™¨è·¯å¾„
         /// </summary>
         private void SetCustomPlayerPath()
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
-                ofd.Filter = "¿ÉÖ´ĞĞÎÄ¼ş|*.exe|ËùÓĞÎÄ¼ş|*.*";
-                ofd.Title = "Ñ¡Ôñ²¥·ÅÆ÷exeÎÄ¼ş£¨Èçvlc.exe¡¢mpv.exe¡¢potplayerµÈ£©";
+                ofd.Filter = "å¯æ‰§è¡Œæ–‡ä»¶|*.exe|æ‰€æœ‰æ–‡ä»¶|*.*";
+                ofd.Title = "é€‰æ‹©æ’­æ”¾å™¨exeæ–‡ä»¶ï¼ˆå¦‚vlc.exeã€mpv.exeã€potplayerç­‰ï¼‰";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     customPlayerPath = ofd.FileName;
-                    DarkMessageBox.Show($"ÒÑÉèÖÃµÚÈı·½²¥·ÅÆ÷£º\n{customPlayerPath}", "ÉèÖÃ³É¹¦", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DarkMessageBox.Show($"å·²è®¾ç½®ç¬¬ä¸‰æ–¹æ’­æ”¾å™¨ï¼š\n{customPlayerPath}", "è®¾ç½®æˆåŠŸ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
 
         /// <summary>
-        /// ·Ö×éÉ¸Ñ¡¸Ä±ä
+        /// åˆ†ç»„ç­›é€‰æ”¹å˜
         /// </summary>
         private void CboGroup_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -11662,7 +11726,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ¸ù¾İallChannelsºÍÉ¸Ñ¡Ìõ¼şË¢ĞÂ±í¸ñ
+        /// æ ¹æ®allChannelså’Œç­›é€‰æ¡ä»¶åˆ·æ–°è¡¨æ ¼
         /// </summary>
         private void RefreshGrid()
         {
@@ -11670,14 +11734,14 @@ namespace IPTVLiveChecker
             dgvData.SuspendLayout();
             try
             {
-                string selectedGroup = cboGroup?.SelectedItem?.ToString() ?? "È«²¿";
+                string selectedGroup = cboGroup?.SelectedItem?.ToString() ?? "å…¨éƒ¨";
                 string searchText = GetSearchText();
 
                 List<ChannelInfo> filteredChannels = new List<ChannelInfo>();
                 foreach (var ch in allChannels)
                 {
-                    string chGroup = string.IsNullOrWhiteSpace(ch.Group) ? "Î´·Ö×é" : ch.Group;
-                    bool matchGroup = selectedGroup == "È«²¿" || chGroup == selectedGroup;
+                    string chGroup = string.IsNullOrWhiteSpace(ch.Group) ? "æœªåˆ†ç»„" : ch.Group;
+                    bool matchGroup = selectedGroup == "å…¨éƒ¨" || chGroup == selectedGroup;
                     bool matchSearch = string.IsNullOrWhiteSpace(searchText) ||
                         ch.Name.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
                         MatchPinyinAbbreviation(ch.Name, searchText);
@@ -11703,7 +11767,7 @@ namespace IPTVLiveChecker
                     row.Cells[2].Value = ch.Location;
                     row.Cells[3].Value = ch.Resolution;
                     row.Cells[4].Value = ch.Speed;
-                    row.Cells[5].Value = string.IsNullOrWhiteSpace(ch.Group) ? "Î´·Ö×é" : ch.Group;
+                    row.Cells[5].Value = string.IsNullOrWhiteSpace(ch.Group) ? "æœªåˆ†ç»„" : ch.Group;
                     row.Cells[6].Value = ch.Status;
                     row.Cells[7].Value = "";
                 }
@@ -11718,17 +11782,17 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// »ñÈ¡ËÑË÷¿òÎÄ±¾£¨ºöÂÔÕ¼Î»·û£©
+        /// è·å–æœç´¢æ¡†æ–‡æœ¬ï¼ˆå¿½ç•¥å ä½ç¬¦ï¼‰
         /// </summary>
         private string GetSearchText()
         {
             if (txtSearchBox == null) return "";
-            if (txtSearchBox.Text == "ÊäÈëËÑË÷ÄÚÈİ£¬°´ÏÂ»Ø³µ¼üËÑË÷") return "";
+            if (txtSearchBox.Text == "è¾“å…¥æœç´¢å†…å®¹ï¼ŒæŒ‰ä¸‹å›è½¦é”®æœç´¢") return "";
             return txtSearchBox.Text;
         }
 
         /// <summary>
-        /// Æ´ÒôËõĞ´Æ¥Åä
+        /// æ‹¼éŸ³ç¼©å†™åŒ¹é…
         /// </summary>
         private bool MatchPinyinAbbreviation(string name, string keyword)
         {
@@ -11740,7 +11804,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// »ñÈ¡ÖĞÎÄÃû³ÆµÄÆ´ÒôÊ××ÖÄ¸ËõĞ´
+        /// è·å–ä¸­æ–‡åç§°çš„æ‹¼éŸ³é¦–å­—æ¯ç¼©å†™
         /// </summary>
         private string GetPinyinAbbreviation(string name)
         {
@@ -11762,7 +11826,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÅĞ¶ÏÊÇ·ñÎªÖĞÎÄ×Ö·û
+        /// åˆ¤æ–­æ˜¯å¦ä¸ºä¸­æ–‡å­—ç¬¦
         /// </summary>
         private bool IsChineseChar(char c)
         {
@@ -11770,14 +11834,14 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// »ñÈ¡ÖĞÎÄ×Ö·ûµÄÆ´ÒôÊ××ÖÄ¸
+        /// è·å–ä¸­æ–‡å­—ç¬¦çš„æ‹¼éŸ³é¦–å­—æ¯
         /// </summary>
         private char GetPinyinFirstLetter(char c)
         {
             if (!IsChineseChar(c))
                 return char.ToLower(c);
 
-            string[] pinyinTable = { "°¡", "°Å", "²Á", "´î", "¶ê", "·¢", "¸Á", "¹ş", "»÷", "¿¦", "À¬", "Âè", "ÄÃ", "Å¶", "Å¾", "ÆÚ", "È»", "Èö", "Ëú", "ÍÚ", "Îô", "Ñ¹", "ÔÑ" };
+            string[] pinyinTable = { "å•Š", "èŠ­", "æ“¦", "æ­", "è›¾", "å‘", "å™¶", "å“ˆ", "å‡»", "å–€", "åƒ", "å¦ˆ", "æ‹¿", "å“¦", "å•ª", "æœŸ", "ç„¶", "æ’’", "å¡Œ", "æŒ–", "æ˜”", "å‹", "åŒ" };
             char[] letters = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'w', 'x', 'y', 'z' };
 
             for (int i = 0; i < pinyinTable.Length; i++)
@@ -11791,14 +11855,14 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ¸üĞÂ·Ö×éÏÂÀ­¿òÑ¡Ïî
+        /// æ›´æ–°åˆ†ç»„ä¸‹æ‹‰æ¡†é€‰é¡¹
         /// </summary>
         private void UpdateGroupFilter()
         {
-            var groups = allChannels.Select(c => string.IsNullOrWhiteSpace(c.Group) ? "Î´·Ö×é" : c.Group)
+            var groups = allChannels.Select(c => string.IsNullOrWhiteSpace(c.Group) ? "æœªåˆ†ç»„" : c.Group)
                 .Distinct().OrderBy(g => g).ToList();
             cboGroup.Items.Clear();
-            cboGroup.Items.Add("È«²¿");
+            cboGroup.Items.Add("å…¨éƒ¨");
             foreach (var g in groups) cboGroup.Items.Add(g);
             cboGroup.SelectedIndex = 0;
             cboGroup.Visible = allChannels.Count > 0;
@@ -11824,23 +11888,23 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÖØĞÂ¼ÆËãÍ³¼ÆÊı¾İ
+        /// é‡æ–°è®¡ç®—ç»Ÿè®¡æ•°æ®
         /// </summary>
         private void RecalcStats()
         {
-            detectedCount = allChannels.Count(c => c.Status != "Î´¼ì²â" && c.Status != "¼ì²âÖĞ");
-            availableCount = allChannels.Count(c => c.Status == "¿ÉÓÃ");
+            detectedCount = allChannels.Count(c => c.Status != "æœªæ£€æµ‹" && c.Status != "æ£€æµ‹ä¸­");
+            availableCount = allChannels.Count(c => c.Status == "å¯ç”¨");
         }
 
         /// <summary>
-        /// Ñ¡ÔñÎÄ¼ş
+        /// é€‰æ‹©æ–‡ä»¶
         /// </summary>
         private void BtnSelectFile_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
-                ofd.Filter = "m3u/txtÎÄ¼ş|*.m3u;*.txt|m3uÎÄ¼ş|*.m3u|txtÎÄ¼ş|*.txt|ËùÓĞÎÄ¼ş|*.*";
-                ofd.Title = "Ñ¡Ôñm3u»òtxtÎÄ¼ş";
+                ofd.Filter = "m3u/txtæ–‡ä»¶|*.m3u;*.txt|m3uæ–‡ä»¶|*.m3u|txtæ–‡ä»¶|*.txt|æ‰€æœ‰æ–‡ä»¶|*.*";
+                ofd.Title = "é€‰æ‹©m3uæˆ–txtæ–‡ä»¶";
                 ofd.Multiselect = true;
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
@@ -11860,23 +11924,23 @@ namespace IPTVLiveChecker
                     UpdateStatusBar();
                     UpdateEmptyState();
                     UpdateActionButtonsVisibility();
-                    string msg = $"³É¹¦µ¼Èë {newCount} ¸öÆµµÀ";
-                    if (beforeCount > 0) msg += $"£¨×·¼Óµ½ÁĞ±í£¬×Ü¼Æ {totalCount} ¸ö£©";
-                    if (dupCount > 0) msg += $"\nÌø¹ıÖØ¸´Á´½Ó {dupCount} ¸ö";
-                    DarkMessageBox.Show(msg, "µ¼Èë³É¹¦", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    string msg = $"æˆåŠŸå¯¼å…¥ {newCount} ä¸ªé¢‘é“";
+                    if (beforeCount > 0) msg += $"ï¼ˆè¿½åŠ åˆ°åˆ—è¡¨ï¼Œæ€»è®¡ {totalCount} ä¸ªï¼‰";
+                    if (dupCount > 0) msg += $"\nè·³è¿‡é‡å¤é“¾æ¥ {dupCount} ä¸ª";
+                    DarkMessageBox.Show(msg, "å¯¼å…¥æˆåŠŸ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
 
         /// <summary>
-        /// ¿ªÊ¼/ÔİÍ£/¼ÌĞø¼ì²â
+        /// å¼€å§‹/æš‚åœ/ç»§ç»­æ£€æµ‹
         /// </summary>
         private async void BtnStartDetect_Click(object sender, EventArgs e)
         {
             if (isDetecting && !isPaused)
             {
                 isPaused = true;
-                btnStartDetect.Text = "? ¼ÌĞø¼ì²â";
+                btnStartDetect.Text = "â–¶ ç»§ç»­æ£€æµ‹";
                 btnStartDetect.BackColor = ColorGreen;
                 btnStartDetect.ForeColor = Color.White;
                 return;
@@ -11884,14 +11948,14 @@ namespace IPTVLiveChecker
             if (isDetecting && isPaused)
             {
                 isPaused = false;
-                btnStartDetect.Text = "? ÔİÍ£¼ì²â";
+                btnStartDetect.Text = "â¸ æš‚åœæ£€æµ‹";
                 btnStartDetect.BackColor = ColorOrange;
                 btnStartDetect.ForeColor = Color.White;
                 return;
             }
             if (allChannels.Count == 0)
             {
-                DarkMessageBox.Show("ÇëÏÈµ¼ÈëÆµµÀÊı¾İ", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DarkMessageBox.Show("è¯·å…ˆå¯¼å…¥é¢‘é“æ•°æ®", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -11899,7 +11963,7 @@ namespace IPTVLiveChecker
 
             isDetecting = true;
             isPaused = false;
-            btnStartDetect.Text = "? ÔİÍ£¼ì²â";
+            btnStartDetect.Text = "â¸ æš‚åœæ£€æµ‹";
             btnStartDetect.BackColor = ColorOrange;
             btnStartDetect.ForeColor = Color.White;
             if (btnScanSource != null) btnScanSource.Enabled = false;
@@ -11908,26 +11972,26 @@ namespace IPTVLiveChecker
 
             isDetecting = false;
             isPaused = false;
-            btnStartDetect.Text = "? ¿ªÊ¼¼ì²â";
+            btnStartDetect.Text = "âº å¼€å§‹æ£€æµ‹";
             btnStartDetect.BackColor = theme.InfoColor;
             btnStartDetect.ForeColor = Color.White;
             if (btnScanSource != null) btnScanSource.Enabled = true;
         }
 
         /// <summary>
-        /// µ¼³ö
+        /// å¯¼å‡º
         /// </summary>
         private void BtnExport_Click(object sender, EventArgs e)
         {
             if (allChannels.Count == 0)
             {
-                DarkMessageBox.Show("Ã»ÓĞÊı¾İ¿Éµ¼³ö", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DarkMessageBox.Show("æ²¡æœ‰æ•°æ®å¯å¯¼å‡º", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
-                sfd.Filter = "m3uÎÄ¼ş(±ê×¼)|*.m3u|m3uÎÄ¼ş(°´Ãû³Æ·Ö×é)|*.m3u|txtÎÄ¼ş(±ê×¼)|*.txt|txtÎÄ¼ş(ºÏ²¢ÆµµÀ)|*.txt";
-                sfd.Title = "Ñ¡Ôñµ¼³ö¸ñÊ½";
+                sfd.Filter = "m3uæ–‡ä»¶(æ ‡å‡†)|*.m3u|m3uæ–‡ä»¶(æŒ‰åç§°åˆ†ç»„)|*.m3u|txtæ–‡ä»¶(æ ‡å‡†)|*.txt|txtæ–‡ä»¶(åˆå¹¶é¢‘é“)|*.txt";
+                sfd.Title = "é€‰æ‹©å¯¼å‡ºæ ¼å¼";
                 sfd.FileName = "channels";
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
@@ -11945,7 +12009,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ¸üĞÂ×´Ì¬À¸Ò©ÍèĞÎ×´Region
+        /// æ›´æ–°çŠ¶æ€æ è¯ä¸¸å½¢çŠ¶Region
         /// </summary>
         private void UpdateStatusBarRegion()
         {
@@ -11958,7 +12022,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÈıµÈ·Ö²¼¾Ö×´Ì¬À¸±êÇ©
+        /// ä¸‰ç­‰åˆ†å¸ƒå±€çŠ¶æ€æ æ ‡ç­¾
         /// </summary>
         private void LayoutStatusBar(Panel statusBar)
         {
@@ -11983,7 +12047,7 @@ namespace IPTVLiveChecker
 
             int progTotalW = lblProgressText.Width + SX(6) + lblPercent.Width;
             int progX;
-            if (lblProgressText.Text.Contains("»ªÊÓÃÀ´ï"))
+            if (lblProgressText.Text.Contains("åè§†ç¾è¾¾"))
             {
                 progX = (w - progTotalW) / 2;
             }
@@ -12010,7 +12074,7 @@ namespace IPTVLiveChecker
                 if (titleBarPanel != null)
                 {
                     titleBarPanel.BackColor = theme.Bg;
-                    Color titleBtnHover = theme.Name == "ÉîÉ«" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(230, 230, 235);
+                    Color titleBtnHover = theme.Name == "æ·±è‰²" ? Color.FromArgb(55, 55, 65) : Color.FromArgb(230, 230, 235);
                     Color titleBtnFg = theme.TextSecondary;
                     if (btnThemeToggle != null)
                     {
@@ -12279,14 +12343,14 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ¸üĞÂ×´Ì¬À¸
+        /// æ›´æ–°çŠ¶æ€æ 
         /// </summary>
         private void UpdateStatusBar()
         {
             if (lblDetected != null && lblAvailable != null && lblPercent != null && statusBarRef != null)
             {
-                lblDetected.Text = $"ÒÑ¼ì²â: {detectedCount}/{totalCount}";
-                lblAvailable.Text = $"¿ÉÓÃ: {availableCount}";
+                lblDetected.Text = $"å·²æ£€æµ‹: {detectedCount}/{totalCount}";
+                lblAvailable.Text = $"å¯ç”¨: {availableCount}";
                 double pct = totalCount > 0 ? (double)detectedCount / totalCount * 100 : 0;
                 lblPercent.Text = $"{pct:F2}%";
 
@@ -12351,11 +12415,11 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ËÑË÷
+        /// æœç´¢
         /// </summary>
         private void SearchChannels(string keyword)
         {
-            if (string.IsNullOrWhiteSpace(keyword) || keyword == "ÊäÈëËÑË÷ÄÚÈİ£¬°´ÏÂ»Ø³µ¼üËÑË÷")
+            if (string.IsNullOrWhiteSpace(keyword) || keyword == "è¾“å…¥æœç´¢å†…å®¹ï¼ŒæŒ‰ä¸‹å›è½¦é”®æœç´¢")
             {
                 foreach (var ch in allChannels) ch.Visible = true;
                 RefreshGrid();
@@ -12363,11 +12427,11 @@ namespace IPTVLiveChecker
             }
             RefreshGrid();
             if (dgvData.Rows.Count == 0)
-                DarkMessageBox.Show($"Î´ÕÒµ½°üº¬ \"{keyword}\" µÄÆµµÀ", "ËÑË÷½á¹û", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DarkMessageBox.Show($"æœªæ‰¾åˆ°åŒ…å« \"{keyword}\" çš„é¢‘é“", "æœç´¢ç»“æœ", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         /// <summary>
-        /// ´ÓÎÄ¼şµ¼Èë
+        /// ä»æ–‡ä»¶å¯¼å…¥
         /// </summary>
         private (int newItems, int dupItems) ImportFromFile(string filePath, HashSet<string> existingUrls = null)
         {
@@ -12419,7 +12483,7 @@ namespace IPTVLiveChecker
                                 u.StartsWith("rtmp", StringComparison.OrdinalIgnoreCase) ||
                                 u.StartsWith("rtsp", StringComparison.OrdinalIgnoreCase))
                             {
-                                if (string.IsNullOrWhiteSpace(n)) n = "Î´ÃüÃûÆµµÀ";
+                                if (string.IsNullOrWhiteSpace(n)) n = "æœªå‘½åé¢‘é“";
                                 if (u.Contains("#"))
                                 {
                                     string[] urls = u.Split(new[] { '#' }, StringSplitOptions.RemoveEmptyEntries);
@@ -12442,7 +12506,7 @@ namespace IPTVLiveChecker
                                                 Resolution = "",
                                                 Speed = "",
                                                 Group = currentGroup,
-                                                Status = "Î´¼ì²â",
+                                                Status = "æœªæ£€æµ‹",
                                                 Visible = true
                                             });
                                             existingUrls.Add(urlKey);
@@ -12464,7 +12528,7 @@ namespace IPTVLiveChecker
                              line.StartsWith("rtmp", StringComparison.OrdinalIgnoreCase) ||
                              line.StartsWith("rtsp", StringComparison.OrdinalIgnoreCase)))
                         {
-                            if (string.IsNullOrWhiteSpace(currentName)) currentName = "Î´ÃüÃûÆµµÀ";
+                            if (string.IsNullOrWhiteSpace(currentName)) currentName = "æœªå‘½åé¢‘é“";
                             urlToAdd = line;
                             nameToAdd = currentName;
                             groupToAdd = currentGroup;
@@ -12501,7 +12565,7 @@ namespace IPTVLiveChecker
                                     Resolution = "",
                                     Speed = "",
                                     Group = groupToAdd ?? "",
-                                    Status = "Î´¼ì²â",
+                                    Status = "æœªæ£€æµ‹",
                                     Visible = true
                                 });
                                 existingUrls.Add(urlKey);
@@ -12513,13 +12577,13 @@ namespace IPTVLiveChecker
             }
             catch (Exception ex)
             {
-                DarkMessageBox.Show($"µ¼ÈëÎÄ¼şÊ§°Ü: {ex.Message}", "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DarkMessageBox.Show($"å¯¼å…¥æ–‡ä»¶å¤±è´¥: {ex.Message}", "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return (newItems, dupItems);
         }
 
         /// <summary>
-        /// ´Ó¼ôÌù°åÕ³Ìù
+        /// ä»å‰ªè´´æ¿ç²˜è´´
         /// </summary>
         private void PasteFromClipboard()
         {
@@ -12528,7 +12592,7 @@ namespace IPTVLiveChecker
                 string text = Clipboard.GetText();
                 if (string.IsNullOrWhiteSpace(text))
                 {
-                    DarkMessageBox.Show("¼ôÌù°åÎª¿Õ", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    DarkMessageBox.Show("å‰ªè´´æ¿ä¸ºç©º", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
                 string[] lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -12561,7 +12625,7 @@ namespace IPTVLiveChecker
                                 chName = tn;
                         }
 
-                        if (string.IsNullOrWhiteSpace(chName)) chName = "Õ³ÌùÁ´½Ó";
+                        if (string.IsNullOrWhiteSpace(chName)) chName = "ç²˜è´´é“¾æ¥";
                         pendingName = chName;
                         pendingGroup = grp;
                         continue;
@@ -12606,7 +12670,7 @@ namespace IPTVLiveChecker
                                 Name = pendingName,
                                 Url = u,
                                 Group = pendingGroup,
-                                Status = "Î´¼ì²â",
+                                Status = "æœªæ£€æµ‹",
                                 Visible = true
                             });
                             existingUrls.Add(urlKey);
@@ -12652,7 +12716,7 @@ namespace IPTVLiveChecker
                         }
                         if (uValid)
                         {
-                            if (string.IsNullOrWhiteSpace(n)) n = "Õ³ÌùÁ´½Ó";
+                            if (string.IsNullOrWhiteSpace(n)) n = "ç²˜è´´é“¾æ¥";
                             if (u.Contains("#"))
                             {
                                 string[] urls = u.Split(new[] { '#' }, StringSplitOptions.RemoveEmptyEntries);
@@ -12665,7 +12729,7 @@ namespace IPTVLiveChecker
                                         dupCount++;
                                     else
                                     {
-                                        allChannels.Add(new ChannelInfo { Name = n, Url = trimmedUrl, Status = "Î´¼ì²â", Visible = true });
+                                        allChannels.Add(new ChannelInfo { Name = n, Url = trimmedUrl, Status = "æœªæ£€æµ‹", Visible = true });
                                         existingUrls.Add(singleUrlKey);
                                         added++;
                                     }
@@ -12680,7 +12744,7 @@ namespace IPTVLiveChecker
                             }
                             else
                             {
-                                allChannels.Add(new ChannelInfo { Name = n, Url = u, Status = "Î´¼ì²â", Visible = true });
+                                allChannels.Add(new ChannelInfo { Name = n, Url = u, Status = "æœªæ£€æµ‹", Visible = true });
                                 existingUrls.Add(urlKey);
                                 added++;
                             }
@@ -12707,7 +12771,7 @@ namespace IPTVLiveChecker
                         }
                         else
                         {
-                            allChannels.Add(new ChannelInfo { Name = "Õ³ÌùÁ´½Ó", Url = cleanedUrl, Status = "Î´¼ì²â", Visible = true });
+                            allChannels.Add(new ChannelInfo { Name = "ç²˜è´´é“¾æ¥", Url = cleanedUrl, Status = "æœªæ£€æµ‹", Visible = true });
                             existingUrls.Add(urlKey);
                             added++;
                         }
@@ -12734,7 +12798,7 @@ namespace IPTVLiveChecker
                                     Resolution = p.Length > 3 ? p[3].Trim() : "",
                                     Speed = p.Length > 4 ? p[4].Trim() : "",
                                     Group = p.Length > 5 ? p[5].Trim() : "",
-                                    Status = "Î´¼ì²â",
+                                    Status = "æœªæ£€æµ‹",
                                     Visible = true
                                 });
                                 existingUrls.Add(urlKey);
@@ -12750,17 +12814,17 @@ namespace IPTVLiveChecker
                 UpdateEmptyState();
                 if (added > 0)
                 {
-                    string msg = $"³É¹¦Õ³Ìù {added} ÌõÁ´½Ó";
-                    if (dupCount > 0) msg += $"\nÌø¹ıÖØ¸´Á´½Ó {dupCount} Ìõ";
-                    DarkMessageBox.Show(msg, "Õ³Ìù³É¹¦", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    string msg = $"æˆåŠŸç²˜è´´ {added} æ¡é“¾æ¥";
+                    if (dupCount > 0) msg += $"\nè·³è¿‡é‡å¤é“¾æ¥ {dupCount} æ¡";
+                    DarkMessageBox.Show(msg, "ç²˜è´´æˆåŠŸ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
-            catch (Exception ex) { DarkMessageBox.Show($"Õ³ÌùÊ§°Ü: {ex.Message}", "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            catch (Exception ex) { DarkMessageBox.Show($"ç²˜è´´å¤±è´¥: {ex.Message}", "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
         /// <summary>
-        /// ¼ì²âµ¥ÌõÖ±²¥Á´½Ó
-        /// ·µ»ØÊÇ·ñ¿ÉÓÃ
+        /// æ£€æµ‹å•æ¡ç›´æ’­é“¾æ¥
+        /// è¿”å›æ˜¯å¦å¯ç”¨
         /// </summary>
         private async Task<bool> DetectSingleChannel(ChannelInfo ch, int timeout, CancellationToken token)
         {
@@ -12922,7 +12986,7 @@ namespace IPTVLiveChecker
                     }
 
                     if (ok && string.IsNullOrEmpty(resolution))
-                        resolution = "Ö±²¥";
+                        resolution = "ç›´æ’­";
                 }
                 else if (ch.Url.StartsWith("rtmp", StringComparison.OrdinalIgnoreCase) ||
                          ch.Url.StartsWith("rtsp", StringComparison.OrdinalIgnoreCase))
@@ -12930,7 +12994,7 @@ namespace IPTVLiveChecker
                     ok = true;
                     sw.Stop();
                     speed = $"{sw.ElapsedMilliseconds}ms";
-                    resolution = "Ö±²¥";
+                    resolution = "ç›´æ’­";
                     if (string.IsNullOrEmpty(location))
                         location = ExtractLocationFromUrl(ch.Url);
                 }
@@ -12945,7 +13009,7 @@ namespace IPTVLiveChecker
             {
                 sw.Stop();
                 ok = false;
-                speed = "³¬Ê±";
+                speed = "è¶…æ—¶";
             }
 
             if (ipLocTask != null)
@@ -12960,7 +13024,7 @@ namespace IPTVLiveChecker
             if (string.IsNullOrEmpty(location))
                 location = ExtractLocationFromUrl(ch.Url);
 
-            ch.Status = ok ? "¿ÉÓÃ" : "²»¿ÉÓÃ";
+            ch.Status = ok ? "å¯ç”¨" : "ä¸å¯ç”¨";
             ch.Speed = speed;
             ch.Resolution = resolution;
             ch.Location = location;
@@ -12968,7 +13032,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ÕæÊµHTTPÒì²½¼ì²â£¨²¢·¢¼ì²â£¬UI½ÚÁ÷¸üĞÂ£©
+        /// çœŸå®HTTPå¼‚æ­¥æ£€æµ‹ï¼ˆå¹¶å‘æ£€æµ‹ï¼ŒUIèŠ‚æµæ›´æ–°ï¼‰
         /// </summary>
         private async System.Threading.Tasks.Task StartDetection()
         {
@@ -12981,7 +13045,7 @@ namespace IPTVLiveChecker
             totalCount = allChannels.Count;
             Parallel.ForEach(allChannels, ch =>
             {
-                ch.Status = "Î´¼ì²â";
+                ch.Status = "æœªæ£€æµ‹";
                 ch.Speed = "";
                 if (string.IsNullOrWhiteSpace(ch.Location))
                     ch.Location = ExtractLocationFromUrl(ch.Url);
@@ -12991,7 +13055,7 @@ namespace IPTVLiveChecker
 
             if (lblProgressText != null && !lblProgressText.IsDisposed)
             {
-                lblProgressText.Text = "¼ì²â½ø¶È:";
+                lblProgressText.Text = "æ£€æµ‹è¿›åº¦:";
             }
             RefreshGrid();
             UpdateStatusBar();
@@ -13034,7 +13098,7 @@ namespace IPTVLiveChecker
                             }
                             token.ThrowIfCancellationRequested();
 
-                            ch.Status = "¼ì²âÖĞ";
+                            ch.Status = "æ£€æµ‹ä¸­";
                             var sw = System.Diagnostics.Stopwatch.StartNew();
                             bool ok = false;
                             string speed = "";
@@ -13156,7 +13220,7 @@ namespace IPTVLiveChecker
                                 ok = true;
                                 sw.Stop();
                                 speed = $"{sw.ElapsedMilliseconds}ms";
-                                resolution = "Ö±²¥";
+                                resolution = "ç›´æ’­";
                                 if (string.IsNullOrEmpty(location))
                                     location = ExtractLocationFromUrl(ch.Url);
                             }
@@ -13177,7 +13241,7 @@ namespace IPTVLiveChecker
                             }
 
                             if (ok && string.IsNullOrEmpty(resolution))
-                                resolution = "Ö±²¥";
+                                resolution = "ç›´æ’­";
 
                             if (ipLocTask != null && ok)
                             {
@@ -13191,7 +13255,7 @@ namespace IPTVLiveChecker
                             if (string.IsNullOrEmpty(location))
                                 location = ExtractLocationFromUrl(ch.Url);
 
-                        ch.Status = ok ? "¿ÉÓÃ" : "²»¿ÉÓÃ";
+                        ch.Status = ok ? "å¯ç”¨" : "ä¸å¯ç”¨";
                         ch.Speed = speed;
                         ch.Resolution = resolution;
                         ch.Location = location;
@@ -13214,7 +13278,7 @@ namespace IPTVLiveChecker
                 catch (OperationCanceledException) { }
             }
 
-            var failedChannels = allChannels.Where(c => c.Status == "²»¿ÉÓÃ").ToList();
+            var failedChannels = allChannels.Where(c => c.Status == "ä¸å¯ç”¨").ToList();
             if (failedChannels.Count > 0 && !token.IsCancellationRequested)
             {
                 int fallbackConcurrency = Math.Max(1, Math.Min(5, concurrency / 2));
@@ -13233,7 +13297,7 @@ namespace IPTVLiveChecker
                             }
                             token.ThrowIfCancellationRequested();
 
-                            ch.Status = "¸´¼ìÖĞ";
+                            ch.Status = "å¤æ£€ä¸­";
                             Interlocked.Exchange(ref uiRefreshNeeded, 1);
                             System.Threading.Tasks.Task<string> ipLocTask = null;
                             var sw = System.Diagnostics.Stopwatch.StartNew();
@@ -13402,7 +13466,7 @@ namespace IPTVLiveChecker
                                     }
 
                                     if (ok && string.IsNullOrEmpty(resolution))
-                                        resolution = "Ö±²¥";
+                                        resolution = "ç›´æ’­";
                                 }
                                 else if (ch.Url.StartsWith("rtmp", StringComparison.OrdinalIgnoreCase) ||
                                          ch.Url.StartsWith("rtsp", StringComparison.OrdinalIgnoreCase))
@@ -13410,7 +13474,7 @@ namespace IPTVLiveChecker
                                     ok = true;
                                     sw.Stop();
                                     speed = $"{sw.ElapsedMilliseconds}ms";
-                                    resolution = "Ö±²¥";
+                                    resolution = "ç›´æ’­";
                                     if (string.IsNullOrEmpty(location))
                                         location = ExtractLocationFromUrl(ch.Url);
                                 }
@@ -13425,7 +13489,7 @@ namespace IPTVLiveChecker
                             {
                                 sw.Stop();
                                 ok = false;
-                                speed = "³¬Ê±";
+                                speed = "è¶…æ—¶";
                             }
 
                             if (ipLocTask != null)
@@ -13440,7 +13504,7 @@ namespace IPTVLiveChecker
                             if (string.IsNullOrEmpty(location))
                                 location = ExtractLocationFromUrl(ch.Url);
 
-                            ch.Status = ok ? "¿ÉÓÃ" : "²»¿ÉÓÃ";
+                            ch.Status = ok ? "å¯ç”¨" : "ä¸å¯ç”¨";
                             ch.Speed = speed;
                             ch.Resolution = resolution;
                             ch.Location = location;
@@ -13470,18 +13534,18 @@ namespace IPTVLiveChecker
             }
             if (lblProgressText != null && !lblProgressText.IsDisposed)
             {
-                lblProgressText.Text = "¼ì²âÍê³É";
+                lblProgressText.Text = "æ£€æµ‹å®Œæˆ";
             }
             RefreshGrid();
             UpdateStatusBar();
             UpdateEmptyState();
             if (!token.IsCancellationRequested)
             {
-                int failedCount = allChannels.Count(c => c.Status == "²»¿ÉÓÃ");
-                string msg = $"¼ì²âÍê³É£¡\nÒÑ¼ì²â: {detectedCount}/{totalCount}\n¿ÉÓÃ: {availableCount}";
+                int failedCount = allChannels.Count(c => c.Status == "ä¸å¯ç”¨");
+                string msg = $"æ£€æµ‹å®Œæˆï¼\nå·²æ£€æµ‹: {detectedCount}/{totalCount}\nå¯ç”¨: {availableCount}";
                 if (failedCount > 0)
-                    msg += $"\n²»¿ÉÓÃ: {failedCount}£¨ÒÑ½øĞĞ¶ş´Î¸´¼ì£©";
-                DarkMessageBox.Show(msg, "¼ì²âÍê³É", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    msg += $"\nä¸å¯ç”¨: {failedCount}ï¼ˆå·²è¿›è¡ŒäºŒæ¬¡å¤æ£€ï¼‰";
+                DarkMessageBox.Show(msg, "æ£€æµ‹å®Œæˆ", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -13514,7 +13578,7 @@ namespace IPTVLiveChecker
             }
             catch (Exception ex)
             {
-                DarkMessageBox.Show("WebView2³õÊ¼»¯Ê§°Ü: " + ex.Message, "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DarkMessageBox.Show("WebView2åˆå§‹åŒ–å¤±è´¥: " + ex.Message, "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -13533,7 +13597,7 @@ namespace IPTVLiveChecker
                         var execMethod = core.GetType().GetMethod("ExecuteScriptAsync", new[] { typeof(string) });
                         if (execMethod == null) return;
 
-                        // 1. ¼ì²âÒ³Ãæ±³¾°É«²¢µ÷Õû¹¤¾ßÀ¸
+                        // 1. æ£€æµ‹é¡µé¢èƒŒæ™¯è‰²å¹¶è°ƒæ•´å·¥å…·æ 
                         try
                         {
                             var bgTask = (System.Threading.Tasks.Task<string>)execMethod.Invoke(core, new object[] {
@@ -13558,7 +13622,7 @@ namespace IPTVLiveChecker
                         }
                         catch { }
 
-                        // 2. ×¢ÈëµÇÂ¼ĞÅÏ¢¼ÇÂ¼½Å±¾
+                        // 2. æ³¨å…¥ç™»å½•ä¿¡æ¯è®°å½•è„šæœ¬
                         try
                         {
                             string loginJs =
@@ -13596,7 +13660,7 @@ namespace IPTVLiveChecker
                         }
                         catch { }
 
-                        // ¸üĞÂ×´Ì¬À¸URL
+                        // æ›´æ–°çŠ¶æ€æ URL
                         try
                         {
                             var sourceProp = type.GetProperty("Source");
@@ -13618,7 +13682,7 @@ namespace IPTVLiveChecker
                         }
                         catch { }
 
-                        // 3. ×Ô¶¯ÌáÈ¡IP+¶Ë¿Ú
+                        // 3. è‡ªåŠ¨æå–IP+ç«¯å£
                         if (autoExtractIpPort)
                         {
                             try
@@ -13706,7 +13770,7 @@ namespace IPTVLiveChecker
                                         {
                                             var sourceProp = type.GetProperty("Source");
                                             string currentSrc = sourceProp?.GetValue(webView2)?.ToString() ?? "";
-                                            sw.WriteLine($"# ÌáÈ¡Ê±¼ä: {DateTime.Now:yyyy-MM-dd HH:mm:ss} À´Ô´: {currentSrc} ¹²{ips.Count}Ìõ");
+                                            sw.WriteLine($"# æå–æ—¶é—´: {DateTime.Now:yyyy-MM-dd HH:mm:ss} æ¥æº: {currentSrc} å…±{ips.Count}æ¡");
                                             foreach (var ip in ips)
                                             {
                                                 sw.WriteLine(ip);
@@ -13716,7 +13780,7 @@ namespace IPTVLiveChecker
                                         {
                                             webViewCboEngine.BeginInvoke(new Action(() =>
                                             {
-                                                DarkMessageBox.Show($"ÒÑÌáÈ¡ {ips.Count} ÌõIPµØÖ·\n±£´æµ½: extracted_ips.txt", "IPÌáÈ¡", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                DarkMessageBox.Show($"å·²æå– {ips.Count} æ¡IPåœ°å€\nä¿å­˜åˆ°: extracted_ips.txt", "IPæå–", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                             }));
                                         }
                                     }
@@ -13734,7 +13798,7 @@ namespace IPTVLiveChecker
         {
             try
             {
-                // Í¨¹ı·´Éä»ñÈ¡WebMessageReceivedEventArgsµÄMessageÊôĞÔ
+                // é€šè¿‡åå°„è·å–WebMessageReceivedEventArgsçš„Messageå±æ€§
                 var argsType = e.GetType();
                 var msgProp = argsType.GetProperty("Message") ?? argsType.GetProperty("TryGetWebMessageAsString");
                 string message = null;
@@ -13745,7 +13809,7 @@ namespace IPTVLiveChecker
                 }
                 else
                 {
-                    // CoreWebView2WebMessageReceivedEventArgs ÓĞ TryGetWebMessageAsString ·½·¨
+                    // CoreWebView2WebMessageReceivedEventArgs æœ‰ TryGetWebMessageAsString æ–¹æ³•
                     var tryGetMethod = argsType.GetMethod("TryGetWebMessageAsString");
                     if (tryGetMethod != null)
                     {
@@ -13755,7 +13819,7 @@ namespace IPTVLiveChecker
 
                 if (string.IsNullOrEmpty(message)) return;
 
-                // ÊÖ¶¯½âÎöJSON
+                // æ‰‹åŠ¨è§£æJSON
                 var data = new Dictionary<string, string>();
                 var matches = System.Text.RegularExpressions.Regex.Matches(message, "\"(\\w+)\":\"([^\"]*)\"");
                 foreach (System.Text.RegularExpressions.Match m in matches)
@@ -13770,12 +13834,12 @@ namespace IPTVLiveChecker
 
                     if (!string.IsNullOrEmpty(url) && !string.IsNullOrEmpty(username))
                     {
-                        // ±£´æµ½ÎÄ¼ş
+                        // ä¿å­˜åˆ°æ–‡ä»¶
                         loginDataPath = System.IO.Path.Combine(Application.StartupPath, "login_data.txt");
                         bool exists = System.IO.File.Exists(loginDataPath);
                         bool hasExisting = false;
 
-                        // ¼ì²éÊÇ·ñÒÑ´æÔÚÏàÍ¬µÄµÇÂ¼ĞÅÏ¢
+                        // æ£€æŸ¥æ˜¯å¦å·²å­˜åœ¨ç›¸åŒçš„ç™»å½•ä¿¡æ¯
                         if (exists)
                         {
                             var lines = System.IO.File.ReadAllLines(loginDataPath, Encoding.UTF8);
@@ -13793,8 +13857,8 @@ namespace IPTVLiveChecker
                         {
                             using (var sw = new System.IO.StreamWriter(loginDataPath, true, Encoding.UTF8))
                             {
-                                if (!exists) sw.WriteLine("# WebView2µÇÂ¼ĞÅÏ¢¼ÇÂ¼");
-                                sw.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {url} | ÓÃ»§Ãû: {username} | ÃÜÂë: {password}");
+                                if (!exists) sw.WriteLine("# WebView2ç™»å½•ä¿¡æ¯è®°å½•");
+                                sw.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {url} | ç”¨æˆ·å: {username} | å¯†ç : {password}");
                             }
                         }
                     }
@@ -13804,13 +13868,13 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ½âÎöÏÂÔØÖ±²¥Ô´£º´Óµ±Ç°ÍøÒ³ÌáÈ¡IP£¬°´¹æÔòÉú³ÉM3U8 URL£¬½âÎöºóÌí¼Óµ½ÁĞ±í
+        /// è§£æä¸‹è½½ç›´æ’­æºï¼šä»å½“å‰ç½‘é¡µæå–IPï¼ŒæŒ‰è§„åˆ™ç”ŸæˆM3U8 URLï¼Œè§£æåæ·»åŠ åˆ°åˆ—è¡¨
         /// </summary>
         private async System.Threading.Tasks.Task ParseAndDownloadLiveSources(object webView2, Type webView2Type, string ruleName)
         {
             try
             {
-                // 1. ´ÓÍøÒ³ÌáÈ¡IP+¶Ë¿Ú
+                // 1. ä»ç½‘é¡µæå–IP+ç«¯å£
                 string extractJs =
                     "(function() { " +
                     "  var html = document.documentElement.outerHTML; " +
@@ -13836,7 +13900,7 @@ namespace IPTVLiveChecker
                 var ipTask = (System.Threading.Tasks.Task<string>)execMethod.Invoke(core, new object[] { extractJs });
                 string ipResult = await ipTask;
 
-                // ½âÎöIPÁĞ±í
+                // è§£æIPåˆ—è¡¨
                 var ipMatches = System.Text.RegularExpressions.Regex.Matches(ipResult, "\"([^\"]+)\"");
                 var ipList = new List<string>();
                 foreach (System.Text.RegularExpressions.Match m in ipMatches)
@@ -13848,7 +13912,7 @@ namespace IPTVLiveChecker
 
                 if (ipList.Count == 0)
                 {
-                    DarkMessageBox.Show("Î´ÔÚµ±Ç°Ò³ÃæÕÒµ½IPµØÖ·", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DarkMessageBox.Show("æœªåœ¨å½“å‰é¡µé¢æ‰¾åˆ°IPåœ°å€", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -13868,17 +13932,17 @@ namespace IPTVLiveChecker
                         string port = parts[1];
                         string rootHttp = $"http://{ip}:{port}";
 
-                        if (ruleName == "ÖÇ»Û¹âÑ¸")
+                        if (ruleName == "æ™ºæ…§å…‰è¿…")
                         {
                             string url = $"{rootHttp}/ZHGXTV/Public/json/live_interface.txt";
                             bool exists = allChannels.Any(c => c.Url == url);
                             if (!exists)
                             {
-                                allChannels.Add(new ChannelInfo { Name = ipPort, Url = url, Group = "½âÎö´ı´¦Àí", Status = "´ı½âÎö", ParseDateTime = parseTime });
+                                allChannels.Add(new ChannelInfo { Name = ipPort, Url = url, Group = "è§£æå¾…å¤„ç†", Status = "å¾…è§£æ", ParseDateTime = parseTime });
                                 addedCount++;
                             }
                         }
-                        else if (ruleName == "»ªÊÓÃÀ´ï")
+                        else if (ruleName == "åè§†ç¾è¾¾")
                         {
                             var scanConfig = await ShowScanConfigDialogAsync();
                             if (scanConfig == null) continue;
@@ -13887,7 +13951,7 @@ namespace IPTVLiveChecker
 
                             if (lblProgressText != null)
                             {
-                                lblProgressText.Text = $"»ªÊÓÃÀ´ïÉ¨Ãè½ø¶È:";
+                                lblProgressText.Text = $"åè§†ç¾è¾¾æ‰«æè¿›åº¦:";
                                 lblProgressText.Refresh();
                             }
                             if (lblPercent != null)
@@ -13980,11 +14044,11 @@ namespace IPTVLiveChecker
 
                             if (lblProgressText != null && !lblProgressText.IsDisposed)
                             {
-                                lblProgressText.Text = $"»ªÊÓÃÀ´ïÉ¨ÃèÍê³É:";
+                                lblProgressText.Text = $"åè§†ç¾è¾¾æ‰«æå®Œæˆ:";
                             }
                             if (lblPercent != null && !lblPercent.IsDisposed)
                             {
-                                lblPercent.Text = $"ÕÒµ½{validResults.Count}¸ö";
+                                lblPercent.Text = $"æ‰¾åˆ°{validResults.Count}ä¸ª";
                             }
                             if (statusBarRef != null)
                                 LayoutStatusBar(statusBarRef);
@@ -13997,14 +14061,14 @@ namespace IPTVLiveChecker
                                 {
                                     string[] urlParts = result.Item1.Split('/');
                                     string cid = urlParts.Length > 1 ? urlParts[urlParts.Length - 2] : "";
-                                    allChannels.Add(new ChannelInfo { Name = $"{ipPort}_CID{cid}", Url = result.Item1, Group = "½âÎö´ı´¦Àí", Status = "´ı½âÎö", ParseDateTime = parseTime });
+                                    allChannels.Add(new ChannelInfo { Name = $"{ipPort}_CID{cid}", Url = result.Item1, Group = "è§£æå¾…å¤„ç†", Status = "å¾…è§£æ", ParseDateTime = parseTime });
                                     addedCount++;
                                 }
                             }
 
                             if (lblProgressText != null && !lblProgressText.IsDisposed)
                             {
-                                lblProgressText.Text = "¼ì²â½ø¶È:";
+                                lblProgressText.Text = "æ£€æµ‹è¿›åº¦:";
                             }
                             if (lblPercent != null && !lblPercent.IsDisposed)
                             {
@@ -14019,7 +14083,7 @@ namespace IPTVLiveChecker
                             bool exists = allChannels.Any(c => c.Url == url);
                             if (!exists)
                             {
-                                allChannels.Add(new ChannelInfo { Name = ipPort, Url = url, Group = "½âÎö´ı´¦Àí", Status = "´ı½âÎö", ParseDateTime = parseTime });
+                                allChannels.Add(new ChannelInfo { Name = ipPort, Url = url, Group = "è§£æå¾…å¤„ç†", Status = "å¾…è§£æ", ParseDateTime = parseTime });
                                 addedCount++;
                             }
                         }
@@ -14041,7 +14105,7 @@ namespace IPTVLiveChecker
                             string port = parts[1];
                             string rootHttp = $"http://{ip}:{port}";
 
-                            if (ruleName == "ÖÇ»Û¹âÑ¸")
+                            if (ruleName == "æ™ºæ…§å…‰è¿…")
                             {
                                 string url = $"{rootHttp}/ZHGXTV/Public/json/live_interface.txt";
                                 try
@@ -14059,7 +14123,7 @@ namespace IPTVLiveChecker
                                 }
                                 catch { }
                             }
-                            else if (ruleName == "»ªÊÓÃÀ´ï")
+                            else if (ruleName == "åè§†ç¾è¾¾")
                             {
                                 var scanConfig = await ShowScanConfigDialogAsync();
                                 if (scanConfig == null) continue;
@@ -14121,7 +14185,7 @@ namespace IPTVLiveChecker
                                     {
                                         string[] urlParts = result.Item1.Split('/');
                                         string cid = urlParts.Length > 1 ? urlParts[urlParts.Length - 2] : "";
-                                        allChannels.Add(new ChannelInfo { Name = $"{ipPort}_CID{cid}", Url = result.Item1, Group = "½âÎö´ı´¦Àí", Status = "´ı½âÎö", ParseDateTime = parseTime });
+                                        allChannels.Add(new ChannelInfo { Name = $"{ipPort}_CID{cid}", Url = result.Item1, Group = "è§£æå¾…å¤„ç†", Status = "å¾…è§£æ", ParseDateTime = parseTime });
                                         addedCount++;
                                     }
                                 }
@@ -14156,11 +14220,11 @@ namespace IPTVLiveChecker
                     UpdateActionButtonsVisibility();
                     SaveChannelList();
 
-                    // ¸üĞÂ×´Ì¬À¸ÏÔÊ¾½âÎö½á¹û
+                    // æ›´æ–°çŠ¶æ€æ æ˜¾ç¤ºè§£æç»“æœ
                     if (lblDetected != null && lblAvailable != null && lblPercent != null && statusBarRef != null)
                     {
-                        lblDetected.Text = $"ÒÑ¼ì²â: 0/{totalCount}";
-                        lblAvailable.Text = $"¿ÉÓÃ: 0";
+                        lblDetected.Text = $"å·²æ£€æµ‹: 0/{totalCount}";
+                        lblAvailable.Text = $"å¯ç”¨: 0";
                         lblPercent.Text = "0.00%";
                         progressBarWidth = 0;
                         RestoreLabelColors();
@@ -14171,21 +14235,21 @@ namespace IPTVLiveChecker
 
                     if (!autoParseLink)
                     {
-                        DarkMessageBox.Show($"ÒÑÌáÈ¡ {addedCount} ÌõÁ´½Óµ½´ı½âÎöÁĞ±í\nÇëµã»÷\"½âÎöÁ´½Ó\"°´Å¥½øĞĞ½âÎö", "ÌáÈ¡Íê³É", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DarkMessageBox.Show($"å·²æå– {addedCount} æ¡é“¾æ¥åˆ°å¾…è§£æåˆ—è¡¨\nè¯·ç‚¹å‡»\"è§£æé“¾æ¥\"æŒ‰é’®è¿›è¡Œè§£æ", "æå–å®Œæˆ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
-                        DarkMessageBox.Show($"½âÎöÍê³É£¡\n³É¹¦: {addedCount} ¸öIP\nÇëµã»÷\"¿ªÊ¼¼ì²â\"°´Å¥ÑéÖ¤Á´½ÓÓĞĞ§ĞÔ", "½âÎöÏÂÔØ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DarkMessageBox.Show($"è§£æå®Œæˆï¼\næˆåŠŸ: {addedCount} ä¸ªIP\nè¯·ç‚¹å‡»\"å¼€å§‹æ£€æµ‹\"æŒ‰é’®éªŒè¯é“¾æ¥æœ‰æ•ˆæ€§", "è§£æä¸‹è½½", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
                 else
                 {
-                    DarkMessageBox.Show($"Î´½âÎöµ½ÓĞĞ§Ö±²¥Ô´\n¹²¼ì²â {ipList.Count} ¸öIP£¬È«²¿Ê§°Ü", "½âÎöÏÂÔØ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    DarkMessageBox.Show($"æœªè§£æåˆ°æœ‰æ•ˆç›´æ’­æº\nå…±æ£€æµ‹ {ipList.Count} ä¸ªIPï¼Œå…¨éƒ¨å¤±è´¥", "è§£æä¸‹è½½", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
             catch (Exception ex)
             {
-                DarkMessageBox.Show("½âÎöÏÂÔØ³ö´í: " + ex.Message, "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DarkMessageBox.Show("è§£æä¸‹è½½å‡ºé”™: " + ex.Message, "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -14202,9 +14266,9 @@ namespace IPTVLiveChecker
                         sw.WriteLine(ch.Url);
                     }
                 }
-                DarkMessageBox.Show($"³É¹¦µ¼³ö {allChannels.Count} ÌõÊı¾İ", "µ¼³ö³É¹¦", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DarkMessageBox.Show($"æˆåŠŸå¯¼å‡º {allChannels.Count} æ¡æ•°æ®", "å¯¼å‡ºæˆåŠŸ", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            catch (Exception ex) { DarkMessageBox.Show($"µ¼³öÊ§°Ü: {ex.Message}", "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            catch (Exception ex) { DarkMessageBox.Show($"å¯¼å‡ºå¤±è´¥: {ex.Message}", "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
         private void ExportToTxtMergeUrl(string filePath)
@@ -14233,9 +14297,9 @@ namespace IPTVLiveChecker
                         sw.WriteLine($"{kv.Key},{urls}");
                     }
                 }
-                DarkMessageBox.Show($"³É¹¦µ¼³ö {merged.Count} ÌõÊı¾İ£¨ÒÑºÏ²¢ÏàÍ¬ÆµµÀ£¬¹² {allChannels.Count} ¸öÔ´£©", "µ¼³ö³É¹¦", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DarkMessageBox.Show($"æˆåŠŸå¯¼å‡º {merged.Count} æ¡æ•°æ®ï¼ˆå·²åˆå¹¶ç›¸åŒé¢‘é“ï¼Œå…± {allChannels.Count} ä¸ªæºï¼‰", "å¯¼å‡ºæˆåŠŸ", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            catch (Exception ex) { DarkMessageBox.Show($"µ¼³öÊ§°Ü: {ex.Message}", "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            catch (Exception ex) { DarkMessageBox.Show($"å¯¼å‡ºå¤±è´¥: {ex.Message}", "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
         private void ExportToM3uMergeGroup(string filePath)
@@ -14264,9 +14328,9 @@ namespace IPTVLiveChecker
                         }
                     }
                 }
-                DarkMessageBox.Show($"³É¹¦µ¼³ö {allChannels.Count} ÌõÊı¾İ£¨{merged.Count} ¸öÆµµÀ£¬°´Ãû³Æ·Ö×é£©", "µ¼³ö³É¹¦", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DarkMessageBox.Show($"æˆåŠŸå¯¼å‡º {allChannels.Count} æ¡æ•°æ®ï¼ˆ{merged.Count} ä¸ªé¢‘é“ï¼ŒæŒ‰åç§°åˆ†ç»„ï¼‰", "å¯¼å‡ºæˆåŠŸ", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            catch (Exception ex) { DarkMessageBox.Show($"µ¼³öÊ§°Ü: {ex.Message}", "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            catch (Exception ex) { DarkMessageBox.Show($"å¯¼å‡ºå¤±è´¥: {ex.Message}", "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
         private void ExportToTxt(string filePath, bool merge)
@@ -14282,7 +14346,7 @@ namespace IPTVLiveChecker
                         {
                             string n = ch.Name?.Trim() ?? "";
                             if (!unique.ContainsKey(n)) unique[n] = ch;
-                            else if (ch.Status == "¿ÉÓÃ" && unique[n].Status != "¿ÉÓÃ")
+                            else if (ch.Status == "å¯ç”¨" && unique[n].Status != "å¯ç”¨")
                                 unique[n] = ch;
                         }
                         foreach (var kv in unique)
@@ -14290,17 +14354,17 @@ namespace IPTVLiveChecker
                             var r = kv.Value;
                             sw.WriteLine($"{r.Name}|{r.Url}|{r.Location}|{r.Resolution}|{r.Speed}|{r.Group}|{r.Status}");
                         }
-                        DarkMessageBox.Show($"³É¹¦µ¼³ö {unique.Count} ÌõÊı¾İ£¨ÒÑºÏ²¢ÏàÍ¬ÆµµÀ£©", "µ¼³ö³É¹¦", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DarkMessageBox.Show($"æˆåŠŸå¯¼å‡º {unique.Count} æ¡æ•°æ®ï¼ˆå·²åˆå¹¶ç›¸åŒé¢‘é“ï¼‰", "å¯¼å‡ºæˆåŠŸ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
                         foreach (var ch in allChannels)
                             sw.WriteLine($"{ch.Name}|{ch.Url}|{ch.Location}|{ch.Resolution}|{ch.Speed}|{ch.Group}|{ch.Status}");
-                        DarkMessageBox.Show($"³É¹¦µ¼³ö {allChannels.Count} ÌõÊı¾İ", "µ¼³ö³É¹¦", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DarkMessageBox.Show($"æˆåŠŸå¯¼å‡º {allChannels.Count} æ¡æ•°æ®", "å¯¼å‡ºæˆåŠŸ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }
-            catch (Exception ex) { DarkMessageBox.Show($"µ¼³öÊ§°Ü: {ex.Message}", "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            catch (Exception ex) { DarkMessageBox.Show($"å¯¼å‡ºå¤±è´¥: {ex.Message}", "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
         private void CopyLink()
@@ -14315,14 +14379,14 @@ namespace IPTVLiveChecker
                     CopyTextToClipboard(text);
                 }
             }
-            else DarkMessageBox.Show("ÇëÏÈÑ¡ÔñÒ»ĞĞ", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else DarkMessageBox.Show("è¯·å…ˆé€‰æ‹©ä¸€è¡Œ", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void CopyAllLinks()
         {
             if (allChannels.Count == 0)
             {
-                DarkMessageBox.Show("ÁĞ±íÎª¿Õ", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DarkMessageBox.Show("åˆ—è¡¨ä¸ºç©º", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             var lines = allChannels
@@ -14338,13 +14402,14 @@ namespace IPTVLiveChecker
             dgvData.ClearSelection();
             foreach (DataGridViewRow row in dgvData.Rows)
                 row.Selected = true;
+            dgvData.Invalidate();
         }
 
         private void DeleteRow()
         {
             if (dgvData.SelectedRows.Count > 0)
             {
-                if (DarkMessageBox.Show("È·¶¨É¾³ıÑ¡ÖĞĞĞ£¿", "È·ÈÏ", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (DarkMessageBox.Show("ç¡®å®šåˆ é™¤é€‰ä¸­è¡Œï¼Ÿ", "ç¡®è®¤", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     foreach (DataGridViewRow row in dgvData.SelectedRows.Cast<DataGridViewRow>().ToList())
                     {
@@ -14359,7 +14424,7 @@ namespace IPTVLiveChecker
                     UpdateStatusBar(); UpdateEmptyState(); UpdateActionButtonsVisibility();
                 }
             }
-            else DarkMessageBox.Show("ÇëÏÈÑ¡ÔñÒ»ĞĞ", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else DarkMessageBox.Show("è¯·å…ˆé€‰æ‹©ä¸€è¡Œ", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void ViewDetails()
@@ -14367,16 +14432,16 @@ namespace IPTVLiveChecker
             if (dgvData.SelectedRows.Count > 0)
             {
                 var r = dgvData.SelectedRows[0];
-                DarkMessageBox.Show($"Ãû³Æ: {r.Cells[0].Value}\nÁ´½Ó: {r.Cells[1].Value}\n¹éÊôµØ: {r.Cells[2].Value}\n·Ö±æÂÊ: {r.Cells[3].Value}\nÏìÓ¦ËÙ¶È: {r.Cells[4].Value}\n·Ö×é: {r.Cells[5].Value}\n×´Ì¬: {r.Cells[6].Value}",
-                    "ÆµµÀÏêÇé", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DarkMessageBox.Show($"åç§°: {r.Cells[0].Value}\né“¾æ¥: {r.Cells[1].Value}\nå½’å±åœ°: {r.Cells[2].Value}\nåˆ†è¾¨ç‡: {r.Cells[3].Value}\nå“åº”é€Ÿåº¦: {r.Cells[4].Value}\nåˆ†ç»„: {r.Cells[5].Value}\nçŠ¶æ€: {r.Cells[6].Value}",
+                    "é¢‘é“è¯¦æƒ…", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            else DarkMessageBox.Show("ÇëÏÈÑ¡ÔñÒ»ĞĞ", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else DarkMessageBox.Show("è¯·å…ˆé€‰æ‹©ä¸€è¡Œ", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void ClearInvalidLinks()
         {
             int before = allChannels.Count;
-            allChannels.RemoveAll(c => c.Status == "²»¿ÉÓÃ");
+            allChannels.RemoveAll(c => c.Status == "ä¸å¯ç”¨");
             int removed = before - allChannels.Count;
             RefreshGrid();
             UpdateGroupFilter();
@@ -14389,13 +14454,13 @@ namespace IPTVLiveChecker
         {
             if (isDetecting)
             {
-                DarkMessageBox.Show("¼ì²âÕıÔÚ½øĞĞÖĞ£¬ÇëÏÈÍ£Ö¹¼ì²âºóÔÙÇå¿ÕÁĞ±í¡£", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                DarkMessageBox.Show("æ£€æµ‹æ­£åœ¨è¿›è¡Œä¸­ï¼Œè¯·å…ˆåœæ­¢æ£€æµ‹åå†æ¸…ç©ºåˆ—è¡¨ã€‚", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (dgvData.Rows.Count == 0)
             {
-                DarkMessageBox.Show("ÁĞ±íÎª¿Õ£¬ÎŞĞèÇå¿Õ¡£", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DarkMessageBox.Show("åˆ—è¡¨ä¸ºç©ºï¼Œæ— éœ€æ¸…ç©ºã€‚", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -14407,7 +14472,7 @@ namespace IPTVLiveChecker
         }
 
         /// <summary>
-        /// ¼ì²âµ±Ç°ÍøÂçÊÇ·ñÖ§³ÖIPv6£¨ÏµÍ³Ö§³ÖÇÒÖÁÉÙÓĞÒ»¸ö»î¶¯µÄIPv6µØÖ·£©
+        /// æ£€æµ‹å½“å‰ç½‘ç»œæ˜¯å¦æ”¯æŒIPv6ï¼ˆç³»ç»Ÿæ”¯æŒä¸”è‡³å°‘æœ‰ä¸€ä¸ªæ´»åŠ¨çš„IPv6åœ°å€ï¼‰
         /// </summary>
         private bool IsIPv6Supported()
         {
@@ -14519,170 +14584,170 @@ namespace IPTVLiveChecker
 
         static readonly List<KeyValuePair<string, string>> PayChannelList = new List<KeyValuePair<string, string>>
         {
-            new KeyValuePair<string,string>("cwjd","ÖØÎÂ¾­µä"),
-            new KeyValuePair<string,string>("dyjc","CCTVµÚÒ»¾ç³¡"),
-            new KeyValuePair<string,string>("fyjc","CCTV·çÔÆ¾ç³¡"),
-            new KeyValuePair<string,string>("hjjc","CCTV»³¾É¾ç³¡"),
-            new KeyValuePair<string,string>("gfjs","CCTV±øÆ÷¿Æ¼¼"),
-            new KeyValuePair<string,string>("nxss","CCTVÅ®ĞÔÊ±ÉĞ"),
-            new KeyValuePair<string,string>("sjdl","CCTVÊÀ½çµØÀí"),
-            new KeyValuePair<string,string>("wsjk","CCTVÎÀÉú½¡¿µ"),
-            new KeyValuePair<string,string>("ysjp","CCTVÑëÊÓÎÄ»¯¾«Æ·"),
-            new KeyValuePair<string,string>("fyyy","CCTV·çÔÆÒôÀÖ"),
-            new KeyValuePair<string,string>("ystq","CCTVÑëÊÓÌ¨Çò"),
-            new KeyValuePair<string,string>("fyzq","CCTV·çÔÆ×ãÇò"),
-            new KeyValuePair<string,string>("gefwq","CCTV¸ß¶û·òÍøÇò"),
-            new KeyValuePair<string,string>("jbty","¾¢±¬ÌåÓı"),
+            new KeyValuePair<string,string>("cwjd","é‡æ¸©ç»å…¸"),
+            new KeyValuePair<string,string>("dyjc","CCTVç¬¬ä¸€å‰§åœº"),
+            new KeyValuePair<string,string>("fyjc","CCTVé£äº‘å‰§åœº"),
+            new KeyValuePair<string,string>("hjjc","CCTVæ€€æ—§å‰§åœº"),
+            new KeyValuePair<string,string>("gfjs","CCTVå…µå™¨ç§‘æŠ€"),
+            new KeyValuePair<string,string>("nxss","CCTVå¥³æ€§æ—¶å°š"),
+            new KeyValuePair<string,string>("sjdl","CCTVä¸–ç•Œåœ°ç†"),
+            new KeyValuePair<string,string>("wsjk","CCTVå«ç”Ÿå¥åº·"),
+            new KeyValuePair<string,string>("ysjp","CCTVå¤®è§†æ–‡åŒ–ç²¾å“"),
+            new KeyValuePair<string,string>("fyyy","CCTVé£äº‘éŸ³ä¹"),
+            new KeyValuePair<string,string>("ystq","CCTVå¤®è§†å°çƒ"),
+            new KeyValuePair<string,string>("fyzq","CCTVé£äº‘è¶³çƒ"),
+            new KeyValuePair<string,string>("gefwq","CCTVé«˜å°”å¤«ç½‘çƒ"),
+            new KeyValuePair<string,string>("jbty","åŠ²çˆ†ä½“è‚²"),
         };
 
         static readonly List<KeyValuePair<string, string>> WsChannelList = new List<KeyValuePair<string, string>>
         {
-            new KeyValuePair<string,string>("jsws","½­ËÕÎÀÊÓ"),
-            new KeyValuePair<string,string>("dfws","¶«·½ÎÀÊÓ"),
-            new KeyValuePair<string,string>("zjws","Õã½­ÎÀÊÓ"),
-            new KeyValuePair<string,string>("sdws","É½¶«ÎÀÊÓ"),
-            new KeyValuePair<string,string>("hnws","ºÓÄÏÎÀÊÓ"),
-            new KeyValuePair<string,string>("hbws","ºş±±ÎÀÊÓ"),
-            new KeyValuePair<string,string>("hunantv","ºşÄÏÎÀÊÓ"),
-            new KeyValuePair<string,string>("hunanws","ºşÄÏÎÀÊÓ"),
-            new KeyValuePair<string,string>("gdws","¹ã¶«ÎÀÊÓ"),
-            new KeyValuePair<string,string>("szws","ÉîÛÚÎÀÊÓ"),
-            new KeyValuePair<string,string>("bjws","±±¾©ÎÀÊÓ"),
-            new KeyValuePair<string,string>("tjws","Ìì½òÎÀÊÓ"),
-            new KeyValuePair<string,string>("ahws","°²»ÕÎÀÊÓ"),
-            new KeyValuePair<string,string>("jxws","½­Î÷ÎÀÊÓ"),
-            new KeyValuePair<string,string>("lnws","ÁÉÄşÎÀÊÓ"),
-            new KeyValuePair<string,string>("jlws","¼ªÁÖÎÀÊÓ"),
-            new KeyValuePair<string,string>("hljws","ºÚÁú½­ÎÀÊÓ"),
-            new KeyValuePair<string,string>("hebeiws","ºÓ±±ÎÀÊÓ"),
-            new KeyValuePair<string,string>("hebs","ºÓ±±ÎÀÊÓ"),
-            new KeyValuePair<string,string>("sxws","É½Î÷ÎÀÊÓ"),
-            new KeyValuePair<string,string>("sxxws","ÉÂÎ÷ÎÀÊÓ"),
-            new KeyValuePair<string,string>("gsws","¸ÊËàÎÀÊÓ"),
-            new KeyValuePair<string,string>("qhws","Çàº£ÎÀÊÓ"),
-            new KeyValuePair<string,string>("scws","ËÄ´¨ÎÀÊÓ"),
-            new KeyValuePair<string,string>("ynws","ÔÆÄÏÎÀÊÓ"),
-            new KeyValuePair<string,string>("gzws","¹óÖİÎÀÊÓ"),
-            new KeyValuePair<string,string>("gxws","¹ãÎ÷ÎÀÊÓ"),
-            new KeyValuePair<string,string>("nmgws","ÄÚÃÉ¹ÅÎÀÊÓ"),
-            new KeyValuePair<string,string>("nmg","ÄÚÃÉ¹ÅÎÀÊÓ"),
-            new KeyValuePair<string,string>("xjws","ĞÂ½®ÎÀÊÓ"),
-            new KeyValuePair<string,string>("xzws","Î÷²ØÎÀÊÓ"),
-            new KeyValuePair<string,string>("nxws","ÄşÏÄÎÀÊÓ"),
-            new KeyValuePair<string,string>("hnws2","º£ÄÏÎÀÊÓ"),
-            new KeyValuePair<string,string>("lyws","ÂÃÓÎÎÀÊÓ"),
-            new KeyValuePair<string,string>("cqws","ÖØÇìÎÀÊÓ"),
-            new KeyValuePair<string,string>("fjws","¸£½¨ÎÀÊÓ"),
-            new KeyValuePair<string,string>("dnws","¶«ÄÏÎÀÊÓ"),
+            new KeyValuePair<string,string>("jsws","æ±Ÿè‹å«è§†"),
+            new KeyValuePair<string,string>("dfws","ä¸œæ–¹å«è§†"),
+            new KeyValuePair<string,string>("zjws","æµ™æ±Ÿå«è§†"),
+            new KeyValuePair<string,string>("sdws","å±±ä¸œå«è§†"),
+            new KeyValuePair<string,string>("hnws","æ²³å—å«è§†"),
+            new KeyValuePair<string,string>("hbws","æ¹–åŒ—å«è§†"),
+            new KeyValuePair<string,string>("hunantv","æ¹–å—å«è§†"),
+            new KeyValuePair<string,string>("hunanws","æ¹–å—å«è§†"),
+            new KeyValuePair<string,string>("gdws","å¹¿ä¸œå«è§†"),
+            new KeyValuePair<string,string>("szws","æ·±åœ³å«è§†"),
+            new KeyValuePair<string,string>("bjws","åŒ—äº¬å«è§†"),
+            new KeyValuePair<string,string>("tjws","å¤©æ´¥å«è§†"),
+            new KeyValuePair<string,string>("ahws","å®‰å¾½å«è§†"),
+            new KeyValuePair<string,string>("jxws","æ±Ÿè¥¿å«è§†"),
+            new KeyValuePair<string,string>("lnws","è¾½å®å«è§†"),
+            new KeyValuePair<string,string>("jlws","å‰æ—å«è§†"),
+            new KeyValuePair<string,string>("hljws","é»‘é¾™æ±Ÿå«è§†"),
+            new KeyValuePair<string,string>("hebeiws","æ²³åŒ—å«è§†"),
+            new KeyValuePair<string,string>("hebs","æ²³åŒ—å«è§†"),
+            new KeyValuePair<string,string>("sxws","å±±è¥¿å«è§†"),
+            new KeyValuePair<string,string>("sxxws","é™•è¥¿å«è§†"),
+            new KeyValuePair<string,string>("gsws","ç”˜è‚ƒå«è§†"),
+            new KeyValuePair<string,string>("qhws","é’æµ·å«è§†"),
+            new KeyValuePair<string,string>("scws","å››å·å«è§†"),
+            new KeyValuePair<string,string>("ynws","äº‘å—å«è§†"),
+            new KeyValuePair<string,string>("gzws","è´µå·å«è§†"),
+            new KeyValuePair<string,string>("gxws","å¹¿è¥¿å«è§†"),
+            new KeyValuePair<string,string>("nmgws","å†…è’™å¤å«è§†"),
+            new KeyValuePair<string,string>("nmg","å†…è’™å¤å«è§†"),
+            new KeyValuePair<string,string>("xjws","æ–°ç–†å«è§†"),
+            new KeyValuePair<string,string>("xzws","è¥¿è—å«è§†"),
+            new KeyValuePair<string,string>("nxws","å®å¤å«è§†"),
+            new KeyValuePair<string,string>("hnws2","æµ·å—å«è§†"),
+            new KeyValuePair<string,string>("lyws","æ—…æ¸¸å«è§†"),
+            new KeyValuePair<string,string>("cqws","é‡åº†å«è§†"),
+            new KeyValuePair<string,string>("fjws","ç¦å»ºå«è§†"),
+            new KeyValuePair<string,string>("dnws","ä¸œå—å«è§†"),
         };
 
         static readonly List<KeyValuePair<string, string>> MovieChannelList = new List<KeyValuePair<string, string>>
         {
-            new KeyValuePair<string,string>("vlcl","³ÉÁúÓ°Ôº"),
-            new KeyValuePair<string,string>("vlzxc","ÖÜĞÇ³ÛÓ°Ôº"),
-            new KeyValuePair<string,string>("vllzy","ÁÖÕıÓ¢Ó°Ôº"),
-            new KeyValuePair<string,string>("sscy","ÉÛÊÏ³şÔ­×¨³¡"),
-            new KeyValuePair<string,string>("ssgf","ÉÛÊÏ¹¦·òµçÓ°"),
-            new KeyValuePair<string,string>("ssnx","ÉÛÊÏÅ®ÏÀ"),
-            new KeyValuePair<string,string>("ssqa","ÉÛÊÏÆæ°¸"),
-            new KeyValuePair<string,string>("sswx","ÉÛÊÏÎäÏÀµçÓ°"),
-            new KeyValuePair<string,string>("ssxj","ÉÛÊÏÏ²¾çµçÓ°"),
-            new KeyValuePair<string,string>("sszc","ÉÛÊÏÕÅ³¹×¨³¡"),
+            new KeyValuePair<string,string>("vlcl","æˆé¾™å½±é™¢"),
+            new KeyValuePair<string,string>("vlzxc","å‘¨æ˜Ÿé©°å½±é™¢"),
+            new KeyValuePair<string,string>("vllzy","æ—æ­£è‹±å½±é™¢"),
+            new KeyValuePair<string,string>("sscy","é‚µæ°æ¥šåŸä¸“åœº"),
+            new KeyValuePair<string,string>("ssgf","é‚µæ°åŠŸå¤«ç”µå½±"),
+            new KeyValuePair<string,string>("ssnx","é‚µæ°å¥³ä¾ "),
+            new KeyValuePair<string,string>("ssqa","é‚µæ°å¥‡æ¡ˆ"),
+            new KeyValuePair<string,string>("sswx","é‚µæ°æ­¦ä¾ ç”µå½±"),
+            new KeyValuePair<string,string>("ssxj","é‚µæ°å–œå‰§ç”µå½±"),
+            new KeyValuePair<string,string>("sszc","é‚µæ°å¼ å½»ä¸“åœº"),
         };
 
         static readonly string[] ResolutionList = new string[] { "4k", "2160p", "1080p", "720p", "540p", "480p", "360p", "sd", "hd" };
 
         private void ShowScanSourceDialog()
         {
-            // ==================== Ö÷ÌâÑÕÉ«ÅäÖÃ£¨ÉîÉ«/Ç³É«×Ô¶¯ÊÊÅä£© ====================
-            bool isDark = theme.Name == "ÉîÉ«";
-            // [Ö÷ÂÌÉ«] °´Å¥¡¢Ñ¡ÖĞ×´Ì¬¡¢³É¹¦ÌáÊ¾µÄÖ÷ÒªÑÕÉ«£ºÉîÉ«Æ«ÁÁÂÌ£¬Ç³É«±ê×¼ÂÌ
+            // ==================== ä¸»é¢˜é¢œè‰²é…ç½®ï¼ˆæ·±è‰²/æµ…è‰²è‡ªåŠ¨é€‚é…ï¼‰ ====================
+            bool isDark = theme.Name == "æ·±è‰²";
+            // [ä¸»ç»¿è‰²] æŒ‰é’®ã€é€‰ä¸­çŠ¶æ€ã€æˆåŠŸæç¤ºçš„ä¸»è¦é¢œè‰²ï¼šæ·±è‰²åäº®ç»¿ï¼Œæµ…è‰²æ ‡å‡†ç»¿
             Color GreenMain = isDark ? Color.FromArgb(70, 200, 110) : Color.FromArgb(46, 189, 96);
-            // [ÉîÂÌÉ«] °´Å¥ĞüÍ£×´Ì¬ÑÕÉ«£º±ÈÖ÷ÂÌÉ«ÂÔÉî£¬Ìá¹©ÊÓ¾õ·´À¡
+            // [æ·±ç»¿è‰²] æŒ‰é’®æ‚¬åœçŠ¶æ€é¢œè‰²ï¼šæ¯”ä¸»ç»¿è‰²ç•¥æ·±ï¼Œæä¾›è§†è§‰åé¦ˆ
             Color GreenDark = isDark ? Color.FromArgb(55, 180, 95) : Color.FromArgb(39, 174, 86);
-            // [»ÒÉ«ÎÄ×Ö] ¸¨ÖúÎÄ×Ö¡¢Õ¼Î»·û¡¢·ÇÑ¡ÖĞ×´Ì¬ÎÄ×ÖÑÕÉ«
+            // [ç°è‰²æ–‡å­—] è¾…åŠ©æ–‡å­—ã€å ä½ç¬¦ã€éé€‰ä¸­çŠ¶æ€æ–‡å­—é¢œè‰²
             Color GrayText = isDark ? theme.TextSecondary : Color.FromArgb(153, 153, 153);
-            // [·Ö¸îÏßÑÕÉ«] ±êÌâÀ¸ÏÂ·½·Ö¸îÏß¡¢Ãæ°å·Ö¸ôÏßÑÕÉ«
+            // [åˆ†å‰²çº¿é¢œè‰²] æ ‡é¢˜æ ä¸‹æ–¹åˆ†å‰²çº¿ã€é¢æ¿åˆ†éš”çº¿é¢œè‰²
             Color GrayLine = isDark ? theme.Border : Color.FromArgb(230, 232, 238);
-            // [±ß¿òÑÕÉ«] ÊäÈë¿ò¡¢Ãæ°åµÄ±ß¿òÑÕÉ«£¨Î´¾Û½¹Ê±£©
+            // [è¾¹æ¡†é¢œè‰²] è¾“å…¥æ¡†ã€é¢æ¿çš„è¾¹æ¡†é¢œè‰²ï¼ˆæœªèšç„¦æ—¶ï¼‰
             Color GrayBorder = isDark ? theme.Border : Color.FromArgb(200, 203, 210);
-            // [ÉîÉ«ÎÄ×Ö] Ö÷ÒªÎÄ×Ö¡¢±êÇ©¡¢°´Å¥ÎÄ×ÖÑÕÉ«£¨Ç³É«Ö÷ÌâÏÂÎªÉîÉ«£©
+            // [æ·±è‰²æ–‡å­—] ä¸»è¦æ–‡å­—ã€æ ‡ç­¾ã€æŒ‰é’®æ–‡å­—é¢œè‰²ï¼ˆæµ…è‰²ä¸»é¢˜ä¸‹ä¸ºæ·±è‰²ï¼‰
             Color DarkText = isDark ? theme.TextPrimary : Color.FromArgb(51, 51, 51);
-            // [ºìÉ«¸ßÁÁ] ±ØÌîÏîĞÇºÅ¡¢´íÎóÌáÊ¾¡¢¾¯¸æÎÄ×ÖÑÕÉ«
+            // [çº¢è‰²é«˜äº®] å¿…å¡«é¡¹æ˜Ÿå·ã€é”™è¯¯æç¤ºã€è­¦å‘Šæ–‡å­—é¢œè‰²
             Color RedHighlight = isDark ? theme.ErrorColor : Color.FromArgb(231, 76, 60);
-            // [Ç³É«°´Å¥±³¾°] Êı×ÖÃæ°å¼Ó¼õ°´Å¥¡¢´ÎÒª°´Å¥µÄ±³¾°É«
+            // [æµ…è‰²æŒ‰é’®èƒŒæ™¯] æ•°å­—é¢æ¿åŠ å‡æŒ‰é’®ã€æ¬¡è¦æŒ‰é’®çš„èƒŒæ™¯è‰²
             Color LightBtnBg = isDark ? Color.FromArgb(55, 55, 65) : Color.FromArgb(248, 249, 250);
-            // [ÊäÈë¿ò±³¾°] ÎÄ±¾¿ò¡¢Êı×ÖÃæ°åµÄ±³¾°É«£¨Ç³É«Ö÷ÌâÊ¹ÓÃÇ³»Ò£¬Óë´°¿Ú±³¾°Çø·Ö£©
+            // [è¾“å…¥æ¡†èƒŒæ™¯] æ–‡æœ¬æ¡†ã€æ•°å­—é¢æ¿çš„èƒŒæ™¯è‰²ï¼ˆæµ…è‰²ä¸»é¢˜ä½¿ç”¨æµ…ç°ï¼Œä¸çª—å£èƒŒæ™¯åŒºåˆ†ï¼‰
             Color InputBg = isDark ? theme.Surface : Color.FromArgb(245, 245, 247);
-            // [ÊäÈë¿ò¾Û½¹±ß¿ò] ÊäÈë¿ò»ñµÃ½¹µãÊ±µÄ±ß¿ò¸ßÁÁÑÕÉ«£¨ÓëÖ÷ÂÌÉ«Ò»ÖÂ£©
+            // [è¾“å…¥æ¡†èšç„¦è¾¹æ¡†] è¾“å…¥æ¡†è·å¾—ç„¦ç‚¹æ—¶çš„è¾¹æ¡†é«˜äº®é¢œè‰²ï¼ˆä¸ä¸»ç»¿è‰²ä¸€è‡´ï¼‰
             Color InputFocusBorder = GreenMain;
-            // [Ãæ°å±³¾°] Õû¸ö¶Ô»°¿ò¡¢ËùÓĞÃæ°åµÄ±³¾°É«
+            // [é¢æ¿èƒŒæ™¯] æ•´ä¸ªå¯¹è¯æ¡†ã€æ‰€æœ‰é¢æ¿çš„èƒŒæ™¯è‰²
             Color PanelBg = isDark ? theme.Bg : Color.White;
-            // [²½ÖèÖ¸Ê¾Æ÷ÏßÌõÑÕÉ«] ²½ÖèÖ¸Ê¾Æ÷ÖĞÎ´Íê³É²½ÖèµÄ»ÒÉ«ÏßÌõ
+            // [æ­¥éª¤æŒ‡ç¤ºå™¨çº¿æ¡é¢œè‰²] æ­¥éª¤æŒ‡ç¤ºå™¨ä¸­æœªå®Œæˆæ­¥éª¤çš„ç°è‰²çº¿æ¡
             Color StepLineGray = isDark ? Color.FromArgb(80, 80, 92) : Color.FromArgb(210, 213, 220);
-            // [Êı×ÖÃæ°åĞüÍ£] Êı×ÖÃæ°å¼Ó¼õ°´Å¥µÄÊó±êĞüÍ£±³¾°É«
+            // [æ•°å­—é¢æ¿æ‚¬åœ] æ•°å­—é¢æ¿åŠ å‡æŒ‰é’®çš„é¼ æ ‡æ‚¬åœèƒŒæ™¯è‰²
             Color NumPadHover = isDark ? Color.FromArgb(65, 65, 75) : Color.FromArgb(235, 236, 240);
-            // [Êı×ÖÃæ°å°´ÏÂ] Êı×ÖÃæ°å¼Ó¼õ°´Å¥µÄÊó±ê°´ÏÂ±³¾°É«
+            // [æ•°å­—é¢æ¿æŒ‰ä¸‹] æ•°å­—é¢æ¿åŠ å‡æŒ‰é’®çš„é¼ æ ‡æŒ‰ä¸‹èƒŒæ™¯è‰²
             Color NumPadDown = isDark ? Color.FromArgb(75, 75, 85) : Color.FromArgb(225, 226, 232);
-            // [¹Ø±Õ°´Å¥ĞüÍ£] ±êÌâÀ¸¹Ø±Õ°´Å¥µÄÊó±êĞüÍ£±³¾°É«
+            // [å…³é—­æŒ‰é’®æ‚¬åœ] æ ‡é¢˜æ å…³é—­æŒ‰é’®çš„é¼ æ ‡æ‚¬åœèƒŒæ™¯è‰²
             Color CloseHover = isDark ? Color.FromArgb(55, 55, 65) : Color.FromArgb(245, 245, 245);
-            // [¹Ø±Õ°´Å¥°´ÏÂ] ±êÌâÀ¸¹Ø±Õ°´Å¥µÄÊó±ê°´ÏÂ±³¾°É«
+            // [å…³é—­æŒ‰é’®æŒ‰ä¸‹] æ ‡é¢˜æ å…³é—­æŒ‰é’®çš„é¼ æ ‡æŒ‰ä¸‹èƒŒæ™¯è‰²
             Color CloseDown = isDark ? Color.FromArgb(65, 65, 75) : Color.FromArgb(230, 230, 230);
 
-            // ====== ´°¿Ú³ß´çÅäÖÃ ======
-            // [´°¿Ú¿í¶È] ¹Ì¶¨900px£¬×ã¹»ÈİÄÉÍêÕûURLºÍ²Ù×÷°´Å¥£¬DPI×ÔÊÊÓ¦Ëõ·Å
+            // ====== çª—å£å°ºå¯¸é…ç½® ======
+            // [çª—å£å®½åº¦] å›ºå®š900pxï¼Œè¶³å¤Ÿå®¹çº³å®Œæ•´URLå’Œæ“ä½œæŒ‰é’®ï¼ŒDPIè‡ªé€‚åº”ç¼©æ”¾
             int DLG_W = SX(900);
-            // [´°¿Ú¸ß¶È] 580px£¬°üº¬£º±êÌâÀ¸(52px) + ·Ö¸îÏß(1px) + ²½ÖèÖ¸Ê¾Æ÷(80px) + ÄÚÈİÇø(447px)
-            // Ôö´ó¸ß¶ÈÒÔÈİÄÉ²½Öè2µÄËùÓĞ¿Ø¼ş£¬È·±£°´Å¥ºÍĞÅÏ¢À¸ÍêÕûÏÔÊ¾
+            // [çª—å£é«˜åº¦] 580pxï¼ŒåŒ…å«ï¼šæ ‡é¢˜æ (52px) + åˆ†å‰²çº¿(1px) + æ­¥éª¤æŒ‡ç¤ºå™¨(80px) + å†…å®¹åŒº(447px)
+            // å¢å¤§é«˜åº¦ä»¥å®¹çº³æ­¥éª¤2çš„æ‰€æœ‰æ§ä»¶ï¼Œç¡®ä¿æŒ‰é’®å’Œä¿¡æ¯æ å®Œæ•´æ˜¾ç¤º
             int DLG_H = SY(620);
             
-            // ====== ²¼¾Ö¼ä¾àÅäÖÃ ======
-            // [ÄÚÈİ±ß¾à] ×óÓÒÁ½²àÁô°×£¬±ÜÃâ¿Ø¼şÌù±ß£¬ÔöÇ¿ÊÓ¾õÊæÊÊ¶È
+            // ====== å¸ƒå±€é—´è·é…ç½® ======
+            // [å†…å®¹è¾¹è·] å·¦å³ä¸¤ä¾§ç•™ç™½ï¼Œé¿å…æ§ä»¶è´´è¾¹ï¼Œå¢å¼ºè§†è§‰èˆ’é€‚åº¦
             int CONTENT_PAD = SX(32);
-            // [¿Ø¼ş¼ä¾à] ¿Ø¼şÖ®¼äµÄ´¹Ö±¼ä¾à£¬±£³ÖÊÓ¾õÆ½ºâ£¬±ÜÃâÓµ¼·
+            // [æ§ä»¶é—´è·] æ§ä»¶ä¹‹é—´çš„å‚ç›´é—´è·ï¼Œä¿æŒè§†è§‰å¹³è¡¡ï¼Œé¿å…æ‹¥æŒ¤
             int CONTROL_GAP = SY(12);
-            // [·Ö×é¼ä¾à] Âß¼­·Ö×é£¨Èç±êÇ©+ÊäÈë¿ò¡¢ÌáÊ¾À¸£©Ö®¼äµÄ¼ä¾à£¬±È¿Ø¼ş¼ä¾àÂÔ´ó
+            // [åˆ†ç»„é—´è·] é€»è¾‘åˆ†ç»„ï¼ˆå¦‚æ ‡ç­¾+è¾“å…¥æ¡†ã€æç¤ºæ ï¼‰ä¹‹é—´çš„é—´è·ï¼Œæ¯”æ§ä»¶é—´è·ç•¥å¤§
             int GROUP_GAP = SY(16);
-            // [¶¥²¿Áô°×] ²½ÖèÄÚÈİÇøÓë²½ÖèÖ¸Ê¾Æ÷Ö®¼äµÄ¼ä¾à
+            // [é¡¶éƒ¨ç•™ç™½] æ­¥éª¤å†…å®¹åŒºä¸æ­¥éª¤æŒ‡ç¤ºå™¨ä¹‹é—´çš„é—´è·
             int TOP_PADDING = SY(20);
             
-            // ====== ¿Ø¼ş³ß´çÅäÖÃ ======
-            // [ÊäÈë¿ò¸ß¶È] ÎÄ±¾¿òºÍÊı×ÖÃæ°åµÄÍ³Ò»¸ß¶È£¨Ôö´óÖÁ44px£¬¸üÇåÎúÒ×¶Á£©
+            // ====== æ§ä»¶å°ºå¯¸é…ç½® ======
+            // [è¾“å…¥æ¡†é«˜åº¦] æ–‡æœ¬æ¡†å’Œæ•°å­—é¢æ¿çš„ç»Ÿä¸€é«˜åº¦ï¼ˆå¢å¤§è‡³44pxï¼Œæ›´æ¸…æ™°æ˜“è¯»ï¼‰
             int INPUT_HEIGHT = SY(44);
-            // [°´Å¥¸ß¶È] ²Ù×÷°´Å¥£¨ÏÂÒ»²½¡¢È¡Ïû£©µÄÍ³Ò»¸ß¶È
+            // [æŒ‰é’®é«˜åº¦] æ“ä½œæŒ‰é’®ï¼ˆä¸‹ä¸€æ­¥ã€å–æ¶ˆï¼‰çš„ç»Ÿä¸€é«˜åº¦
             int BTN_HEIGHT = SY(38);
-            // [ÌáÊ¾À¸¸ß¶È] ÖÇÄÜÌáÊ¾¡¢·¶Î§ÌáÊ¾µÈĞÅÏ¢À¸¸ß¶È£¨ÈİÄÉ2ĞĞÎÄ×Ö+ÉÏÏÂÄÚ±ß¾à£©
+            // [æç¤ºæ é«˜åº¦] æ™ºèƒ½æç¤ºã€èŒƒå›´æç¤ºç­‰ä¿¡æ¯æ é«˜åº¦ï¼ˆå®¹çº³2è¡Œæ–‡å­—+ä¸Šä¸‹å†…è¾¹è·ï¼‰
             int HINT_HEIGHT = SY(68);
-            // [±êÌâÀ¸¸ß¶È] ¶Ô»°¿ò¶¥²¿±êÌâÀ¸¸ß¶È£¨°üº¬±êÌâÎÄ×ÖºÍ¹Ø±Õ°´Å¥£©
+            // [æ ‡é¢˜æ é«˜åº¦] å¯¹è¯æ¡†é¡¶éƒ¨æ ‡é¢˜æ é«˜åº¦ï¼ˆåŒ…å«æ ‡é¢˜æ–‡å­—å’Œå…³é—­æŒ‰é’®ï¼‰
             int TITLE_BAR_H = SY(52);
-            // [²½ÖèÖ¸Ê¾Æ÷¸ß¶È] ²½Öè½ø¶ÈÌõÇøÓò¸ß¶È£¨Ô²ĞÎÖ¸Ê¾Æ÷+±êÇ©ÎÄ×Ö£©
+            // [æ­¥éª¤æŒ‡ç¤ºå™¨é«˜åº¦] æ­¥éª¤è¿›åº¦æ¡åŒºåŸŸé«˜åº¦ï¼ˆåœ†å½¢æŒ‡ç¤ºå™¨+æ ‡ç­¾æ–‡å­—ï¼‰
             int STEP_INDICATOR_H = SY(80);
             
-            // ====== ×ÖÌåÅäÖÃ ======
-            // [»ù´¡×ÖÌå] Õû¸ö¶Ô»°¿òµÄÄ¬ÈÏ×ÖÌå£¨10pt£©
+            // ====== å­—ä½“é…ç½® ======
+            // [åŸºç¡€å­—ä½“] æ•´ä¸ªå¯¹è¯æ¡†çš„é»˜è®¤å­—ä½“ï¼ˆ10ptï¼‰
             Font BASE_FONT = GetFont(9f);
-            // [±êÌâ×ÖÌå] ¶Ô»°¿ò±êÌâ"Ö±²¥Ô´Éú³ÉÆ÷"£¨14pt¼Ó´Ö£©
+            // [æ ‡é¢˜å­—ä½“] å¯¹è¯æ¡†æ ‡é¢˜"ç›´æ’­æºç”Ÿæˆå™¨"ï¼ˆ14ptåŠ ç²—ï¼‰
             Font TITLE_FONT = GetFont(14f, FontStyle.Bold);
-            // [±êÇ©×ÖÌå] ×Ö¶Î±êÇ©£¨Èç"Ö±²¥Ô´µØÖ·"¡¢"ÆğÊ¼Êı×Ö"£©£¨10.5pt£©
+            // [æ ‡ç­¾å­—ä½“] å­—æ®µæ ‡ç­¾ï¼ˆå¦‚"ç›´æ’­æºåœ°å€"ã€"èµ·å§‹æ•°å­—"ï¼‰ï¼ˆ10.5ptï¼‰
             Font LABEL_FONT = GetFont(10.5f);
-            // [ÌáÊ¾×ÖÌå] ÌáÊ¾ĞÅÏ¢£¨Èç"ÖÇÄÜÊ¶±ğ"¡¢"×î´óÉú³É·¶Î§"£©£¨10pt£©
+            // [æç¤ºå­—ä½“] æç¤ºä¿¡æ¯ï¼ˆå¦‚"æ™ºèƒ½è¯†åˆ«"ã€"æœ€å¤§ç”ŸæˆèŒƒå›´"ï¼‰ï¼ˆ10ptï¼‰
             Font HINT_FONT = GetFont(10f);
-            // [URL×ÖÌå] URLÏÔÊ¾ºÍÊäÈë¿òÊ¹ÓÃµÄµÈ¿í×ÖÌå£¨Consolas 9.5pt£¬È·±£Êı×Ö¶ÔÆë£©
+            // [URLå­—ä½“] URLæ˜¾ç¤ºå’Œè¾“å…¥æ¡†ä½¿ç”¨çš„ç­‰å®½å­—ä½“ï¼ˆConsolas 9.5ptï¼Œç¡®ä¿æ•°å­—å¯¹é½ï¼‰
             Font URL_FONT = new Font("Consolas", SF(9.5f));
-            // [URLÑ¡ÖĞ×ÖÌå] URLÖĞÑ¡ÖĞ²¿·ÖµÄ¸ßÁÁ×ÖÌå£¨Consolas 10.5pt£¬¼Ó´ÖÏÂ»®Ïß£©
+            // [URLé€‰ä¸­å­—ä½“] URLä¸­é€‰ä¸­éƒ¨åˆ†çš„é«˜äº®å­—ä½“ï¼ˆConsolas 10.5ptï¼ŒåŠ ç²—ä¸‹åˆ’çº¿ï¼‰
             Font URL_SEL_FONT = new Font("Consolas", SF(10.5f), FontStyle.Bold | FontStyle.Underline);
-            // [URL¼Ó´Ö×ÖÌå] URLÖĞÇ¿µ÷²¿·ÖµÄ×ÖÌå£¨Consolas 10.5pt¼Ó´Ö£©
+            // [URLåŠ ç²—å­—ä½“] URLä¸­å¼ºè°ƒéƒ¨åˆ†çš„å­—ä½“ï¼ˆConsolas 10.5ptåŠ ç²—ï¼‰
             Font URL_BOLD_FONT = new Font("Consolas", SF(10.5f), FontStyle.Bold);
-            // [°´Å¥×ÖÌå] ²Ù×÷°´Å¥µÄ×ÖÌå£¨10.5pt¼Ó´Ö£¬Ìá¸ß¿É¶ÁĞÔ£©
+            // [æŒ‰é’®å­—ä½“] æ“ä½œæŒ‰é’®çš„å­—ä½“ï¼ˆ10.5ptåŠ ç²—ï¼Œæé«˜å¯è¯»æ€§ï¼‰
             Font BTN_FONT = GetFont(10.5f, FontStyle.Bold);
-            // [Êı×ÖÃæ°å×ÖÌå] Êı×ÖÃæ°å¼Ó¼õ°´Å¥µÄ×ÖÌå£¨14pt¼Ó´Ö£©
+            // [æ•°å­—é¢æ¿å­—ä½“] æ•°å­—é¢æ¿åŠ å‡æŒ‰é’®çš„å­—ä½“ï¼ˆ14ptåŠ ç²—ï¼‰
             Font NUMPAD_BTN_FONT = GetFont(14f, FontStyle.Bold);
-            // [Êı×ÖÊäÈë×ÖÌå] Êı×ÖÃæ°åÊäÈë¿òµÄ×ÖÌå£¨12pt£¬¾ÓÖĞÏÔÊ¾£©
+            // [æ•°å­—è¾“å…¥å­—ä½“] æ•°å­—é¢æ¿è¾“å…¥æ¡†çš„å­—ä½“ï¼ˆ12ptï¼Œå±…ä¸­æ˜¾ç¤ºï¼‰
             Font NUM_INPUT_FONT = GetFont(12f);
 
             Form dlg = new Form
             {
-                Text = "Ö±²¥Ô´Éú³ÉÆ÷",
+                Text = "ç›´æ’­æºç”Ÿæˆå™¨",
                 StartPosition = FormStartPosition.Manual,
                 FormBorderStyle = FormBorderStyle.None,
                 MaximizeBox = false,
@@ -14797,7 +14862,7 @@ namespace IPTVLiveChecker
                             string tn = tnm.Groups[1].Value.Trim().Trim('"', ' ', '`');
                             if (!string.IsNullOrWhiteSpace(tn) && string.IsNullOrWhiteSpace(chName)) chName = tn;
                         }
-                        if (string.IsNullOrWhiteSpace(chName)) chName = "Éú³ÉÆ÷µ¼Èë";
+                        if (string.IsNullOrWhiteSpace(chName)) chName = "ç”Ÿæˆå™¨å¯¼å…¥";
                         pendingName = chName;
                         pendingGroup = grp;
                         continue;
@@ -14811,7 +14876,7 @@ namespace IPTVLiveChecker
                     int commaIdx = line.LastIndexOf(',');
                     if (commaIdx > 0 && commaIdx < line.Length - 1)
                     {
-                        string before = line.Substring(0, commaIdx).Trim().Trim('"', ' ', '`', '\t', '£¬');
+                        string before = line.Substring(0, commaIdx).Trim().Trim('"', ' ', '`', '\t', 'ï¼Œ');
                         string after = line.Substring(commaIdx + 1);
                         string cleaned = CleanUrlToken(after);
                         if (IsUrl(cleaned) && !string.IsNullOrWhiteSpace(before))
@@ -14843,15 +14908,15 @@ namespace IPTVLiveChecker
                         if (IsUrl(whole))
                         {
                             url = whole;
-                            name = pendingName ?? $"Ô´{result.Count + 1}";
+                            name = pendingName ?? $"æº{result.Count + 1}";
                             pendingName = null;
                         }
                     }
 
                     if (url != null && IsUrl(url))
                     {
-                        if (string.IsNullOrWhiteSpace(name)) name = pendingName ?? $"Ô´{result.Count + 1}";
-                        result.Add(new ChannelInfo { Name = name, Url = url, Group = string.IsNullOrEmpty(pendingGroup) ? "Éú³ÉÆ÷µ¼Èë" : pendingGroup, Status = "Î´¼ì²â", Visible = true });
+                        if (string.IsNullOrWhiteSpace(name)) name = pendingName ?? $"æº{result.Count + 1}";
+                        result.Add(new ChannelInfo { Name = name, Url = url, Group = string.IsNullOrEmpty(pendingGroup) ? "ç”Ÿæˆå™¨å¯¼å…¥" : pendingGroup, Status = "æœªæ£€æµ‹", Visible = true });
                         pendingName = null;
                         pendingGroup = "";
                     }
@@ -14868,11 +14933,11 @@ namespace IPTVLiveChecker
                     BackColor = theme.Surface,
                     ForeColor = theme.TextPrimary
                 };
-                ToolStripMenuItem miCut = new ToolStripMenuItem("¼ôÇĞ(T)", null, (s, e) => targetTb.Cut()) { ShortcutKeyDisplayString = "Ctrl+X" };
-                ToolStripMenuItem miCopy = new ToolStripMenuItem("¸´ÖÆ(C)", null, (s, e) => targetTb.Copy()) { ShortcutKeyDisplayString = "Ctrl+C" };
-                ToolStripMenuItem miPaste = new ToolStripMenuItem("Õ³Ìù(P)", null, (s, e) => targetTb.Paste()) { ShortcutKeyDisplayString = "Ctrl+V" };
-                ToolStripMenuItem miSelectAll = new ToolStripMenuItem("È«Ñ¡(A)", null, (s, e) => targetTb.SelectAll()) { ShortcutKeyDisplayString = "Ctrl+A" };
-                ToolStripMenuItem miClear = new ToolStripMenuItem("Çå¿Õ(L)", null, (s, e) => { targetTb.Clear(); targetTb.Focus(); });
+                ToolStripMenuItem miCut = new ToolStripMenuItem("å‰ªåˆ‡(T)", null, (s, e) => targetTb.Cut()) { ShortcutKeyDisplayString = "Ctrl+X" };
+                ToolStripMenuItem miCopy = new ToolStripMenuItem("å¤åˆ¶(C)", null, (s, e) => targetTb.Copy()) { ShortcutKeyDisplayString = "Ctrl+C" };
+                ToolStripMenuItem miPaste = new ToolStripMenuItem("ç²˜è´´(P)", null, (s, e) => targetTb.Paste()) { ShortcutKeyDisplayString = "Ctrl+V" };
+                ToolStripMenuItem miSelectAll = new ToolStripMenuItem("å…¨é€‰(A)", null, (s, e) => targetTb.SelectAll()) { ShortcutKeyDisplayString = "Ctrl+A" };
+                ToolStripMenuItem miClear = new ToolStripMenuItem("æ¸…ç©º(L)", null, (s, e) => { targetTb.Clear(); targetTb.Focus(); });
                 cms.Items.AddRange(new ToolStripItem[] { miCut, miCopy, miPaste, miSelectAll, new ToolStripSeparator(), miClear });
                 cms.Opening += (s, e) =>
                 {
@@ -14888,54 +14953,54 @@ namespace IPTVLiveChecker
 
             void StyleGreenButton(Button btn)
             {
-                // [°´Å¥ÑùÊ½] ÂÌÉ«Ö÷°´Å¥Í³Ò»ÑùÊ½ÅäÖÃ
-                btn.FlatStyle = FlatStyle.Flat;           // ±âÆ½ÑùÊ½£¬ÎŞ±ß¿òÍ¹ÆğĞ§¹û
-                btn.FlatAppearance.BorderSize = 0;        // ±ß¿ò¿í¶ÈÎª0
-                btn.FlatAppearance.MouseOverBackColor = GreenDark;      // Êó±êĞüÍ£Ê±±³¾°É«±äÎªÉîÂÌÉ«
-                btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(34, 160, 76);  // Êó±ê°´ÏÂÊ±±³¾°É«¸üÉî
-                btn.BackColor = GreenMain;                // Ä¬ÈÏ±³¾°É«ÎªÖ÷ÂÌÉ«
-                btn.ForeColor = Color.White;              // ÎÄ×ÖÑÕÉ«Îª°×É«
-                btn.Font = BTN_FONT;                      // Ê¹ÓÃ°´Å¥×ÖÌå£¨10.5pt¼Ó´Ö£©
-                btn.Cursor = Cursors.Hand;                // Êó±ê±äÎªÊÖĞÍ
-                StyleRoundButton(btn, SX(8));             // ÉèÖÃÔ²½Ç°ë¾¶Îª8px£¨DPI×ÔÊÊÓ¦£©
+                // [æŒ‰é’®æ ·å¼] ç»¿è‰²ä¸»æŒ‰é’®ç»Ÿä¸€æ ·å¼é…ç½®
+                btn.FlatStyle = FlatStyle.Flat;           // æ‰å¹³æ ·å¼ï¼Œæ— è¾¹æ¡†å‡¸èµ·æ•ˆæœ
+                btn.FlatAppearance.BorderSize = 0;        // è¾¹æ¡†å®½åº¦ä¸º0
+                btn.FlatAppearance.MouseOverBackColor = GreenDark;      // é¼ æ ‡æ‚¬åœæ—¶èƒŒæ™¯è‰²å˜ä¸ºæ·±ç»¿è‰²
+                btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(34, 160, 76);  // é¼ æ ‡æŒ‰ä¸‹æ—¶èƒŒæ™¯è‰²æ›´æ·±
+                btn.BackColor = GreenMain;                // é»˜è®¤èƒŒæ™¯è‰²ä¸ºä¸»ç»¿è‰²
+                btn.ForeColor = Color.White;              // æ–‡å­—é¢œè‰²ä¸ºç™½è‰²
+                btn.Font = BTN_FONT;                      // ä½¿ç”¨æŒ‰é’®å­—ä½“ï¼ˆ10.5ptåŠ ç²—ï¼‰
+                btn.Cursor = Cursors.Hand;                // é¼ æ ‡å˜ä¸ºæ‰‹å‹
+                StyleRoundButton(btn, SX(8));             // è®¾ç½®åœ†è§’åŠå¾„ä¸º8pxï¼ˆDPIè‡ªé€‚åº”ï¼‰
             }
 
-            // ====== ±êÌâÀ¸ ======
-            // [±êÌâÀ¸Ãæ°å] ¶Ô»°¿ò¶¥²¿±êÌâÇøÓò£¬°üº¬±êÌâºÍ¹Ø±Õ°´Å¥£¬¿ÉÍÏ¶¯
+            // ====== æ ‡é¢˜æ  ======
+            // [æ ‡é¢˜æ é¢æ¿] å¯¹è¯æ¡†é¡¶éƒ¨æ ‡é¢˜åŒºåŸŸï¼ŒåŒ…å«æ ‡é¢˜å’Œå…³é—­æŒ‰é’®ï¼Œå¯æ‹–åŠ¨
             Panel titleBar = new Panel
             {
-                Dock = DockStyle.Top,     // ¶¥²¿Í£¿¿£¬×Ô¶¯Ìî³ä¿í¶È
-                Height = TITLE_BAR_H,     // ±êÌâÀ¸¸ß¶È52px
-                BackColor = PanelBg       // Ê¹ÓÃÃæ°å±³¾°É«
+                Dock = DockStyle.Top,     // é¡¶éƒ¨åœé ï¼Œè‡ªåŠ¨å¡«å……å®½åº¦
+                Height = TITLE_BAR_H,     // æ ‡é¢˜æ é«˜åº¦52px
+                BackColor = PanelBg       // ä½¿ç”¨é¢æ¿èƒŒæ™¯è‰²
             };
             
-            // [±êÌâ±êÇ©] ¶Ô»°¿ò±êÌâ"?? Ö±²¥Ô´Éú³ÉÆ÷"
+            // [æ ‡é¢˜æ ‡ç­¾] å¯¹è¯æ¡†æ ‡é¢˜"ğŸ” ç›´æ’­æºç”Ÿæˆå™¨"
             Label lblTitle = new Label
             {
-                Text = "?? Ö±²¥Ô´Éú³ÉÆ÷",                // ±êÌâÎÄ×Ö£¬´ø·Å´ó¾µÍ¼±ê
-                Font = TITLE_FONT,                      // Ê¹ÓÃ±êÌâ×ÖÌå£¨14pt¼Ó´Ö£©
-                ForeColor = DarkText,                   // ÉîÉ«ÎÄ×Ö£¬È·±£¶Ô±È¶È
-                Location = new Point(CONTENT_PAD, (TITLE_BAR_H - SY(22)) / 2),  // ´¹Ö±¾ÓÖĞ£¬Ë®Æ½×ó¶ÔÆë
-                AutoSize = true                         // ×Ô¶¯µ÷Õû´óĞ¡ÒÔÊÊÓ¦ÎÄ×Ö
+                Text = "ğŸ” ç›´æ’­æºç”Ÿæˆå™¨",                // æ ‡é¢˜æ–‡å­—ï¼Œå¸¦æ”¾å¤§é•œå›¾æ ‡
+                Font = TITLE_FONT,                      // ä½¿ç”¨æ ‡é¢˜å­—ä½“ï¼ˆ14ptåŠ ç²—ï¼‰
+                ForeColor = DarkText,                   // æ·±è‰²æ–‡å­—ï¼Œç¡®ä¿å¯¹æ¯”åº¦
+                Location = new Point(CONTENT_PAD, (TITLE_BAR_H - SY(22)) / 2),  // å‚ç›´å±…ä¸­ï¼Œæ°´å¹³å·¦å¯¹é½
+                AutoSize = true                         // è‡ªåŠ¨è°ƒæ•´å¤§å°ä»¥é€‚åº”æ–‡å­—
             };
             titleBar.Controls.Add(lblTitle);
 
-            // [¹Ø±Õ°´Å¥] ±êÌâÀ¸ÓÒ²àµÄ¹Ø±Õ°´Å¥£¨?£©
+            // [å…³é—­æŒ‰é’®] æ ‡é¢˜æ å³ä¾§çš„å…³é—­æŒ‰é’®ï¼ˆâœ•ï¼‰
             Button btnClose = new Button
             {
-                Text = "?",                                  // ¹Ø±ÕÍ¼±ê
-                FlatStyle = FlatStyle.Flat,                  // ±âÆ½ÑùÊ½
-                Size = new Size(SX(40), TITLE_BAR_H),        // ¿í¶È40px£¬¸ß¶ÈÓë±êÌâÀ¸Ò»ÖÂ
-                Location = new Point(DLG_W - SX(40), 0),     // Î»ÓÚ´°¿Ú×îÓÒ²à
-                ForeColor = GrayText,                        // »ÒÉ«ÎÄ×Ö£¬²»ÏÔÑÛ
-                BackColor = PanelBg,                         // Óë±êÌâÀ¸±³¾°Ò»ÖÂ
-                Font = GetFont(11f),                         // 11pt×ÖÌå£¬Í¼±êÇåÎú
-                Cursor = Cursors.Hand                        // Êó±ê±äÎªÊÖĞÍ
+                Text = "âœ•",                                  // å…³é—­å›¾æ ‡
+                FlatStyle = FlatStyle.Flat,                  // æ‰å¹³æ ·å¼
+                Size = new Size(SX(40), TITLE_BAR_H),        // å®½åº¦40pxï¼Œé«˜åº¦ä¸æ ‡é¢˜æ ä¸€è‡´
+                Location = new Point(DLG_W - SX(40), 0),     // ä½äºçª—å£æœ€å³ä¾§
+                ForeColor = GrayText,                        // ç°è‰²æ–‡å­—ï¼Œä¸æ˜¾çœ¼
+                BackColor = PanelBg,                         // ä¸æ ‡é¢˜æ èƒŒæ™¯ä¸€è‡´
+                Font = GetFont(11f),                         // 11ptå­—ä½“ï¼Œå›¾æ ‡æ¸…æ™°
+                Cursor = Cursors.Hand                        // é¼ æ ‡å˜ä¸ºæ‰‹å‹
             };
-            btnClose.FlatAppearance.BorderSize = 0;           // ÎŞ±ß¿ò
-            btnClose.FlatAppearance.MouseOverBackColor = CloseHover;  // ĞüÍ£Ê±±³¾°É«±äÉî
-            btnClose.FlatAppearance.MouseDownBackColor = CloseDown;   // °´ÏÂÊ±±³¾°É«¸üÉî
-            btnClose.Click += (s, e) => dlg.Close();         // µã»÷¹Ø±Õ¶Ô»°¿ò
+            btnClose.FlatAppearance.BorderSize = 0;           // æ— è¾¹æ¡†
+            btnClose.FlatAppearance.MouseOverBackColor = CloseHover;  // æ‚¬åœæ—¶èƒŒæ™¯è‰²å˜æ·±
+            btnClose.FlatAppearance.MouseDownBackColor = CloseDown;   // æŒ‰ä¸‹æ—¶èƒŒæ™¯è‰²æ›´æ·±
+            btnClose.Click += (s, e) => dlg.Close();         // ç‚¹å‡»å…³é—­å¯¹è¯æ¡†
             titleBar.Controls.Add(btnClose);
 
             void MakeDraggable(Control c)
@@ -14979,18 +15044,18 @@ namespace IPTVLiveChecker
             int selectedResSegIndex = -1;
             bool multiResEnabled = false;
 
-            // ====== ²½ÖèÖ¸Ê¾Æ÷ ======
-            // [²½ÖèÖ¸Ê¾Æ÷Ãæ°å] ÏÔÊ¾µ±Ç°Ïòµ¼½ø¶È£¬°üº¬3¸ö²½Öè£ºÊäÈëÔ´µØÖ· ¡ú Ñ¡Ôñ×Ö¶Î ¡ú ÉèÖÃ·¶Î§
+            // ====== æ­¥éª¤æŒ‡ç¤ºå™¨ ======
+            // [æ­¥éª¤æŒ‡ç¤ºå™¨é¢æ¿] æ˜¾ç¤ºå½“å‰å‘å¯¼è¿›åº¦ï¼ŒåŒ…å«3ä¸ªæ­¥éª¤ï¼šè¾“å…¥æºåœ°å€ â†’ é€‰æ‹©å­—æ®µ â†’ è®¾ç½®èŒƒå›´
             Panel stepIndicator = new Panel
             {
-                Dock = DockStyle.Top,     // ¶¥²¿Í£¿¿
-                Height = STEP_INDICATOR_H,  // ¸ß¶È80px£¬ÈİÄÉÔ²ĞÎÖ¸Ê¾Æ÷ºÍ±êÇ©ÎÄ×Ö
-                BackColor = PanelBg       // Ê¹ÓÃÃæ°å±³¾°É«
+                Dock = DockStyle.Top,     // é¡¶éƒ¨åœé 
+                Height = STEP_INDICATOR_H,  // é«˜åº¦80pxï¼Œå®¹çº³åœ†å½¢æŒ‡ç¤ºå™¨å’Œæ ‡ç­¾æ–‡å­—
+                BackColor = PanelBg       // ä½¿ç”¨é¢æ¿èƒŒæ™¯è‰²
             };
             
-            // [²½Öè±êÇ©Êı×é] Èı¸ö²½ÖèµÄÏÔÊ¾ÎÄ×Ö
-            string[] stepLabelsArr = { "ÊäÈëÔ´µØÖ·", "Ñ¡Ôñ×Ö¶Î", "ÉèÖÃ·¶Î§" };
-            // [²½ÖèÔ²°ë¾¶] ²½ÖèÖ¸Ê¾Æ÷ÖĞÔ²ĞÎµÄ°ë¾¶£¨12px£¬DPI×ÔÊÊÓ¦£©
+            // [æ­¥éª¤æ ‡ç­¾æ•°ç»„] ä¸‰ä¸ªæ­¥éª¤çš„æ˜¾ç¤ºæ–‡å­—
+            string[] stepLabelsArr = { "è¾“å…¥æºåœ°å€", "é€‰æ‹©å­—æ®µ", "è®¾ç½®èŒƒå›´" };
+            // [æ­¥éª¤åœ†åŠå¾„] æ­¥éª¤æŒ‡ç¤ºå™¨ä¸­åœ†å½¢çš„åŠå¾„ï¼ˆ12pxï¼ŒDPIè‡ªé€‚åº”ï¼‰
             int stepCircleR = SX(12);
 
             stepIndicator.Paint += (s, pe) =>
@@ -15020,7 +15085,7 @@ namespace IPTVLiveChecker
                     stepLblFontBold?.Dispose();
                     stepLblFont = GetFont(fontSize);
                     stepLblFontBold = GetFont(fontSize, FontStyle.Bold);
-                    lblSize = g.MeasureString("ÊäÈëÔ´µØÖ·", stepLblFontBold);
+                    lblSize = g.MeasureString("è¾“å…¥æºåœ°å€", stepLblFontBold);
                     fontSize -= 0.5f;
                 } while (lblSize.Width > maxLabelWidth && fontSize >= 8f);
 
@@ -15062,7 +15127,7 @@ namespace IPTVLiveChecker
                             g.FillEllipse(greenBrush, circleRect);
                             g.DrawEllipse(greenPen, circleRect);
                             RectangleF strRect = new RectangleF(cx - stepCircleR, circleY + 1, circleD, circleD);
-                            g.DrawString("?", checkFont, whiteBrush, strRect, sfCenter);
+                            g.DrawString("âœ“", checkFont, whiteBrush, strRect, sfCenter);
                         }
                         else if (isCurrent)
                         {
@@ -15114,115 +15179,115 @@ namespace IPTVLiveChecker
             stepContainer.Controls.Add(step3Panel);
             stepContainer.Controls.Add(step1Panel);
 
-            // ====== ²½Öè1£ºÊäÈëÔ´µØÖ· ======
-            // [²¼¾Ö½á¹¹] ±êÇ©(28px) ¡ú ¼ä¾à(12px) ¡ú ÊäÈë¿ò(44px) ¡ú ¼ä¾à(12px) ¡ú ÌáÊ¾À¸(68px)
+            // ====== æ­¥éª¤1ï¼šè¾“å…¥æºåœ°å€ ======
+            // [å¸ƒå±€ç»“æ„] æ ‡ç­¾(28px) â†’ é—´è·(12px) â†’ è¾“å…¥æ¡†(44px) â†’ é—´è·(12px) â†’ æç¤ºæ (68px)
             
-            // ------ ±êÇ© ------
-            int step1Top = TOP_PADDING;  // ²½Öè1ÄÚÈİÆğÊ¼Î»ÖÃ£¨¾à²½ÖèÖ¸Ê¾Æ÷µ×²¿20px£©
+            // ------ æ ‡ç­¾ ------
+            int step1Top = TOP_PADDING;  // æ­¥éª¤1å†…å®¹èµ·å§‹ä½ç½®ï¼ˆè·æ­¥éª¤æŒ‡ç¤ºå™¨åº•éƒ¨20pxï¼‰
             
-            // [²½Öè1±êÇ©] "Ö±²¥Ô´µØÖ·"£¬´ø±ØÌîĞÇºÅ
+            // [æ­¥éª¤1æ ‡ç­¾] "ç›´æ’­æºåœ°å€"ï¼Œå¸¦å¿…å¡«æ˜Ÿå·
             Label lblStep1Hint = new Label
             {
-                Text = "Ö±²¥Ô´µØÖ·",
-                Font = LABEL_FONT,    // ±êÇ©×ÖÌå10.5pt
-                ForeColor = DarkText, // ÉîÉ«ÎÄ×Ö
-                Location = new Point(CONTENT_PAD, step1Top),  // ×ó¶ÔÆë£¬¾à×ó²à±ß¾à32px
-                AutoSize = true,      // ×Ô¶¯µ÷Õû´óĞ¡
-                BackColor = PanelBg   // Í¸Ã÷±³¾°
+                Text = "ç›´æ’­æºåœ°å€",
+                Font = LABEL_FONT,    // æ ‡ç­¾å­—ä½“10.5pt
+                ForeColor = DarkText, // æ·±è‰²æ–‡å­—
+                Location = new Point(CONTENT_PAD, step1Top),  // å·¦å¯¹é½ï¼Œè·å·¦ä¾§è¾¹è·32px
+                AutoSize = true,      // è‡ªåŠ¨è°ƒæ•´å¤§å°
+                BackColor = PanelBg   // é€æ˜èƒŒæ™¯
             };
             int hint1W = TextRenderer.MeasureText(lblStep1Hint.Text, lblStep1Hint.Font).Width;
             int hint1H = TextRenderer.MeasureText(lblStep1Hint.Text, lblStep1Hint.Font).Height;
             
-            // [±ØÌîĞÇºÅ] ºìÉ«ĞÇºÅ£¬±êÊ¶¸Ã×Ö¶ÎÎª±ØÌîÏî
+            // [å¿…å¡«æ˜Ÿå·] çº¢è‰²æ˜Ÿå·ï¼Œæ ‡è¯†è¯¥å­—æ®µä¸ºå¿…å¡«é¡¹
             Label lblStep1Star = new Label
             {
                 Text = "*",
-                Font = LABEL_FONT,      // Óë±êÇ©×ÖÌåÒ»ÖÂ
-                ForeColor = RedHighlight,  // ºìÉ«¸ßÁÁ
-                Location = new Point(CONTENT_PAD + hint1W + SX(3), step1Top),  // ½ô¸ú±êÇ©ÓÒ²à£¬¼ä¾à3px
+                Font = LABEL_FONT,      // ä¸æ ‡ç­¾å­—ä½“ä¸€è‡´
+                ForeColor = RedHighlight,  // çº¢è‰²é«˜äº®
+                Location = new Point(CONTENT_PAD + hint1W + SX(3), step1Top),  // ç´§è·Ÿæ ‡ç­¾å³ä¾§ï¼Œé—´è·3px
                 AutoSize = true,
                 BackColor = PanelBg
             };
             step1Panel.Controls.Add(lblStep1Hint);
             step1Panel.Controls.Add(lblStep1Star);
 
-            // ------ ÊäÈë¿ò ------
-            // ÊäÈë¿ò¶¥²¿Î»ÖÃ = ±êÇ©¸ß¶È + ¿Ø¼ş¼ä¾à
+            // ------ è¾“å…¥æ¡† ------
+            // è¾“å…¥æ¡†é¡¶éƒ¨ä½ç½® = æ ‡ç­¾é«˜åº¦ + æ§ä»¶é—´è·
             int step1InputTop = step1Top + hint1H + CONTROL_GAP;  
             
-            // [URLÊäÈë¿ò] ÓÃÓÚÊäÈëÖ±²¥Ô´µØÖ·£¬Ö§³Ö±ê×¼URL»ò×Ô¶¨Òå·¶Î§¸ñÊ½
+            // [URLè¾“å…¥æ¡†] ç”¨äºè¾“å…¥ç›´æ’­æºåœ°å€ï¼Œæ”¯æŒæ ‡å‡†URLæˆ–è‡ªå®šä¹‰èŒƒå›´æ ¼å¼
             TextBox txtStep1Url = new TextBox
             {
-                Location = new Point(CONTENT_PAD, step1InputTop),  // ×ó¶ÔÆë£¬¾à×ó²à±ß¾à32px
-                Width = DLG_W - CONTENT_PAD * 2,                   // ¿í¶È = ´°¿Ú¿í¶È - ×óÓÒ±ß¾à
-                Height = INPUT_HEIGHT,                              // ÊäÈë¿ò¸ß¶È44px
-                Font = URL_FONT,                                    // µÈ¿í×ÖÌå9.5pt£¨Consolas£©
-                BorderStyle = BorderStyle.None,                     // ÎŞ±ß¿ò£¨×Ô¶¨Òå»æÖÆÔ²½Ç±ß¿ò£©
-                BackColor = InputBg,                                // ÊäÈë¿ò±³¾°É«£¨Ç³»Ò/ÉîÉ«Surface£©
-                Padding = new Padding(SX(8), SX(2), SX(8), SX(2))   // ÄÚ±ß¾à£¬·ÀÖ¹ÎÄ×Ö±»±ß¿ò½Ø¶Ï
+                Location = new Point(CONTENT_PAD, step1InputTop),  // å·¦å¯¹é½ï¼Œè·å·¦ä¾§è¾¹è·32px
+                Width = DLG_W - CONTENT_PAD * 2,                   // å®½åº¦ = çª—å£å®½åº¦ - å·¦å³è¾¹è·
+                Height = INPUT_HEIGHT,                              // è¾“å…¥æ¡†é«˜åº¦44px
+                Font = URL_FONT,                                    // ç­‰å®½å­—ä½“9.5ptï¼ˆConsolasï¼‰
+                BorderStyle = BorderStyle.None,                     // æ— è¾¹æ¡†ï¼ˆè‡ªå®šä¹‰ç»˜åˆ¶åœ†è§’è¾¹æ¡†ï¼‰
+                BackColor = InputBg,                                // è¾“å…¥æ¡†èƒŒæ™¯è‰²ï¼ˆæµ…ç°/æ·±è‰²Surfaceï¼‰
+                Padding = new Padding(SX(8), SX(2), SX(8), SX(2))   // å†…è¾¹è·ï¼Œé˜²æ­¢æ–‡å­—è¢«è¾¹æ¡†æˆªæ–­
             };
-            // ÉèÖÃÔ²½ÇÂ·¾¶£¨°ë¾¶6px£©
+            // è®¾ç½®åœ†è§’è·¯å¾„ï¼ˆåŠå¾„6pxï¼‰
             txtStep1Url.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, txtStep1Url.Width, txtStep1Url.Height), SX(6)));
-            // ×Ô¶¨Òå»æÖÆ±ß¿ò£¨¾Û½¹Ê±ÂÌÉ«¸ßÁÁ£¬Î´¾Û½¹Ê±»ÒÉ«£©
+            // è‡ªå®šä¹‰ç»˜åˆ¶è¾¹æ¡†ï¼ˆèšç„¦æ—¶ç»¿è‰²é«˜äº®ï¼Œæœªèšç„¦æ—¶ç°è‰²ï¼‰
             txtStep1Url.Paint += (s, pe) =>
             {
-                Color borderColor = txtStep1Url.Focused ? InputFocusBorder : Color.FromArgb(100, 100, 100);  // Éî»ÒÉ«±ß¿ò£¬Ç³É«Ö÷ÌâÏÂ¸üĞÑÄ¿
+                Color borderColor = txtStep1Url.Focused ? InputFocusBorder : Color.FromArgb(100, 100, 100);  // æ·±ç°è‰²è¾¹æ¡†ï¼Œæµ…è‰²ä¸»é¢˜ä¸‹æ›´é†’ç›®
                 using (Pen p = new Pen(borderColor, 2.5f))
                 {
                     pe.Graphics.DrawPath(p, CreateRoundedRectPath(new Rectangle(0, 0, txtStep1Url.Width - 1, txtStep1Url.Height - 1), SX(6)));
                 }
             };
-            // ÉèÖÃÓÒ¼ü²Ëµ¥£¨¼ôÇĞ/¸´ÖÆ/Õ³Ìù/È«Ñ¡/Çå¿Õ£©
+            // è®¾ç½®å³é”®èœå•ï¼ˆå‰ªåˆ‡/å¤åˆ¶/ç²˜è´´/å…¨é€‰/æ¸…ç©ºï¼‰
             txtStep1Url.ContextMenuStrip = CreateInputContextMenu(txtStep1Url);
             
-            // [Õ¼Î»·ûÑÕÉ«] ÌáÊ¾ÎÄ×ÖÑÕÉ«£¬¼ÓÉîÒÔÌá¸ß¿É¶ÁĞÔ£¨ÉîÉ«Ö÷ÌâÏÂÉÔÁÁ£¬Ç³É«Ö÷ÌâÏÂÉÔÉî£©
+            // [å ä½ç¬¦é¢œè‰²] æç¤ºæ–‡å­—é¢œè‰²ï¼ŒåŠ æ·±ä»¥æé«˜å¯è¯»æ€§ï¼ˆæ·±è‰²ä¸»é¢˜ä¸‹ç¨äº®ï¼Œæµ…è‰²ä¸»é¢˜ä¸‹ç¨æ·±ï¼‰
             Color phColor = isDark ? Color.FromArgb(120, 125, 135) : Color.FromArgb(130, 133, 140);
             bool phStep1Active = true;
-            // ÉèÖÃÕ¼Î»·ûÎÄ×Ö£¨ÌáÊ¾ÓÃ»§Ö§³ÖµÄÊäÈë¸ñÊ½£©
-            txtStep1Url.Text = "ÇëÊäÈëÖ±²¥Ô´µØÖ·£¬Ö§³Ö±ê×¼URL»ò{0001-0100}/[1-100]×Ô¶¨Òå·¶Î§£¬Ò²¿ÉÓÃ{Êı×Ö}ÊÖ¶¯¿òÑ¡Éú³É¶Î";
+            // è®¾ç½®å ä½ç¬¦æ–‡å­—ï¼ˆæç¤ºç”¨æˆ·æ”¯æŒçš„è¾“å…¥æ ¼å¼ï¼‰
+            txtStep1Url.Text = "è¯·è¾“å…¥ç›´æ’­æºåœ°å€ï¼Œæ”¯æŒæ ‡å‡†URLæˆ–{0001-0100}/[1-100]è‡ªå®šä¹‰èŒƒå›´ï¼Œä¹Ÿå¯ç”¨{æ•°å­—}æ‰‹åŠ¨æ¡†é€‰ç”Ÿæˆæ®µ";
             txtStep1Url.ForeColor = phColor;
-            // »ñÈ¡½¹µãÊ±Çå³ıÕ¼Î»·û£¬»Ö¸´Õı³£ÎÄ×ÖÑÕÉ«
+            // è·å–ç„¦ç‚¹æ—¶æ¸…é™¤å ä½ç¬¦ï¼Œæ¢å¤æ­£å¸¸æ–‡å­—é¢œè‰²
             txtStep1Url.GotFocus += (s, e) =>
             {
                 if (phStep1Active) { phStep1Active = false; txtStep1Url.Text = ""; txtStep1Url.ForeColor = DarkText; }
                 txtStep1Url.Invalidate();
             };
-            // Ê§È¥½¹µãÊ±Èç¹ûÊäÈë¿òÎª¿Õ£¬»Ö¸´Õ¼Î»·û
+            // å¤±å»ç„¦ç‚¹æ—¶å¦‚æœè¾“å…¥æ¡†ä¸ºç©ºï¼Œæ¢å¤å ä½ç¬¦
             txtStep1Url.LostFocus += (s, e) =>
             {
                 if (string.IsNullOrWhiteSpace(txtStep1Url.Text))
-                { phStep1Active = true; txtStep1Url.Text = "ÇëÊäÈëÖ±²¥Ô´µØÖ·£¬Ö§³Ö±ê×¼URL»ò{0001-0100}/[1-100]×Ô¶¨Òå·¶Î§£¬Ò²¿ÉÓÃ{Êı×Ö}ÊÖ¶¯¿òÑ¡Éú³É¶Î"; txtStep1Url.ForeColor = phColor; }
+                { phStep1Active = true; txtStep1Url.Text = "è¯·è¾“å…¥ç›´æ’­æºåœ°å€ï¼Œæ”¯æŒæ ‡å‡†URLæˆ–{0001-0100}/[1-100]è‡ªå®šä¹‰èŒƒå›´ï¼Œä¹Ÿå¯ç”¨{æ•°å­—}æ‰‹åŠ¨æ¡†é€‰ç”Ÿæˆæ®µ"; txtStep1Url.ForeColor = phColor; }
             };
             step1Panel.Controls.Add(txtStep1Url);
 
-            // ------ ÖÇÄÜÌáÊ¾À¸ ------
-            // ÌáÊ¾À¸¶¥²¿Î»ÖÃ = ÊäÈë¿ò¶¥²¿ + ÊäÈë¿ò¸ß¶È + ¿Ø¼ş¼ä¾à
+            // ------ æ™ºèƒ½æç¤ºæ  ------
+            // æç¤ºæ é¡¶éƒ¨ä½ç½® = è¾“å…¥æ¡†é¡¶éƒ¨ + è¾“å…¥æ¡†é«˜åº¦ + æ§ä»¶é—´è·
             int step1HintTop = step1InputTop + INPUT_HEIGHT + CONTROL_GAP;  
             
-            // [ÖÇÄÜÌáÊ¾Ãæ°å] ÏÔÊ¾Ê¹ÓÃËµÃ÷ºÍ¸ñÊ½Ê¾Àı
+            // [æ™ºèƒ½æç¤ºé¢æ¿] æ˜¾ç¤ºä½¿ç”¨è¯´æ˜å’Œæ ¼å¼ç¤ºä¾‹
             Panel pnlSmartHint = new Panel
             {
-                Location = new Point(CONTENT_PAD, step1HintTop),  // ×ó¶ÔÆë£¬¾à×ó²à±ß¾à32px
-                Size = new Size(DLG_W - CONTENT_PAD * 2, HINT_HEIGHT),  // ¿í¶È = ´°¿Ú¿í¶È - ×óÓÒ±ß¾à£¬¸ß¶È68px
-                BackColor = theme.StatusTagBg,                    // Ê¹ÓÃÖ÷ÌâµÄÌáÊ¾±³¾°É«£¨Ç³ÂÌÉ«£©
-                BorderStyle = BorderStyle.None                    // ÎŞ±ß¿ò£¨×Ô¶¨Òå»æÖÆÔ²½Ç±ß¿ò£©
+                Location = new Point(CONTENT_PAD, step1HintTop),  // å·¦å¯¹é½ï¼Œè·å·¦ä¾§è¾¹è·32px
+                Size = new Size(DLG_W - CONTENT_PAD * 2, HINT_HEIGHT),  // å®½åº¦ = çª—å£å®½åº¦ - å·¦å³è¾¹è·ï¼Œé«˜åº¦68px
+                BackColor = theme.StatusTagBg,                    // ä½¿ç”¨ä¸»é¢˜çš„æç¤ºèƒŒæ™¯è‰²ï¼ˆæµ…ç»¿è‰²ï¼‰
+                BorderStyle = BorderStyle.None                    // æ— è¾¹æ¡†ï¼ˆè‡ªå®šä¹‰ç»˜åˆ¶åœ†è§’è¾¹æ¡†ï¼‰
             };
-            // ÉèÖÃÔ²½ÇÂ·¾¶£¨°ë¾¶6px£©
+            // è®¾ç½®åœ†è§’è·¯å¾„ï¼ˆåŠå¾„6pxï¼‰
             pnlSmartHint.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, pnlSmartHint.Width, pnlSmartHint.Height), SX(6)));
             
-            // [ÖÇÄÜÌáÊ¾±êÇ©] ÌáÊ¾ÎÄ×Ö£¬´ø??Í¼±ê
+            // [æ™ºèƒ½æç¤ºæ ‡ç­¾] æç¤ºæ–‡å­—ï¼Œå¸¦ğŸ’¡å›¾æ ‡
             Label lblStep1SmartHint = new Label
             {
-                Text = "?? ÖÇÄÜÊ¶±ğ£ºÊäÈë±ê×¼URL½øÈëÏòµ¼Ä£Ê½£»ÊäÈë´ø [ÆğÊ¼-½áÊø] µÄµØÖ·Ö±½ÓÉú³É\n£¨Èç http://example.com/[1-100].m3u8£©",
-                Font = HINT_FONT,      // ÌáÊ¾×ÖÌå10pt
-                ForeColor = theme.SuccessColor,  // ³É¹¦ÌáÊ¾ÑÕÉ«£¨ÂÌÉ«£©
-                Location = new Point(SX(16), SY(8)),  // ÌáÊ¾À¸ÄÚ±ß¾à£¨×ó16px£¬ÉÏ8px£©
-                AutoSize = false,      // ¹Ì¶¨´óĞ¡£¬Ö§³Ö»»ĞĞ
-                Size = new Size(DLG_W - CONTENT_PAD * 2 - SX(32), HINT_HEIGHT - SY(16)),  // ¼õÈ¥×óÓÒÄÚ±ß¾à
-                BackColor = theme.StatusTagBg  // Í¸Ã÷±³¾°
+                Text = "ğŸ’¡ æ™ºèƒ½è¯†åˆ«ï¼šè¾“å…¥æ ‡å‡†URLè¿›å…¥å‘å¯¼æ¨¡å¼ï¼›è¾“å…¥å¸¦ [èµ·å§‹-ç»“æŸ] çš„åœ°å€ç›´æ¥ç”Ÿæˆ\nï¼ˆå¦‚ http://example.com/[1-100].m3u8ï¼‰",
+                Font = HINT_FONT,      // æç¤ºå­—ä½“10pt
+                ForeColor = theme.SuccessColor,  // æˆåŠŸæç¤ºé¢œè‰²ï¼ˆç»¿è‰²ï¼‰
+                Location = new Point(SX(16), SY(8)),  // æç¤ºæ å†…è¾¹è·ï¼ˆå·¦16pxï¼Œä¸Š8pxï¼‰
+                AutoSize = false,      // å›ºå®šå¤§å°ï¼Œæ”¯æŒæ¢è¡Œ
+                Size = new Size(DLG_W - CONTENT_PAD * 2 - SX(32), HINT_HEIGHT - SY(16)),  // å‡å»å·¦å³å†…è¾¹è·
+                BackColor = theme.StatusTagBg  // é€æ˜èƒŒæ™¯
             };
             pnlSmartHint.Controls.Add(lblStep1SmartHint);
-            // ×Ô¶¨Òå»æÖÆ±ß¿ò£¨Ê¹ÓÃÖ÷ÌâµÄÌáÊ¾±ß¿òÉ«£©
+            // è‡ªå®šä¹‰ç»˜åˆ¶è¾¹æ¡†ï¼ˆä½¿ç”¨ä¸»é¢˜çš„æç¤ºè¾¹æ¡†è‰²ï¼‰
             pnlSmartHint.Paint += (s, pe) =>
             {
                 using (Pen p = new Pen(theme.StatusTagBorder, 1f))
@@ -15232,18 +15297,18 @@ namespace IPTVLiveChecker
             };
             step1Panel.Controls.Add(pnlSmartHint);
 
-            // ====== ²½Öè2£ºÑ¡Ôñ×Ö¶Î ======
-            // [²¼¾Ö½á¹¹] ±êÇ©(28px) ¡ú ¼ä¾à(12px) ¡ú URLÏÔÊ¾Çø(310px)
+            // ====== æ­¥éª¤2ï¼šé€‰æ‹©å­—æ®µ ======
+            // [å¸ƒå±€ç»“æ„] æ ‡ç­¾(28px) â†’ é—´è·(12px) â†’ URLæ˜¾ç¤ºåŒº(310px)
             
-            // ------ ±êÇ© ------
-            int step2Top = TOP_PADDING;  // ²½Öè2ÄÚÈİÆğÊ¼Î»ÖÃ£¨¾à²½ÖèÖ¸Ê¾Æ÷µ×²¿20px£©
+            // ------ æ ‡ç­¾ ------
+            int step2Top = TOP_PADDING;  // æ­¥éª¤2å†…å®¹èµ·å§‹ä½ç½®ï¼ˆè·æ­¥éª¤æŒ‡ç¤ºå™¨åº•éƒ¨20pxï¼‰
             
-            // [²½Öè2±êÇ©] "ÇëÑ¡ÔñÒªÉú³ÉµÄ×Ö·û¶Î"£¬´ø±ØÌîĞÇºÅ
+            // [æ­¥éª¤2æ ‡ç­¾] "è¯·é€‰æ‹©è¦ç”Ÿæˆçš„å­—ç¬¦æ®µ"ï¼Œå¸¦å¿…å¡«æ˜Ÿå·
             Label lblStep2Hint = new Label
             {
-                Text = "ÇëÑ¡ÔñÒªÉú³ÉµÄ×Ö·û¶Î",
-                Font = LABEL_FONT,    // ±êÇ©×ÖÌå10.5pt
-                ForeColor = DarkText, // ÉîÉ«ÎÄ×Ö
+                Text = "è¯·é€‰æ‹©è¦ç”Ÿæˆçš„å­—ç¬¦æ®µ",
+                Font = LABEL_FONT,    // æ ‡ç­¾å­—ä½“10.5pt
+                ForeColor = DarkText, // æ·±è‰²æ–‡å­—
                 Location = new Point(CONTENT_PAD, step2Top),
                 AutoSize = true,
                 BackColor = PanelBg
@@ -15251,7 +15316,7 @@ namespace IPTVLiveChecker
             int hint2W = TextRenderer.MeasureText(lblStep2Hint.Text, lblStep2Hint.Font).Width;
             int hint2H = TextRenderer.MeasureText(lblStep2Hint.Text, lblStep2Hint.Font).Height;
             
-            // [±ØÌîĞÇºÅ] ºìÉ«ĞÇºÅ£¬±êÊ¶¸Ã×Ö¶ÎÎª±ØÌîÏî
+            // [å¿…å¡«æ˜Ÿå·] çº¢è‰²æ˜Ÿå·ï¼Œæ ‡è¯†è¯¥å­—æ®µä¸ºå¿…å¡«é¡¹
             Label lblStep2Star = new Label
             {
                 Text = "*",
@@ -15264,58 +15329,58 @@ namespace IPTVLiveChecker
             step2Panel.Controls.Add(lblStep2Hint);
             step2Panel.Controls.Add(lblStep2Star);
 
-            // ------ URLÏÔÊ¾ÈİÆ÷ ------
-            // URLÏÔÊ¾Çø¶¥²¿Î»ÖÃ = ±êÇ©¸ß¶È + ¿Ø¼ş¼ä¾à
+            // ------ URLæ˜¾ç¤ºå®¹å™¨ ------
+            // URLæ˜¾ç¤ºåŒºé¡¶éƒ¨ä½ç½® = æ ‡ç­¾é«˜åº¦ + æ§ä»¶é—´è·
             int step2ContentTop = step2Top + hint2H + CONTROL_GAP;  
             
-            // [URLÏÔÊ¾Ãæ°å] ÓÃÓÚÕ¹Ê¾½âÎöºóµÄURLÆ¬¶Î£¬ÓÃ»§¿ÉÑ¡ÔñÒªÉú³ÉµÄ×Ö·û¶Î
+            // [URLæ˜¾ç¤ºé¢æ¿] ç”¨äºå±•ç¤ºè§£æåçš„URLç‰‡æ®µï¼Œç”¨æˆ·å¯é€‰æ‹©è¦ç”Ÿæˆçš„å­—ç¬¦æ®µ
             Panel segListContainer = new Panel
             {
                 Location = new Point(CONTENT_PAD, step2ContentTop),
                 Width = DLG_W - CONTENT_PAD * 2,
-                Height = SY(310),        // ¸ß¶È310px£¬¿ÉÈİÄÉ¶à¸öURLÆ¬¶Î
+                Height = SY(310),        // é«˜åº¦310pxï¼Œå¯å®¹çº³å¤šä¸ªURLç‰‡æ®µ
                 BackColor = PanelBg,
-                AutoScroll = true        // Ö§³Ö´¹Ö±¹ö¶¯
+                AutoScroll = true        // æ”¯æŒå‚ç›´æ»šåŠ¨
             };
             step2Panel.Controls.Add(segListContainer);
 
-            // ====== ²½Öè3£ºÉèÖÃ·¶Î§ ======
-            // [²¼¾Ö½á¹¹] ±êÇ©(28px) ¡ú ¼ä¾à(12px) ¡ú Êı×ÖÃæ°å(44px) ¡ú ¼ä¾à(24px) ¡ú ÌáÊ¾À¸(72px)
+            // ====== æ­¥éª¤3ï¼šè®¾ç½®èŒƒå›´ ======
+            // [å¸ƒå±€ç»“æ„] æ ‡ç­¾(28px) â†’ é—´è·(12px) â†’ æ•°å­—é¢æ¿(44px) â†’ é—´è·(24px) â†’ æç¤ºæ (72px)
             
-            // ------ Êı×ÖÃæ°åÅäÖÃ ------
-            int numPanelW = SX(180);   // Êı×ÖÃæ°å¿í¶È180px£¨°üº¬¼Ó¼õ°´Å¥ºÍÊäÈë¿ò£©
-            int step3Top = TOP_PADDING;     // ²½Öè3ÄÚÈİÆğÊ¼Î»ÖÃ
+            // ------ æ•°å­—é¢æ¿é…ç½® ------
+            int numPanelW = SX(180);   // æ•°å­—é¢æ¿å®½åº¦180pxï¼ˆåŒ…å«åŠ å‡æŒ‰é’®å’Œè¾“å…¥æ¡†ï¼‰
+            int step3Top = TOP_PADDING;     // æ­¥éª¤3å†…å®¹èµ·å§‹ä½ç½®
             
-            // ¼ÆËãÁ½¸öÊı×ÖÃæ°åµÄÎ»ÖÃ£¬Ê¹ÆäÔÚ´°¿ÚÖĞË®Æ½¾ÓÖĞ·Ö²¼
-            int panelTotalW = numPanelW * 2 + SX(180);  // Á½¸öÃæ°å + ÖĞ¼ä¼ä¾à180px
-            int pFromX = (DLG_W - panelTotalW) / 2;     // ÆğÊ¼Ãæ°åXÎ»ÖÃ£¨Ë®Æ½¾ÓÖĞ£©
-            int pToX = pFromX + numPanelW + SX(180);    // ½áÊøÃæ°åXÎ»ÖÃ£¨¾àÆğÊ¼Ãæ°å180px£©
+            // è®¡ç®—ä¸¤ä¸ªæ•°å­—é¢æ¿çš„ä½ç½®ï¼Œä½¿å…¶åœ¨çª—å£ä¸­æ°´å¹³å±…ä¸­åˆ†å¸ƒ
+            int panelTotalW = numPanelW * 2 + SX(180);  // ä¸¤ä¸ªé¢æ¿ + ä¸­é—´é—´è·180px
+            int pFromX = (DLG_W - panelTotalW) / 2;     // èµ·å§‹é¢æ¿Xä½ç½®ï¼ˆæ°´å¹³å±…ä¸­ï¼‰
+            int pToX = pFromX + numPanelW + SX(180);    // ç»“æŸé¢æ¿Xä½ç½®ï¼ˆè·èµ·å§‹é¢æ¿180pxï¼‰
             
-            // ------ ±êÇ© ------
-            // [ÆğÊ¼Êı×Ö±êÇ©] "ÆğÊ¼Êı×Ö"£¬¾ÓÖĞ¶ÔÆë
+            // ------ æ ‡ç­¾ ------
+            // [èµ·å§‹æ•°å­—æ ‡ç­¾] "èµ·å§‹æ•°å­—"ï¼Œå±…ä¸­å¯¹é½
             Label lblStep3From = new Label
             {
-                Text = "ÆğÊ¼Êı×Ö",
-                Font = LABEL_FONT,    // ±êÇ©×ÖÌå10.5pt
+                Text = "èµ·å§‹æ•°å­—",
+                Font = LABEL_FONT,    // æ ‡ç­¾å­—ä½“10.5pt
                 ForeColor = DarkText,
                 Location = new Point(pFromX, step3Top),
                 AutoSize = false,
-                Size = new Size(numPanelW, SY(28)),     // ¿í¶ÈÓëÊı×ÖÃæ°åÒ»ÖÂ£¬¸ß¶È28px
-                TextAlign = ContentAlignment.MiddleCenter,  // ÎÄ×Ö¾ÓÖĞ¶ÔÆë
+                Size = new Size(numPanelW, SY(28)),     // å®½åº¦ä¸æ•°å­—é¢æ¿ä¸€è‡´ï¼Œé«˜åº¦28px
+                TextAlign = ContentAlignment.MiddleCenter,  // æ–‡å­—å±…ä¸­å¯¹é½
                 BackColor = PanelBg
             };
             step3Panel.Controls.Add(lblStep3From);
             
-            // [½áÊøÊı×Ö±êÇ©] "½áÊøÊı×Ö"£¬¾ÓÖĞ¶ÔÆë
+            // [ç»“æŸæ•°å­—æ ‡ç­¾] "ç»“æŸæ•°å­—"ï¼Œå±…ä¸­å¯¹é½
             Label lblStep3To = new Label
             {
-                Text = "½áÊøÊı×Ö",
+                Text = "ç»“æŸæ•°å­—",
                 Font = LABEL_FONT,
                 ForeColor = DarkText,
                 Location = new Point(pToX, step3Top),
                 AutoSize = false,
-                Size = new Size(numPanelW, SY(28)),     // ¿í¶ÈÓëÊı×ÖÃæ°åÒ»ÖÂ£¬¸ß¶È28px
-                TextAlign = ContentAlignment.MiddleCenter,  // ÎÄ×Ö¾ÓÖĞ¶ÔÆë
+                Size = new Size(numPanelW, SY(28)),     // å®½åº¦ä¸æ•°å­—é¢æ¿ä¸€è‡´ï¼Œé«˜åº¦28px
+                TextAlign = ContentAlignment.MiddleCenter,  // æ–‡å­—å±…ä¸­å¯¹é½
                 BackColor = PanelBg
             };
             step3Panel.Controls.Add(lblStep3To);
@@ -15325,12 +15390,12 @@ namespace IPTVLiveChecker
             CheckedListBox clstTextCandidates = null;
             List<string> selectedTextValues = null;
 
-            // ====== Êı×ÖÃæ°å´´½¨·½·¨ ======
-            // [´´½¨Êı×ÖÃæ°å] ´´½¨Ò»¸ö°üº¬¼õºÅ°´Å¥¡¢ÊäÈë¿ò¡¢¼ÓºÅ°´Å¥µÄÊı×ÖÑ¡ÔñÃæ°å
-            // ²ÎÊı: x - Ãæ°åXÎ»ÖÃ, initialVal - ³õÊ¼ÊıÖµ, outTextBox - ·µ»ØµÄÊäÈë¿òÒıÓÃ
+            // ====== æ•°å­—é¢æ¿åˆ›å»ºæ–¹æ³• ======
+            // [åˆ›å»ºæ•°å­—é¢æ¿] åˆ›å»ºä¸€ä¸ªåŒ…å«å‡å·æŒ‰é’®ã€è¾“å…¥æ¡†ã€åŠ å·æŒ‰é’®çš„æ•°å­—é€‰æ‹©é¢æ¿
+            // å‚æ•°: x - é¢æ¿Xä½ç½®, initialVal - åˆå§‹æ•°å€¼, outTextBox - è¿”å›çš„è¾“å…¥æ¡†å¼•ç”¨
             Panel CreateNumPanel(int x, long initialVal, out TextBox outTextBox)
             {
-                // [Êı×ÖÃæ°åÈİÆ÷] °üº¬¼Ó¼õ°´Å¥ºÍÊäÈë¿òµÄÃæ°å
+                // [æ•°å­—é¢æ¿å®¹å™¨] åŒ…å«åŠ å‡æŒ‰é’®å’Œè¾“å…¥æ¡†çš„é¢æ¿
                 Panel p = new Panel
                 {
                     Location = new Point(x, 0),
@@ -15339,9 +15404,9 @@ namespace IPTVLiveChecker
                     BackColor = InputBg,
                     BorderStyle = BorderStyle.None
                 };
-                // ÉèÖÃÔ²½ÇÂ·¾¶£¨°ë¾¶6px£©
+                // è®¾ç½®åœ†è§’è·¯å¾„ï¼ˆåŠå¾„6pxï¼‰
                 p.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, numPanelW, INPUT_HEIGHT), SX(6)));
-                // ×Ô¶¨Òå»æÖÆ±ß¿ò£¨Éî»ÒÉ«£¬Ô²½Ç£©
+                // è‡ªå®šä¹‰ç»˜åˆ¶è¾¹æ¡†ï¼ˆæ·±ç°è‰²ï¼Œåœ†è§’ï¼‰
                 p.Paint += (s, pe) =>
                 {
                     Color borderColor = isDark ? Color.FromArgb(100, 105, 115) : Color.FromArgb(130, 135, 145);
@@ -15351,57 +15416,57 @@ namespace IPTVLiveChecker
                     }
                 };
                 
-                int btnW = INPUT_HEIGHT;  // ¼Ó¼õ°´Å¥¿í¶È = ÊäÈë¿ò¸ß¶È£¨Õı·½ĞÎ£©
+                int btnW = INPUT_HEIGHT;  // åŠ å‡æŒ‰é’®å®½åº¦ = è¾“å…¥æ¡†é«˜åº¦ï¼ˆæ­£æ–¹å½¢ï¼‰
                 
-                // [¼õºÅ°´Å¥] µã»÷¼õÉÙÊı×Ö
+                // [å‡å·æŒ‰é’®] ç‚¹å‡»å‡å°‘æ•°å­—
                 Button btnMinus = new Button
                 {
-                    Text = "?",
+                    Text = "âˆ’",
                     Size = new Size(btnW, INPUT_HEIGHT - 2),
                     Location = new Point(0, 0),
                     FlatStyle = FlatStyle.Flat,
                     BackColor = LightBtnBg,
                     ForeColor = DarkText,
-                    Font = NUMPAD_BTN_FONT,  // 14pt¼Ó´Ö×ÖÌå
+                    Font = NUMPAD_BTN_FONT,  // 14ptåŠ ç²—å­—ä½“
                     Cursor = Cursors.Hand
                 };
                 btnMinus.FlatAppearance.BorderSize = 0;
-                btnMinus.FlatAppearance.MouseOverBackColor = NumPadHover;   // ĞüÍ£Ê±±³¾°É«±äÉî
-                btnMinus.FlatAppearance.MouseDownBackColor = NumPadDown;   // °´ÏÂÊ±±³¾°É«¸üÉî
+                btnMinus.FlatAppearance.MouseOverBackColor = NumPadHover;   // æ‚¬åœæ—¶èƒŒæ™¯è‰²å˜æ·±
+                btnMinus.FlatAppearance.MouseDownBackColor = NumPadDown;   // æŒ‰ä¸‹æ—¶èƒŒæ™¯è‰²æ›´æ·±
                 
-                // [Êı×ÖÊäÈë¿ò] ÏÔÊ¾ºÍÊäÈëµ±Ç°ÊıÖµ
+                // [æ•°å­—è¾“å…¥æ¡†] æ˜¾ç¤ºå’Œè¾“å…¥å½“å‰æ•°å€¼
                 TextBox tb = new TextBox
                 {
                     Text = initialVal.ToString(),
-                    Location = new Point(btnW + 2, (INPUT_HEIGHT - 24) / 2),  // ´¹Ö±¾ÓÖĞ
-                    Width = numPanelW - btnW * 2 - 6,                         // ¿í¶È = Ãæ°å¿í¶È - Á½¸ö°´Å¥¿í¶È
+                    Location = new Point(btnW + 2, (INPUT_HEIGHT - 24) / 2),  // å‚ç›´å±…ä¸­
+                    Width = numPanelW - btnW * 2 - 6,                         // å®½åº¦ = é¢æ¿å®½åº¦ - ä¸¤ä¸ªæŒ‰é’®å®½åº¦
                     Height = 24,
                     BorderStyle = BorderStyle.None,
-                    Font = NUM_INPUT_FONT,     // 12pt×ÖÌå£¬¾ÓÖĞÏÔÊ¾
+                    Font = NUM_INPUT_FONT,     // 12ptå­—ä½“ï¼Œå±…ä¸­æ˜¾ç¤º
                     ForeColor = DarkText,
                     BackColor = InputBg,
                     TextAlign = HorizontalAlignment.Center
                 };
-                // ÉèÖÃÓÒ¼ü²Ëµ¥£¨¼ôÇĞ/¸´ÖÆ/Õ³Ìù/È«Ñ¡/Çå¿Õ£©
+                // è®¾ç½®å³é”®èœå•ï¼ˆå‰ªåˆ‡/å¤åˆ¶/ç²˜è´´/å…¨é€‰/æ¸…ç©ºï¼‰
                 tb.ContextMenuStrip = CreateInputContextMenu(tb);
                 
-                // [¼ÓºÅ°´Å¥] µã»÷Ôö¼ÓÊı×Ö
+                // [åŠ å·æŒ‰é’®] ç‚¹å‡»å¢åŠ æ•°å­—
                 Button btnPlus = new Button
                 {
                     Text = "+",
                     Size = new Size(btnW, INPUT_HEIGHT - 2),
-                    Location = new Point(numPanelW - btnW - SX(1), 0),  // ÓÒ²à¶ÔÆë
+                    Location = new Point(numPanelW - btnW - SX(1), 0),  // å³ä¾§å¯¹é½
                     FlatStyle = FlatStyle.Flat,
                     BackColor = LightBtnBg,
                     ForeColor = DarkText,
-                    Font = NUMPAD_BTN_FONT,  // 14pt¼Ó´Ö×ÖÌå
+                    Font = NUMPAD_BTN_FONT,  // 14ptåŠ ç²—å­—ä½“
                     Cursor = Cursors.Hand
                 };
                 btnPlus.FlatAppearance.BorderSize = 0;
-                btnPlus.FlatAppearance.MouseOverBackColor = NumPadHover;   // ĞüÍ£Ê±±³¾°É«±äÉî
-                btnPlus.FlatAppearance.MouseDownBackColor = NumPadDown;   // °´ÏÂÊ±±³¾°É«¸üÉî
+                btnPlus.FlatAppearance.MouseOverBackColor = NumPadHover;   // æ‚¬åœæ—¶èƒŒæ™¯è‰²å˜æ·±
+                btnPlus.FlatAppearance.MouseDownBackColor = NumPadDown;   // æŒ‰ä¸‹æ—¶èƒŒæ™¯è‰²æ›´æ·±
 
-                // ¼õºÅ°´Å¥µã»÷ÊÂ¼ş£ºÊı×Ö¼õ1£¨×îĞ¡ÖµÎª0£©
+                // å‡å·æŒ‰é’®ç‚¹å‡»äº‹ä»¶ï¼šæ•°å­—å‡1ï¼ˆæœ€å°å€¼ä¸º0ï¼‰
                 btnMinus.Click += (s, e) =>
                 {
                     long v;
@@ -15409,7 +15474,7 @@ namespace IPTVLiveChecker
                     else { tb.Text = "0"; }
                 };
                 
-                // ¼ÓºÅ°´Å¥µã»÷ÊÂ¼ş£ºÊı×Ö¼Ó1£¨×î´óÖµÎª9999999999£©
+                // åŠ å·æŒ‰é’®ç‚¹å‡»äº‹ä»¶ï¼šæ•°å­—åŠ 1ï¼ˆæœ€å¤§å€¼ä¸º9999999999ï¼‰
                 btnPlus.Click += (s, e) =>
                 {
                     long v;
@@ -15417,7 +15482,7 @@ namespace IPTVLiveChecker
                     else if (!long.TryParse(tb.Text, out v)) { tb.Text = "0"; }
                 };
                 
-                // ÊäÈë¿ò°´¼üÊÂ¼ş£ºÖ»ÔÊĞíÊäÈëÊı×Ö
+                // è¾“å…¥æ¡†æŒ‰é”®äº‹ä»¶ï¼šåªå…è®¸è¾“å…¥æ•°å­—
                 tb.KeyPress += (s, e) =>
                 {
                     if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
@@ -15431,8 +15496,8 @@ namespace IPTVLiveChecker
                 return p;
             }
 
-            // ------ Êı×ÖÃæ°å ------
-            int step3PanelTop = step3Top + SY(28) + CONTROL_GAP;  // ±êÇ©¸ß¶È28px + ¿Ø¼ş¼ä¾à12px
+            // ------ æ•°å­—é¢æ¿ ------
+            int step3PanelTop = step3Top + SY(28) + CONTROL_GAP;  // æ ‡ç­¾é«˜åº¦28px + æ§ä»¶é—´è·12px
             
             Panel pFrom = CreateNumPanel(pFromX, fromVal, out txtFrom);
             pFrom.Location = new Point(pFromX, step3PanelTop);
@@ -15442,23 +15507,23 @@ namespace IPTVLiveChecker
             pTo.Location = new Point(pToX, step3PanelTop);
             step3Panel.Controls.Add(pTo);
 
-            // ------ ·¶Î§ÌáÊ¾À¸ ------
-            int step3HintTop = step3PanelTop + INPUT_HEIGHT + SY(24);  // Ãæ°å¸ß¶È44px + ¿Ø¼ş¼ä¾à24px£¬Ôö´ó¼ä¾à
+            // ------ èŒƒå›´æç¤ºæ  ------
+            int step3HintTop = step3PanelTop + INPUT_HEIGHT + SY(24);  // é¢æ¿é«˜åº¦44px + æ§ä»¶é—´è·24pxï¼Œå¢å¤§é—´è·
             
             Panel pnlRangeHint = new Panel
             {
                 Location = new Point(CONTENT_PAD, step3HintTop),
-                Size = new Size(DLG_W - CONTENT_PAD * 2, SY(72)),  // ÌáÊ¾À¸¸ß¶È72px
+                Size = new Size(DLG_W - CONTENT_PAD * 2, SY(72)),  // æç¤ºæ é«˜åº¦72px
                 BackColor = theme.TipBg,
                 BorderStyle = BorderStyle.None
             };
             pnlRangeHint.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, pnlRangeHint.Width, pnlRangeHint.Height), SX(6)));
             Label lblStep3RangeHint = new Label
             {
-                Text = "? ×î´óÉú³É·¶Î§Îª10000£¬·¶Î§¹ı´ó¿ÉÄÜµ¼ÖÂ¼ì²âÊ±¼ä¹ı³¤",
-                Font = GetFont(9.5f),      // ÌáÊ¾×ÖÌå9.5pt
+                Text = "âš  æœ€å¤§ç”ŸæˆèŒƒå›´ä¸º10000ï¼ŒèŒƒå›´è¿‡å¤§å¯èƒ½å¯¼è‡´æ£€æµ‹æ—¶é—´è¿‡é•¿",
+                Font = GetFont(9.5f),      // æç¤ºå­—ä½“9.5pt
                 ForeColor = theme.WarnColor,
-                Location = new Point(SX(16), SY(10)),  // ÌáÊ¾À¸ÄÚ±ß¾à
+                Location = new Point(SX(16), SY(10)),  // æç¤ºæ å†…è¾¹è·
                 AutoSize = false,
                 Size = new Size(DLG_W - CONTENT_PAD * 2 - SX(32), SY(52)),
                 BackColor = theme.TipBg,
@@ -15497,7 +15562,7 @@ namespace IPTVLiveChecker
             };
             Label lblTextOptTitle = new Label
             {
-                Text = "Ñ¡ÔñÒªÌæ»»µÄÑ¡Ïî£º",
+                Text = "é€‰æ‹©è¦æ›¿æ¢çš„é€‰é¡¹ï¼š",
                 Font = GetFont(11f),
                 ForeColor = DarkText,
                 Location = new Point(0, 0),
@@ -15526,7 +15591,7 @@ namespace IPTVLiveChecker
             };
             Button btnTextCheckAll = new Button
             {
-                Text = "È«Ñ¡",
+                Text = "å…¨é€‰",
                 Size = new Size(SX(70), SY(30)),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = LightBtnBg,
@@ -15547,7 +15612,7 @@ namespace IPTVLiveChecker
             };
             Button btnTextUncheckAll = new Button
             {
-                Text = "È«²»Ñ¡",
+                Text = "å…¨ä¸é€‰",
                 Size = new Size(SX(70), SY(30)),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = LightBtnBg,
@@ -15571,8 +15636,8 @@ namespace IPTVLiveChecker
             pnlTextOptions.Controls.Add(pnlTextBtns);
             step3Panel.Controls.Add(pnlTextOptions);
 
-            // ====== µ×²¿°´Å¥À¸ ======
-            // [¸ß¶È] 68px£¬°üº¬°´Å¥(38px) + ÉÏÏÂ¼ä¾à¸÷15px
+            // ====== åº•éƒ¨æŒ‰é’®æ  ======
+            // [é«˜åº¦] 68pxï¼ŒåŒ…å«æŒ‰é’®(38px) + ä¸Šä¸‹é—´è·å„15px
             
             Panel sepBottom = new Panel { Dock = DockStyle.Bottom, Height = 1, BackColor = GrayLine };
 
@@ -15584,11 +15649,11 @@ namespace IPTVLiveChecker
                 Padding = new Padding(CONTENT_PAD, 0, CONTENT_PAD, 0)
             };
 
-            int btnBottomY = (bottomBar.Height - BTN_HEIGHT) / 2;  // ´¹Ö±¾ÓÖĞ
+            int btnBottomY = (bottomBar.Height - BTN_HEIGHT) / 2;  // å‚ç›´å±…ä¸­
             
             Button btnPrev = new Button
             {
-                Text = "¡û ÉÏÒ»²½ (B)",
+                Text = "â† ä¸Šä¸€æ­¥ (B)",
                 Size = new Size(SX(130), BTN_HEIGHT),
                 Location = new Point(CONTENT_PAD, btnBottomY),
                 Visible = false
@@ -15598,7 +15663,7 @@ namespace IPTVLiveChecker
 
             Button btnAction = new Button
             {
-                Text = "ÏÂÒ»²½ (N) ¡ú",
+                Text = "ä¸‹ä¸€æ­¥ (N) â†’",
                 Size = new Size(SX(130), BTN_HEIGHT),
                 Location = new Point(DLG_W - CONTENT_PAD - SX(130), btnBottomY)
             };
@@ -15623,9 +15688,9 @@ namespace IPTVLiveChecker
                 stepIndicator.Invalidate();
                 btnPrev.Visible = currentStep > 1;
                 if (isCustomRangeMode)
-                    btnAction.Text = "¿ªÊ¼Éú³É";
+                    btnAction.Text = "å¼€å§‹ç”Ÿæˆ";
                 else
-                    btnAction.Text = (currentStep == 3) ? "¿ªÊ¼Éú³É" : "ÏÂÒ»²½ (N) ¡ú";
+                    btnAction.Text = (currentStep == 3) ? "å¼€å§‹ç”Ÿæˆ" : "ä¸‹ä¸€æ­¥ (N) â†’";
             }
 
             void BuildUrlPreview(string url, int preSelectSeg = -1, int preSubStart = 0, int preSubLen = 0, int preGlobalPos = -1, int preGlobalLen = 0)
@@ -15671,7 +15736,7 @@ namespace IPTVLiveChecker
                         GlobalStart = pathStart + m.Groups[1].Index,
                         GlobalEnd = pathStart + m.Groups[1].Index + m.Groups[1].Length,
                         OriginalText = num,
-                        Label = "?? Êı×Ö¶Î: " + num,
+                        Label = "ğŸ”¢ æ•°å­—æ®µ: " + num,
                         Candidates = null
                     });
                 }
@@ -15687,7 +15752,7 @@ namespace IPTVLiveChecker
                         GlobalStart = pathStart + m.Groups[1].Index,
                         GlobalEnd = pathStart + m.Groups[1].Index + m.Groups[1].Length,
                         OriginalText = res,
-                        Label = "?? ·Ö±æÂÊ: " + res,
+                        Label = "ğŸ“ åˆ†è¾¨ç‡: " + res,
                         Candidates = new List<string>(ResolutionList)
                     });
                 }
@@ -15730,28 +15795,28 @@ namespace IPTVLiveChecker
                     if (Regex.IsMatch(tok, @"^cctv\d+[a-z0-9]*$") && cctvSet.Contains(tok))
                     {
                         segType = ScanSegType.CctvChannel;
-                        segLabel = "?? CCTVÆµµÀ: " + tok;
+                        segLabel = "ğŸ“º CCTVé¢‘é“: " + tok;
                         segCandidates = new List<string>(cctvCandidates);
                         found = true;
                     }
                     else if (payDict.ContainsKey(tok))
                     {
                         segType = ScanSegType.PayChannel;
-                        segLabel = "?? ¸¶·ÑÆµµÀ: " + tok;
+                        segLabel = "ğŸ“º ä»˜è´¹é¢‘é“: " + tok;
                         segCandidates = payKeys;
                         found = true;
                     }
                     else if (wsDict.ContainsKey(tok))
                     {
                         segType = ScanSegType.WsChannel;
-                        segLabel = "?? ÎÀÊÓÆµµÀ: " + tok;
+                        segLabel = "ğŸ“¡ å«è§†é¢‘é“: " + tok;
                         segCandidates = wsKeys;
                         found = true;
                     }
                     else if (movieDict.ContainsKey(tok))
                     {
                         segType = ScanSegType.MovieChannel;
-                        segLabel = "?? Ó°ÊÓÆµµÀ: " + tok;
+                        segLabel = "ğŸ¬ å½±è§†é¢‘é“: " + tok;
                         segCandidates = movieKeys;
                         found = true;
                     }
@@ -15761,28 +15826,28 @@ namespace IPTVLiveChecker
                         if (cctvSet.Contains(tok))
                         {
                             segType = ScanSegType.CctvChannel;
-                            segLabel = "?? CCTVÆµµÀ: " + tok;
+                            segLabel = "ğŸ“º CCTVé¢‘é“: " + tok;
                             segCandidates = new List<string>(cctvCandidates);
                             found = true;
                         }
                         else if (payDict.ContainsKey(tok))
                         {
                             segType = ScanSegType.PayChannel;
-                            segLabel = "?? ¸¶·ÑÆµµÀ: " + tok;
+                            segLabel = "ğŸ“º ä»˜è´¹é¢‘é“: " + tok;
                             segCandidates = payKeys;
                             found = true;
                         }
                         else if (wsDict.ContainsKey(tok))
                         {
                             segType = ScanSegType.WsChannel;
-                            segLabel = "?? ÎÀÊÓÆµµÀ: " + tok;
+                            segLabel = "ğŸ“¡ å«è§†é¢‘é“: " + tok;
                             segCandidates = wsKeys;
                             found = true;
                         }
                         else if (movieDict.ContainsKey(tok))
                         {
                             segType = ScanSegType.MovieChannel;
-                            segLabel = "?? Ó°ÊÓÆµµÀ: " + tok;
+                            segLabel = "ğŸ¬ å½±è§†é¢‘é“: " + tok;
                             segCandidates = movieKeys;
                             found = true;
                         }
@@ -15821,7 +15886,7 @@ namespace IPTVLiveChecker
                 {
                     Label noMatch = new Label
                     {
-                        Text = "? Î´ÕÒµ½¿ÉÉú³ÉµÄ×Ö¶Î£¬Çë¼ì²éURL¸ñÊ½£¨Ö§³ÖÊı×Ö¶ÎÈç/123/¡¢ÆµµÀÃûÈçcctv1¡¢·Ö±æÂÊÈç1080pµÈ£©",
+                        Text = "âŒ æœªæ‰¾åˆ°å¯ç”Ÿæˆçš„å­—æ®µï¼Œè¯·æ£€æŸ¥URLæ ¼å¼ï¼ˆæ”¯æŒæ•°å­—æ®µå¦‚/123/ã€é¢‘é“åå¦‚cctv1ã€åˆ†è¾¨ç‡å¦‚1080pç­‰ï¼‰",
                         ForeColor = RedHighlight,
                         Font = GetFont(10.5f),
                         Location = new Point(0, SY(8)),
@@ -15849,7 +15914,7 @@ namespace IPTVLiveChecker
                 }
 
                 int itemY = 8;
-                int itemH = SY(44);  // Ôö´óĞĞ¸ßÒÔÈİÄÉËùÓĞ¿Ø¼ş
+                int itemH = SY(44);  // å¢å¤§è¡Œé«˜ä»¥å®¹çº³æ‰€æœ‰æ§ä»¶
                 int radioSize = 18;
                 Color rowBgNormal = PanelBg;
                 Color radioBorderColor = GrayBorder;
@@ -15971,9 +16036,9 @@ namespace IPTVLiveChecker
                     string selDigits = curSeg.OriginalText.Substring(ss, sl);
                     string fullNum = curSeg.OriginalText;
                     if (ss == 0 && sl == numLen)
-                        lblSelInfo.Text = string.Format("ÒÑÑ¡ÖĞÕû¶Î {{{0}}}£¨{1}Î»£©£¬ÈôĞè¿òÑ¡²¿·ÖÎ»ÊıÇëÓÃ°´Å¥µ÷Õû´óÀ¨ºÅ", selDigits, numLen);
+                        lblSelInfo.Text = string.Format("å·²é€‰ä¸­æ•´æ®µ {{{0}}}ï¼ˆ{1}ä½ï¼‰ï¼Œè‹¥éœ€æ¡†é€‰éƒ¨åˆ†ä½æ•°è¯·ç”¨æŒ‰é’®è°ƒæ•´å¤§æ‹¬å·", selDigits, numLen);
                     else
-                        lblSelInfo.Text = string.Format("ÒÑ¿òÑ¡£º{0}{{{1}}}{2}", fullNum.Substring(0, ss), selDigits, (ss + sl < numLen ? fullNum.Substring(ss + sl) : ""));
+                        lblSelInfo.Text = string.Format("å·²æ¡†é€‰ï¼š{0}{{{1}}}{2}", fullNum.Substring(0, ss), selDigits, (ss + sl < numLen ? fullNum.Substring(ss + sl) : ""));
                 }
 
                 void SelectSegment(int segIdx)
@@ -16193,7 +16258,7 @@ namespace IPTVLiveChecker
                     rowPanel.Controls.Add(rowFlow);
                     rowPanels[i] = rowPanel;
                     segListContainer.Controls.Add(rowPanel);
-                    itemY += itemH + CONTROL_GAP;  // Ê¹ÓÃ±ê×¼¿Ø¼ş¼ä¾à
+                    itemY += itemH + CONTROL_GAP;  // ä½¿ç”¨æ ‡å‡†æ§ä»¶é—´è·
                 }
 
                 adjPanel = new Panel
@@ -16207,11 +16272,11 @@ namespace IPTVLiveChecker
 
                 int btnH = SY(34);
                 int btnY = (SY(50) - btnH) / 2;
-                btnLeftExpand = new Button { Text = "? {", Size = new Size(SX(54), btnH), Location = new Point(0, btnY), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(9f), Cursor = Cursors.Hand };
-                btnLeftShrink = new Button { Text = "{ ?", Size = new Size(SX(54), btnH), Location = new Point(SX(58), btnY), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(9f), Cursor = Cursors.Hand };
-                btnRightShrink = new Button { Text = "} ?", Size = new Size(SX(54), btnH), Location = new Point(SX(116), btnY), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(9f), Cursor = Cursors.Hand };
-                btnRightExpand = new Button { Text = "} ?", Size = new Size(SX(54), btnH), Location = new Point(SX(174), btnY), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(9f), Cursor = Cursors.Hand };
-                btnSelectAll = new Button { Text = "È«Ñ¡±¾¶Î", Size = new Size(SX(80), btnH), Location = new Point(SX(236), btnY), FlatStyle = FlatStyle.Flat, BackColor = bracketActiveColor, ForeColor = Color.White, Font = GetFont(9f), Cursor = Cursors.Hand };
+                btnLeftExpand = new Button { Text = "â—€ {", Size = new Size(SX(54), btnH), Location = new Point(0, btnY), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(9f), Cursor = Cursors.Hand };
+                btnLeftShrink = new Button { Text = "{ â–¶", Size = new Size(SX(54), btnH), Location = new Point(SX(58), btnY), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(9f), Cursor = Cursors.Hand };
+                btnRightShrink = new Button { Text = "} â—€", Size = new Size(SX(54), btnH), Location = new Point(SX(116), btnY), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(9f), Cursor = Cursors.Hand };
+                btnRightExpand = new Button { Text = "} â–¶", Size = new Size(SX(54), btnH), Location = new Point(SX(174), btnY), FlatStyle = FlatStyle.Flat, BackColor = PanelBg, ForeColor = DarkText, Font = GetFont(9f), Cursor = Cursors.Hand };
+                btnSelectAll = new Button { Text = "å…¨é€‰æœ¬æ®µ", Size = new Size(SX(80), btnH), Location = new Point(SX(236), btnY), FlatStyle = FlatStyle.Flat, BackColor = bracketActiveColor, ForeColor = Color.White, Font = GetFont(9f), Cursor = Cursors.Hand };
 
                 void StyleBtn(Button b)
                 {
@@ -16305,7 +16370,7 @@ namespace IPTVLiveChecker
 
                 Label lblHint = new Label
                 {
-                    Text = "?? µã»÷µ¥Ñ¡°´Å¥Ñ¡ÔñÒªÉú³ÉµÄ×Ö¶Î£¬ÂÌÉ«¡ñÎªµ±Ç°Ñ¡ÖĞ¡£Êı×Ö¶Î¿ÉÓÃ ?{ {? }? }? °´Å¥µ÷Õû´óÀ¨ºÅ¿òÑ¡²¿·ÖÎ»Êı£¨³¤Êı×Ö¿ÉÑ¡×Ó·¶Î§£©£¬º¬Ç°µ¼Áã½«±£³Ö²¹Áã¡£ÆµµÀ/·Ö±æÂÊ¶Î½«Ìá¹©ºòÑ¡ÁĞ±í¹©Ñ¡Ôñ¡£",
+                    Text = "ğŸ’¡ ç‚¹å‡»å•é€‰æŒ‰é’®é€‰æ‹©è¦ç”Ÿæˆçš„å­—æ®µï¼Œç»¿è‰²â—ä¸ºå½“å‰é€‰ä¸­ã€‚æ•°å­—æ®µå¯ç”¨ â—€{ {â–¶ }â—€ }â–¶ æŒ‰é’®è°ƒæ•´å¤§æ‹¬å·æ¡†é€‰éƒ¨åˆ†ä½æ•°ï¼ˆé•¿æ•°å­—å¯é€‰å­èŒƒå›´ï¼‰ï¼Œå«å‰å¯¼é›¶å°†ä¿æŒè¡¥é›¶ã€‚é¢‘é“/åˆ†è¾¨ç‡æ®µå°†æä¾›å€™é€‰åˆ—è¡¨ä¾›é€‰æ‹©ã€‚",
                     Font = GetFont(8.5f),
                     ForeColor = theme.SuccessColor,
                     Location = new Point(0, itemY + SY(20)),
@@ -16316,11 +16381,11 @@ namespace IPTVLiveChecker
                     TextAlign = ContentAlignment.TopLeft
                 };
                 segListContainer.Controls.Add(lblHint);
-                itemY = lblHint.Bottom + CONTROL_GAP;  // Ê¹ÓÃ±ê×¼¿Ø¼ş¼ä¾à
+                itemY = lblHint.Bottom + CONTROL_GAP;  // ä½¿ç”¨æ ‡å‡†æ§ä»¶é—´è·
 
                 CheckBox chkMultiRes = new CheckBox
                 {
-                    Text = "?? Í¬Ê±Éú³É¶à¸ö·Ö±æÂÊ£¨1080p/720p/540p/480p/360p£©",
+                    Text = "ğŸ“ åŒæ—¶ç”Ÿæˆå¤šä¸ªåˆ†è¾¨ç‡ï¼ˆ1080p/720p/540p/480p/360pï¼‰",
                     Font = GetFont(9.5f),
                     ForeColor = hasResolution ? DarkText : GrayText,
                     Location = new Point(0, itemY),
@@ -16404,7 +16469,7 @@ namespace IPTVLiveChecker
                 if (totalMatches == 0) return false;
                 if (totalMatches > 1)
                 {
-                    error = "Ã¿´ÎÖ»ÄÜÅäÖÃÒ»¸ö±äÁ¿·¶Î§£¨½öÔÊĞíÒ»¶Ô[Êı×Ö-Êı×Ö]»ò{Êı×Ö-Êı×Ö}£©";
+                    error = "æ¯æ¬¡åªèƒ½é…ç½®ä¸€ä¸ªå˜é‡èŒƒå›´ï¼ˆä»…å…è®¸ä¸€å¯¹[æ•°å­—-æ•°å­—]æˆ–{æ•°å­—-æ•°å­—}ï¼‰";
                     return false;
                 }
                 if (mc1.Count == 1) m = mc1[0];
@@ -16415,12 +16480,12 @@ namespace IPTVLiveChecker
                 end = long.Parse(endStr);
                 if (start >= end)
                 {
-                    error = "·¶Î§ÆğÊ¼Öµ±ØĞëĞ¡ÓÚ½áÊøÖµ";
+                    error = "èŒƒå›´èµ·å§‹å€¼å¿…é¡»å°äºç»“æŸå€¼";
                     return false;
                 }
                 if (end - start > 10000)
                 {
-                    error = "Éú³É·¶Î§¹ı´ó£¬Çë¿ØÖÆÔÚ10000ÒÔÄÚ";
+                    error = "ç”ŸæˆèŒƒå›´è¿‡å¤§ï¼Œè¯·æ§åˆ¶åœ¨10000ä»¥å†…";
                     return false;
                 }
                 padW = startStr.Length;
@@ -16431,7 +16496,7 @@ namespace IPTVLiveChecker
                 string testUrl = url.Substring(0, m.Index) + "12345" + url.Substring(m.Index + m.Length);
                 if (!Uri.IsWellFormedUriString(testUrl, UriKind.Absolute))
                 {
-                    error = "URL¸ñÊ½²»ÕıÈ·£¬Çë¼ì²éµØÖ·";
+                    error = "URLæ ¼å¼ä¸æ­£ç¡®ï¼Œè¯·æ£€æŸ¥åœ°å€";
                     return false;
                 }
                 return true;
@@ -16451,7 +16516,7 @@ namespace IPTVLiveChecker
                 if (rangeMatches.Count > 0) return false;
                 if (bracketMatches.Count > 1)
                 {
-                    error = "Ã¿´ÎÖ»ÄÜ¿òÑ¡Ò»¸öÊı×Ö¶Î£¨½öÔÊĞíÒ»¶Ô{Êı×Ö}£©";
+                    error = "æ¯æ¬¡åªèƒ½æ¡†é€‰ä¸€ä¸ªæ•°å­—æ®µï¼ˆä»…å…è®¸ä¸€å¯¹{æ•°å­—}ï¼‰";
                     return false;
                 }
                 var m = bracketMatches[0];
@@ -16461,7 +16526,7 @@ namespace IPTVLiveChecker
                 cleanUrl = url.Substring(0, m.Index) + m.Groups[1].Value + url.Substring(m.Index + m.Length);
                 if (!Uri.IsWellFormedUriString(cleanUrl, UriKind.Absolute))
                 {
-                    error = "URL¸ñÊ½²»ÕıÈ·£¬Çë¼ì²éµØÖ·";
+                    error = "URLæ ¼å¼ä¸æ­£ç¡®ï¼Œè¯·æ£€æŸ¥åœ°å€";
                     return false;
                 }
                 return true;
@@ -16501,7 +16566,7 @@ namespace IPTVLiveChecker
                     for (long v = customRangeStart; v <= customRangeEnd; v++)
                     {
                         string url = customUrlTemplate.Substring(0, customReplacePos) + PadNumber(v, customPadWidth, customPadZero) + customUrlTemplate.Substring(customReplacePos + customReplaceLen);
-                        channels.Add(new ChannelInfo { Name = "Ô´" + (channels.Count + 1), Url = url, Group = "Éú³ÉÆ÷", Status = "Î´¼ì²â", Visible = true });
+                        channels.Add(new ChannelInfo { Name = "æº" + (channels.Count + 1), Url = url, Group = "ç”Ÿæˆå™¨", Status = "æœªæ£€æµ‹", Visible = true });
                     }
                 }
                 else
@@ -16532,7 +16597,7 @@ namespace IPTVLiveChecker
                             string replText = PadNumber(v, segPadWidth, segPadZero);
                             string newPath = pathPart.Substring(0, primStart) + replText + pathPart.Substring(primStart + primLen);
                             int deltaLen = replText.Length - primLen;
-                            string baseName = "Ô´" + (channels.Count + 1);
+                            string baseName = "æº" + (channels.Count + 1);
                             AddChannelWithResVariants(channels, prefixPart, newPath, selSeg, baseName, deltaLen);
                         }
                     }
@@ -16551,7 +16616,7 @@ namespace IPTVLiveChecker
 
                 if (channels.Count > 10000)
                 {
-                    DarkMessageBox.Show("Éú³ÉµÄÔ´ÊıÁ¿³¬¹ı10000£¬ÇëËõĞ¡·¶Î§", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    DarkMessageBox.Show("ç”Ÿæˆçš„æºæ•°é‡è¶…è¿‡10000ï¼Œè¯·ç¼©å°èŒƒå›´", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -16580,13 +16645,13 @@ namespace IPTVLiveChecker
                         string resNewPath = baseNewPath.Substring(0, resPathStart) + res + baseNewPath.Substring(resPathStart + resPathLen);
                         string resUrl = prefixPart + resNewPath;
                         string resName = baseName + "-" + res;
-                        channels.Add(new ChannelInfo { Name = resName, Url = resUrl, Group = "Éú³ÉÆ÷", Status = "Î´¼ì²â", Visible = true });
+                        channels.Add(new ChannelInfo { Name = resName, Url = resUrl, Group = "ç”Ÿæˆå™¨", Status = "æœªæ£€æµ‹", Visible = true });
                         if (channels.Count > 10000) break;
                     }
                 }
                 else
                 {
-                    channels.Add(new ChannelInfo { Name = baseName, Url = baseUrl, Group = "Éú³ÉÆ÷", Status = "Î´¼ì²â", Visible = true });
+                    channels.Add(new ChannelInfo { Name = baseName, Url = baseUrl, Group = "ç”Ÿæˆå™¨", Status = "æœªæ£€æµ‹", Visible = true });
                 }
             }
 
@@ -16603,8 +16668,8 @@ namespace IPTVLiveChecker
                         if (parsedList.Count > 1)
                         {
                             var dr = DarkMessageBox.Show(
-                                string.Format("¼ì²âµ½ {0} ÌõÆµµÀÁĞ±í£¨Ãû³Æ+µØÖ·¸ñÊ½£©£¬ÊÇ·ñÖ±½Óµ¼Èëµ½¼ì²â´°¿Ú£¿\n\nµã»÷¡¸ÊÇ¡¹Ö±½Óµ¼ÈëÈ«²¿ÆµµÀ\nµã»÷¡¸·ñ¡¹Ê¹ÓÃµÚÒ»ÌõURL½øĞĞÉú³É", parsedList.Count),
-                                "¼ì²âµ½ÆµµÀÁĞ±í",
+                                string.Format("æ£€æµ‹åˆ° {0} æ¡é¢‘é“åˆ—è¡¨ï¼ˆåç§°+åœ°å€æ ¼å¼ï¼‰ï¼Œæ˜¯å¦ç›´æ¥å¯¼å…¥åˆ°æ£€æµ‹çª—å£ï¼Ÿ\n\nç‚¹å‡»ã€Œæ˜¯ã€ç›´æ¥å¯¼å…¥å…¨éƒ¨é¢‘é“\nç‚¹å‡»ã€Œå¦ã€ä½¿ç”¨ç¬¬ä¸€æ¡URLè¿›è¡Œç”Ÿæˆ", parsedList.Count),
+                                "æ£€æµ‹åˆ°é¢‘é“åˆ—è¡¨",
                                 MessageBoxButtons.YesNoCancel,
                                 MessageBoxIcon.Question);
                             if (dr == DialogResult.Cancel) return;
@@ -16625,7 +16690,7 @@ namespace IPTVLiveChecker
                     step1Url = input;
                     if (string.IsNullOrWhiteSpace(input))
                     {
-                        DarkMessageBox.Show("ÇëÊäÈëÖ±²¥Ô´µØÖ·", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        DarkMessageBox.Show("è¯·è¾“å…¥ç›´æ’­æºåœ°å€", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
@@ -16650,7 +16715,7 @@ namespace IPTVLiveChecker
                         pTo.Visible = true;
                         pnlRangeHint.Visible = true;
                         string sampleUrl = ctpl.Substring(0, crp) + PadNumber(cs, cpw, cpz) + ctpl.Substring(crp + crl);
-                        lblStep3Preview.Text = string.Format("? ¼ì²âµ½×Ô¶¨Òå·¶Î§¸ñÊ½\n½«Éú³É {0} ¸öÔ´µØÖ·\nÊ¾Àı£º{1}", ce - cs + 1, sampleUrl);
+                        lblStep3Preview.Text = string.Format("âœ… æ£€æµ‹åˆ°è‡ªå®šä¹‰èŒƒå›´æ ¼å¼\nå°†ç”Ÿæˆ {0} ä¸ªæºåœ°å€\nç¤ºä¾‹ï¼š{1}", ce - cs + 1, sampleUrl);
                         lblStep3Preview.Visible = true;
                         UpdateStepUI();
                         return;
@@ -16668,13 +16733,13 @@ namespace IPTVLiveChecker
 
                     if (!string.IsNullOrEmpty(bktErr))
                     {
-                        DarkMessageBox.Show(bktErr, "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        DarkMessageBox.Show(bktErr, "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     if (!Uri.IsWellFormedUriString(input, UriKind.Absolute))
                     {
-                        DarkMessageBox.Show("ÇëÊäÈëÓĞĞ§µÄÖ±²¥Ô´µØÖ·£¨Èç http://example.com/1.m3u8£©", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        DarkMessageBox.Show("è¯·è¾“å…¥æœ‰æ•ˆçš„ç›´æ’­æºåœ°å€ï¼ˆå¦‚ http://example.com/1.m3u8ï¼‰", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
@@ -16688,12 +16753,12 @@ namespace IPTVLiveChecker
                 {
                     if (segs == null || segs.Count == 0)
                     {
-                        DarkMessageBox.Show("Î´ÕÒµ½¿ÉÉú³ÉµÄ×Ö¶Î", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        DarkMessageBox.Show("æœªæ‰¾åˆ°å¯ç”Ÿæˆçš„å­—æ®µ", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                     if (selectedSegIndex < 0 || selectedSegIndex >= segs.Count)
                     {
-                        DarkMessageBox.Show("ÇëÑ¡ÔñÒªÉú³ÉµÄ×Ö¶Î£¨µã»÷RadioButton»ò×Ö¶ÎÎÄ±¾£©", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        DarkMessageBox.Show("è¯·é€‰æ‹©è¦ç”Ÿæˆçš„å­—æ®µï¼ˆç‚¹å‡»RadioButtonæˆ–å­—æ®µæ–‡æœ¬ï¼‰", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
@@ -16718,8 +16783,8 @@ namespace IPTVLiveChecker
                             long defaultTo = selNum + (selNum < 100 ? 10 : (selNum < 10000 ? 20 : 50));
                             txtTo.Text = defaultTo.ToString();
                         }
-                        lblStep3From.Text = "ÆğÊ¼Êı×Ö";
-                        lblStep3To.Text = "½áÊøÊı×Ö";
+                        lblStep3From.Text = "èµ·å§‹æ•°å­—";
+                        lblStep3To.Text = "ç»“æŸæ•°å­—";
                         lblStep3From.Visible = true;
                         lblStep3To.Visible = true;
                         pFrom.Visible = true;
@@ -16754,13 +16819,13 @@ namespace IPTVLiveChecker
                         {
                             clstTextCandidates.SetItemChecked(ci, ci == origIdx || ci < 5);
                         }
-                        string typeLabel = "Ñ¡Ïî";
-                        if (curSeg.Type == ScanSegType.CctvChannel) typeLabel = "CCTVÆµµÀ";
-                        else if (curSeg.Type == ScanSegType.PayChannel) typeLabel = "¸¶·ÑÆµµÀ";
-                        else if (curSeg.Type == ScanSegType.WsChannel) typeLabel = "ÎÀÊÓÆµµÀ";
-                        else if (curSeg.Type == ScanSegType.MovieChannel) typeLabel = "Ó°ÊÓÆµµÀ";
-                        else if (curSeg.Type == ScanSegType.Resolution) typeLabel = "·Ö±æÂÊ";
-                        lblTextOptTitle.Text = "Ñ¡ÔñÒªÌæ»»µÄ" + typeLabel + "£º";
+                        string typeLabel = "é€‰é¡¹";
+                        if (curSeg.Type == ScanSegType.CctvChannel) typeLabel = "CCTVé¢‘é“";
+                        else if (curSeg.Type == ScanSegType.PayChannel) typeLabel = "ä»˜è´¹é¢‘é“";
+                        else if (curSeg.Type == ScanSegType.WsChannel) typeLabel = "å«è§†é¢‘é“";
+                        else if (curSeg.Type == ScanSegType.MovieChannel) typeLabel = "å½±è§†é¢‘é“";
+                        else if (curSeg.Type == ScanSegType.Resolution) typeLabel = "åˆ†è¾¨ç‡";
+                        lblTextOptTitle.Text = "é€‰æ‹©è¦æ›¿æ¢çš„" + typeLabel + "ï¼š";
                         lblStep3From.Visible = false;
                         lblStep3To.Visible = false;
                         pFrom.Visible = false;
@@ -16782,7 +16847,7 @@ namespace IPTVLiveChecker
                         if (!long.TryParse(txtTo.Text, out tv)) tv = 0;
                         if (fv < customRangeStart || fv > customRangeEnd || tv < customRangeStart || tv > customRangeEnd || fv >= tv)
                         {
-                            DarkMessageBox.Show("ÇëÊäÈëÓĞĞ§µÄ·¶Î§Öµ", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            DarkMessageBox.Show("è¯·è¾“å…¥æœ‰æ•ˆçš„èŒƒå›´å€¼", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
                         fromVal = fv;
@@ -16799,7 +16864,7 @@ namespace IPTVLiveChecker
                         if (!long.TryParse(txtTo.Text, out tv)) tv = 0;
                         if (fv >= tv)
                         {
-                            DarkMessageBox.Show("ÆğÊ¼Öµ±ØĞëĞ¡ÓÚ½áÊøÖµ", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            DarkMessageBox.Show("èµ·å§‹å€¼å¿…é¡»å°äºç»“æŸå€¼", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
                         long estCount = tv - fv + 1;
@@ -16807,7 +16872,7 @@ namespace IPTVLiveChecker
                             estCount *= ResolutionList.Length;
                         if (estCount > 10000)
                         {
-                            DarkMessageBox.Show("Éú³É·¶Î§¹ı´ó£¬Ô¤¼ÆÉú³É³¬¹ı10000¸öÔ´£¬ÇëËõĞ¡·¶Î§", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            DarkMessageBox.Show("ç”ŸæˆèŒƒå›´è¿‡å¤§ï¼Œé¢„è®¡ç”Ÿæˆè¶…è¿‡10000ä¸ªæºï¼Œè¯·ç¼©å°èŒƒå›´", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
                         fromVal = fv;
@@ -16832,7 +16897,7 @@ namespace IPTVLiveChecker
                         }
                         if (selectedTextValues.Count == 0)
                         {
-                            DarkMessageBox.Show("ÇëÖÁÉÙÑ¡ÔñÒ»¸öÑ¡Ïî", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            DarkMessageBox.Show("è¯·è‡³å°‘é€‰æ‹©ä¸€ä¸ªé€‰é¡¹", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
                         long estCount = selectedTextValues.Count;
@@ -16840,7 +16905,7 @@ namespace IPTVLiveChecker
                             estCount *= ResolutionList.Length;
                         if (estCount > 10000)
                         {
-                            DarkMessageBox.Show("Ñ¡Ôñ¹ı¶à£¬Ô¤¼ÆÉú³É³¬¹ı10000¸öÔ´£¬Çë¼õÉÙÑ¡Ïî", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            DarkMessageBox.Show("é€‰æ‹©è¿‡å¤šï¼Œé¢„è®¡ç”Ÿæˆè¶…è¿‡10000ä¸ªæºï¼Œè¯·å‡å°‘é€‰é¡¹", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
                     }
@@ -16933,9 +16998,9 @@ namespace IPTVLiveChecker
                                 dupCount++;
                                 continue;
                             }
-                            if (string.IsNullOrEmpty(ch.Name) || System.Text.RegularExpressions.Regex.IsMatch(ch.Name, @"^Ô´\d+$"))
+                            if (string.IsNullOrEmpty(ch.Name) || System.Text.RegularExpressions.Regex.IsMatch(ch.Name, @"^æº\d+$"))
                             {
-                                ch.Name = string.Format("Ô´{0}", allChannels.Count + 1);
+                                ch.Name = string.Format("æº{0}", allChannels.Count + 1);
                             }
                             allChannels.Add(ch);
                             existingUrls.Add(urlKey);
@@ -17124,11 +17189,11 @@ namespace IPTVLiveChecker
 
                 if (!x86Installed)
                 {
-                    missingDependencies.Add("Microsoft Visual C++ 2015-2022 ÔËĞĞÊ± (x86)");
+                    missingDependencies.Add("Microsoft Visual C++ 2015-2022 è¿è¡Œæ—¶ (x86)");
                 }
                 if (!x64Installed)
                 {
-                    missingDependencies.Add("Microsoft Visual C++ 2015-2022 ÔËĞĞÊ± (x64)");
+                    missingDependencies.Add("Microsoft Visual C++ 2015-2022 è¿è¡Œæ—¶ (x64)");
                 }
             }
             catch { }
@@ -17310,7 +17375,7 @@ else { exit 1 }
 
         private SearchMode ShowModeSelectionDialog()
         {
-            bool isDark = theme.Name == "ÉîÉ«";
+            bool isDark = theme.Name == "æ·±è‰²";
             Color LightBlueBg = Color.FromArgb(46, 78, 126);
             Color PanelBg = isDark ? LightBlueBg : Color.White;
             Color SurfaceBg = isDark ? Color.FromArgb(36, 62, 100) : Color.White;
@@ -17321,7 +17386,7 @@ else { exit 1 }
 
             Form dlg = new Form
             {
-                Text = "Ñ¡ÔñËÑË÷Ä£Ê½",
+                Text = "é€‰æ‹©æœç´¢æ¨¡å¼",
                 StartPosition = FormStartPosition.Manual,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 MaximizeBox = false,
@@ -17334,10 +17399,10 @@ else { exit 1 }
             SetFormDarkModeTitleBar(dlg, isDark);
             CenterForm(dlg, this);
             
-            SearchMode result = (SearchMode)(-1); // Ä¬ÈÏÎŞĞ§Öµ£¬±íÊ¾È¡Ïû
+            SearchMode result = (SearchMode)(-1); // é»˜è®¤æ— æ•ˆå€¼ï¼Œè¡¨ç¤ºå–æ¶ˆ
             bool isConfirmed = false;
             
-            // ´¦Àí´°¿ÚÓÒÉÏ½Ç¹Ø±Õ°´Å¥
+            // å¤„ç†çª—å£å³ä¸Šè§’å…³é—­æŒ‰é’®
             dlg.FormClosing += (s, e) =>
             {
                 if (!isConfirmed)
@@ -17348,7 +17413,7 @@ else { exit 1 }
 
             RadioButton rbBrowser = new RadioButton
             {
-                Text = "?? ä¯ÀÀÆ÷Ä£Ê½",
+                Text = "ğŸŒ æµè§ˆå™¨æ¨¡å¼",
                 Font = GetFont(14f),
                 ForeColor = TextPrimary,
                 BackColor = PanelBg,
@@ -17362,7 +17427,7 @@ else { exit 1 }
 
             Label lblBrowserDesc = new Label
             {
-                Text = "Ê¹ÓÃÏµÍ³Ä¬ÈÏä¯ÀÀÆ÷´ò¿ªÍøÂç¿Õ¼äËÑË÷ÒıÇæ",
+                Text = "ä½¿ç”¨ç³»ç»Ÿé»˜è®¤æµè§ˆå™¨æ‰“å¼€ç½‘ç»œç©ºé—´æœç´¢å¼•æ“",
                 Font = GetFont(12f),
                 ForeColor = TextSecondary,
                 Location = new Point(SX(30), SY(78)),
@@ -17374,7 +17439,7 @@ else { exit 1 }
 
             RadioButton rbWebView2 = new RadioButton
             {
-                Text = "??? WebView2´°¿ÚÄ£Ê½",
+                Text = "ğŸ–¥ï¸ WebView2çª—å£æ¨¡å¼",
                 Font = GetFont(14f),
                 ForeColor = TextPrimary,
                 BackColor = PanelBg,
@@ -17387,7 +17452,7 @@ else { exit 1 }
 
             Label lblWebView2Desc = new Label
             {
-                Text = "ÔÚÓ¦ÓÃÄÚ´°¿ÚÖĞÊ¹ÓÃEdgeÄÚºËÏÔÊ¾ËÑË÷Ò³Ãæ",
+                Text = "åœ¨åº”ç”¨å†…çª—å£ä¸­ä½¿ç”¨Edgeå†…æ ¸æ˜¾ç¤ºæœç´¢é¡µé¢",
                 Font = GetFont(12f),
                 ForeColor = TextSecondary,
                 Location = new Point(SX(30), SY(168)),
@@ -17397,7 +17462,7 @@ else { exit 1 }
             };
             dlg.Controls.Add(lblWebView2Desc);
 
-            // Êó±êµã»÷½»»¥£ºµã»÷Õû¸öÇøÓò¶¼ÄÜÑ¡ÖĞ¶ÔÓ¦Ñ¡Ïî
+            // é¼ æ ‡ç‚¹å‡»äº¤äº’ï¼šç‚¹å‡»æ•´ä¸ªåŒºåŸŸéƒ½èƒ½é€‰ä¸­å¯¹åº”é€‰é¡¹
             rbBrowser.Click += (s, e) => { rbBrowser.Checked = true; };
             lblBrowserDesc.Click += (s, e) => { rbBrowser.Checked = true; };
             rbWebView2.Click += (s, e) => { rbWebView2.Checked = true; };
@@ -17417,19 +17482,19 @@ else { exit 1 }
             bool webView2Supported = IsWebView2Supported();
             if (!webView2Supported)
             {
-                lblStatus.Text = "?? ÏµÍ³Î´°²×°WebView2ÔËĞĞ¿â£¬Ñ¡Ôñ´ËÄ£Ê½½«×Ô¶¯ÏÂÔØ°²×°";
+                lblStatus.Text = "âš ï¸ ç³»ç»Ÿæœªå®‰è£…WebView2è¿è¡Œåº“ï¼Œé€‰æ‹©æ­¤æ¨¡å¼å°†è‡ªåŠ¨ä¸‹è½½å®‰è£…";
                 lblStatus.ForeColor = isDark ? Color.FromArgb(255, 200, 50) : Color.Orange;
             }
             else
             {
-                lblStatus.Text = "? WebView2ÔËĞĞ¿âÒÑ°²×°";
+                lblStatus.Text = "âœ“ WebView2è¿è¡Œåº“å·²å®‰è£…";
                 lblStatus.ForeColor = isDark ? Color.FromArgb(100, 255, 100) : Color.Green;
             }
 
             int btnSpacing = (dlg.ClientSize.Width - 120 - 120) / 3;
             Button btnOK = new Button
             {
-                Text = "È·¶¨",
+                Text = "ç¡®å®š",
                 Size = new Size(SX(120), SY(36)),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = PrimaryColor,
@@ -17444,7 +17509,7 @@ else { exit 1 }
 
             Button btnCancel = new Button
             {
-                Text = "È¡Ïû",
+                Text = "å–æ¶ˆ",
                 Size = new Size(SX(120), SY(36)),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = isDark ? Color.FromArgb(30, 50, 80) : Color.White,
@@ -17505,7 +17570,7 @@ else { exit 1 }
             {
                 if (!CheckWindowsVersionSupported())
                 {
-                    DarkMessageBox.Show("ÄúµÄÏµÍ³°æ±¾¹ıµÍ£¬WebView2ĞèÒªWindows 10 1809»ò¸ü¸ß°æ±¾¡£½«×Ô¶¯Ê¹ÓÃä¯ÀÀÆ÷Ä£Ê½´ò¿ª¡£", "ÏµÍ³°æ±¾²»Ö§³Ö", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DarkMessageBox.Show("æ‚¨çš„ç³»ç»Ÿç‰ˆæœ¬è¿‡ä½ï¼ŒWebView2éœ€è¦Windows 10 1809æˆ–æ›´é«˜ç‰ˆæœ¬ã€‚å°†è‡ªåŠ¨ä½¿ç”¨æµè§ˆå™¨æ¨¡å¼æ‰“å¼€ã€‚", "ç³»ç»Ÿç‰ˆæœ¬ä¸æ”¯æŒ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     mode = SearchMode.Browser;
                 }
                 else
@@ -17514,10 +17579,10 @@ else { exit 1 }
                     if (missingDeps.Count > 0)
                     {
                         string depList = string.Join("\n", missingDeps);
-                        DialogResult confirm = DarkMessageBox.Show($"¼ì²âµ½È±ÉÙÒÔÏÂÔËĞĞ¿âÒÀÀµ£º\n{depList}\n\nÊÇ·ñ×Ô¶¯ÏÂÔØ°²×°£¿", "È±ÉÙÔËĞĞ¿â", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        DialogResult confirm = DarkMessageBox.Show($"æ£€æµ‹åˆ°ç¼ºå°‘ä»¥ä¸‹è¿è¡Œåº“ä¾èµ–ï¼š\n{depList}\n\næ˜¯å¦è‡ªåŠ¨ä¸‹è½½å®‰è£…ï¼Ÿ", "ç¼ºå°‘è¿è¡Œåº“", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                         if (confirm == DialogResult.Yes)
                         {
-                            Form progressForm = CreateProgressForm("ÕıÔÚ°²×°ÔËĞĞ¿âÒÀÀµ...");
+                            Form progressForm = CreateProgressForm("æ­£åœ¨å®‰è£…è¿è¡Œåº“ä¾èµ–...");
                             progressForm.Show(this);
                             Application.DoEvents();
 
@@ -17526,7 +17591,7 @@ else { exit 1 }
 
                             if (!vcInstalled)
                             {
-                                DarkMessageBox.Show("VC++ÔËĞĞÊ±°²×°Ê§°Ü£¬WebView2¿ÉÄÜÎŞ·¨Õı³£¹¤×÷¡£½«Ê¹ÓÃä¯ÀÀÆ÷Ä£Ê½´ò¿ª¡£", "°²×°Ê§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                DarkMessageBox.Show("VC++è¿è¡Œæ—¶å®‰è£…å¤±è´¥ï¼ŒWebView2å¯èƒ½æ— æ³•æ­£å¸¸å·¥ä½œã€‚å°†ä½¿ç”¨æµè§ˆå™¨æ¨¡å¼æ‰“å¼€ã€‚", "å®‰è£…å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 mode = SearchMode.Browser;
                             }
                         }
@@ -17538,10 +17603,10 @@ else { exit 1 }
 
                     if (mode == SearchMode.WebView2 && !IsWebView2Supported())
                     {
-                        DialogResult confirm = DarkMessageBox.Show("ÏµÍ³Î´°²×°WebView2ÔËĞĞ¿â£¬ÊÇ·ñ×Ô¶¯ÏÂÔØ°²×°£¿", "È±ÉÙWebView2ÔËĞĞ¿â", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        DialogResult confirm = DarkMessageBox.Show("ç³»ç»Ÿæœªå®‰è£…WebView2è¿è¡Œåº“ï¼Œæ˜¯å¦è‡ªåŠ¨ä¸‹è½½å®‰è£…ï¼Ÿ", "ç¼ºå°‘WebView2è¿è¡Œåº“", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                         if (confirm == DialogResult.Yes)
                         {
-                            Form progressForm = CreateProgressForm("ÕıÔÚÏÂÔØ²¢°²×°WebView2ÔËĞĞ¿â£¬ÇëÉÔºò...");
+                            Form progressForm = CreateProgressForm("æ­£åœ¨ä¸‹è½½å¹¶å®‰è£…WebView2è¿è¡Œåº“ï¼Œè¯·ç¨å€™...");
                             progressForm.Show(this);
                             Application.DoEvents();
 
@@ -17550,7 +17615,7 @@ else { exit 1 }
 
                             if (!installed)
                             {
-                                DarkMessageBox.Show("WebView2ÔËĞĞ¿â°²×°Ê§°Ü£¬½«Ê¹ÓÃä¯ÀÀÆ÷Ä£Ê½´ò¿ª", "°²×°Ê§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                DarkMessageBox.Show("WebView2è¿è¡Œåº“å®‰è£…å¤±è´¥ï¼Œå°†ä½¿ç”¨æµè§ˆå™¨æ¨¡å¼æ‰“å¼€", "å®‰è£…å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 mode = SearchMode.Browser;
                             }
                         }
@@ -17573,35 +17638,35 @@ else { exit 1 }
         }
 
         /// <summary>
-        /// ´´½¨¼òÒ×½ø¶È¶Ô»°¿ò£¨ÇáÁ¿¼¶£¬½öÏÔÊ¾ÎÄ±¾ÌáÊ¾£©
-        /// ÓÃÓÚ°²×°ÔËĞĞ¿â¡¢WebView2µÈºóÌ¨²Ù×÷Ê±ÏÔÊ¾µÈ´ı×´Ì¬
+        /// åˆ›å»ºç®€æ˜“è¿›åº¦å¯¹è¯æ¡†ï¼ˆè½»é‡çº§ï¼Œä»…æ˜¾ç¤ºæ–‡æœ¬æç¤ºï¼‰
+        /// ç”¨äºå®‰è£…è¿è¡Œåº“ã€WebView2ç­‰åå°æ“ä½œæ—¶æ˜¾ç¤ºç­‰å¾…çŠ¶æ€
         /// </summary>
-        /// <param name="message">ÏÔÊ¾µÄÌáÊ¾ÎÄ×Ö</param>
-        /// <returns>½ø¶È¶Ô»°¿ò´°Ìå</returns>
+        /// <param name="message">æ˜¾ç¤ºçš„æç¤ºæ–‡å­—</param>
+        /// <returns>è¿›åº¦å¯¹è¯æ¡†çª—ä½“</returns>
         private Form CreateProgressForm(string message)
         {
-            // ========== ÑÕÉ«ÅäÖÃ£¨¸ù¾İÖ÷Ìâ×Ô¶¯ÇĞ»»£© ==========
-            bool isDark = theme.Name == "ÉîÉ«";
-            Color progressBg = isDark ? Color.FromArgb(46, 78, 126) : Color.White;      // ´°¿Ú±³¾°É«£¨ÉîÉ«£ºÀ¶»ÒÉ« / Ç³É«£º´¿°×£©
-            Color progressText = isDark ? Color.White : Color.FromArgb(51, 51, 51);     // ÎÄ×ÖÑÕÉ«
+            // ========== é¢œè‰²é…ç½®ï¼ˆæ ¹æ®ä¸»é¢˜è‡ªåŠ¨åˆ‡æ¢ï¼‰ ==========
+            bool isDark = theme.Name == "æ·±è‰²";
+            Color progressBg = isDark ? Color.FromArgb(46, 78, 126) : Color.White;      // çª—å£èƒŒæ™¯è‰²ï¼ˆæ·±è‰²ï¼šè“ç°è‰² / æµ…è‰²ï¼šçº¯ç™½ï¼‰
+            Color progressText = isDark ? Color.White : Color.FromArgb(51, 51, 51);     // æ–‡å­—é¢œè‰²
 
-            // ========== Ö÷´°¿ÚÅäÖÃ ==========
-            // [Î»ÖÃ] ÊÖ¶¯¶¨Î»£¨ÓÉµ÷ÓÃ·½¸ºÔğ¾ÓÖĞ£©[´óĞ¡] 400x120 [ÑùÊ½] ¹Ì¶¨¶Ô»°¿ò
+            // ========== ä¸»çª—å£é…ç½® ==========
+            // [ä½ç½®] æ‰‹åŠ¨å®šä½ï¼ˆç”±è°ƒç”¨æ–¹è´Ÿè´£å±…ä¸­ï¼‰[å¤§å°] 400x120 [æ ·å¼] å›ºå®šå¯¹è¯æ¡†
             Form progressForm = new Form
             {
-                Text = "°²×°½ø¶È",                         // ´°¿Ú±êÌâ
-                StartPosition = FormStartPosition.Manual,   // ÊÖ¶¯¶¨Î»£¨µ÷ÓÃ·½¸ºÔğ¾ÓÖĞÓÚÖ÷´°¿Ú£©
-                FormBorderStyle = FormBorderStyle.FixedDialog,  // ¹Ì¶¨¶Ô»°¿òÑùÊ½£¬½ûÖ¹µ÷Õû´óĞ¡
-                MaximizeBox = false,                       // ½ûÓÃ×î´ó»¯°´Å¥
-                MinimizeBox = false,                       // ½ûÓÃ×îĞ¡»¯°´Å¥
-                ShowInTaskbar = false,                     // ²»ÔÚÈÎÎñÀ¸ÏÔÊ¾
-                ClientSize = new Size(SX(400), SY(120)),    // ´°¿Ú´óĞ¡£¨¿í400px£¬¸ß120px£¬DPIÊÊÅä£©
-                BackColor = progressBg                     // ´°¿Ú±³¾°É«
+                Text = "å®‰è£…è¿›åº¦",                         // çª—å£æ ‡é¢˜
+                StartPosition = FormStartPosition.Manual,   // æ‰‹åŠ¨å®šä½ï¼ˆè°ƒç”¨æ–¹è´Ÿè´£å±…ä¸­äºä¸»çª—å£ï¼‰
+                FormBorderStyle = FormBorderStyle.FixedDialog,  // å›ºå®šå¯¹è¯æ¡†æ ·å¼ï¼Œç¦æ­¢è°ƒæ•´å¤§å°
+                MaximizeBox = false,                       // ç¦ç”¨æœ€å¤§åŒ–æŒ‰é’®
+                MinimizeBox = false,                       // ç¦ç”¨æœ€å°åŒ–æŒ‰é’®
+                ShowInTaskbar = false,                     // ä¸åœ¨ä»»åŠ¡æ æ˜¾ç¤º
+                ClientSize = new Size(SX(400), SY(120)),    // çª—å£å¤§å°ï¼ˆå®½400pxï¼Œé«˜120pxï¼ŒDPIé€‚é…ï¼‰
+                BackColor = progressBg                     // çª—å£èƒŒæ™¯è‰²
             };
-            SetFormDarkModeTitleBar(progressForm, isDark);  // Ó¦ÓÃÉîÉ«±êÌâÀ¸
+            SetFormDarkModeTitleBar(progressForm, isDark);  // åº”ç”¨æ·±è‰²æ ‡é¢˜æ 
 
-            // ========== ÌáÊ¾±êÇ© ==========
-            // [Î»ÖÃ] (20, 40) [´óĞ¡] 360x24 [×ÖÌå] YaHei 10pt
+            // ========== æç¤ºæ ‡ç­¾ ==========
+            // [ä½ç½®] (20, 40) [å¤§å°] 360x24 [å­—ä½“] YaHei 10pt
             Label lblProgress = new Label
             {
                 Text = message,
@@ -17616,59 +17681,59 @@ else { exit 1 }
         }
 
         /// <summary>
-        /// ÏÔÊ¾ä¯ÀÀÆ÷ËÑË÷¶Ô»°¿ò£¨¹æÔòËÑË÷¹¦ÄÜ£©
-        /// ÔÊĞíÓÃ»§Ñ¡ÔñËÑË÷¹æÔòºÍËÑË÷ÒıÇæ£¬ÔÚä¯ÀÀÆ÷ÖĞ´ò¿ªËÑË÷½á¹û
+        /// æ˜¾ç¤ºæµè§ˆå™¨æœç´¢å¯¹è¯æ¡†ï¼ˆè§„åˆ™æœç´¢åŠŸèƒ½ï¼‰
+        /// å…è®¸ç”¨æˆ·é€‰æ‹©æœç´¢è§„åˆ™å’Œæœç´¢å¼•æ“ï¼Œåœ¨æµè§ˆå™¨ä¸­æ‰“å¼€æœç´¢ç»“æœ
         /// </summary>
         private void ShowBrowserSearchDialog()
         {
-            // ========== ÑÕÉ«ÅäÖÃ£¨¸ù¾İÖ÷Ìâ×Ô¶¯ÇĞ»»£© ==========
-            bool isDark = theme.Name == "ÉîÉ«";
-            Color LightBlueBg = Color.FromArgb(46, 78, 126);      // ÉîÉ«Ö÷ÌâÇ³À¶±³¾°
-            Color PanelBg = isDark ? LightBlueBg : Color.White;   // Ãæ°å±³¾°É«£¨ÉîÉ«£ºÇ³À¶ / Ç³É«£º´¿°×£©
-            Color SurfaceBg = isDark ? Color.FromArgb(36, 62, 100) : Color.White; // ±íÃæ±³¾°É«£¨±ÈÃæ°åÂÔÉî/Í¬É«£©
-            Color TextPrimary = isDark ? Color.White : Color.FromArgb(51, 51, 51);      // Ö÷ÎÄ×ÖÉ«
-            Color TextSecondary = isDark ? Color.FromArgb(200, 220, 240) : Color.FromArgb(153, 153, 153); // ´ÎÒªÎÄ×ÖÉ«
-            Color BorderColor = isDark ? Color.FromArgb(60, 100, 150) : Color.FromArgb(200, 203, 210);  // ±ß¿òÉ«
-            Color PrimaryColor = isDark ? Color.FromArgb(100, 150, 220) : theme.Primary; // Ö÷É«µ÷£¨À¶É«Ïµ£©
-            Color HoverBg = isDark ? Color.FromArgb(50, 85, 135) : Color.FromArgb(248, 249, 250); // ĞüÍ£±³¾°É«
+            // ========== é¢œè‰²é…ç½®ï¼ˆæ ¹æ®ä¸»é¢˜è‡ªåŠ¨åˆ‡æ¢ï¼‰ ==========
+            bool isDark = theme.Name == "æ·±è‰²";
+            Color LightBlueBg = Color.FromArgb(46, 78, 126);      // æ·±è‰²ä¸»é¢˜æµ…è“èƒŒæ™¯
+            Color PanelBg = isDark ? LightBlueBg : Color.White;   // é¢æ¿èƒŒæ™¯è‰²ï¼ˆæ·±è‰²ï¼šæµ…è“ / æµ…è‰²ï¼šçº¯ç™½ï¼‰
+            Color SurfaceBg = isDark ? Color.FromArgb(36, 62, 100) : Color.White; // è¡¨é¢èƒŒæ™¯è‰²ï¼ˆæ¯”é¢æ¿ç•¥æ·±/åŒè‰²ï¼‰
+            Color TextPrimary = isDark ? Color.White : Color.FromArgb(51, 51, 51);      // ä¸»æ–‡å­—è‰²
+            Color TextSecondary = isDark ? Color.FromArgb(200, 220, 240) : Color.FromArgb(153, 153, 153); // æ¬¡è¦æ–‡å­—è‰²
+            Color BorderColor = isDark ? Color.FromArgb(60, 100, 150) : Color.FromArgb(200, 203, 210);  // è¾¹æ¡†è‰²
+            Color PrimaryColor = isDark ? Color.FromArgb(100, 150, 220) : theme.Primary; // ä¸»è‰²è°ƒï¼ˆè“è‰²ç³»ï¼‰
+            Color HoverBg = isDark ? Color.FromArgb(50, 85, 135) : Color.FromArgb(248, 249, 250); // æ‚¬åœèƒŒæ™¯è‰²
 
-            // ±£´æÖ÷´°¿Ú×´Ì¬£¨ÓÃÓÚ¹Ø±Õ¶Ô»°¿òºó»Ö¸´£©
+            // ä¿å­˜ä¸»çª—å£çŠ¶æ€ï¼ˆç”¨äºå…³é—­å¯¹è¯æ¡†åæ¢å¤ï¼‰
             FormWindowState originalState = this.WindowState;
             Rectangle originalBounds = this.Bounds;
 
-            // ========== Ö÷´°¿ÚÅäÖÃ ==========
-            // [±êÌâ] ¹æÔòËÑË÷ [´óĞ¡] 900x550 [ÑùÊ½] ¿Éµ÷Õû´óĞ¡ [Î»ÖÃ] ¾ÓÖĞÓÚÖ÷´°¿Ú
+            // ========== ä¸»çª—å£é…ç½® ==========
+            // [æ ‡é¢˜] è§„åˆ™æœç´¢ [å¤§å°] 900x550 [æ ·å¼] å¯è°ƒæ•´å¤§å° [ä½ç½®] å±…ä¸­äºä¸»çª—å£
             Form dlg = new Form
             {
-                Text = "¹æÔòËÑË÷",                    // ´°¿Ú±êÌâ
-                StartPosition = FormStartPosition.Manual,  // ÊÖ¶¯¶¨Î»
-                FormBorderStyle = FormBorderStyle.Sizable, // ¿Éµ÷Õû´óĞ¡
-                MaximizeBox = true,                   // ÆôÓÃ×î´ó»¯°´Å¥
-                MinimizeBox = true,                   // ÆôÓÃ×îĞ¡»¯°´Å¥
-                ShowInTaskbar = true,                 // ÔÚÈÎÎñÀ¸ÏÔÊ¾
-                BackColor = PanelBg,                  // ´°¿Ú±³¾°É«
-                ClientSize = new Size(SX(900), SY(550)),  // ´°¿Ú´óĞ¡£¨900x550px£¬DPIÊÊÅä£©
-                KeyPreview = true                     // Ô¤ÀÀ¼üÅÌÊÂ¼ş
+                Text = "è§„åˆ™æœç´¢",                    // çª—å£æ ‡é¢˜
+                StartPosition = FormStartPosition.Manual,  // æ‰‹åŠ¨å®šä½
+                FormBorderStyle = FormBorderStyle.Sizable, // å¯è°ƒæ•´å¤§å°
+                MaximizeBox = true,                   // å¯ç”¨æœ€å¤§åŒ–æŒ‰é’®
+                MinimizeBox = true,                   // å¯ç”¨æœ€å°åŒ–æŒ‰é’®
+                ShowInTaskbar = true,                 // åœ¨ä»»åŠ¡æ æ˜¾ç¤º
+                BackColor = PanelBg,                  // çª—å£èƒŒæ™¯è‰²
+                ClientSize = new Size(SX(900), SY(550)),  // çª—å£å¤§å°ï¼ˆ900x550pxï¼ŒDPIé€‚é…ï¼‰
+                KeyPreview = true                     // é¢„è§ˆé”®ç›˜äº‹ä»¶
             };
-            SetFormDarkModeTitleBar(dlg, isDark);     // Ó¦ÓÃÉîÉ«±êÌâÀ¸
-            CenterForm(dlg, this);                    // ¾ÓÖĞÓÚÖ÷´°¿Ú
+            SetFormDarkModeTitleBar(dlg, isDark);     // åº”ç”¨æ·±è‰²æ ‡é¢˜æ 
+            CenterForm(dlg, this);                    // å±…ä¸­äºä¸»çª—å£
 
-            // Òş²ØÖ÷´°¿Ú£¬¹Ø±Õ¶Ô»°¿òºó»Ö¸´
+            // éšè—ä¸»çª—å£ï¼Œå…³é—­å¯¹è¯æ¡†åæ¢å¤
             this.Hide();
             dlg.Closed += (s, e) =>
             {
-                this.Show();                         // ÏÔÊ¾Ö÷´°¿Ú
-                this.WindowState = originalState;    // »Ö¸´´°¿Ú×´Ì¬
+                this.Show();                         // æ˜¾ç¤ºä¸»çª—å£
+                this.WindowState = originalState;    // æ¢å¤çª—å£çŠ¶æ€
                 if (originalState != FormWindowState.Maximized)
                 {
-                    this.Bounds = originalBounds;    // »Ö¸´´°¿ÚÎ»ÖÃºÍ´óĞ¡
+                    this.Bounds = originalBounds;    // æ¢å¤çª—å£ä½ç½®å’Œå¤§å°
                 }
-                this.Activate();                     // ¼¤»îÖ÷´°¿Ú
-                this.Refresh();                      // Ë¢ĞÂ½çÃæ
+                this.Activate();                     // æ¿€æ´»ä¸»çª—å£
+                this.Refresh();                      // åˆ·æ–°ç•Œé¢
             };
 
-            // ========== ¶¥²¿À¸£¨±êÌâ+¹æÔòÑ¡Ôñ+ËÑË÷°´Å¥£© ==========
-            // [Î»ÖÃ] ¶¥²¿Dock [¸ß¶È] 60px [±³¾°] ±íÃæ±³¾°É«
+            // ========== é¡¶éƒ¨æ ï¼ˆæ ‡é¢˜+è§„åˆ™é€‰æ‹©+æœç´¢æŒ‰é’®ï¼‰ ==========
+            // [ä½ç½®] é¡¶éƒ¨Dock [é«˜åº¦] 60px [èƒŒæ™¯] è¡¨é¢èƒŒæ™¯è‰²
             Panel topBar = new Panel
             {
                 Dock = DockStyle.Top,
@@ -17677,8 +17742,8 @@ else { exit 1 }
             };
             dlg.Controls.Add(topBar);
 
-            // ========== Ö÷ÄÚÈİÃæ°å£¨ËÑË÷ÒıÇæÁĞ±í£© ==========
-            // [Î»ÖÃ] Ìî³äÊ£Óà¿Õ¼ä [ÄÚ±ß¾à] 20px [±³¾°] Ãæ°å±³¾°É«
+            // ========== ä¸»å†…å®¹é¢æ¿ï¼ˆæœç´¢å¼•æ“åˆ—è¡¨ï¼‰ ==========
+            // [ä½ç½®] å¡«å……å‰©ä½™ç©ºé—´ [å†…è¾¹è·] 20px [èƒŒæ™¯] é¢æ¿èƒŒæ™¯è‰²
             Panel mainPanel = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -17687,12 +17752,12 @@ else { exit 1 }
             };
             dlg.Controls.Add(mainPanel);
 
-            // ========== ±êÌâ±êÇ© ==========
-            // [Î»ÖÃ] (16, 0) [´óĞ¡] 200x48 [×ÖÌå] YaHei 12pt Bold [¶ÔÆë] ×ó¾ÓÖĞ
+            // ========== æ ‡é¢˜æ ‡ç­¾ ==========
+            // [ä½ç½®] (16, 0) [å¤§å°] 200x48 [å­—ä½“] YaHei 12pt Bold [å¯¹é½] å·¦å±…ä¸­
             Label lblTitle = new Label
             {
-                Text = "¹æÔòËÑË÷",
-                Font = GetFont(12f, FontStyle.Bold),  // ×ÖÌå£¨12pt Bold * DPIËõ·Å£©
+                Text = "è§„åˆ™æœç´¢",
+                Font = GetFont(12f, FontStyle.Bold),  // å­—ä½“ï¼ˆ12pt Bold * DPIç¼©æ”¾ï¼‰
                 ForeColor = TextPrimary,
                 Location = new Point(SX(16), 0),
                 Size = new Size(SX(200), SY(48)),
@@ -17701,22 +17766,22 @@ else { exit 1 }
             };
             topBar.Controls.Add(lblTitle);
 
-            // ========== ËÑË÷¹æÔòÏÂÀ­¿ò ==========
-            // [Î»ÖÃ] (220, 14) [´óĞ¡] 120x32 [Ñ¡Ïî] ÖÇ»Û×ÀÃæ/ÖÇ»Û¹âÑ¸/»ªÊÓÃÀ´ï [Ä¬ÈÏ] ÖÇ»Û×ÀÃæ
+            // ========== æœç´¢è§„åˆ™ä¸‹æ‹‰æ¡† ==========
+            // [ä½ç½®] (220, 14) [å¤§å°] 120x32 [é€‰é¡¹] æ™ºæ…§æ¡Œé¢/æ™ºæ…§å…‰è¿…/åè§†ç¾è¾¾ [é»˜è®¤] æ™ºæ…§æ¡Œé¢
             ComboBox cboSearchRule = new ComboBox
             {
-                DropDownStyle = ComboBoxStyle.DropDownList, // Ö»¶ÁÏÂÀ­ÁĞ±í
+                DropDownStyle = ComboBoxStyle.DropDownList, // åªè¯»ä¸‹æ‹‰åˆ—è¡¨
                 Size = new Size(SX(120), SY(32)),
                 FlatStyle = FlatStyle.Flat,
-                BackColor = isDark ? Color.FromArgb(30, 50, 80) : Color.White, // ±³¾°É«
+                BackColor = isDark ? Color.FromArgb(30, 50, 80) : Color.White, // èƒŒæ™¯è‰²
                 ForeColor = TextPrimary,
-                Font = GetFont(10f),                        // ×ÖÌå£¨10pt * DPIËõ·Å£©
+                Font = GetFont(10f),                        // å­—ä½“ï¼ˆ10pt * DPIç¼©æ”¾ï¼‰
                 Cursor = Cursors.Hand,
                 Location = new Point(SX(220), SY(14))
             };
-            cboSearchRule.Items.AddRange(new object[] { "ÖÇ»Û×ÀÃæ", "ÖÇ»Û¹âÑ¸", "»ªÊÓÃÀ´ï" });
-            cboSearchRule.SelectedIndex = 0;               // Ä¬ÈÏÑ¡ÖĞµÚÒ»¸öÑ¡Ïî
-            // ×Ô¶¨Òå»æÖÆ±ß¿ò
+            cboSearchRule.Items.AddRange(new object[] { "æ™ºæ…§æ¡Œé¢", "æ™ºæ…§å…‰è¿…", "åè§†ç¾è¾¾" });
+            cboSearchRule.SelectedIndex = 0;               // é»˜è®¤é€‰ä¸­ç¬¬ä¸€ä¸ªé€‰é¡¹
+            // è‡ªå®šä¹‰ç»˜åˆ¶è¾¹æ¡†
             cboSearchRule.Paint += (s, e) =>
             {
                 ComboBox cb = (ComboBox)s;
@@ -17725,17 +17790,17 @@ else { exit 1 }
             };
             topBar.Controls.Add(cboSearchRule);
 
-            // ========== ËÑË÷¹æÔòÓ³Éä±í ==========
-            // ¼ü£º¹æÔòÃû³Æ£¬Öµ£ºFOFAËÑË÷¹æÔò
+            // ========== æœç´¢è§„åˆ™æ˜ å°„è¡¨ ==========
+            // é”®ï¼šè§„åˆ™åç§°ï¼Œå€¼ï¼šFOFAæœç´¢è§„åˆ™
             var searchRules = new Dictionary<string, string>
             {
-                {"ÖÇ»Û×ÀÃæ", "body=\"/iptv/live/zh_cn.js\""},
-                {"ÖÇ»Û¹âÑ¸", "body=\"ZHGXTV\""},
-                {"»ªÊÓÃÀ´ï", "body=\"»ªÊÓÃÀ´ï\""}
+                {"æ™ºæ…§æ¡Œé¢", "body=\"/iptv/live/zh_cn.js\""},
+                {"æ™ºæ…§å…‰è¿…", "body=\"ZHGXTV\""},
+                {"åè§†ç¾è¾¾", "body=\"åè§†ç¾è¾¾\""}
             };
 
-            // ========== ËÑË÷ÒıÇæÓ³Éä±í ==========
-            // ¼ü£ºËÑË÷ÒıÇæÃû³Æ£¬Öµ£ºËÑË÷ÒıÇæURL
+            // ========== æœç´¢å¼•æ“æ˜ å°„è¡¨ ==========
+            // é”®ï¼šæœç´¢å¼•æ“åç§°ï¼Œå€¼ï¼šæœç´¢å¼•æ“URL
             var searchEngines = new Dictionary<string, string>
             {
                 {"FOFA", "https://fofa.info/"},
@@ -17746,13 +17811,13 @@ else { exit 1 }
                 {"Censys", "https://search.censys.io/"}
             };
 
-            string selectedEngine = "FOFA"; // Ä¬ÈÏÑ¡ÖĞFOFA
+            string selectedEngine = "FOFA"; // é»˜è®¤é€‰ä¸­FOFA
 
-            // ========== ´ò¿ªËÑË÷°´Å¥ ==========
-            // [Î»ÖÃ] (780, 14) [´óĞ¡] 100x32 [×ÖÌå] YaHei 10pt Bold [Ô²½Ç] 6px [ÑÕÉ«] Ö÷É«µ÷±³¾°+°×É«ÎÄ×Ö
+            // ========== æ‰“å¼€æœç´¢æŒ‰é’® ==========
+            // [ä½ç½®] (780, 14) [å¤§å°] 100x32 [å­—ä½“] YaHei 10pt Bold [åœ†è§’] 6px [é¢œè‰²] ä¸»è‰²è°ƒèƒŒæ™¯+ç™½è‰²æ–‡å­—
             Button btnSearch = new Button
             {
-                Text = "´ò¿ªËÑË÷",
+                Text = "æ‰“å¼€æœç´¢",
                 Size = new Size(SX(100), SY(32)),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = PrimaryColor,
@@ -17766,13 +17831,13 @@ else { exit 1 }
             btnSearch.FlatAppearance.MouseOverBackColor = Color.FromArgb(
                 Math.Min(255, PrimaryColor.R + 20),
                 Math.Min(255, PrimaryColor.G + 20),
-                Math.Min(255, PrimaryColor.B + 20)); // ĞüÍ£Ê±ÑÕÉ«±äÁÁ
-            StyleRoundButton(btnSearch, 6, null, 0, "dynamic"); // ÉèÖÃÔ²½Ç£¨6px£©
+                Math.Min(255, PrimaryColor.B + 20)); // æ‚¬åœæ—¶é¢œè‰²å˜äº®
+            StyleRoundButton(btnSearch, 6, null, 0, "dynamic"); // è®¾ç½®åœ†è§’ï¼ˆ6pxï¼‰
             btnSearch.Click += (s, e) =>
             {
-                // »ñÈ¡Ñ¡ÖĞµÄ¹æÔòºÍÒıÇæ£¬¹¹½¨ËÑË÷URL²¢ÔÚä¯ÀÀÆ÷ÖĞ´ò¿ª
-                string ruleName = cboSearchRule.SelectedItem?.ToString() ?? "ÖÇ»Û×ÀÃæ";
-                string searchRule = searchRules.ContainsKey(ruleName) ? searchRules[ruleName] : searchRules["ÖÇ»Û×ÀÃæ"];
+                // è·å–é€‰ä¸­çš„è§„åˆ™å’Œå¼•æ“ï¼Œæ„å»ºæœç´¢URLå¹¶åœ¨æµè§ˆå™¨ä¸­æ‰“å¼€
+                string ruleName = cboSearchRule.SelectedItem?.ToString() ?? "æ™ºæ…§æ¡Œé¢";
+                string searchRule = searchRules.ContainsKey(ruleName) ? searchRules[ruleName] : searchRules["æ™ºæ…§æ¡Œé¢"];
                 string baseUrl = searchEngines.ContainsKey(selectedEngine) ? searchEngines[selectedEngine] : searchEngines["FOFA"];
                 string url = baseUrl + "result?qbase64=" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(searchRule));
                 try
@@ -17784,16 +17849,16 @@ else { exit 1 }
             topBar.Controls.Add(btnSearch);
             btnSearchRef = btnSearch;
 
-            // ¶¥²¿À¸µ×²¿±ß¿ò»æÖÆ
+            // é¡¶éƒ¨æ åº•éƒ¨è¾¹æ¡†ç»˜åˆ¶
             topBar.Paint += (s, e) =>
             {
                 Panel p = (Panel)s;
                 using (Pen pen = new Pen(BorderColor))
-                    e.Graphics.DrawLine(pen, 0, SY(47), p.Width, SY(47)); // ÔÚY=47´¦»æÖÆ·Ö¸ôÏß£¨DPIÊÊÅä£©
+                    e.Graphics.DrawLine(pen, 0, SY(47), p.Width, SY(47)); // åœ¨Y=47å¤„ç»˜åˆ¶åˆ†éš”çº¿ï¼ˆDPIé€‚é…ï¼‰
             };
 
-            // ========== ËÑË÷ÒıÇæÁĞ±íÃæ°å ==========
-            // [Î»ÖÃ] (20, 80) [´óĞ¡] 860x420 [±³¾°] ±íÃæ±³¾°É« [±ß¿ò] ¹Ì¶¨µ¥±ß¿ò
+            // ========== æœç´¢å¼•æ“åˆ—è¡¨é¢æ¿ ==========
+            // [ä½ç½®] (20, 80) [å¤§å°] 860x420 [èƒŒæ™¯] è¡¨é¢èƒŒæ™¯è‰² [è¾¹æ¡†] å›ºå®šå•è¾¹æ¡†
             Panel listPanel = new Panel
             {
                 Location = new Point(SX(20), SY(80)),
@@ -17803,15 +17868,15 @@ else { exit 1 }
             };
             mainPanel.Controls.Add(listPanel);
 
-            Color hoverColor = isDark ? Color.FromArgb(50, 85, 135) : Color.FromArgb(240, 245, 250); // ÁĞ±íÏîĞüÍ£É«
+            Color hoverColor = isDark ? Color.FromArgb(50, 85, 135) : Color.FromArgb(240, 245, 250); // åˆ—è¡¨é¡¹æ‚¬åœè‰²
 
-            // ========== ¶¯Ì¬Éú³ÉËÑË÷ÒıÇæÁĞ±íÏî ==========
-            // Ã¿¸öÁĞ±íÏî°üº¬£ºµ¥Ñ¡°´Å¥(ÒıÇæÃû³Æ) + URL±êÇ© + ·ÃÎÊ°´Å¥
-            // ÁĞ±íÏî¸ß¶È55px£¬¼ä¾à5px£¨ÀÛ¼Æ60px£©
+            // ========== åŠ¨æ€ç”Ÿæˆæœç´¢å¼•æ“åˆ—è¡¨é¡¹ ==========
+            // æ¯ä¸ªåˆ—è¡¨é¡¹åŒ…å«ï¼šå•é€‰æŒ‰é’®(å¼•æ“åç§°) + URLæ ‡ç­¾ + è®¿é—®æŒ‰é’®
+            // åˆ—è¡¨é¡¹é«˜åº¦55pxï¼Œé—´è·5pxï¼ˆç´¯è®¡60pxï¼‰
             int y = 10;
             foreach (var engine in searchEngines)
             {
-                // ÁĞ±íÏîÈİÆ÷£¨´øĞüÍ£¸ßÁÁ£©
+                // åˆ—è¡¨é¡¹å®¹å™¨ï¼ˆå¸¦æ‚¬åœé«˜äº®ï¼‰
                 Panel itemPanel = new Panel
                 {
                     Location = new Point(SX(10), y),
@@ -17820,7 +17885,7 @@ else { exit 1 }
                 };
                 listPanel.Controls.Add(itemPanel);
 
-                // ĞüÍ£Ğ§¹û£ºÊó±ê½øÈëÊ±ÏÔÊ¾¸ßÁÁ±³¾°
+                // æ‚¬åœæ•ˆæœï¼šé¼ æ ‡è¿›å…¥æ—¶æ˜¾ç¤ºé«˜äº®èƒŒæ™¯
                 itemPanel.MouseEnter += (s, e) =>
                 {
                     itemPanel.BackColor = hoverColor;
@@ -17830,7 +17895,7 @@ else { exit 1 }
                     itemPanel.BackColor = Color.Transparent;
                 };
 
-                // ËÑË÷ÒıÇæµ¥Ñ¡°´Å¥
+                // æœç´¢å¼•æ“å•é€‰æŒ‰é’®
                 RadioButton rbEngine = new RadioButton
                 {
                     Text = engine.Key,
@@ -17839,52 +17904,52 @@ else { exit 1 }
                     FlatStyle = FlatStyle.Flat,
                     BackColor = Color.Transparent,
                     ForeColor = isDark ? Color.White : Color.FromArgb(51, 51, 51),
-                    Font = GetFont(10f, FontStyle.Bold), // ×ÖÌå£¨10pt Bold * DPIËõ·Å£©
+                    Font = GetFont(10f, FontStyle.Bold), // å­—ä½“ï¼ˆ10pt Bold * DPIç¼©æ”¾ï¼‰
                     Cursor = Cursors.Hand,
-                    Checked = engine.Key == selectedEngine // Ä¬ÈÏÑ¡ÖĞFOFA
+                    Checked = engine.Key == selectedEngine // é»˜è®¤é€‰ä¸­FOFA
                 };
                 rbEngine.CheckedChanged += (s, e) =>
                 {
                     if (rbEngine.Checked)
                     {
-                        selectedEngine = engine.Key; // ¸üĞÂÑ¡ÖĞµÄËÑË÷ÒıÇæ
+                        selectedEngine = engine.Key; // æ›´æ–°é€‰ä¸­çš„æœç´¢å¼•æ“
                     }
                 };
                 itemPanel.Controls.Add(rbEngine);
 
-                // ËÑË÷ÒıÇæURL±êÇ©
+                // æœç´¢å¼•æ“URLæ ‡ç­¾
                 Label lblUrl = new Label
                 {
                     Text = engine.Value,
                     Size = new Size(SX(630), SY(36)),
                     Location = new Point(SX(130), SY(10)),
-                    Font = GetFont(10f),              // ×ÖÌå£¨10pt * DPIËõ·Å£©
-                    ForeColor = TextSecondary,       // ´ÎÒªÎÄ×ÖÉ«£¨»ÒÉ«£©
+                    Font = GetFont(10f),              // å­—ä½“ï¼ˆ10pt * DPIç¼©æ”¾ï¼‰
+                    ForeColor = TextSecondary,       // æ¬¡è¦æ–‡å­—è‰²ï¼ˆç°è‰²ï¼‰
                     TextAlign = ContentAlignment.MiddleLeft
                 };
                 itemPanel.Controls.Add(lblUrl);
 
-                // ·ÃÎÊ°´Å¥
+                // è®¿é—®æŒ‰é’®
                 Button btnGo = new Button
                 {
-                    Text = "·ÃÎÊ",
+                    Text = "è®¿é—®",
                     Size = new Size(SX(70), SY(36)),
                     Location = new Point(SX(760), SY(10)),
                     FlatStyle = FlatStyle.Flat,
-                    BackColor = PrimaryColor,         // Ö÷É«µ÷±³¾°
-                    ForeColor = Color.White,          // °×É«ÎÄ×Ö
-                    Font = GetFont(9f, FontStyle.Bold), // ×ÖÌå£¨9pt Bold * DPIËõ·Å£©
+                    BackColor = PrimaryColor,         // ä¸»è‰²è°ƒèƒŒæ™¯
+                    ForeColor = Color.White,          // ç™½è‰²æ–‡å­—
+                    Font = GetFont(9f, FontStyle.Bold), // å­—ä½“ï¼ˆ9pt Bold * DPIç¼©æ”¾ï¼‰
                     Cursor = Cursors.Hand
                 };
                 btnGo.FlatAppearance.BorderSize = 0;
                 btnGo.FlatAppearance.MouseOverBackColor = Color.FromArgb(
                     Math.Min(255, PrimaryColor.R + 20),
                     Math.Min(255, PrimaryColor.G + 20),
-                    Math.Min(255, PrimaryColor.B + 20)); // ĞüÍ£Ê±ÑÕÉ«±äÁÁ
-                StyleRoundButton(btnGo, 6, null, 0, "dynamic"); // ÉèÖÃÔ²½Ç£¨6px£©
+                    Math.Min(255, PrimaryColor.B + 20)); // æ‚¬åœæ—¶é¢œè‰²å˜äº®
+                StyleRoundButton(btnGo, 6, null, 0, "dynamic"); // è®¾ç½®åœ†è§’ï¼ˆ6pxï¼‰
                 btnGo.Click += (s, e) =>
                 {
-                    // ÔÚä¯ÀÀÆ÷ÖĞ´ò¿ªËÑË÷ÒıÇæÖ÷Ò³
+                    // åœ¨æµè§ˆå™¨ä¸­æ‰“å¼€æœç´¢å¼•æ“ä¸»é¡µ
                     try
                     {
                         System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(engine.Value) { UseShellExecute = true });
@@ -17893,17 +17958,17 @@ else { exit 1 }
                 };
                 itemPanel.Controls.Add(btnGo);
 
-                y += 60; // ÏÂÒ»¸öÁĞ±íÏîY×ø±ê£¨55px¸ß¶È + 5px¼ä¾à£©
+                y += 60; // ä¸‹ä¸€ä¸ªåˆ—è¡¨é¡¹Yåæ ‡ï¼ˆ55pxé«˜åº¦ + 5pxé—´è·ï¼‰
             }
 
-            dlg.ShowDialog(this); // ÏÔÊ¾¶Ô»°¿ò£¨Ä£Ì¬£©
+            dlg.ShowDialog(this); // æ˜¾ç¤ºå¯¹è¯æ¡†ï¼ˆæ¨¡æ€ï¼‰
         }
 
         private void ShowWebView2SearchDialog()
         {
             try
             {
-                bool isDark = theme.Name == "ÉîÉ«";
+                bool isDark = theme.Name == "æ·±è‰²";
                 Color LightBlueBg = Color.FromArgb(46, 78, 126);
                 Color PanelBg = isDark ? LightBlueBg : Color.White;
                 Color SurfaceBg = isDark ? Color.FromArgb(36, 62, 100) : Color.White;
@@ -18039,7 +18104,7 @@ else { exit 1 }
 
                 Label lblStatusIp = new Label
                 {
-                    Text = "IPÌáÈ¡: ¹Ø",
+                    Text = "IPæå–: å…³",
                     Font = GetFont(9f),
                     ForeColor = TextSecondary,
                     BackColor = SurfaceBg,
@@ -18051,7 +18116,7 @@ else { exit 1 }
 
                 Label lblStatusEngine = new Label
                 {
-                    Text = "ËÑË÷ÒıÇæ: FOFA",
+                    Text = "æœç´¢å¼•æ“: FOFA",
                     Font = GetFont(9f),
                     ForeColor = TextSecondary,
                     BackColor = SurfaceBg,
@@ -18131,7 +18196,7 @@ else { exit 1 }
 
                 Label lblEngine = new Label
                 {
-                    Text = "ËÑË÷ÒıÇæ",
+                    Text = "æœç´¢å¼•æ“",
                     Font = GetFont(11f, FontStyle.Bold),
                     ForeColor = TextSecondary,
                     BackColor = SurfaceBg,
@@ -18169,7 +18234,7 @@ else { exit 1 }
                     Cursor = Cursors.Hand,
                     Location = new Point(280, 2)
                 };
-                cboSearchRule.Items.AddRange(new object[] { "ÖÇ»Û×ÀÃæ", "ÖÇ»Û¹âÑ¸", "»ªÊÓÃÀ´ï" });
+                cboSearchRule.Items.AddRange(new object[] { "æ™ºæ…§æ¡Œé¢", "æ™ºæ…§å…‰è¿…", "åè§†ç¾è¾¾" });
                 cboSearchRule.SelectedIndex = 0;
                 cboSearchRule.DropDown += (s, e) => isDropdownOpen = true;
                 cboSearchRule.DropDownClosed += (s, e) => isDropdownOpen = false;
@@ -18177,16 +18242,16 @@ else { exit 1 }
 
                 var searchRules = new Dictionary<string, string>
                 {
-                    {"ÖÇ»Û×ÀÃæ", "body=\"/iptv/live/zh_cn.js\""},
-                    {"ÖÇ»Û¹âÑ¸", "body=\"ZHGXTV\""},
-                    {"»ªÊÓÃÀ´ï", "body=\"»ªÊÓÃÀ´ï\""}
+                    {"æ™ºæ…§æ¡Œé¢", "body=\"/iptv/live/zh_cn.js\""},
+                    {"æ™ºæ…§å…‰è¿…", "body=\"ZHGXTV\""},
+                    {"åè§†ç¾è¾¾", "body=\"åè§†ç¾è¾¾\""}
                 };
 
                 var parseTemplates = new Dictionary<string, string>
                 {
-                    {"ÖÇÄÜKUTV", "http://{ip}:{port}/iptv/live/1000.json?key=txiptv"},
-                    {"ÖÇ»Û¹âÑ¸", "http://{ip}:{port}/ZHGXTV/Public/json/live_interface.txt"},
-                    {"»ªÊÓÃÀ´ï", "http://{ip}:{port}/newlive/live/hls/{cid}/live.m3u8"}
+                    {"æ™ºèƒ½KUTV", "http://{ip}:{port}/iptv/live/1000.json?key=txiptv"},
+                    {"æ™ºæ…§å…‰è¿…", "http://{ip}:{port}/ZHGXTV/Public/json/live_interface.txt"},
+                    {"åè§†ç¾è¾¾", "http://{ip}:{port}/newlive/live/hls/{cid}/live.m3u8"}
                 };
 
                 TextBox txtUrl = new TextBox
@@ -18231,7 +18296,7 @@ else { exit 1 }
                 }
                 catch (Exception ex)
                 {
-                    DarkMessageBox.Show("WebView2¿Ø¼ş´´½¨Ê§°Ü: " + ex.Message, "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    DarkMessageBox.Show("WebView2æ§ä»¶åˆ›å»ºå¤±è´¥: " + ex.Message, "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 dlg.FormClosing += (s, e) =>
@@ -18244,10 +18309,10 @@ else { exit 1 }
                     catch { }
                 };
 
-                // IPÌáÈ¡¿ª¹Ø°´Å¥
+                // IPæå–å¼€å…³æŒ‰é’®
                 Button btnExtractIp = new Button
                 {
-                    Text = autoExtractIpPort ? "IPÌáÈ¡: ¿ª" : "IPÌáÈ¡: ¹Ø",
+                    Text = autoExtractIpPort ? "IPæå–: å¼€" : "IPæå–: å…³",
                     Size = new Size(110, NAV_BAR_H - 6),
                     FlatStyle = FlatStyle.Flat,
                     BackColor = autoExtractIpPort ? Color.FromArgb(40, 160, 80) : (isDark ? Color.FromArgb(60, 60, 70) : Color.FromArgb(230, 230, 235)),
@@ -18262,18 +18327,18 @@ else { exit 1 }
                 btnExtractIp.Click += async (s2, e2) =>
                 {
                     autoExtractIpPort = !autoExtractIpPort;
-                    btnExtractIp.Text = autoExtractIpPort ? "IPÌáÈ¡: ¿ª" : "IPÌáÈ¡: ¹Ø";
+                    btnExtractIp.Text = autoExtractIpPort ? "IPæå–: å¼€" : "IPæå–: å…³";
                     btnExtractIp.BackColor = autoExtractIpPort ? Color.FromArgb(40, 160, 80) : (isDark ? Color.FromArgb(60, 60, 70) : Color.FromArgb(230, 230, 235));
                     btnExtractIp.ForeColor = autoExtractIpPort ? Color.White : TextSecondary;
-                    lblStatusIp.Text = autoExtractIpPort ? "IPÌáÈ¡: ¿ª" : "IPÌáÈ¡: ¹Ø";
+                    lblStatusIp.Text = autoExtractIpPort ? "IPæå–: å¼€" : "IPæå–: å…³";
                     lblStatusIp.ForeColor = autoExtractIpPort ? Color.FromArgb(40, 160, 80) : TextSecondary;
                     SaveConfig();
 
-                    // Á¢¼´ÌáÈ¡µ±Ç°Ò³ÃæµÄIP+¶Ë¿Ú
+                    // ç«‹å³æå–å½“å‰é¡µé¢çš„IP+ç«¯å£
                     if (webView2 != null && webView2Type != null)
                     {
                         btnExtractIp.Enabled = false;
-                        btnExtractIp.Text = "ÌáÈ¡ÖĞ...";
+                        btnExtractIp.Text = "æå–ä¸­...";
                         try
                         {
                             string extractJs =
@@ -18384,7 +18449,7 @@ else { exit 1 }
                                                 {
                                                     var sourceProp = webView2Type.GetProperty("Source");
                                                     string currentSrc = sourceProp?.GetValue(webView2)?.ToString() ?? "";
-                                                    sw.WriteLine($"# ÌáÈ¡Ê±¼ä: {DateTime.Now:yyyy-MM-dd HH:mm:ss} À´Ô´: {currentSrc} ¹²{ips.Count}Ìõ");
+                                                    sw.WriteLine($"# æå–æ—¶é—´: {DateTime.Now:yyyy-MM-dd HH:mm:ss} æ¥æº: {currentSrc} å…±{ips.Count}æ¡");
                                                     foreach (var ip in ips)
                                                     {
                                                         sw.WriteLine(ip);
@@ -18392,7 +18457,7 @@ else { exit 1 }
                                                 }
 
                                                 DateTime extractTime = DateTime.Now;
-                                                string ruleName = cboSearchRule.SelectedItem?.ToString() ?? "ÖÇ»Û×ÀÃæ";
+                                                string ruleName = cboSearchRule.SelectedItem?.ToString() ?? "æ™ºæ…§æ¡Œé¢";
                                                 int addedCount = 0;
                                                 hasSearchPlatformData = true;
 
@@ -18407,17 +18472,17 @@ else { exit 1 }
                                                         string port = parts[1];
                                                         string rootHttp = $"http://{ip}:{port}";
 
-                                                        if (ruleName == "ÖÇ»Û¹âÑ¸")
+                                                        if (ruleName == "æ™ºæ…§å…‰è¿…")
                                                         {
                                                             string url = $"{rootHttp}/ZHGXTV/Public/json/live_interface.txt";
                                                             bool exists = allChannels.Any(c => c.Url == url);
                                                             if (!exists)
                                                             {
-                                                                allChannels.Add(new ChannelInfo { Name = ipPort, Url = url, Group = "½âÎö´ı´¦Àí", Status = "´ı½âÎö", ParseDateTime = extractTime });
+                                                                allChannels.Add(new ChannelInfo { Name = ipPort, Url = url, Group = "è§£æå¾…å¤„ç†", Status = "å¾…è§£æ", ParseDateTime = extractTime });
                                                                 addedCount++;
                                                             }
                                                         }
-                                                        else if (ruleName == "»ªÊÓÃÀ´ï")
+                                                        else if (ruleName == "åè§†ç¾è¾¾")
                                                         {
                                                             var scanConfig = await ShowScanConfigDialogAsync();
                                                             if (scanConfig == null) continue;
@@ -18428,7 +18493,7 @@ else { exit 1 }
 
                                                             if (lblProgressText != null && lblProgressText.IsHandleCreated)
                                                             {
-                                                                lblProgressText.Invoke(new Action(() => { lblProgressText.Text = $"»ªÊÓÃÀ´ïÉ¨Ãè½ø¶È:"; lblProgressText.Refresh(); }));
+                                                                lblProgressText.Invoke(new Action(() => { lblProgressText.Text = $"åè§†ç¾è¾¾æ‰«æè¿›åº¦:"; lblProgressText.Refresh(); }));
                                                             }
                                                             if (lblPercent != null && lblPercent.IsHandleCreated)
                                                             {
@@ -18520,11 +18585,11 @@ else { exit 1 }
 
                                                             if (lblProgressText != null && !lblProgressText.IsDisposed)
                                                             {
-                                                                lblProgressText.Invoke(new Action(() => { lblProgressText.Text = $"»ªÊÓÃÀ´ïÉ¨ÃèÍê³É:"; }));
+                                                                lblProgressText.Invoke(new Action(() => { lblProgressText.Text = $"åè§†ç¾è¾¾æ‰«æå®Œæˆ:"; }));
                                                             }
                                                             if (lblPercent != null && !lblPercent.IsDisposed)
                                                             {
-                                                                lblPercent.Invoke(new Action(() => { lblPercent.Text = $"ÕÒµ½{validResults.Count}¸ö"; }));
+                                                                lblPercent.Invoke(new Action(() => { lblPercent.Text = $"æ‰¾åˆ°{validResults.Count}ä¸ª"; }));
                                                             }
                                                             if (statusBarRef != null)
                                                                 statusBarRef.Invoke(new Action(() => { LayoutStatusBar(statusBarRef); }));
@@ -18536,14 +18601,14 @@ else { exit 1 }
                                                                 {
                                                                     string[] urlParts = result.Item1.Split('/');
                                                                     string cid = urlParts.Length > 1 ? urlParts[urlParts.Length - 2] : "";
-                                                                    allChannels.Add(new ChannelInfo { Name = $"{ipPort}_CID{cid}", Url = result.Item1, Group = "½âÎö´ı´¦Àí", Status = "´ı½âÎö", ParseDateTime = extractTime });
+                                                                    allChannels.Add(new ChannelInfo { Name = $"{ipPort}_CID{cid}", Url = result.Item1, Group = "è§£æå¾…å¤„ç†", Status = "å¾…è§£æ", ParseDateTime = extractTime });
                                                                     addedCount++;
                                                                 }
                                                             }
 
                                                             if (lblProgressText != null && !lblProgressText.IsDisposed)
                                                             {
-                                                                lblProgressText.Invoke(new Action(() => { lblProgressText.Text = "¼ì²â½ø¶È:"; }));
+                                                                lblProgressText.Invoke(new Action(() => { lblProgressText.Text = "æ£€æµ‹è¿›åº¦:"; }));
                                                             }
                                                             if (lblPercent != null && !lblPercent.IsDisposed)
                                                             {
@@ -18558,7 +18623,7 @@ else { exit 1 }
                                                             bool exists = allChannels.Any(c => c.Url == url);
                                                             if (!exists)
                                                             {
-                                                                allChannels.Add(new ChannelInfo { Name = ipPort, Url = url, Group = "½âÎö´ı´¦Àí", Status = "´ı½âÎö", ParseDateTime = extractTime });
+                                                                allChannels.Add(new ChannelInfo { Name = ipPort, Url = url, Group = "è§£æå¾…å¤„ç†", Status = "å¾…è§£æ", ParseDateTime = extractTime });
                                                                 addedCount++;
                                                             }
                                                         }
@@ -18580,7 +18645,7 @@ else { exit 1 }
                                                             string port = parts[1];
                                                             string rootHttp = $"http://{ip}:{port}";
 
-                                                            if (ruleName == "ÖÇ»Û¹âÑ¸")
+                                                            if (ruleName == "æ™ºæ…§å…‰è¿…")
                                                             {
                                                                 string url = $"{rootHttp}/ZHGXTV/Public/json/live_interface.txt";
                                                                 try
@@ -18598,7 +18663,7 @@ else { exit 1 }
                                                                 }
                                                                 catch { }
                                                             }
-                                                            else if (ruleName == "»ªÊÓÃÀ´ï")
+                                                            else if (ruleName == "åè§†ç¾è¾¾")
                                                             {
                                                                 var scanConfig = await ShowScanConfigDialogAsync();
                                                                 if (scanConfig == null) continue;
@@ -18660,7 +18725,7 @@ else { exit 1 }
                                                                     {
                                                                         string[] urlParts = result.Item1.Split('/');
                                                                         string cid = urlParts.Length > 1 ? urlParts[urlParts.Length - 2] : "";
-                                                                        allChannels.Add(new ChannelInfo { Name = $"{ipPort}_CID{cid}", Url = result.Item1, Group = "½âÎö´ı´¦Àí", Status = "´ı½âÎö", ParseDateTime = extractTime });
+                                                                        allChannels.Add(new ChannelInfo { Name = $"{ipPort}_CID{cid}", Url = result.Item1, Group = "è§£æå¾…å¤„ç†", Status = "å¾…è§£æ", ParseDateTime = extractTime });
                                                                         addedCount++;
                                                                     }
                                                                 }
@@ -18695,11 +18760,11 @@ else { exit 1 }
                                                 this.Show();
                                                 dlg.Close();
 
-                                                // ¸üĞÂ×´Ì¬À¸ÏÔÊ¾½âÎö½á¹û
+                                                // æ›´æ–°çŠ¶æ€æ æ˜¾ç¤ºè§£æç»“æœ
                                                 if (lblDetected != null && lblAvailable != null && lblPercent != null && statusBarRef != null)
                                                 {
-                                                    lblDetected.Text = $"ÒÑ¼ì²â: 0/{totalCount}";
-                                                    lblAvailable.Text = $"¿ÉÓÃ: 0";
+                                                    lblDetected.Text = $"å·²æ£€æµ‹: 0/{totalCount}";
+                                                    lblAvailable.Text = $"å¯ç”¨: 0";
                                                     lblPercent.Text = "0.00%";
                                                     progressBarWidth = 0;
                                                     RestoreLabelColors();
@@ -18710,45 +18775,45 @@ else { exit 1 }
 
                                                 if (!autoParseLink)
                                                 {
-                                                    DarkMessageBox.Show($"ÒÑÌáÈ¡ {addedCount} ÌõÁ´½Óµ½´ı½âÎöÁĞ±í\nÇëµã»÷\"½âÎöÁ´½Ó\"°´Å¥½øĞĞ½âÎö", "ÌáÈ¡Íê³É", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                    DarkMessageBox.Show($"å·²æå– {addedCount} æ¡é“¾æ¥åˆ°å¾…è§£æåˆ—è¡¨\nè¯·ç‚¹å‡»\"è§£æé“¾æ¥\"æŒ‰é’®è¿›è¡Œè§£æ", "æå–å®Œæˆ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                                 }
                                                 else
                                                 {
-                                                    DarkMessageBox.Show($"½âÎöÍê³É£¡\n³É¹¦: {addedCount} ¸öIP\nÇëµã»÷\"¿ªÊ¼¼ì²â\"°´Å¥ÑéÖ¤Á´½ÓÓĞĞ§ĞÔ", "½âÎöÏÂÔØ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                    DarkMessageBox.Show($"è§£æå®Œæˆï¼\næˆåŠŸ: {addedCount} ä¸ªIP\nè¯·ç‚¹å‡»\"å¼€å§‹æ£€æµ‹\"æŒ‰é’®éªŒè¯é“¾æ¥æœ‰æ•ˆæ€§", "è§£æä¸‹è½½", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                                 }
                                             }
                                             else
                                             {
-                                                DarkMessageBox.Show($"Î´ÔÚµ±Ç°Ò³ÃæÕÒµ½IPµØÖ·\nµ÷ÊÔĞÅÏ¢:\nÎÄ±¾³¤¶È: {testResult}\n°üº¬µãºÅ: {htmlResult}\nJS·µ»Ø: {ipResult?.Substring(0, Math.Min(ipResult.Length, 200))}", "IPÌáÈ¡", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                                DarkMessageBox.Show($"æœªåœ¨å½“å‰é¡µé¢æ‰¾åˆ°IPåœ°å€\nè°ƒè¯•ä¿¡æ¯:\næ–‡æœ¬é•¿åº¦: {testResult}\nåŒ…å«ç‚¹å·: {htmlResult}\nJSè¿”å›: {ipResult?.Substring(0, Math.Min(ipResult.Length, 200))}", "IPæå–", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                             }
                                         }
                                         else
                                         {
-                                            DarkMessageBox.Show($"JSÖ´ĞĞ·µ»ØÎª¿Õ\nµ÷ÊÔĞÅÏ¢:\nÎÄ±¾³¤¶È: {testResult}\n°üº¬µãºÅ: {htmlResult}", "IPÌáÈ¡", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                            DarkMessageBox.Show($"JSæ‰§è¡Œè¿”å›ä¸ºç©º\nè°ƒè¯•ä¿¡æ¯:\næ–‡æœ¬é•¿åº¦: {testResult}\nåŒ…å«ç‚¹å·: {htmlResult}", "IPæå–", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         }
                                     }
                                     else
                                     {
-                                        DarkMessageBox.Show("ExecuteScriptAsync·½·¨Î´ÕÒµ½", "IPÌáÈ¡", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                        DarkMessageBox.Show("ExecuteScriptAsyncæ–¹æ³•æœªæ‰¾åˆ°", "IPæå–", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                     }
                                 }
                                 else
                                 {
-                                    DarkMessageBox.Show("CoreWebView2Îª¿Õ", "IPÌáÈ¡", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    DarkMessageBox.Show("CoreWebView2ä¸ºç©º", "IPæå–", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 }
                             }
                             else
                             {
-                                DarkMessageBox.Show("CoreWebView2ÊôĞÔÎ´ÕÒµ½", "IPÌáÈ¡", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                DarkMessageBox.Show("CoreWebView2å±æ€§æœªæ‰¾åˆ°", "IPæå–", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             }
                         }
                         catch (Exception ex)
                         {
-                            DarkMessageBox.Show("IPÌáÈ¡Ê§°Ü: " + ex.Message, "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            DarkMessageBox.Show("IPæå–å¤±è´¥: " + ex.Message, "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                         finally
                         {
-                            btnExtractIp.Text = autoExtractIpPort ? "IPÌáÈ¡: ¿ª" : "IPÌáÈ¡: ¹Ø";
+                            btnExtractIp.Text = autoExtractIpPort ? "IPæå–: å¼€" : "IPæå–: å…³";
                             btnExtractIp.Enabled = true;
                         }
                     }
@@ -18820,7 +18885,7 @@ else { exit 1 }
                         navCompletedEvent.AddEventHandler(webView2, handler);
                     }
 
-                    // WebMessageReceivedÊÂ¼ş - ½ÓÊÕJS·¢ËÍµÄµÇÂ¼ĞÅÏ¢
+                    // WebMessageReceivedäº‹ä»¶ - æ¥æ”¶JSå‘é€çš„ç™»å½•ä¿¡æ¯
                     var msgEvent = webView2Type.GetEvent("WebMessageReceived");
                     if (msgEvent != null)
                     {
@@ -18857,7 +18922,7 @@ else { exit 1 }
                     }
                     catch (Exception ex)
                     {
-                        DarkMessageBox.Show("WebView2¼ÓÔØÊ§°Ü: " + ex.Message, "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        DarkMessageBox.Show("WebView2åŠ è½½å¤±è´¥: " + ex.Message, "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 };
 
@@ -18885,13 +18950,13 @@ else { exit 1 }
                     }
                     catch (Exception ex)
                     {
-                        DarkMessageBox.Show("ËÑË÷Ê§°Ü: " + ex.Message, "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        DarkMessageBox.Show("æœç´¢å¤±è´¥: " + ex.Message, "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 };
 
                 cboEngine.SelectedIndexChanged += (s, e) =>
                 {
-                    lblStatusEngine.Text = "ËÑË÷ÒıÇæ: " + cboEngine.SelectedItem?.ToString();
+                    lblStatusEngine.Text = "æœç´¢å¼•æ“: " + cboEngine.SelectedItem?.ToString();
                     DoSearch();
                 };
 
@@ -18912,7 +18977,7 @@ else { exit 1 }
                                     "allInputs.forEach(function(input) { input.value = ''; input.dispatchEvent(new Event('input')); input.dispatchEvent(new Event('change')); }); " +
                                     
                                     "let searchSelectors = [ " +
-                                    "  'input[placeholder*=\"ËÑË÷\"]', " +
+                                    "  'input[placeholder*=\"æœç´¢\"]', " +
                                     "  'input[placeholder*=\"Search\"]', " +
                                     "  'input[placeholder*=\"search\"]', " +
                                     "  'input[placeholder*=\"query\"]', " +
@@ -18961,7 +19026,7 @@ else { exit 1 }
                     }
                     catch (Exception ex)
                     {
-                        DarkMessageBox.Show("×Ô¶¯ËÑË÷Ê§°Ü: " + ex.Message, "´íÎó", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        DarkMessageBox.Show("è‡ªåŠ¨æœç´¢å¤±è´¥: " + ex.Message, "é”™è¯¯", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 };
 
@@ -18970,8 +19035,8 @@ else { exit 1 }
             catch (Exception ex)
             {
                 this.Show();
-                string errorDetails = $"WebView2´°¿Ú³õÊ¼»¯Ê§°Ü£¬½«Ê¹ÓÃä¯ÀÀÆ÷Ä£Ê½´ò¿ª¡£\n\n´íÎóĞÅÏ¢: {ex.Message}\n\n¶ÑÕ»¸ú×Ù:\n{ex.StackTrace}\n\nÄÚ²¿Òì³£: {ex.InnerException?.Message ?? "ÎŞ"}";
-                DarkMessageBox.Show(errorDetails, "WebView2³õÊ¼»¯Ê§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string errorDetails = $"WebView2çª—å£åˆå§‹åŒ–å¤±è´¥ï¼Œå°†ä½¿ç”¨æµè§ˆå™¨æ¨¡å¼æ‰“å¼€ã€‚\n\né”™è¯¯ä¿¡æ¯: {ex.Message}\n\nå †æ ˆè·Ÿè¸ª:\n{ex.StackTrace}\n\nå†…éƒ¨å¼‚å¸¸: {ex.InnerException?.Message ?? "æ— "}";
+                DarkMessageBox.Show(errorDetails, "WebView2åˆå§‹åŒ–å¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 ShowBrowserSearchDialog();
             }
         }
@@ -19023,16 +19088,16 @@ else { exit 1 }
             string ipFile = System.IO.Path.Combine(Application.StartupPath, "extracted_ips.txt");
             if (!System.IO.File.Exists(ipFile))
             {
-                DarkMessageBox.Show("Î´ÕÒµ½ÌáÈ¡µÄIPÎÄ¼ş: extracted_ips.txt\nÇëÏÈÊ¹ÓÃËÑË÷Æ½Ì¨ÌáÈ¡IP+¶Ë¿Ú", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DarkMessageBox.Show("æœªæ‰¾åˆ°æå–çš„IPæ–‡ä»¶: extracted_ips.txt\nè¯·å…ˆä½¿ç”¨æœç´¢å¹³å°æå–IP+ç«¯å£", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            var platforms = new List<string> { "ÖÇ»Û¹âÑ¸", "»ªÊÓÃÀ´ï", "ÖÇ»Û×ÀÃæ" };
+            var platforms = new List<string> { "æ™ºæ…§å…‰è¿…", "åè§†ç¾è¾¾", "æ™ºæ…§æ¡Œé¢" };
             
             using (var dlg = new Form())
             {
                 bool isDarkPlat = IsDarkColor(theme.Bg);
-                dlg.Text = "Ñ¡ÔñÆ½Ì¨¹æÔò";
+                dlg.Text = "é€‰æ‹©å¹³å°è§„åˆ™";
                 dlg.Size = new Size(680, 260);
                 dlg.StartPosition = FormStartPosition.Manual;
                 dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -19053,20 +19118,20 @@ else { exit 1 }
                     ForeColor = isDarkPlat ? Color.FromArgb(220, 220, 230) : Color.Black
                 };
                 lstPlatforms.Items.AddRange(new object[] {
-                    "ÖÇ»Û¹âÑ¸ - /ZHGXTV/Public/json/live_interface.txt",
-                    "»ªÊÓÃÀ´ï - /newlive/live/hls/{cid}/live.m3u8",
-                    "ÖÇ»Û×ÀÃæ - /iptv/live/1000.json?key=txiptv"
+                    "æ™ºæ…§å…‰è¿… - /ZHGXTV/Public/json/live_interface.txt",
+                    "åè§†ç¾è¾¾ - /newlive/live/hls/{cid}/live.m3u8",
+                    "æ™ºæ…§æ¡Œé¢ - /iptv/live/1000.json?key=txiptv"
                 });
                 lstPlatforms.SelectedIndex = 0;
                 dlg.Controls.Add(lstPlatforms);
 
-                Button btnOK = new Button { Text = "È·¶¨", Location = new Point(100, 140), Size = new Size(100, 38), Font = GetFont(11), BackColor = isDarkPlat ? Color.FromArgb(55, 55, 70) : Color.FromArgb(200, 200, 210), ForeColor = isDarkPlat ? Color.White : Color.Black, FlatStyle = FlatStyle.Flat, FlatAppearance = { BorderSize = 0 } };
+                Button btnOK = new Button { Text = "ç¡®å®š", Location = new Point(100, 140), Size = new Size(100, 38), Font = GetFont(11), BackColor = isDarkPlat ? Color.FromArgb(55, 55, 70) : Color.FromArgb(200, 200, 210), ForeColor = isDarkPlat ? Color.White : Color.Black, FlatStyle = FlatStyle.Flat, FlatAppearance = { BorderSize = 0 } };
                 btnOK.FlatAppearance.BorderColor = isDarkPlat ? Color.FromArgb(80, 80, 100) : Color.Gray;
                 btnOK.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, 100, 38), 6));
                 btnOK.Click += (s, e) => dlg.DialogResult = DialogResult.OK;
                 dlg.Controls.Add(btnOK);
 
-                Button btnCancel = new Button { Text = "È¡Ïû", Location = new Point(420, 140), Size = new Size(100, 38), Font = GetFont(11), BackColor = isDarkPlat ? Color.FromArgb(55, 55, 70) : Color.FromArgb(200, 200, 210), ForeColor = isDarkPlat ? Color.White : Color.Black, FlatStyle = FlatStyle.Flat, FlatAppearance = { BorderSize = 0 } };
+                Button btnCancel = new Button { Text = "å–æ¶ˆ", Location = new Point(420, 140), Size = new Size(100, 38), Font = GetFont(11), BackColor = isDarkPlat ? Color.FromArgb(55, 55, 70) : Color.FromArgb(200, 200, 210), ForeColor = isDarkPlat ? Color.White : Color.Black, FlatStyle = FlatStyle.Flat, FlatAppearance = { BorderSize = 0 } };
                 btnCancel.FlatAppearance.BorderColor = isDarkPlat ? Color.FromArgb(80, 80, 100) : Color.Gray;
                 btnCancel.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, 100, 38), 6));
                 btnCancel.Click += (s, e) => dlg.DialogResult = DialogResult.Cancel;
@@ -19078,7 +19143,7 @@ else { exit 1 }
                 string selectedText = lstPlatforms.SelectedItem.ToString();
                 string ruleName = selectedText.Split('-')[0].Trim();
 
-                SelectNavItem("¼ì²â");
+                SelectNavItem("æ£€æµ‹");
 
                 string[] lines = System.IO.File.ReadAllLines(ipFile, Encoding.UTF8);
                 var ipList = new List<string>();
@@ -19093,7 +19158,7 @@ else { exit 1 }
 
                 if (ipList.Count == 0)
                 {
-                    DarkMessageBox.Show("Î´ÕÒµ½ÓĞĞ§µÄIPµØÖ·", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DarkMessageBox.Show("æœªæ‰¾åˆ°æœ‰æ•ˆçš„IPåœ°å€", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -19101,7 +19166,7 @@ else { exit 1 }
                 int addedCount = 0;
                 DateTime parseTime = DateTime.Now;
 
-                if (ruleName == "ÖÇ»Û¹âÑ¸")
+                if (ruleName == "æ™ºæ…§å…‰è¿…")
                 {
                     foreach (string ipPort in ipList)
                     {
@@ -19115,12 +19180,12 @@ else { exit 1 }
                         bool exists = allChannels.Any(c => c.Url == url);
                         if (!exists)
                         {
-                            allChannels.Add(new ChannelInfo { Name = $"ÖÇ»Û¹âÑ¸_{ipPort}", Url = url, Group = "ÖÇ»Û¹âÑ¸½âÎö", Status = "´ı½âÎö", ParseDateTime = parseTime });
+                            allChannels.Add(new ChannelInfo { Name = $"æ™ºæ…§å…‰è¿…_{ipPort}", Url = url, Group = "æ™ºæ…§å…‰è¿…è§£æ", Status = "å¾…è§£æ", ParseDateTime = parseTime });
                             addedCount++;
                         }
                     }
                 }
-                else if (ruleName == "»ªÊÓÃÀ´ï")
+                else if (ruleName == "åè§†ç¾è¾¾")
                 {
                     var scanConfig = await ShowScanConfigDialogAsync();
                     if (scanConfig == null) return;
@@ -19138,7 +19203,7 @@ else { exit 1 }
 
                         if (lblProgressText != null)
                             {
-                                lblProgressText.Text = $"»ªÊÓÃÀ´ïÉ¨Ãè½ø¶È:";
+                                lblProgressText.Text = $"åè§†ç¾è¾¾æ‰«æè¿›åº¦:";
                                 lblProgressText.Refresh();
                             }
                         if (lblPercent != null)
@@ -19230,9 +19295,9 @@ else { exit 1 }
                         });
 
                         if (lblProgressText != null && !lblProgressText.IsDisposed)
-                            lblProgressText.Text = $"»ªÊÓÃÀ´ïÉ¨ÃèÍê³É:";
+                            lblProgressText.Text = $"åè§†ç¾è¾¾æ‰«æå®Œæˆ:";
                         if (lblPercent != null && !lblPercent.IsDisposed)
-                            lblPercent.Text = $"ÕÒµ½{validResults.Count}¸ö";
+                            lblPercent.Text = $"æ‰¾åˆ°{validResults.Count}ä¸ª";
                         if (statusBarRef != null)
                             LayoutStatusBar(statusBarRef);
                         this.Refresh();
@@ -19244,13 +19309,13 @@ else { exit 1 }
                             {
                                 string[] urlParts = result.Item1.Split('/');
                                 string cid = urlParts.Length > 1 ? urlParts[urlParts.Length - 2] : "";
-                                allChannels.Add(new ChannelInfo { Name = $"»ªÊÓÃÀ´ï_{ipPort}_CID{cid}", Url = result.Item1, Group = "»ªÊÓÃÀ´ï½âÎö", Status = "´ı½âÎö", ParseDateTime = parseTime });
+                                allChannels.Add(new ChannelInfo { Name = $"åè§†ç¾è¾¾_{ipPort}_CID{cid}", Url = result.Item1, Group = "åè§†ç¾è¾¾è§£æ", Status = "å¾…è§£æ", ParseDateTime = parseTime });
                                 addedCount++;
                             }
                         }
 
                         if (lblProgressText != null && !lblProgressText.IsDisposed)
-                            lblProgressText.Text = "¼ì²â½ø¶È:";
+                            lblProgressText.Text = "æ£€æµ‹è¿›åº¦:";
                         if (lblPercent != null && !lblPercent.IsDisposed)
                             lblPercent.Text = "0%";
                         if (statusBarRef != null)
@@ -19271,7 +19336,7 @@ else { exit 1 }
                         bool exists = allChannels.Any(c => c.Url == url);
                         if (!exists)
                         {
-                            allChannels.Add(new ChannelInfo { Name = $"ÖÇ»Û×ÀÃæ_{ipPort}", Url = url, Group = "ÖÇ»Û×ÀÃæ½âÎö", Status = "´ı½âÎö", ParseDateTime = parseTime });
+                            allChannels.Add(new ChannelInfo { Name = $"æ™ºæ…§æ¡Œé¢_{ipPort}", Url = url, Group = "æ™ºæ…§æ¡Œé¢è§£æ", Status = "å¾…è§£æ", ParseDateTime = parseTime });
                             addedCount++;
                         }
                     }
@@ -19286,13 +19351,13 @@ else { exit 1 }
                         btnParseLink.Visible = true;
                 }
 
-                DarkMessageBox.Show($"ÒÑÌí¼Ó {addedCount} Ìõ´ı½âÎöÁ´½Ó\n·Ö×é: {ruleName}½âÎö", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                DarkMessageBox.Show($"å·²æ·»åŠ  {addedCount} æ¡å¾…è§£æé“¾æ¥\nåˆ†ç»„: {ruleName}è§£æ", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
         private void ShowIptvParserDialog()
         {
-            bool isDark = theme.Name == "ÉîÉ«";
+            bool isDark = theme.Name == "æ·±è‰²";
             Color bgColor = isDark ? Color.FromArgb(35, 35, 45) : Color.White;
             Color panelBg = isDark ? Color.FromArgb(45, 45, 55) : Color.FromArgb(248, 249, 252);
             Color textColor = isDark ? Color.FromArgb(240, 240, 240) : Color.FromArgb(50, 55, 65);
@@ -19306,7 +19371,7 @@ else { exit 1 }
 
             using (Form dlg = new Form())
             {
-                dlg.Text = "Ö±²¥Ô´½âÎö";
+                dlg.Text = "ç›´æ’­æºè§£æ";
                 dlg.StartPosition = FormStartPosition.Manual;
                 dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
                 dlg.MaximizeBox = false;
@@ -19409,7 +19474,7 @@ else { exit 1 }
 
                 Label lblTitle = new Label
                 {
-                    Text = "½âÎöÅäÖÃ",
+                    Text = "è§£æé…ç½®",
                     Font = GetFont(SF(10.5f), FontStyle.Bold),
                     ForeColor = textColor,
                     Location = new Point(SX(16), y-SX(6)),
@@ -19420,7 +19485,7 @@ else { exit 1 }
 
                 Label lblPlatform = new Label
                 {
-                    Text = "Æ½Ì¨Ñ¡Ôñ",
+                    Text = "å¹³å°é€‰æ‹©",
                     Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
                     Location = new Point(SX(16), y),
@@ -19438,9 +19503,9 @@ else { exit 1 }
                     ForeColor = textColor
                 };
                 cboPlatform.Items.AddRange(new object[] {
-                    "1. ÖÇ»Û¹âÑ¸ ZHGXTV",
-                    "2. »ªÊÓÃÀ´ï ÆµµÀÉ¨Ãè",
-                    "3. ÖÇÄÜKUTV JSON½Ó¿Ú"
+                    "1. æ™ºæ…§å…‰è¿… ZHGXTV",
+                    "2. åè§†ç¾è¾¾ é¢‘é“æ‰«æ",
+                    "3. æ™ºèƒ½KUTV JSONæ¥å£"
                 });
                 cboPlatform.SelectedIndex = 0;
                 leftPanel.Controls.Add(cboPlatform);
@@ -19448,7 +19513,7 @@ else { exit 1 }
 
                 Label lblIpPort = new Label
                 {
-                    Text = "IP¶Ë¿Ú",
+                    Text = "IPç«¯å£",
                     Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
                     Location = new Point(SX(16), y),
@@ -19463,11 +19528,11 @@ else { exit 1 }
                     Font = GetFont(SF(8.5f)),
                     BackColor = isDark ? Color.FromArgb(55, 55, 65) : Color.White,
                     ForeColor = isDark ? Color.FromArgb(120, 120, 130) : Color.FromArgb(150, 150, 160),
-                    Text = "Ê¾Àı£º110.72.103.69:8181"
+                    Text = "ç¤ºä¾‹ï¼š110.72.103.69:8181"
                 };
                 txtIpPort.GotFocus += (s, e) =>
                 {
-                    if (txtIpPort.Text == "Ê¾Àı£º110.72.103.69:8181")
+                    if (txtIpPort.Text == "ç¤ºä¾‹ï¼š110.72.103.69:8181")
                     {
                         txtIpPort.Text = "";
                         txtIpPort.ForeColor = textColor;
@@ -19477,7 +19542,7 @@ else { exit 1 }
                 {
                     if (string.IsNullOrWhiteSpace(txtIpPort.Text))
                     {
-                        txtIpPort.Text = "Ê¾Àı£º110.72.103.69:8181";
+                        txtIpPort.Text = "ç¤ºä¾‹ï¼š110.72.103.69:8181";
                         txtIpPort.ForeColor = isDark ? Color.FromArgb(120, 120, 130) : Color.FromArgb(150, 150, 160);
                     }
                 };
@@ -19486,7 +19551,7 @@ else { exit 1 }
 
                 Button btnAutoBuild = new Button
                 {
-                    Text = "×Ô¶¯Æ´½ÓÍêÕûURL",
+                    Text = "è‡ªåŠ¨æ‹¼æ¥å®Œæ•´URL",
                     Location = new Point((leftPanelWidth - btnWidth) / 2, y),
                     Size = new Size(btnWidth+100, btnHeight),
                     Font = GetFont(SF(9f)),
@@ -19501,7 +19566,7 @@ else { exit 1 }
 
                 Label lblTimeout = new Label
                 {
-                    Text = "ÇëÇó³¬Ê±(Ãë)",
+                    Text = "è¯·æ±‚è¶…æ—¶(ç§’)",
                     Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
                     Location = new Point(SX(16), y),
@@ -19551,7 +19616,7 @@ else { exit 1 }
 
                 Label lblHuashiRange = new Label
                 {
-                    Text = "É¨ÃèIDÇø¼ä",
+                    Text = "æ‰«æIDåŒºé—´",
                     Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
                     Location = new Point(SX(16), SY(12)),
@@ -19574,7 +19639,7 @@ else { exit 1 }
 
                 Label lblHuashiThread = new Label
                 {
-                    Text = "²¢·¢Ïß³ÌÊı",
+                    Text = "å¹¶å‘çº¿ç¨‹æ•°",
                     Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
                     Location = new Point(SX(16), SY(48)),
@@ -19598,7 +19663,7 @@ else { exit 1 }
 
                 Label lblHistory = new Label
                 {
-                    Text = "ÀúÊ·¼ÇÂ¼",
+                    Text = "å†å²è®°å½•",
                     Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
                     Location = new Point(SX(16), y+40),
@@ -19664,7 +19729,7 @@ else { exit 1 }
                 historyContextMenu.Renderer = new ToolStripProfessionalRenderer(new MenuColorTable(IsDarkColor(theme.Bg)));
                 historyContextMenu.BackColor = theme.Surface;
                 historyContextMenu.ForeColor = theme.TextPrimary;
-                ToolStripMenuItem menuDelete = new ToolStripMenuItem("É¾³ıÑ¡ÖĞÏî");
+                ToolStripMenuItem menuDelete = new ToolStripMenuItem("åˆ é™¤é€‰ä¸­é¡¹");
                 menuDelete.Click += (s, e) =>
                 {
                     if (lstHistory.SelectedItem != null)
@@ -19677,7 +19742,7 @@ else { exit 1 }
                 };
                 historyContextMenu.Items.Add(menuDelete);
 
-                ToolStripMenuItem menuClear = new ToolStripMenuItem("Çå¿ÕÀúÊ·¼ÇÂ¼");
+                ToolStripMenuItem menuClear = new ToolStripMenuItem("æ¸…ç©ºå†å²è®°å½•");
                 menuClear.Click += (s, e) =>
                 {
                     iptvHistoryIps.Clear();
@@ -19692,7 +19757,7 @@ else { exit 1 }
 
                 Label lblHeaders = new Label
                 {
-                    Text = "×Ô¶¨ÒåÇëÇóÍ·",
+                    Text = "è‡ªå®šä¹‰è¯·æ±‚å¤´",
                     Font = GetFont(SF(9f)),
                     ForeColor = labelColor,
                     Location = new Point(SX(16), y+70),
@@ -19717,7 +19782,7 @@ else { exit 1 }
 
                 Button btnExecute = new Button
                 {
-                    Text = "¿ªÊ¼½âÎö",
+                    Text = "å¼€å§‹è§£æ",
                     Location = new Point(SX(60), leftPanel.ClientSize.Height - SY(64)),
                     Size = new Size(btnWidth, btnHeight),
                     Font = GetFont(SF(8f)),
@@ -19731,7 +19796,7 @@ else { exit 1 }
 
                 Button btnCancel = new Button
                 {
-                    Text = "È¡Ïû",
+                    Text = "å–æ¶ˆ",
                     Location = new Point(SX(200), leftPanel.ClientSize.Height - SY(64)),
                     Size = new Size(btnWidth, btnHeight),
                     Font = GetFont(SF(8f)),
@@ -19745,7 +19810,7 @@ else { exit 1 }
 
                 Label lblResult = new Label
                 {
-                    Text = "½âÎö½á¹û",
+                    Text = "è§£æç»“æœ",
                     Font = GetFont(SF(10.5f), FontStyle.Bold),
                     ForeColor = textColor,
                     Location = new Point(SX(10), SY(10)),
@@ -19771,7 +19836,7 @@ else { exit 1 }
                 tabResult.TabSpacing = SX(8);
                 rightPanel.Controls.Add(tabResult);
 
-                TabPage tabRaw = new TabPage("Ô­Ê¼ÎÄ±¾");
+                TabPage tabRaw = new TabPage("åŸå§‹æ–‡æœ¬");
                 tabRaw.BackColor = panelBg;
                 TextBox txtRaw = new TextBox
                 {
@@ -19786,7 +19851,7 @@ else { exit 1 }
                 tabRaw.Controls.Add(txtRaw);
                 tabResult.TabPages.Add(tabRaw);
 
-                TabPage tabPreview = new TabPage("ÆµµÀÔ¤ÀÀ");
+                TabPage tabPreview = new TabPage("é¢‘é“é¢„è§ˆ");
                 tabPreview.BackColor = panelBg;
                 TextBox txtPreview = new TextBox
                 {
@@ -19801,7 +19866,7 @@ else { exit 1 }
                 tabPreview.Controls.Add(txtPreview);
                 tabResult.TabPages.Add(tabPreview);
 
-                TabPage tabM3u = new TabPage("M3U²¥·ÅÁĞ±í");
+                TabPage tabM3u = new TabPage("M3Uæ’­æ”¾åˆ—è¡¨");
                 tabM3u.BackColor = panelBg;
                 TextBox txtM3u = new TextBox
                 {
@@ -19816,7 +19881,7 @@ else { exit 1 }
                 tabM3u.Controls.Add(txtM3u);
                 tabResult.TabPages.Add(tabM3u);
 
-                TabPage tabLog = new TabPage("ÔËĞĞÈÕÖ¾");
+                TabPage tabLog = new TabPage("è¿è¡Œæ—¥å¿—");
                 tabLog.BackColor = panelBg;
                 TextBox txtLog = new TextBox
                 {
@@ -19837,7 +19902,7 @@ else { exit 1 }
 
                 Button btnExport = new Button
                 {
-                    Text = "µ¼³öÈ«²¿ÎÄ¼ş",
+                    Text = "å¯¼å‡ºå…¨éƒ¨æ–‡ä»¶",
                     Location = new Point(SX(16), btnStartY),
                     Size = new Size(btnExportWidth, btnHeight),
                     Font = GetFont(SF(8f)),
@@ -19851,7 +19916,7 @@ else { exit 1 }
 
                 Button btnAddToList = new Button
                 {
-                    Text = "Ìí¼Óµ½ÁĞ±í",
+                    Text = "æ·»åŠ åˆ°åˆ—è¡¨",
                     Location = new Point(SX(16) + btnExportWidth + SX(12), btnStartY),
                     Size = new Size(btnAddWidth, btnHeight),
                     Font = GetFont(SF(8f)),
@@ -19865,7 +19930,7 @@ else { exit 1 }
 
                 Label lblStats = new Label
                 {
-                    Text = "ÆµµÀ£º0 | ×´Ì¬£º¾ÍĞ÷",
+                    Text = "é¢‘é“ï¼š0 | çŠ¶æ€ï¼šå°±ç»ª",
                     Font = GetFont(SF(8f)),
                     ForeColor = labelColor,
                     Location = new Point(rightPanel.ClientSize.Width - SX(220), btnStartY + 24),
@@ -19910,40 +19975,40 @@ else { exit 1 }
                     error = "";
                     if (string.IsNullOrWhiteSpace(ipPort))
                     {
-                        error = "IP¶Ë¿Ú²»ÄÜÎª¿Õ";
+                        error = "IPç«¯å£ä¸èƒ½ä¸ºç©º";
                         return false;
                     }
                     ipPort = ipPort.Trim();
                     var match = System.Text.RegularExpressions.Regex.Match(ipPort, @"(?:http://|https://)?((?:\d{1,3}\.){3}\d{1,3}:\d+)");
                     if (!match.Success)
                     {
-                        error = "IP¶Ë¿Ú¸ñÊ½´íÎó£¬Ê¾Àı£º110.72.103.69:8181";
+                        error = "IPç«¯å£æ ¼å¼é”™è¯¯ï¼Œç¤ºä¾‹ï¼š110.72.103.69:8181";
                         return false;
                     }
                     ipPort = match.Groups[1].Value;
                     if (!ipPort.Contains(":"))
                     {
-                        error = "È±ÉÙ¶Ë¿ÚºÅ";
+                        error = "ç¼ºå°‘ç«¯å£å·";
                         return false;
                     }
                     var parts = ipPort.Split(':');
                     var ipParts = parts[0].Split('.');
                     if (ipParts.Length != 4)
                     {
-                        error = $"IPv4·Ö¶Î´íÎó£º{parts[0]}";
+                        error = $"IPv4åˆ†æ®µé”™è¯¯ï¼š{parts[0]}";
                         return false;
                     }
                     foreach (var seg in ipParts)
                     {
                         if (!int.TryParse(seg, out int val) || val < 0 || val > 255)
                         {
-                            error = $"·Ç·¨IP¶Î£º{seg}";
+                            error = $"éæ³•IPæ®µï¼š{seg}";
                             return false;
                         }
                     }
                     if (!int.TryParse(parts[1], out int port) || port < 1 || port > 65535)
                     {
-                        error = $"·Ç·¨¶Ë¿Ú£º{parts[1]}";
+                        error = $"éæ³•ç«¯å£ï¼š{parts[1]}";
                         return false;
                     }
                     return true;
@@ -20042,13 +20107,13 @@ else { exit 1 }
                     string ipRaw = txtIpPort.Text.Trim();
                     if (ipRaw.StartsWith("http://") || ipRaw.StartsWith("https://"))
                     {
-                        Log("¼ì²âµ½ÍêÕûHTTPÁ´½Ó£¬Ö±½ÓÊ¹ÓÃ");
+                        Log("æ£€æµ‹åˆ°å®Œæ•´HTTPé“¾æ¥ï¼Œç›´æ¥ä½¿ç”¨");
                         return;
                     }
                     if (!ValidateIpPort(ipRaw, out string error))
                     {
-                        Log($"IPĞ£Ñé´íÎó£º{error}");
-                        DarkMessageBox.Show(error, "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        Log($"IPæ ¡éªŒé”™è¯¯ï¼š{error}");
+                        DarkMessageBox.Show(error, "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
                     var match = System.Text.RegularExpressions.Regex.Match(ipRaw, @"(?:http://|https://)?((?:\d{1,3}\.){3}\d{1,3}:\d+)");
@@ -20068,7 +20133,7 @@ else { exit 1 }
                             break;
                     }
                     txtIpPort.Text = ipPort;
-                    Log($"ÒÑ×Ô¶¯Æ´½Ó±ê×¼µØÖ·£º{url}");
+                    Log($"å·²è‡ªåŠ¨æ‹¼æ¥æ ‡å‡†åœ°å€ï¼š{url}");
                 };
 
                 btnCancel.Click += (s, e) => dlg.DialogResult = DialogResult.Cancel;
@@ -20077,15 +20142,15 @@ else { exit 1 }
                 {
                     ClearResults();
                     btnExecute.Enabled = false;
-                    btnExecute.Text = "½âÎöÖĞ...";
-                    SetStats("ÆµµÀ£º0 | ×´Ì¬£º½âÎöÖĞ");
+                    btnExecute.Text = "è§£æä¸­...";
+                    SetStats("é¢‘é“ï¼š0 | çŠ¶æ€ï¼šè§£æä¸­");
 
                     string ipRaw = txtIpPort.Text.Trim();
                     if (!ValidateIpPort(ipRaw, out string error))
                     {
-                        DarkMessageBox.Show(error, "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        DarkMessageBox.Show(error, "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         btnExecute.Enabled = true;
-                        btnExecute.Text = "¿ªÊ¼½âÎö";
+                        btnExecute.Text = "å¼€å§‹è§£æ";
                         return;
                     }
 
@@ -20118,7 +20183,7 @@ else { exit 1 }
                     httpClient.Timeout = TimeSpan.FromSeconds(timeout);
 
                     currentPlatform = cboPlatform.SelectedItem.ToString().Split(' ')[0];
-                    Log($"===== Æô¶¯ÈÎÎñ | Æ½Ì¨{currentPlatform} | ·şÎñÆ÷ {currentIpPort} =====");
+                    Log($"===== å¯åŠ¨ä»»åŠ¡ | å¹³å°{currentPlatform} | æœåŠ¡å™¨ {currentIpPort} =====");
 
                     try
                     {
@@ -20137,21 +20202,21 @@ else { exit 1 }
                     }
                     catch (Exception ex)
                     {
-                        Log($"ÈÎÎñÔËĞĞÒì³££º{ex.Message}");
-                        SetStats($"ÆµµÀ£º0 | ×´Ì¬£º´íÎó");
+                        Log($"ä»»åŠ¡è¿è¡Œå¼‚å¸¸ï¼š{ex.Message}");
+                        SetStats($"é¢‘é“ï¼š0 | çŠ¶æ€ï¼šé”™è¯¯");
                     }
                     finally
                     {
                         httpClient.Dispose();
                         btnExecute.Enabled = true;
-                        btnExecute.Text = "¿ªÊ¼½âÎö";
+                        btnExecute.Text = "å¼€å§‹è§£æ";
                     }
                 };
 
                 async Task ParseZhgx(HttpClient httpClient, int timeout)
                 {
                     string url = $"http://{currentIpPort}/ZHGXTV/Public/json/live_interface.txt";
-                    Log($"ÇëÇóµØÖ·£º{url}");
+                    Log($"è¯·æ±‚åœ°å€ï¼š{url}");
 
                     string rawText = "";
                     for (int retry = 0; retry <= 2; retry++)
@@ -20165,15 +20230,15 @@ else { exit 1 }
                         }
                         catch (Exception e)
                         {
-                            Log($"µÚ{retry + 1}´ÎÇëÇóÊ§°Ü£º{e.Message}£¬µÈ´ı1ÃëÖØÊÔ...");
+                            Log($"ç¬¬{retry + 1}æ¬¡è¯·æ±‚å¤±è´¥ï¼š{e.Message}ï¼Œç­‰å¾…1ç§’é‡è¯•...");
                             await Task.Delay(1000);
                         }
                     }
 
                     if (string.IsNullOrWhiteSpace(rawText))
                     {
-                        Log("·şÎñÆ÷·µ»Ø¿ÕÄÚÈİ");
-                        SetStats("ÆµµÀ£º0 | ×´Ì¬£ºÎŞÊı¾İ");
+                        Log("æœåŠ¡å™¨è¿”å›ç©ºå†…å®¹");
+                        SetStats("é¢‘é“ï¼š0 | çŠ¶æ€ï¼šæ— æ•°æ®");
                         return;
                     }
 
@@ -20210,8 +20275,8 @@ else { exit 1 }
                     txtRaw.Text = currentRaw;
                     txtPreview.Text = currentPreview;
                     txtM3u.Text = currentM3u;
-                    Log($"ÖÇ»Û¹âÑ¸½âÎöÍê³É£¬ÓĞĞ§ÆµµÀ {validCnt}£¬½âÎöÒì³£ĞĞ {errCnt}");
-                    SetStats($"ÆµµÀ£º{validCnt} | ×´Ì¬£ºÍê³É");
+                    Log($"æ™ºæ…§å…‰è¿…è§£æå®Œæˆï¼Œæœ‰æ•ˆé¢‘é“ {validCnt}ï¼Œè§£æå¼‚å¸¸è¡Œ {errCnt}");
+                    SetStats($"é¢‘é“ï¼š{validCnt} | çŠ¶æ€ï¼šå®Œæˆ");
                 }
 
                 async Task ParseHuashi(HttpClient httpClient)
@@ -20222,29 +20287,29 @@ else { exit 1 }
 
                     if (!rangeStr.Contains("-"))
                     {
-                        Log("É¨ÃèÇø¼ä¸ñÊ½´íÎó");
-                        DarkMessageBox.Show("É¨ÃèÇø¼ä¸ñÊ½´íÎó£¬±ê×¼Ê¾Àı£º1-100", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        Log("æ‰«æåŒºé—´æ ¼å¼é”™è¯¯");
+                        DarkMessageBox.Show("æ‰«æåŒºé—´æ ¼å¼é”™è¯¯ï¼Œæ ‡å‡†ç¤ºä¾‹ï¼š1-100", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     var rangeParts = rangeStr.Split('-');
                     if (!int.TryParse(rangeParts[0], out int startId) || !int.TryParse(rangeParts[1], out int endId))
                     {
-                        Log("É¨ÃèÇø¼äÊı×Ö·Ç·¨");
-                        DarkMessageBox.Show("É¨ÃèÇø¼ä±ØĞëÎª´¿Êı×Ö", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        Log("æ‰«æåŒºé—´æ•°å­—éæ³•");
+                        DarkMessageBox.Show("æ‰«æåŒºé—´å¿…é¡»ä¸ºçº¯æ•°å­—", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     if (startId <= 0 || endId < startId)
                     {
-                        Log("É¨ÃèÇø¼äÊı×Ö·Ç·¨");
-                        DarkMessageBox.Show("ÆğÊ¼±ØĞëĞ¡ÓÚ½áÊøÇÒ´óÓÚ0", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        Log("æ‰«æåŒºé—´æ•°å­—éæ³•");
+                        DarkMessageBox.Show("èµ·å§‹å¿…é¡»å°äºç»“æŸä¸”å¤§äº0", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     threadNum = Math.Max(1, Math.Min(20, threadNum));
 
-                    Log($"¿ªÊ¼²¢·¢É¨Ãè ID {startId}~{endId}£¬²¢·¢Ïß³Ì {threadNum}");
+                    Log($"å¼€å§‹å¹¶å‘æ‰«æ ID {startId}~{endId}ï¼Œå¹¶å‘çº¿ç¨‹ {threadNum}");
 
                     var cidList = Enumerable.Range(startId, endId - startId + 1).ToList();
                     var validResults = new System.Collections.Concurrent.ConcurrentBag<Tuple<int, string>>();
@@ -20305,7 +20370,7 @@ else { exit 1 }
                             Log($"FAIL ID:{cid}");
                             int current = System.Threading.Interlocked.Increment(ref processedCount);
                             int pct = (int)(current * 100.0 / cidList.Count);
-                            SetStats($"ÆµµÀ£º{validResults.Count} | ×´Ì¬£ºÉ¨ÃèÖĞ {pct}%");
+                            SetStats($"é¢‘é“ï¼š{validResults.Count} | çŠ¶æ€ï¼šæ‰«æä¸­ {pct}%");
                         });
                     });
 
@@ -20316,12 +20381,12 @@ else { exit 1 }
                     var previewLines = new List<string>();
                     foreach (var result in validResults.OrderBy(r => r.Item1))
                     {
-                        m3uLines.Add($"#EXTINF:-1,»ªÊÓÆµµÀ{result.Item1}");
+                        m3uLines.Add($"#EXTINF:-1,åè§†é¢‘é“{result.Item1}");
                         m3uLines.Add(result.Item2);
                         previewLines.Add($"OK ID:{result.Item1} | {result.Item2}");
                     }
 
-                    currentRaw = $"»ªÊÓÉ¨Ãè»ã×Ü\r\nÉ¨ÃèÇø¼ä£º{startId}-{endId}\r\n×ÜÉ¨ÃèÊıÁ¿£º{cidList.Count}\r\nÓĞĞ§ÆµµÀ£º{validResults.Count}";
+                    currentRaw = $"åè§†æ‰«ææ±‡æ€»\r\næ‰«æåŒºé—´ï¼š{startId}-{endId}\r\næ€»æ‰«ææ•°é‡ï¼š{cidList.Count}\r\næœ‰æ•ˆé¢‘é“ï¼š{validResults.Count}";
                     currentPreview = string.Join("\r\n", previewLines);
                     currentM3u = string.Join("\r\n", m3uLines);
                     currentValidCount = validResults.Count;
@@ -20329,14 +20394,14 @@ else { exit 1 }
                     txtRaw.Text = currentRaw;
                     txtPreview.Text = currentPreview;
                     txtM3u.Text = currentM3u;
-                    Log($"»ªÊÓÉ¨ÃèÈ«²¿Íê³É£¬ÓĞĞ§ÆµµÀ {validResults.Count}");
-                    SetStats($"ÆµµÀ£º{validResults.Count} | ×´Ì¬£ºÍê³É");
+                    Log($"åè§†æ‰«æå…¨éƒ¨å®Œæˆï¼Œæœ‰æ•ˆé¢‘é“ {validResults.Count}");
+                    SetStats($"é¢‘é“ï¼š{validResults.Count} | çŠ¶æ€ï¼šå®Œæˆ");
                 }
 
                 async Task ParseKutv(HttpClient httpClient, int timeout)
                 {
                     string url = $"http://{currentIpPort}/iptv/live/1000.json?key=txiptv";
-                    Log($"ÇëÇóµØÖ·£º{url}");
+                    Log($"è¯·æ±‚åœ°å€ï¼š{url}");
 
                     string jsonText = "";
                     for (int retry = 0; retry <= 2; retry++)
@@ -20350,15 +20415,15 @@ else { exit 1 }
                         }
                         catch (Exception e)
                         {
-                            Log($"µÚ{retry + 1}´ÎÇëÇóÊ§°Ü£º{e.Message}£¬µÈ´ı1ÃëÖØÊÔ...");
+                            Log($"ç¬¬{retry + 1}æ¬¡è¯·æ±‚å¤±è´¥ï¼š{e.Message}ï¼Œç­‰å¾…1ç§’é‡è¯•...");
                             await Task.Delay(1000);
                         }
                     }
 
                     if (string.IsNullOrWhiteSpace(jsonText))
                     {
-                        Log("·şÎñÆ÷·µ»Ø¿ÕÄÚÈİ");
-                        SetStats("ÆµµÀ£º0 | ×´Ì¬£ºÎŞÊı¾İ");
+                        Log("æœåŠ¡å™¨è¿”å›ç©ºå†…å®¹");
+                        SetStats("é¢‘é“ï¼š0 | çŠ¶æ€ï¼šæ— æ•°æ®");
                         return;
                     }
 
@@ -20368,17 +20433,17 @@ else { exit 1 }
                         if (codeMatch.Success && codeMatch.Groups[1].Value != "0")
                         {
                             var msgMatch = System.Text.RegularExpressions.Regex.Match(jsonText, "\"msg\"\\s*:\\s*\"([^\"]+)\"");
-                            string msg = msgMatch.Success ? msgMatch.Groups[1].Value : "Î´Öª´íÎó";
-                            Log($"½Ó¿Ú·µ»ØÒì³£ code={codeMatch.Groups[1].Value} msg={msg}");
-                            SetStats("ÆµµÀ£º0 | ×´Ì¬£º½Ó¿ÚÒì³£");
+                            string msg = msgMatch.Success ? msgMatch.Groups[1].Value : "æœªçŸ¥é”™è¯¯";
+                            Log($"æ¥å£è¿”å›å¼‚å¸¸ code={codeMatch.Groups[1].Value} msg={msg}");
+                            SetStats("é¢‘é“ï¼š0 | çŠ¶æ€ï¼šæ¥å£å¼‚å¸¸");
                             return;
                         }
 
                         var dataMatch = System.Text.RegularExpressions.Regex.Match(jsonText, "\"data\"\\s*:\\s*(\\[.+?\\])", System.Text.RegularExpressions.RegexOptions.Singleline);
                         if (!dataMatch.Success)
                         {
-                            Log("½Ó¿Ú·µ»ØÊı¾İ¸ñÊ½´íÎó");
-                            SetStats("ÆµµÀ£º0 | ×´Ì¬£ºÊı¾İ´íÎó");
+                            Log("æ¥å£è¿”å›æ•°æ®æ ¼å¼é”™è¯¯");
+                            SetStats("é¢‘é“ï¼š0 | çŠ¶æ€ï¼šæ•°æ®é”™è¯¯");
                             return;
                         }
 
@@ -20414,13 +20479,13 @@ else { exit 1 }
                         txtRaw.Text = currentRaw;
                         txtPreview.Text = currentPreview;
                         txtM3u.Text = currentM3u;
-                        Log($"ÖÇÄÜKUTV JSON½âÎöÍê³É£¬ÓĞĞ§ÆµµÀ {validCnt}");
-                        SetStats($"ÆµµÀ£º{validCnt} | ×´Ì¬£ºÍê³É");
+                        Log($"æ™ºèƒ½KUTV JSONè§£æå®Œæˆï¼Œæœ‰æ•ˆé¢‘é“ {validCnt}");
+                        SetStats($"é¢‘é“ï¼š{validCnt} | çŠ¶æ€ï¼šå®Œæˆ");
                     }
                     catch (Exception ex)
                     {
-                        Log($"½âÎöÒì³££º{ex.Message}");
-                        SetStats("ÆµµÀ£º0 | ×´Ì¬£º½âÎöÒì³£");
+                        Log($"è§£æå¼‚å¸¸ï¼š{ex.Message}");
+                        SetStats("é¢‘é“ï¼š0 | çŠ¶æ€ï¼šè§£æå¼‚å¸¸");
                     }
                 }
 
@@ -20428,7 +20493,7 @@ else { exit 1 }
                 {
                     if (currentValidCount == 0)
                     {
-                        DarkMessageBox.Show("ÇëÏÈµã»÷¡¾¿ªÊ¼½âÎö¡¿»ñÈ¡Êı¾İºóÔÙµ¼³ö", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        DarkMessageBox.Show("è¯·å…ˆç‚¹å‡»ã€å¼€å§‹è§£æã€‘è·å–æ•°æ®åå†å¯¼å‡º", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
@@ -20436,56 +20501,56 @@ else { exit 1 }
                     string prefix = "";
                     switch (cboPlatform.SelectedIndex)
                     {
-                        case 0: prefix = "ÖÇ»Û¹âÑ¸"; break;
-                        case 1: prefix = "»ªÊÓÃÀ´ï"; break;
-                        case 2: prefix = "ÖÇÄÜKUTV"; break;
+                        case 0: prefix = "æ™ºæ…§å…‰è¿…"; break;
+                        case 1: prefix = "åè§†ç¾è¾¾"; break;
+                        case 2: prefix = "æ™ºèƒ½KUTV"; break;
                     }
 
                     var errors = new List<string>();
 
                     if (cboPlatform.SelectedIndex == 0)
                     {
-                        string txtPath = GetUniqueFilePath($"{prefix}_Ô­Ê¼_{ipSafe}", ".txt");
-                        string m3uPath = GetUniqueFilePath($"{prefix}_Ö±²¥ÁĞ±í_{ipSafe}", ".m3u");
-                        if (!SafeWriteFile(txtPath, currentRaw)) errors.Add($"Ğ´Èë {Path.GetFileName(txtPath)} Ê§°Ü");
-                        if (!SafeWriteFile(m3uPath, currentM3u)) errors.Add($"Ğ´Èë {Path.GetFileName(m3uPath)} Ê§°Ü");
+                        string txtPath = GetUniqueFilePath($"{prefix}_åŸå§‹_{ipSafe}", ".txt");
+                        string m3uPath = GetUniqueFilePath($"{prefix}_ç›´æ’­åˆ—è¡¨_{ipSafe}", ".m3u");
+                        if (!SafeWriteFile(txtPath, currentRaw)) errors.Add($"å†™å…¥ {Path.GetFileName(txtPath)} å¤±è´¥");
+                        if (!SafeWriteFile(m3uPath, currentM3u)) errors.Add($"å†™å…¥ {Path.GetFileName(m3uPath)} å¤±è´¥");
                         if (errors.Count == 0)
-                            DarkMessageBox.Show($"µ¼³ö³É¹¦\r\nÔ­Ê¼ÎÄ±¾£º{Path.GetFileName(txtPath)}\r\nM3U²¥·ÅÁĞ±í£º{Path.GetFileName(m3uPath)}\r\nÓĞĞ§ÆµµÀ£º{currentValidCount}", "µ¼³öÍê³É", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            DarkMessageBox.Show($"å¯¼å‡ºæˆåŠŸ\r\nåŸå§‹æ–‡æœ¬ï¼š{Path.GetFileName(txtPath)}\r\nM3Uæ’­æ”¾åˆ—è¡¨ï¼š{Path.GetFileName(m3uPath)}\r\næœ‰æ•ˆé¢‘é“ï¼š{currentValidCount}", "å¯¼å‡ºå®Œæˆ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else if (cboPlatform.SelectedIndex == 1)
                     {
-                        string m3uPath = GetUniqueFilePath($"{prefix}_ÓĞĞ§Ô´_{ipSafe}", ".m3u");
-                        if (!SafeWriteFile(m3uPath, currentM3u)) errors.Add($"Ğ´Èë {Path.GetFileName(m3uPath)} Ê§°Ü");
+                        string m3uPath = GetUniqueFilePath($"{prefix}_æœ‰æ•ˆæº_{ipSafe}", ".m3u");
+                        if (!SafeWriteFile(m3uPath, currentM3u)) errors.Add($"å†™å…¥ {Path.GetFileName(m3uPath)} å¤±è´¥");
                         if (errors.Count == 0)
-                            DarkMessageBox.Show($"µ¼³ö³É¹¦\r\nM3UÎÄ¼ş£º{Path.GetFileName(m3uPath)}\r\nÓĞĞ§ÆµµÀ£º{currentValidCount}", "µ¼³öÍê³É", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            DarkMessageBox.Show($"å¯¼å‡ºæˆåŠŸ\r\nM3Uæ–‡ä»¶ï¼š{Path.GetFileName(m3uPath)}\r\næœ‰æ•ˆé¢‘é“ï¼š{currentValidCount}", "å¯¼å‡ºå®Œæˆ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
-                        string txtCsv = GetUniqueFilePath($"{prefix}_¶ººÅÇåµ¥_{ipSafe}", ".txt");
-                        string txtJson = GetUniqueFilePath($"{prefix}_Ô­Ê¼JSON_{ipSafe}", ".txt");
-                        string m3uPath = GetUniqueFilePath($"{prefix}_Ö±²¥ÁĞ±í_{ipSafe}", ".m3u");
-                        if (!SafeWriteFile(txtCsv, currentPreview)) errors.Add($"Ğ´Èë {Path.GetFileName(txtCsv)} Ê§°Ü");
-                        if (!SafeWriteFile(txtJson, currentRaw)) errors.Add($"Ğ´Èë {Path.GetFileName(txtJson)} Ê§°Ü");
-                        if (!SafeWriteFile(m3uPath, currentM3u)) errors.Add($"Ğ´Èë {Path.GetFileName(m3uPath)} Ê§°Ü");
+                        string txtCsv = GetUniqueFilePath($"{prefix}_é€—å·æ¸…å•_{ipSafe}", ".txt");
+                        string txtJson = GetUniqueFilePath($"{prefix}_åŸå§‹JSON_{ipSafe}", ".txt");
+                        string m3uPath = GetUniqueFilePath($"{prefix}_ç›´æ’­åˆ—è¡¨_{ipSafe}", ".m3u");
+                        if (!SafeWriteFile(txtCsv, currentPreview)) errors.Add($"å†™å…¥ {Path.GetFileName(txtCsv)} å¤±è´¥");
+                        if (!SafeWriteFile(txtJson, currentRaw)) errors.Add($"å†™å…¥ {Path.GetFileName(txtJson)} å¤±è´¥");
+                        if (!SafeWriteFile(m3uPath, currentM3u)) errors.Add($"å†™å…¥ {Path.GetFileName(m3uPath)} å¤±è´¥");
                         if (errors.Count == 0)
-                            DarkMessageBox.Show($"µ¼³ö3¸öÎÄ¼ş³É¹¦\r\n¶ººÅÇåµ¥txt / Ô­Ê¼JSON / M3U²¥·ÅÁĞ±í\r\nÓĞĞ§ÆµµÀ£º{currentValidCount}", "µ¼³öÍê³É", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            DarkMessageBox.Show($"å¯¼å‡º3ä¸ªæ–‡ä»¶æˆåŠŸ\r\né€—å·æ¸…å•txt / åŸå§‹JSON / M3Uæ’­æ”¾åˆ—è¡¨\r\næœ‰æ•ˆé¢‘é“ï¼š{currentValidCount}", "å¯¼å‡ºå®Œæˆ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
 
                     if (errors.Count > 0)
-                        DarkMessageBox.Show(string.Join("\r\n", errors), "µ¼³öÊ§°Ü", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        DarkMessageBox.Show(string.Join("\r\n", errors), "å¯¼å‡ºå¤±è´¥", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 };
 
                 btnAddToList.Click += (s, e) =>
                 {
                     if (currentValidCount == 0)
                     {
-                        DarkMessageBox.Show("ÇëÏÈµã»÷¡¾¿ªÊ¼½âÎö¡¿»ñÈ¡Êı¾İºóÔÙÌí¼Ó", "ÌáÊ¾", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        DarkMessageBox.Show("è¯·å…ˆç‚¹å‡»ã€å¼€å§‹è§£æã€‘è·å–æ•°æ®åå†æ·»åŠ ", "æç¤º", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     int addedCount = 0;
                     DateTime parseTime = DateTime.Now;
-                    string groupName = $"{currentPlatform}½âÎö";
+                    string groupName = $"{currentPlatform}è§£æ";
 
                     if (cboPlatform.SelectedIndex == 0)
                     {
@@ -20499,7 +20564,7 @@ else { exit 1 }
                                 string url = parts[1].Trim();
                                 if (!allChannels.Any(c => c.Url == url))
                                 {
-                                    allChannels.Add(new ChannelInfo { Name = name, Url = url, Group = groupName, Status = "´ı½âÎö", ParseDateTime = parseTime });
+                                    allChannels.Add(new ChannelInfo { Name = name, Url = url, Group = groupName, Status = "å¾…è§£æ", ParseDateTime = parseTime });
                                     addedCount++;
                                 }
                             }
@@ -20515,10 +20580,10 @@ else { exit 1 }
                             if (urlMatch.Success)
                             {
                                 string url = urlMatch.Value;
-                                string name = $"»ªÊÓÃÀ´ï_{currentIpPort}_{url.Split('/')[url.Split('/').Length - 2]}";
+                                string name = $"åè§†ç¾è¾¾_{currentIpPort}_{url.Split('/')[url.Split('/').Length - 2]}";
                                 if (!allChannels.Any(c => c.Url == url))
                                 {
-                                    allChannels.Add(new ChannelInfo { Name = name, Url = url, Group = groupName, Status = "´ı½âÎö", ParseDateTime = parseTime });
+                                    allChannels.Add(new ChannelInfo { Name = name, Url = url, Group = groupName, Status = "å¾…è§£æ", ParseDateTime = parseTime });
                                     addedCount++;
                                 }
                             }
@@ -20536,7 +20601,7 @@ else { exit 1 }
                                 string url = parts[1].Trim();
                                 if (!allChannels.Any(c => c.Url == url))
                                 {
-                                    allChannels.Add(new ChannelInfo { Name = name, Url = url, Group = groupName, Status = "´ı½âÎö", ParseDateTime = parseTime });
+                                    allChannels.Add(new ChannelInfo { Name = name, Url = url, Group = groupName, Status = "å¾…è§£æ", ParseDateTime = parseTime });
                                     addedCount++;
                                 }
                             }
@@ -20548,11 +20613,11 @@ else { exit 1 }
                     UpdateEmptyState();
                     SaveChannelList();
 
-                    // ¸üĞÂ×´Ì¬À¸ÏÔÊ¾½âÎö½á¹û
+                    // æ›´æ–°çŠ¶æ€æ æ˜¾ç¤ºè§£æç»“æœ
                     if (lblDetected != null && lblAvailable != null && lblPercent != null && statusBarRef != null)
                     {
-                        lblDetected.Text = $"ÒÑ¼ì²â: 0/{totalCount}";
-                        lblAvailable.Text = $"¿ÉÓÃ: 0";
+                        lblDetected.Text = $"å·²æ£€æµ‹: 0/{totalCount}";
+                        lblAvailable.Text = $"å¯ç”¨: 0";
                         lblPercent.Text = "0.00%";
                         progressBarWidth = 0;
                         RestoreLabelColors();
@@ -20561,10 +20626,10 @@ else { exit 1 }
                         statusBarRef.Refresh();
                     }
 
-                    DarkMessageBox.Show($"ÒÑÌí¼Ó {addedCount} ÌõÁ´½Óµ½¼ì²âÁĞ±í\r\n·Ö×é: {groupName}", "Ìí¼Ó³É¹¦", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DarkMessageBox.Show($"å·²æ·»åŠ  {addedCount} æ¡é“¾æ¥åˆ°æ£€æµ‹åˆ—è¡¨\r\nåˆ†ç»„: {groupName}", "æ·»åŠ æˆåŠŸ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 };
 
-                // Ç¿ÖÆ´´½¨ËùÓĞ×Ó¿Ø¼ş¾ä±úºóÔÙÓ¦ÓÃÖ÷Ìâ£¬±ÜÃâ°×É«ÉÁË¸
+                // å¼ºåˆ¶åˆ›å»ºæ‰€æœ‰å­æ§ä»¶å¥æŸ„åå†åº”ç”¨ä¸»é¢˜ï¼Œé¿å…ç™½è‰²é—ªçƒ
                 dlg.CreateControl();
                 ForceCreateChildHandles(dlg);
                 UpdateScrollBarTheme(dlg);
