@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -21,7 +20,7 @@ namespace IPTVLiveChecker
             Application.SetCompatibleTextRenderingDefault(false);
 
             #if !DEBUG
-            string encryptedMd5 = ConfigurationManager.AppSettings["ExpectedExeMd5"]?.ToString()?.Trim() ?? "";
+            string encryptedMd5 = ReadEmbeddedMd5();
             if (!string.IsNullOrEmpty(encryptedMd5))
             {
                 try
@@ -41,7 +40,7 @@ namespace IPTVLiveChecker
                 catch (FormatException)
                 {
                     MessageBox.Show(
-                        "MD5配置格式错误，请检查ExpectedExeMd5值是否为有效的Base64编码。",
+                        "程序完整性校验失败，配置数据格式错误。",
                         "安全警告",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
@@ -50,7 +49,7 @@ namespace IPTVLiveChecker
                 catch (CryptographicException)
                 {
                     MessageBox.Show(
-                        "MD5解密失败，请检查密钥是否正确或ExpectedExeMd5值是否被篡改。",
+                        "程序完整性校验失败，验证数据损坏。",
                         "安全警告",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
@@ -65,6 +64,15 @@ namespace IPTVLiveChecker
                         MessageBoxIcon.Stop);
                     return;
                 }
+            }
+            else
+            {
+                MessageBox.Show(
+                    "程序文件不完整，缺少完整性校验数据。",
+                    "安全警告",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+                return;
             }
 #endif
 
@@ -88,38 +96,41 @@ namespace IPTVLiveChecker
                     if (config != null) break;
                 }
 
-                if (config != null)
+                if (config != null && config.VersionCode > localVersionCode)
                 {
                     string updaterPath = Path.Combine(Application.StartupPath, "Updater.exe");
                     if (File.Exists(updaterPath))
                     {
-                        if (config.VersionCode > localVersionCode)
+                        if (config.IsForceUpdate)
                         {
-                            if (config.IsForceUpdate)
+                            if (!ShowForcedUpdateDialog(config, currentVersion))
+                                return;
+                        }
+                        else
+                        {
+                            var result = MessageBox.Show(
+                                "发现新版本" + config.LatestVersion + "\n\n" +
+                                "当前版本: " + currentVersion + "\n\n" +
+                                "更新内容:\n" + string.Join("\n", (config.Changelog ?? new List<string>()).Select(x => "  " + x)) + "\n\n" +
+                                "是否更新？",
+                                "发现新版本", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                            if (result == DialogResult.Yes)
                             {
-                                if (!ShowForcedUpdateDialog(config, currentVersion))
-                                    return;
-                            }
-                            else
-                            {
-                                var result = MessageBox.Show(
-                                    "发现新版本" + config.LatestVersion + "\n\n" +
-                                    "当前版本: " + currentVersion + "\n\n" +
-                                    "更新内容:\n" + string.Join("\n", (config.Changelog ?? new List<string>()).Select(x => "  " + x)) + "\n\n" +
-                                    "是否更新？",
-                                    "发现新版本", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                                if (result == DialogResult.Yes)
-                                {
-                                    StartUpdater(config.DownloadUrl, config.Md5Checksum);
-                                    return;
-                                }
+                                StartUpdater(config.DownloadUrl, config.Md5Checksum);
+                                return;
                             }
                         }
                     }
                     else
                     {
-                        MessageBox.Show("更新器丢失(Updater.exe)，无法进行更新。\n将继续使用当前版本。", "提示",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show(
+                            "发现新版本" + config.LatestVersion + "\n\n" +
+                            "当前版本: " + currentVersion + "\n\n" +
+                            "更新内容:\n" + string.Join("\n", (config.Changelog ?? new List<string>()).Select(x => "  " + x)) + "\n\n" +
+                            "注意: 更新程序(Updater.exe)已丢失，无法自动更新。\n" +
+                            "请重新下载完整版本后再使用。",
+                            "发现新版本", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
                 }
             }
@@ -160,14 +171,73 @@ namespace IPTVLiveChecker
             catch { return null; }
         }
 
+        private const string Md5Signature = "IPTV_MD5_V1____";
+        private const int Md5EmbeddedBase64Len = 64;
+        private static readonly int Md5SignatureLen = Md5Signature.Length;
+
         private static string ComputeExeMd5()
         {
             string exePath = Application.ExecutablePath;
             using (var md5 = MD5.Create())
             using (var stream = File.OpenRead(exePath))
             {
-                byte[] hash = md5.ComputeHash(stream);
-                return BitConverter.ToString(hash).Replace("-", "").ToUpperInvariant();
+                long totalLen = stream.Length;
+                long payloadLen = totalLen;
+                byte[] sig = new byte[Md5SignatureLen];
+
+                if (totalLen >= Md5SignatureLen + Md5EmbeddedBase64Len)
+                {
+                    stream.Seek(totalLen - Md5SignatureLen, SeekOrigin.Begin);
+                    stream.Read(sig, 0, Md5SignatureLen);
+                    string sigStr = Encoding.ASCII.GetString(sig);
+                    if (sigStr == Md5Signature)
+                    {
+                        payloadLen = totalLen - Md5SignatureLen - Md5EmbeddedBase64Len;
+                    }
+                }
+
+                stream.Seek(0, SeekOrigin.Begin);
+                byte[] buf = new byte[8192];
+                long remaining = payloadLen;
+                while (remaining > 0)
+                {
+                    int toRead = (int)Math.Min(buf.Length, remaining);
+                    int read = stream.Read(buf, 0, toRead);
+                    if (read <= 0) break;
+                    md5.TransformBlock(buf, 0, read, buf, 0);
+                    remaining -= read;
+                }
+                md5.TransformFinalBlock(new byte[0], 0, 0);
+                return BitConverter.ToString(md5.Hash).Replace("-", "").ToUpperInvariant();
+            }
+        }
+
+        private static string ReadEmbeddedMd5()
+        {
+            try
+            {
+                string exePath = Application.ExecutablePath;
+                using (var fs = File.OpenRead(exePath))
+                {
+                    long totalLen = fs.Length;
+                    if (totalLen < Md5SignatureLen + Md5EmbeddedBase64Len)
+                        return null;
+
+                    fs.Seek(totalLen - Md5SignatureLen, SeekOrigin.Begin);
+                    byte[] sig = new byte[Md5SignatureLen];
+                    fs.Read(sig, 0, Md5SignatureLen);
+                    if (Encoding.ASCII.GetString(sig) != Md5Signature)
+                        return null;
+
+                    fs.Seek(totalLen - Md5SignatureLen - Md5EmbeddedBase64Len, SeekOrigin.Begin);
+                    byte[] b64 = new byte[Md5EmbeddedBase64Len];
+                    fs.Read(b64, 0, Md5EmbeddedBase64Len);
+                    return Encoding.ASCII.GetString(b64).Trim();
+                }
+            }
+            catch
+            {
+                return null;
             }
         }
 

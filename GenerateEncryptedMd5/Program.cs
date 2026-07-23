@@ -7,15 +7,24 @@ namespace GenerateEncryptedMd5
 {
     class Program
     {
+        private const string Md5Signature = "IPTV_MD5_V1____";
+        private const int Md5EmbeddedBase64Len = 64;
+        private static readonly int Md5SignatureLen = Md5Signature.Length;
+
         static void Main(string[] args)
         {
+            bool interactive = !Console.IsInputRedirected;
+
             if (args.Length == 0)
             {
                 Console.WriteLine("用法: GenerateEncryptedMd5.exe <目标文件路径> [<解决方案目录>]");
                 Console.WriteLine("示例: GenerateEncryptedMd5.exe bin\\x64\\Release\\IPTVLiveChecker.exe .");
                 Console.WriteLine();
-                Console.WriteLine("按任意键退出...");
-                Console.ReadKey();
+                if (interactive)
+                {
+                    Console.WriteLine("按任意键退出...");
+                    Console.ReadKey();
+                }
                 return;
             }
 
@@ -25,8 +34,11 @@ namespace GenerateEncryptedMd5
             if (!File.Exists(filePath))
             {
                 Console.WriteLine($"错误: 文件不存在 - {filePath}");
-                Console.WriteLine("按任意键退出...");
-                Console.ReadKey();
+                if (interactive)
+                {
+                    Console.WriteLine("按任意键退出...");
+                    Console.ReadKey();
+                }
                 return;
             }
 
@@ -47,16 +59,11 @@ namespace GenerateEncryptedMd5
                     Console.WriteLine("加密解密验证通过!");
                     Console.WriteLine();
 
-                    // 只更新 EXE 同目录的 config 和项目根的 App.config
-                    // 避免错误覆盖其他目录（如 release/）的 config
-                    string exeDir = Path.GetDirectoryName(filePath);
-                    string exeConfigPath = Path.Combine(exeDir, "IPTVLiveChecker.exe.config");
-                    UpdateConfigFile(exeConfigPath, encryptedMd5);
-                    UpdateConfigFile(Path.Combine(solutionDir, "App.config"), encryptedMd5);
+                    EmbedMd5ToExe(filePath, encryptedMd5);
 
-                    Console.WriteLine("配置文件已自动更新!");
                     Console.WriteLine();
                     Console.WriteLine($"新的加密 MD5: {encryptedMd5}");
+                    Console.WriteLine("已嵌入到 EXE 文件末尾!");
                 }
                 else
                 {
@@ -68,9 +75,63 @@ namespace GenerateEncryptedMd5
                 Console.WriteLine($"错误: {ex.Message}");
             }
 
-            Console.WriteLine();
-            Console.WriteLine("按任意键退出...");
-            Console.ReadKey();
+            if (interactive)
+            {
+                Console.WriteLine();
+                Console.WriteLine("按任意键退出...");
+                Console.ReadKey();
+            }
+        }
+
+        private static void EmbedMd5ToExe(string exePath, string encryptedMd5)
+        {
+            // 先移除旧的嵌入数据（如果有）
+            RemoveOldEmbeddedMd5(exePath);
+
+            // 重新计算移除旧数据后的 MD5
+            string newMd5 = ComputeMd5(exePath);
+            string newEncryptedMd5 = AesEncrypt(newMd5);
+            Console.WriteLine($"移除旧数据后 MD5: {newMd5}");
+
+            // 准备要嵌入的数据：64字节 base64（不足补空格） + 16字节签名
+            string b64Padded = newEncryptedMd5.PadRight(Md5EmbeddedBase64Len, ' ');
+            if (b64Padded.Length > Md5EmbeddedBase64Len)
+            {
+                Console.WriteLine($"警告: 加密后 MD5 长度 {b64Padded.Length} 超过 {Md5EmbeddedBase64Len} 字节");
+                b64Padded = b64Padded.Substring(0, Md5EmbeddedBase64Len);
+            }
+
+            byte[] b64Bytes = Encoding.ASCII.GetBytes(b64Padded);
+            byte[] sigBytes = Encoding.ASCII.GetBytes(Md5Signature);
+
+            using (var fs = new FileStream(exePath, FileMode.Append, FileAccess.Write))
+            {
+                fs.Write(b64Bytes, 0, b64Bytes.Length);
+                fs.Write(sigBytes, 0, sigBytes.Length);
+            }
+
+            Console.WriteLine($"已嵌入 {b64Bytes.Length + sigBytes.Length} 字节数据到 EXE 末尾");
+        }
+
+        private static void RemoveOldEmbeddedMd5(string exePath)
+        {
+            using (var fs = new FileStream(exePath, FileMode.Open, FileAccess.ReadWrite))
+            {
+                long totalLen = fs.Length;
+                if (totalLen < Md5SignatureLen + Md5EmbeddedBase64Len)
+                    return;
+
+                fs.Seek(totalLen - Md5SignatureLen, SeekOrigin.Begin);
+                byte[] sig = new byte[Md5SignatureLen];
+                fs.Read(sig, 0, Md5SignatureLen);
+                string sigStr = Encoding.ASCII.GetString(sig);
+                if (sigStr != Md5Signature)
+                    return;
+
+                long newLen = totalLen - Md5SignatureLen - Md5EmbeddedBase64Len;
+                fs.SetLength(newLen);
+                Console.WriteLine($"已移除旧的嵌入数据，文件大小从 {totalLen} 变为 {newLen}");
+            }
         }
 
         private static void UpdateConfigFile(string configPath, string encryptedMd5)

@@ -31,11 +31,11 @@ if not exist "%TOOL_PATH%" (
 
 set "FOUND=0"
 
-rem 依次处理每个存在的 EXE，分别生成加密 MD5 并更新同目录 config
+rem 依次处理每个存在的 EXE，将加密 MD5 嵌入到 EXE 末尾
 for %%P in ("bin\x64\Release\IPTVLiveChecker.exe" "bin\Release\IPTVLiveChecker.exe" "release\IPTVLiveChecker.exe" "publish\IPTVLiveChecker.exe") do (
     if exist "%%~P" (
         echo [信息] 处理: %%~P
-        "%TOOL_PATH%" "%%~P" "%cd%" < nul
+        "%TOOL_PATH%" "%%~P" < nul
         echo.
         set "FOUND=1"
     )
@@ -52,7 +52,7 @@ if "%FOUND%"=="0" (
 )
 
 echo ==================================================
-echo 所有 EXE 的加密 MD5 已生成并更新对应 config
-echo 注意: App.config 会被最后一次处理的 EXE 覆盖
+echo  所有 EXE 的加密 MD5 已嵌入到文件末尾
+echo  不再依赖 IPTVLiveChecker.exe.config
 echo ==================================================
 pause

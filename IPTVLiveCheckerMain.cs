@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -4729,9 +4729,15 @@ namespace IPTVLiveChecker
                     autoParseLink = false;
                     customPlayerPath = "";
                     watchSearchWindow = false;
+                    showSearchButton = false;
+                    autoExtractIpPort = false;
                     customFontFamily = "Microsoft YaHei";
-                    themePreference = "跟随系统";
-                    theme = AppTheme.GetAutoTheme();
+                    themePreference = "浅色";
+                    theme = AppTheme.Light;
+                    disclaimerAgreed = false;
+                    skipDisclaimerPrompt = false;
+                    iptvHistoryIps = new List<string>();
+                    loginDataPath = "";
 
                     rbHttp.Checked = true;
                     rbFfmpeg.Checked = false;
@@ -4741,10 +4747,18 @@ namespace IPTVLiveChecker
                     togglePersist.Checked = true;
                     toggleAutoParse.Checked = false;
                     toggleWatch.Checked = false;
+                    toggleSearchBtn.Checked = false;
+                    toggleSkipDisclaimer.Checked = false;
                     txtPlayerPath.Text = "";
                     if (cmbFont.Items.Contains("Microsoft YaHei"))
                     {
                         cmbFont.SelectedItem = "Microsoft YaHei";
+                    }
+
+                    if (btnNavSearch != null)
+                    {
+                        btnNavSearch.Visible = showSearchButton;
+                        RefreshNavButtonSizes();
                     }
 
                     SaveConfig();
@@ -6060,7 +6074,7 @@ namespace IPTVLiveChecker
                 // ==================== 提示文字标签（倒计时/状态提示） ====================
                 Label lblHint = new Label
                 {
-                    Text = "请滚动阅读至底部并等待倒计时结束",                  // 初始提示文字
+                    Text = "⇩ 请向下滚动阅读全部条款",                  // 初始提示文字（不显示倒计时）
                     Font = GetFont(SF(8.5f)),                                 // 字体：8.5pt（DPI自适应）
                     Location = new Point(0, y),                               // 位置：水平居中，Y=当前游标
                     Size = new Size(dlg.ClientSize.Width, SY(20)),            // 大小：宽=窗口宽度，高=20px
@@ -6114,7 +6128,9 @@ namespace IPTVLiveChecker
                 // ==================== 倒计时与交互状态控制 ====================
                 bool canAgree = false;              // 是否允许勾选同意（需同时满足：滚动到底+倒计时结束）
                 bool hasScrolledToBottom = false;    // 用户是否已滚动到文本底部
-                bool timerStarted = false;           // 倒计时是否已启动（首次滚动时启动）
+                bool timerStarted = false;           // 倒计时是否已启动（首次主动向下滚动时启动）
+                bool scrollDetectionActive = false;  // 滚动检测是否已激活（窗口显示后才激活，避免初始化触发）
+                int initialScrollPos = 0;            // 初始滚动位置（用于判断是否主动向下滚动）
                 int countdownSeconds = 8;            // 倒计时秒数：用户需阅读8秒后方可勾选同意
 
                 // 倒计时定时器：每秒触发一次
@@ -6127,22 +6143,49 @@ namespace IPTVLiveChecker
                         // 倒计时结束：更新提示文字为成功状态
                         countdownSeconds = 0;
                         countdownTimer.Stop();
-                        lblHint.Text = "✓ 阅读时间已满足，请勾选同意条款后进入软件";
-                        lblHint.ForeColor = successColor;
+                        if (hasScrolledToBottom)
+                        {
+                            lblHint.Text = "✓ 阅读时间已满足，请勾选同意条款后进入软件";
+                            lblHint.ForeColor = successColor;
+                        }
+                        else
+                        {
+                            lblHint.Text = "⏳ 阅读时间已满足，请继续滚动至底部";
+                            lblHint.ForeColor = warningColor;
+                        }
                         UpdateAgreeState();
                     }
                     else
                     {
                         // 倒计时进行中：更新提示文字显示剩余秒数
-                        lblHint.Text = $"⏳ 阅读倒计时 {countdownSeconds} 秒 · 请滚动至底部";
+                        if (hasScrolledToBottom)
+                        {
+                            lblHint.Text = $"⏳ 阅读倒计时 {countdownSeconds} 秒 · 请稍候";
+                        }
+                        else
+                        {
+                            lblHint.Text = $"⏳ 阅读倒计时 {countdownSeconds} 秒 · 请滚动至底部";
+                        }
                     }
                 };
 
-                // 文本框滚动事件：首次滚动启动倒计时，滚动到底部时更新状态
+                // 文本框滚动事件：首次主动向下滚动时启动倒计时，滚动到底部时更新状态
                 txtDisclaimer.VScroll += (s, e) =>
                 {
-                    // 首次滚动时启动倒计时，提示文字变为警告色
-                    if (!timerStarted)
+                    // 窗口显示前的滚动事件不处理（避免初始化触发）
+                    if (!scrollDetectionActive)
+                        return;
+
+                    // 通过Win32 API获取滚动条位置
+                    var scrollInfo = new SCROLLINFO();
+                    scrollInfo.cbSize = (uint)Marshal.SizeOf(typeof(SCROLLINFO));
+                    scrollInfo.fMask = 7;  // SIF_RANGE | SIF_PAGE | SIF_POS
+                    GetScrollInfo(txtDisclaimer.Handle, 1, ref scrollInfo);
+
+                    int currentPos = (int)scrollInfo.nPos;
+
+                    // 首次主动向下滚动时启动倒计时（滚动距离超过30px视为主动阅读）
+                    if (!timerStarted && currentPos - initialScrollPos > 30)
                     {
                         timerStarted = true;
                         countdownTimer.Start();
@@ -6150,18 +6193,22 @@ namespace IPTVLiveChecker
                         lblHint.ForeColor = warningColor;
                     }
 
-                    // 通过Win32 API获取滚动条位置，判断是否滚动到底部
-                    var scrollInfo = new SCROLLINFO();
-                    scrollInfo.cbSize = (uint)Marshal.SizeOf(typeof(SCROLLINFO));
-                    scrollInfo.fMask = 7;  // SIF_RANGE | SIF_PAGE | SIF_POS
-                    GetScrollInfo(txtDisclaimer.Handle, 1, ref scrollInfo);
-
                     // 判断是否到达底部：当前位置 + 可见页高度 >= 最大滚动范围 - 2（容差）
                     bool atBottom = scrollInfo.nPos + (int)scrollInfo.nPage >= scrollInfo.nMax - 2;
                     if (atBottom && !hasScrolledToBottom)
                     {
                         hasScrolledToBottom = true;
                         UpdateAgreeState();
+                        // 更新提示文字
+                        if (timerStarted && countdownSeconds > 0)
+                        {
+                            lblHint.Text = $"⏳ 阅读倒计时 {countdownSeconds} 秒 · 请稍候";
+                        }
+                        else if (countdownSeconds <= 0)
+                        {
+                            lblHint.Text = "✓ 阅读时间已满足，请勾选同意条款后进入软件";
+                            lblHint.ForeColor = successColor;
+                        }
                     }
                 };
 
@@ -6212,6 +6259,26 @@ namespace IPTVLiveChecker
                 {
                     txtDisclaimer.SelectionStart = 0;
                     txtDisclaimer.ScrollToCaret();
+
+                    // 延迟一小段时间后记录初始滚动位置并激活滚动检测
+                    // 确保初始化完成后的滚动不会触发倒计时
+                    System.Windows.Forms.Timer initTimer = new System.Windows.Forms.Timer { Interval = 200 };
+                    initTimer.Tick += (s2, e2) =>
+                    {
+                        initTimer.Stop();
+                        initTimer.Dispose();
+
+                        // 记录初始滚动位置
+                        var scrollInfo = new SCROLLINFO();
+                        scrollInfo.cbSize = (uint)Marshal.SizeOf(typeof(SCROLLINFO));
+                        scrollInfo.fMask = 4;  // SIF_POS
+                        GetScrollInfo(txtDisclaimer.Handle, 1, ref scrollInfo);
+                        initialScrollPos = (int)scrollInfo.nPos;
+
+                        // 激活滚动检测
+                        scrollDetectionActive = true;
+                    };
+                    initTimer.Start();
                 };
 
                 dlg.ShowDialog(this);
@@ -6343,32 +6410,18 @@ namespace IPTVLiveChecker
                 {
                     int btnW = SX(126);
                     int leftX = SX(12);
-                    int ay = SY(14);
                     
                     foreach (Control ctrl in actionArea.Controls)
                     {
                         if (ctrl is Button btn && !string.IsNullOrEmpty(btn.Text))
                         {
-                            SizeF textSize = g.MeasureString(btn.Text, btn.Font);
-                            int requiredBtnHeight = (int)(textSize.Height * 1.5) + 6;
-                            requiredBtnHeight = Math.Max(requiredBtnHeight, SY(28));
-                            
                             btn.Width = btnW;
-                            btn.Height = requiredBtnHeight;
                             btn.Left = leftX;
-                            btn.Top = ay;
-                            
-                            ay += requiredBtnHeight + SY(10);
                             
                             btn.Region?.Dispose();
                             using (GraphicsPath path = RoundedRectPath(new Rectangle(0, 0, btn.Width, btn.Height), 8))
                                 btn.Region = new Region(path);
                             btn.Invalidate();
-                        }
-                        else if (ctrl is Panel && ctrl == tipBox)
-                        {
-                            ctrl.Top = ay;
-                            ay += ctrl.Height + SY(10);
                         }
                     }
                 }

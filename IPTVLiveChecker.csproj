@@ -160,7 +160,7 @@
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 Èç?x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 ÔøΩ?x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -170,4 +170,16 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
+    <PropertyGroup>
+      <_Md5ToolPlatform Condition="'$(Platform)' == 'AnyCPU'">x64</_Md5ToolPlatform>
+      <_Md5ToolPlatform Condition="'$(_Md5ToolPlatform)' == ''">$(Platform)</_Md5ToolPlatform>
+      <_Md5ToolExe>$(ProjectDir)GenerateEncryptedMd5\bin\$(_Md5ToolPlatform)\Release\net472\GenerateEncryptedMd5.exe</_Md5ToolExe>
+    </PropertyGroup>
+    <Message Text="Embedding encrypted MD5 into $(TargetFileName) ..." Importance="normal" />
+    <Exec Command="&quot;$(_Md5ToolExe)&quot; &quot;$(TargetPath)&quot;"
+          Condition="Exists('$(_Md5ToolExe)')"
+          ContinueOnError="true"
+          StandardOutputImportance="low" />
+  </Target>
 </Project>

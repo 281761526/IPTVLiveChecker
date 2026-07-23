@@ -1,11 +1,11 @@
-﻿{
+{
     "appName":  "IPTV直播源检测工具",
     "appId":  "IPTVLiveChecker",
     "currentLocalVersion":  "v1.0-beta",
     "latestVersion":  "v1.0-beta",
     "versionCode":  100,
     "updateType":  "beta",
-    "updateTime":  "2026-07-23",
+    "updateTime":  "2026-07-24",
     "isForceUpdate":  true,
     "downloadUrl":  "https://github.com/281761526/IPTVLiveChecker/releases/download/v1.0-beta/IPTVLiveChecker_v1.0-beta.zip",
     "githubRepo":  "https://github.com/281761526/IPTVLiveChecker",
@@ -19,7 +19,7 @@
     "disclaimerUrl":  "https://github.com/281761526/IPTVLiveChecker/blob/master/DISCLAIMER.md",
     "feedbackEmail":  "xiaomiren0510@gmail.com",
     "developer":  "半步沧桑",
-    "md5Checksum":  "F7001349A999B180FA7945C6236C7194",
+    "md5Checksum":  "9EF70C8FD5210EB3848C49B730936430",
     "supportOS":  [
                       "Windows 10",
                       "Windows 11"
