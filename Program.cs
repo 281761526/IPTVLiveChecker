@@ -20,6 +20,7 @@ namespace IPTVLiveChecker
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            #if !DEBUG
             string encryptedMd5 = ConfigurationManager.AppSettings["ExpectedExeMd5"]?.ToString()?.Trim() ?? "";
             if (!string.IsNullOrEmpty(encryptedMd5))
             {
@@ -37,16 +38,35 @@ namespace IPTVLiveChecker
                         return;
                     }
                 }
-                catch
+                catch (FormatException)
                 {
                     MessageBox.Show(
-                        "程序文件完整性校验失败，请重新下载官方版本。",
+                        "MD5配置格式错误，请检查ExpectedExeMd5值是否为有效的Base64编码。",
+                        "安全警告",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop);
+                    return;
+                }
+                catch (CryptographicException)
+                {
+                    MessageBox.Show(
+                        "MD5解密失败，请检查密钥是否正确或ExpectedExeMd5值是否被篡改。",
+                        "安全警告",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        $"程序文件完整性校验失败：{ex.Message}",
                         "安全警告",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
                     return;
                 }
             }
+#endif
 
             int localVersionCode = AppVersion.VersionCode;
             string currentVersion = AppVersion.Version;
@@ -148,17 +168,40 @@ namespace IPTVLiveChecker
         }
 
         // ========== AES 加解密（用于保护 App.config 中的 MD5 值）==========
-        // 密钥与 IV（256位密钥 + 128位 IV），破解者需反编译才能获取
-        private static readonly byte[] AesKey = new byte[] {
-            0x4D, 0x6F, 0x72, 0x65, 0x53, 0x65, 0x63, 0x72,
-            0x65, 0x74, 0x4B, 0x65, 0x79, 0x21, 0x40, 0x23,
-            0x58, 0x59, 0x7A, 0x61, 0x31, 0x32, 0x62, 0x63,
-            0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B
-        };
-        private static readonly byte[] AesIV = new byte[] {
-            0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
-            0x39, 0x30, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46
-        };
+        // 运行时密钥派生：密钥材料分散存储，通过变换组装，提高反编译难度
+        private static byte[] GetAesKey()
+        {
+            byte[] part1 = Encoding.UTF8.GetBytes("MoreSec");
+            byte[] part2 = Encoding.UTF8.GetBytes("retKey12");
+            byte[] part3 = Encoding.UTF8.GetBytes("!@#XYZabc");
+            byte[] part4 = Encoding.UTF8.GetBytes("12defghi");
+
+            byte[] key = new byte[32];
+            Buffer.BlockCopy(part1, 0, key, 0, part1.Length);
+            Buffer.BlockCopy(part2, 0, key, part1.Length, part2.Length);
+            Buffer.BlockCopy(part3, 0, key, part1.Length + part2.Length, part3.Length);
+            Buffer.BlockCopy(part4, 0, key, part1.Length + part2.Length + part3.Length, part4.Length);
+
+            for (int i = 0; i < key.Length; i++)
+                key[i] = (byte)(key[i] ^ 0x5A);
+
+            return key;
+        }
+
+        private static byte[] GetAesIV()
+        {
+            byte[] part1 = Encoding.UTF8.GetBytes("12345678");
+            byte[] part2 = Encoding.UTF8.GetBytes("90ABCDEF");
+
+            byte[] iv = new byte[16];
+            Buffer.BlockCopy(part1, 0, iv, 0, part1.Length);
+            Buffer.BlockCopy(part2, 0, iv, part1.Length, part2.Length);
+
+            for (int i = 0; i < iv.Length; i++)
+                iv[i] = (byte)(iv[i] ^ 0x39);
+
+            return iv;
+        }
 
         /// <summary>
         /// AES 解密（解密 App.config 中存储的加密 MD5）
@@ -168,8 +211,8 @@ namespace IPTVLiveChecker
             byte[] cipherBytes = Convert.FromBase64String(cipherTextBase64);
             using (var aes = Aes.Create())
             {
-                aes.Key = AesKey;
-                aes.IV = AesIV;
+                aes.Key = GetAesKey();
+                aes.IV = GetAesIV();
                 aes.Mode = CipherMode.CBC;
                 aes.Padding = PaddingMode.PKCS7;
                 using (var decryptor = aes.CreateDecryptor())
@@ -192,8 +235,8 @@ namespace IPTVLiveChecker
             byte[] plainBytes = Encoding.UTF8.GetBytes(plainText);
             using (var aes = Aes.Create())
             {
-                aes.Key = AesKey;
-                aes.IV = AesIV;
+                aes.Key = GetAesKey();
+                aes.IV = GetAesIV();
                 aes.Mode = CipherMode.CBC;
                 aes.Padding = PaddingMode.PKCS7;
                 using (var encryptor = aes.CreateEncryptor())

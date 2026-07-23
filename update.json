@@ -1,4 +1,4 @@
-﻿{
+{
     "appName":  "IPTV直播源检测工具",
     "appId":  "IPTVLiveChecker",
     "currentLocalVersion":  "v1.0-beta",
@@ -19,7 +19,7 @@
     "disclaimerUrl":  "https://github.com/281761526/IPTVLiveChecker/blob/master/DISCLAIMER.md",
     "feedbackEmail":  "xiaomiren0510@gmail.com",
     "developer":  "半步沧桑",
-    "md5Checksum":  "E64401C15B19A980BCB0211887995512",
+    "md5Checksum":  "4567B532B96C99C10A776203BE0C2E23",
     "supportOS":  [
                       "Windows 10",
                       "Windows 11"

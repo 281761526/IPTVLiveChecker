@@ -100,22 +100,24 @@ namespace Updater
                     }
                 }
 
-                // 第六步：安装新文件
+                // 第六步：安装新文件（仅覆盖ZIP中包含的文件，保护用户数据）
                 if (isZip)
                 {
-                    // 删除旧文件（保留 backup）
-                    foreach (var file in Directory.GetFiles(appDir, "*", SearchOption.AllDirectories))
+                    // 仅删除ZIP中存在且需要替换的文件，保护用户配置和数据
+                    foreach (var newFile in Directory.GetFiles(tempExtract, "*", SearchOption.AllDirectories))
                     {
-                        try { File.Delete(file); } catch { }
-                    }
-
-                    // 从解压目录复制所有文件
-                    foreach (var file in Directory.GetFiles(tempExtract, "*", SearchOption.AllDirectories))
-                    {
-                        string relPath = GetRelativePath(tempExtract, file);
+                        string relPath = GetRelativePath(tempExtract, newFile);
                         string destPath = Path.Combine(appDir, relPath);
+
+                        // 删除旧文件（如果存在）
+                        if (File.Exists(destPath))
+                        {
+                            try { File.Delete(destPath); } catch { }
+                        }
+
+                        // 复制新文件
                         Directory.CreateDirectory(Path.GetDirectoryName(destPath) ?? appDir);
-                        File.Copy(file, destPath, true);
+                        File.Copy(newFile, destPath, true);
                     }
                 }
                 else
