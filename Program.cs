@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
@@ -74,8 +74,19 @@ namespace IPTVLiveChecker
 
             try
             {
-                string updateUrl = "https://raw.githubusercontent.com/281761526/IPTVLiveChecker/master/update.json";
-                config = FetchUpdateConfig(updateUrl);
+                string[] updateUrls = new string[]
+                {
+                    "https://raw.githubusercontent.com/281761526/IPTVLiveChecker/master/update.json",
+                    "https://cdn.jsdelivr.net/gh/281761526/IPTVLiveChecker@master/update.json",
+                    "https://fastly.jsdelivr.net/gh/281761526/IPTVLiveChecker@master/update.json",
+                    "https://ghproxy.com/https://raw.githubusercontent.com/281761526/IPTVLiveChecker/master/update.json"
+                };
+
+                foreach (string url in updateUrls)
+                {
+                    config = FetchUpdateConfig(url, 8);
+                    if (config != null) break;
+                }
 
                 if (config != null)
                 {
@@ -111,16 +122,9 @@ namespace IPTVLiveChecker
                             MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                 }
-                else
-                {
-                    MessageBox.Show("无法连接到更新服务器，请检查网络连接。\n将继续使用当前版本。", "提示",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
             }
-            catch (Exception)
+            catch
             {
-                MessageBox.Show("更新检查失败，将继续使用当前版本。", "提示",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
             using (var mainForm = new IPTVLiveCheckerMain())
@@ -131,13 +135,13 @@ namespace IPTVLiveChecker
             }
         }
 
-        private static UpdateConfig FetchUpdateConfig(string url)
+        private static UpdateConfig FetchUpdateConfig(string url, int timeoutSeconds = 15)
         {
             try
             {
                 using (var client = new HttpClient())
                 {
-                    client.Timeout = TimeSpan.FromSeconds(15);
+                    client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
                     string json = client.GetStringAsync(url).Result;
                     var serializer = new JavaScriptSerializer();
                     var dict = serializer.Deserialize<Dictionary<string, object>>(json);
