@@ -7,7 +7,7 @@
     "updateType":  "beta",
     "updateTime":  "2026-07-23",
     "isForceUpdate":  true,
-    "downloadUrl":  "https://github.com/281761526/IPTVLiveChecker/releases/download/v1.0-beta/IPTVLiveChecker_v1.0-beta.exe",
+    "downloadUrl":  "https://github.com/281761526/IPTVLiveChecker/releases/download/v1.0-beta/IPTVLiveChecker_v1.0-beta.zip",
     "githubRepo":  "https://github.com/281761526/IPTVLiveChecker",
     "changelog":  [
                       "v1.0-beta 初始测试版",
