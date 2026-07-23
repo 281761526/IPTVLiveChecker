@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -22,7 +22,7 @@ namespace IPTVLiveChecker
             UpdateConfig config = FetchUpdateConfig(updateUrl);
             if (config == null)
             {
-                MessageBox.Show("æ— æ³•è¿æ¥æ›´æ–°æœåŠ¡å™¨ï¼Œè¯·æ£€æŸ¥ç½‘ç»œåé‡è¯•ã€‚\nç¨‹åºå³å°†é€€å‡ºã€‚", "ç½‘ç»œé”™è¯¯",
+                MessageBox.Show("ÎŞ·¨Á¬½Ó¸üĞÂ·şÎñÆ÷£¬Çë¼ì²éÍøÂçºóÖØÊÔ¡£\n³ÌĞò¼´½«ÍË³ö¡£", "ÍøÂç´íÎó",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -31,7 +31,7 @@ namespace IPTVLiveChecker
             {
                 if (!VerifyExeMd5(config.Md5Checksum))
                 {
-                    MessageBox.Show("ç¨‹åºå®Œæ•´æ€§æ ¡éªŒå¤±è´¥ï¼\næ–‡ä»¶å¯èƒ½å·²è¢«ç¯¡æ”¹æˆ–æŸåã€‚\nç¨‹åºå³å°†é€€å‡ºã€‚", "å®‰å…¨è­¦å‘Š",
+                    MessageBox.Show("³ÌĞòÍêÕûĞÔĞ£ÑéÊ§°Ü£¡\nÎÄ¼ş¿ÉÄÜÒÑ±»´Û¸Ä»òËğ»µ¡£\n³ÌĞò¼´½«ÍË³ö¡£", "°²È«¾¯¸æ",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -40,20 +40,33 @@ namespace IPTVLiveChecker
             string updaterPath = Path.Combine(Application.StartupPath, "Updater.exe");
             if (!File.Exists(updaterPath))
             {
-                MessageBox.Show("æ›´æ–°ç»„ä»¶ç¼ºå¤±(Updater.exe)ï¼Œç¨‹åºæ— æ³•æ­£å¸¸è¿è¡Œã€‚\nè¯·é‡æ–°å®‰è£…ã€‚", "ç»„ä»¶ç¼ºå¤±",
+                MessageBox.Show("¸üĞÂ×é¼şÈ±Ê§(Updater.exe)£¬³ÌĞòÎŞ·¨Õı³£ÔËĞĞ¡£\nÇëÖØĞÂ°²×°¡£", "×é¼şÈ±Ê§",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            const int localVersionCode = 100;
+            const string currentVersion = "v1.0-beta";
 
-            if (!string.IsNullOrEmpty(config.LatestVersion))
+            if (config.VersionCode > localVersionCode)
             {
-                string currentVersion = "Beta 1.0";
-                if (config.LatestVersion != currentVersion)
+                if (config.IsForceUpdate)
                 {
                     if (!ShowForcedUpdateDialog(config, currentVersion))
                         return;
-                    StartUpdater(config.DownloadUrl);
-                    return;
+                }
+                else
+                {
+                    var result = MessageBox.Show(
+                        "·¢ÏÖĞÂ°æ±¾£º" + config.LatestVersion + "\n\n" +
+                        "µ±Ç°°æ±¾£º" + currentVersion + "\n\n" +
+                        "¸üĞÂÄÚÈİ£º\n" + string.Join("\n", (config.Changelog ?? new List<string>()).Select(x => "  " + x)) + "\n\n" +
+                        "ÊÇ·ñÁ¢¼´¸üĞÂ£¿",
+                        "·¢ÏÖĞÂ°æ±¾", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                    if (result == DialogResult.Yes)
+                    {
+                        StartUpdater(config.DownloadUrl, config.Md5Checksum);
+                        return;
+                    }
                 }
             }
 
@@ -80,9 +93,10 @@ namespace IPTVLiveChecker
                     if (dict.ContainsKey("latestVersion")) cfg.LatestVersion = dict["latestVersion"]?.ToString() ?? "";
                     if (dict.ContainsKey("downloadUrl")) cfg.DownloadUrl = dict["downloadUrl"]?.ToString() ?? "";
                     if (dict.ContainsKey("md5Checksum")) cfg.Md5Checksum = dict["md5Checksum"]?.ToString() ?? "";
+                    if (dict.ContainsKey("versionCode")) { int vc; int.TryParse(dict["versionCode"]?.ToString(), out vc); cfg.VersionCode = vc; }
                     if (dict.ContainsKey("isForceUpdate")) { bool f; bool.TryParse(dict["isForceUpdate"]?.ToString(), out f); cfg.IsForceUpdate = f; }
-                    if (dict.ContainsKey("changelog") && dict["changelog"] is List<object> list)
-                        cfg.Changelog = list.Select(x => x?.ToString() ?? "").ToList();
+                    if (dict.ContainsKey("changelog") && dict["changelog"] is System.Collections.ArrayList arr)
+                        cfg.Changelog = arr.Cast<object>().Select(x => x?.ToString() ?? "").ToList();
                     return cfg;
                 }
             }
@@ -110,7 +124,7 @@ namespace IPTVLiveChecker
             bool confirmed = false;
             var dlg = new Form
             {
-                Text = "å¼ºåˆ¶æ›´æ–°",
+                Text = "Ç¿ÖÆ¸üĞÂ",
                 StartPosition = FormStartPosition.CenterScreen,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 MaximizeBox = false,
@@ -125,7 +139,7 @@ namespace IPTVLiveChecker
             };
             dlg.Controls.Add(new Label
             {
-                Text = "å‘ç°æ–°ç‰ˆæœ¬",
+                Text = "·¢ÏÖĞÂ°æ±¾",
                 Font = new Font("Microsoft YaHei", 16f, FontStyle.Bold),
                 ForeColor = Color.FromArgb(64, 158, 255),
                 Location = new Point(30, 25),
@@ -133,17 +147,17 @@ namespace IPTVLiveChecker
             });
             dlg.Controls.Add(new Label
             {
-                Text = "å½“å‰ç‰ˆæœ¬: " + currentVersion + "  ->  æœ€æ–°ç‰ˆæœ¬: " + cfg.LatestVersion,
+                Text = "µ±Ç°°æ±¾: " + currentVersion + "  ->  ×îĞÂ°æ±¾: " + cfg.LatestVersion,
                 Font = new Font("Microsoft YaHei", 10f),
                 ForeColor = Color.FromArgb(160, 168, 185),
                 Location = new Point(30, 65),
                 AutoSize = true
             });
-            string changelogText = "æ›´æ–°å†…å®¹:";
+            string changelogText = "¸üĞÂÄÚÈİ:";
             if (cfg.Changelog != null && cfg.Changelog.Count > 0)
                 changelogText += "\n" + string.Join("\n", cfg.Changelog.Select(x => "  " + x));
             else
-                changelogText += "\n  è¯·æ›´æ–°åˆ°æœ€æ–°ç‰ˆæœ¬ä»¥ç»§ç»­ä½¿ç”¨";
+                changelogText += "\n  Çë¸üĞÂµ½×îĞÂ°æ±¾ÒÔ¼ÌĞøÊ¹ÓÃ";
             dlg.Controls.Add(new Label
             {
                 Text = changelogText,
@@ -155,7 +169,7 @@ namespace IPTVLiveChecker
             });
             dlg.Controls.Add(new Label
             {
-                Text = "æ­¤æ›´æ–°ä¸ºå¼ºåˆ¶æ›´æ–°ï¼Œå¿…é¡»å‡çº§åæ‰èƒ½ç»§ç»­ä½¿ç”¨ã€‚",
+                Text = "´Ë¸üĞÂÎªÇ¿ÖÆ¸üĞÂ£¬±ØĞëÉı¼¶ºó²ÅÄÜ¼ÌĞøÊ¹ÓÃ¡£",
                 Font = new Font("Microsoft YaHei", 8.5f),
                 ForeColor = Color.FromArgb(255, 150, 50),
                 Location = new Point(30, 260),
@@ -164,7 +178,7 @@ namespace IPTVLiveChecker
             });
             var btnUpdate = new Button
             {
-                Text = "ç«‹å³æ›´æ–°",
+                Text = "Á¢¼´¸üĞÂ",
                 Font = new Font("Microsoft YaHei", 11f, FontStyle.Bold),
                 Location = new Point(140, 305),
                 Size = new Size(180, 40),
@@ -177,28 +191,30 @@ namespace IPTVLiveChecker
             btnUpdate.Click += (s, e) => { confirmed = true; dlg.Close(); };
             dlg.Controls.Add(btnUpdate);
             dlg.ShowDialog();
+            if (confirmed)
+                StartUpdater(cfg.DownloadUrl, cfg.Md5Checksum);
             return confirmed;
         }
 
-        private static void StartUpdater(string downloadUrl)
+        private static void StartUpdater(string downloadUrl, string md5 = "")
         {
             try
             {
                 string updaterPath = Path.Combine(Application.StartupPath, "Updater.exe");
                 if (!File.Exists(updaterPath))
                 {
-                    MessageBox.Show("æ›´æ–°ç»„ä»¶ç¼ºå¤±ï¼Œæ— æ³•å®Œæˆæ›´æ–°ã€‚\nè¯·é‡æ–°å®‰è£…ç¨‹åºã€‚", "æ›´æ–°å¤±è´¥",
+                    MessageBox.Show("¸üĞÂ×é¼şÈ±Ê§£¬ÎŞ·¨Íê³É¸üĞÂ¡£\nÇëÖØĞÂ°²×°³ÌĞò¡£", "¸üĞÂÊ§°Ü",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
                 var psi = new System.Diagnostics.ProcessStartInfo(updaterPath,
-                    "\"" + Application.ExecutablePath + "\" \"" + downloadUrl + "\"")
+                    "\"" + Application.ExecutablePath + "\" \"" + downloadUrl + "\" \"" + md5 + "\"")
                 { UseShellExecute = true };
                 System.Diagnostics.Process.Start(psi);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("å¯åŠ¨æ›´æ–°ç¨‹åºå¤±è´¥: " + ex.Message, "æ›´æ–°å¤±è´¥",
+                MessageBox.Show("Æô¶¯¸üĞÂ³ÌĞòÊ§°Ü: " + ex.Message, "¸üĞÂÊ§°Ü",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -209,6 +225,7 @@ namespace IPTVLiveChecker
         public string LatestVersion = "";
         public string DownloadUrl = "";
         public string Md5Checksum = "";
+        public int VersionCode = 0;
         public bool IsForceUpdate = false;
         public List<string> Changelog = new List<string>();
     }
