@@ -18,3 +18,5 @@ IPTV直播源检测工具 Beta 1.0
 
 ## 使用须知
 使用前请阅读 `DISCLAIMER.md` 免责文件，本工具仅作技术学习用途，违规使用产生的全部法律责任由使用者自行承担。
+<img width="2249" height="1329" alt="image" src="https://github.com/user-attachments/assets/202f0b01-a196-4766-a9bb-b26849d0a544" />
+<img width="1658" height="1206" alt="image" src="https://github.com/user-attachments/assets/074631b6-c828-4f1f-bd3b-52ce3a66c07d" />
