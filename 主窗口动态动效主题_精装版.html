@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主窗口 · 动态动效主题（精装版）</title>
+<style>
+  :root{
+    --bg:#1c1c22; --bgalt:#26262e; --surface:#2f2f38; --border:#3c3c46;
+    --text:#f5f5f7; --text2:#a1a1a6; --accent:#5ad1ff; --accent2:#bf5af2;
+    --nav:#20202a; --header:rgba(34,34,42,.66); --sel:rgba(90,209,255,.16);
+    --statusbar:#20202a; --play:#46e0a8; --copy:#7c8cff; --link:#5ad1ff;
+    --success:#46e0a8; --error:#ff6b81; --warn:#ffd166; --info:#7c8cff;
+    --glow:rgba(90,209,255,.55); --radius:14px; --ease:cubic-bezier(.2,.9,.25,1);
+    --t:460ms; --glass:blur(26px) saturate(180%);
+    --ribbon:none; --rowglow:none; --mesh:none; --shimmer:0; --scan:none;
+    --chrome:#3a3a44;
+  }
+  [data-theme="aurora"]{
+    --bg:#12141b; --bgalt:#1b1f29; --surface:#222734; --border:#33405a;
+    --text:#eef4ff; --text2:#9fb2cf; --accent:#46e7c8; --accent2:#5ad1ff;
+    --nav:#161922; --header:rgba(22,25,34,.6); --sel:rgba(70,231,200,.15);
+    --statusbar:#161922; --play:#46e0a8; --copy:#6fb6ff; --link:#46e7c8;
+    --success:#46e0a8; --error:#ff6b81; --warn:#ffd166; --info:#6fb6ff;
+    --glow:rgba(70,231,200,.55); --chrome:#2a3346;
+    --ribbon:aurora 13s linear infinite;
+    --rowglow:auroraGlow 4.2s ease-in-out infinite;
+  }
+  [data-theme="peach"]{
+    --bg:#fff4ee; --bgalt:#ffffff; --surface:#ffffff; --border:#f3ddd0;
+    --text:#3a2a22; --text2:#9a7c6c; --accent:#ff7a59; --accent2:#ff5d8f;
+    --nav:#fff0e8; --header:rgba(255,244,238,.62); --sel:rgba(255,122,89,.14);
+    --statusbar:#fff0e8; --play:#34c759; --copy:#7b61ff; --link:#e0522f;
+    --success:#2ea362; --error:#e0463b; --warn:#d98300; --info:#e0522f;
+    --glow:rgba(255,122,89,.4); --chrome:#ead0c2;
+    --mesh:peachMesh 18s ease-in-out infinite alternate;
+  }
+  [data-theme="mercury"]{
+    --bg:#eef1f6; --bgalt:#ffffff; --surface:rgba(255,255,255,.66);
+    --border:#d7dde8; --text:#232733; --text2:#6b7385; --accent:#5b6cff;
+    --accent2:#39c2ff; --nav:#e7ebf3; --header:rgba(255,255,255,.5);
+    --sel:rgba(91,108,255,.12); --statusbar:#e7ebf3; --play:#1fb56a;
+    --copy:#7b61ff; --link:#3a4fd9; --success:#1fb56a; --error:#e0463b;
+    --warn:#c47d00; --info:#3a4fd9; --glow:rgba(91,108,255,.35);
+    --chrome:#cdd5e3; --glass:blur(34px) saturate(170%); --shimmer:1;
+  }
+  [data-theme="neon"]{
+    --bg:#0a0a12; --bgalt:#13131f; --surface:#181826; --border:#2a2a48;
+    --text:#ece8ff; --text2:#9a8fd6; --accent:#c45cff; --accent2:#ff4ecd;
+    --nav:#0e0e18; --header:rgba(14,14,24,.58); --sel:rgba(196,92,255,.16);
+    --statusbar:#0e0e18; --play:#36e6c8; --copy:#5e5ce6; --link:#c45cff;
+    --success:#36e6c8; --error:#ff4d6d; --warn:#ffb74d; --info:#6ab7ff;
+    --glow:rgba(196,92,255,.6); --chrome:#241f3e;
+    --rowglow:neonGlow 2.4s ease-in-out infinite;
+    --scan:scan 3.6s linear infinite;
+  }
+
+  *{box-sizing:border-box;margin:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",
+    "Microsoft YaHei",Roboto,sans-serif;min-height:100vh;color:#f5f5f7;
+    background:radial-gradient(1100px 620px at 50% -8%,#2b2b3e,#0e0e16 62%);
+    padding:30px 16px 64px;}
+  .wrap{max-width:1120px;margin:0 auto;}
+  h1{font-size:26px;font-weight:750;letter-spacing:-.022em;margin-bottom:6px;
+    background:linear-gradient(90deg,#fff,#b9c6ff);-webkit-background-clip:text;
+    background-clip:text;color:transparent;}
+  .sub{color:#a1a1a6;font-size:13px;line-height:1.65;margin-bottom:24px;
+    max-width:760px;}
+  .sub b{color:#cfd6ff;font-weight:600;}
+
+  .themes{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+  .tpill{position:relative;border:1px solid #34343e;background:#1a1a22;
+    border-radius:14px;padding:14px;cursor:pointer;overflow:hidden;
+    transition:transform .25s var(--ease),border-color .25s,box-shadow .25s;}
+  .tpill:hover{transform:translateY(-3px);}
+  .tpill.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),
+    0 14px 40px rgba(0,0,0,.45);}
+  .tpill .sw{height:42px;border-radius:9px;margin-bottom:10px;}
+  .tpill .nm{font-weight:650;font-size:14px;}
+  .tpill .ds{color:#a1a1a6;font-size:11.5px;margin-top:5px;line-height:1.5;}
+
+  /* ===== window ===== */
+  .stage{display:flex;justify-content:center;}
+  .win{width:100%;max-width:980px;border-radius:var(--radius);overflow:hidden;
+    background:var(--bg);border:1px solid var(--border);position:relative;
+    box-shadow:0 40px 110px rgba(0,0,0,.6);transition:background-color var(--t),
+    border-color var(--t),box-shadow var(--t);}
+  [data-theme="peach"] .win,[data-theme="mercury"] .win{
+    box-shadow:0 40px 110px rgba(40,30,50,.22);}
+  .win::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
+    background:var(--mesh);opacity:.5;transition:opacity var(--t);}
+  [data-theme="peach"] .win::before{opacity:.9;}
+
+  .titlebar{height:46px;display:flex;align-items:center;gap:12px;padding:0 14px;
+    background:var(--header);backdrop-filter:var(--glass);
+    -webkit-backdrop-filter:var(--glass);border-bottom:1px solid var(--border);
+    position:relative;z-index:6;transition:background-color var(--t);}
+  [data-theme="aurora"] .titlebar::after,[data-theme="neon"] .titlebar::after{
+    content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
+    background:linear-gradient(90deg,transparent,var(--accent),var(--accent2),
+      var(--accent),transparent);background-size:320% 100%;animation:var(--ribbon);}
+  [data-theme="neon"] .titlebar::after{box-shadow:0 0 14px var(--glow);}
+  .lights{display:flex;gap:8px;}
+  .lights i{width:12px;height:12px;border-radius:50%;background:var(--chrome);
+    display:block;transition:background-color var(--t);}
+  .appname{font-size:13.5px;font-weight:600;color:var(--text);letter-spacing:.3px;
+    transition:color var(--t);}
+  .search{margin-left:auto;display:flex;align-items:center;gap:7px;
+    background:var(--surface);border:1px solid var(--border);border-radius:9px;
+    padding:6px 11px;color:var(--text2);font-size:12px;min-width:150px;
+    transition:background-color var(--t),border-color var(--t);}
+  .ttoggle{width:26px;height:26px;border-radius:8px;background:var(--surface);
+    border:1px solid var(--border);display:grid;place-items:center;color:var(--accent);
+    cursor:pointer;transition:transform .12s var(--ease),background-color var(--t);}
+  .ttoggle:active{transform:scale(.9);}
+
+  .toolbar{display:flex;gap:8px;padding:9px 14px;background:var(--bgalt);
+    border-bottom:1px solid var(--border);position:relative;z-index:6;
+    transition:background-color var(--t);}
+  .tbtn{position:relative;overflow:hidden;display:flex;align-items:center;gap:6px;
+    font-size:12px;color:var(--text);background:var(--surface);
+    border:1px solid var(--border);border-radius:9px;padding:7px 13px;cursor:pointer;
+    transition:transform .12s var(--ease),background-color var(--t),border-color var(--t);}
+  .tbtn:active{transform:scale(.93);}
+  .tbtn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;
+    stroke-linecap:round;stroke-linejoin:round;}
+  .tbtn.p{background:linear-gradient(135deg,var(--accent),var(--accent2));
+    border-color:transparent;color:#fff;}
+  .ripple{position:absolute;border-radius:50%;transform:scale(0);
+    background:rgba(255,255,255,.4);pointer-events:none;animation:rip .6s ease-out;}
+  .tbtn.p .ripple{background:rgba(255,255,255,.45);}
+  [data-theme="mercury"] .tbtn:not(.p)::after{content:"";position:absolute;top:0;
+    left:-60%;width:45%;height:100%;background:linear-gradient(100deg,transparent,
+    rgba(255,255,255,.6),transparent);transform:skewX(-18deg);}
+  [data-theme="mercury"] .tbtn:not(.p):hover::after{animation:shim 1.3s ease-out;
+    left:130%;}
+
+  .body{flex:1;display:flex;min-height:384px;position:relative;z-index:6;}
+  .side{width:182px;background:var(--nav);padding:14px 11px;position:relative;
+    border-right:1px solid var(--border);transition:background-color var(--t);}
+  .navind{position:absolute;left:11px;right:11px;height:38px;border-radius:9px;
+    background:var(--sel);border:1px solid var(--accent);
+    transition:transform .42s var(--ease),background-color var(--t),border-color var(--t);
+    z-index:0;}
+  .navitem{position:relative;z-index:1;display:flex;align-items:center;gap:9px;
+    font-size:12.5px;color:var(--text2);padding:9px 12px;border-radius:9px;
+    margin-bottom:4px;cursor:pointer;transition:color .25s;}
+  .navitem .ic{width:7px;height:7px;border-radius:2px;background:var(--text2);
+    transition:background-color .25s;}
+  .navitem.on{color:var(--text);font-weight:600;}
+  .navitem.on .ic{background:var(--accent);}
+
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .grid{flex:1;padding:12px 14px;overflow:hidden;}
+  .gh{display:flex;font-size:11px;color:var(--text2);padding:0 12px 9px;
+    border-bottom:1px solid var(--border);transition:color var(--t),border-color var(--t);}
+  .gh span{flex:1;}
+  .gh span:last-child{flex:0 0 96px;text-align:right;}
+  .row{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;
+    margin-bottom:6px;cursor:pointer;background:var(--surface);
+    border:1px solid transparent;transition:transform .2s var(--ease),
+    background-color .2s,border-color .25s,box-shadow .3s,opacity .4s;}
+  .row:hover{transform:translateX(4px);}
+  .row.sel{background:var(--sel);border-color:var(--accent);animation:var(--rowglow);}
+  [data-theme="neon"] .row.sel{box-shadow:0 0 0 1px var(--accent),0 0 20px var(--glow);}
+  .logo{width:30px;height:30px;border-radius:8px;flex:0 0 30px;display:grid;
+    place-items:center;color:#fff;font-size:11px;font-weight:700;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));}
+  .rc{flex:1;min-width:0;}
+  .rc .nm{font-size:12.5px;color:var(--text);white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis;}
+  .rc .ad{font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis;font-family:ui-monospace,Menlo,Consolas,monospace;}
+  .lat{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text2);
+    width:78px;}
+  .latbar{width:34px;height:5px;border-radius:3px;background:var(--border);overflow:hidden;}
+  .latbar i{display:block;height:100%;border-radius:3px;background:var(--success);}
+  .pill{font-size:11px;padding:3px 10px;border-radius:20px;color:#fff;flex:0 0 auto;}
+  .pill.ok{background:var(--success);} .pill.bad{background:var(--warn);}
+  .pill.off{background:var(--chrome);color:var(--text2);}
+
+  .preview{width:236px;background:var(--bgalt);border-left:1px solid var(--border);
+    padding:13px;position:relative;overflow:hidden;transition:background-color var(--t);}
+  [data-theme="neon"] .preview::before{content:"";position:absolute;left:0;top:0;
+    width:2px;height:100%;background:linear-gradient(var(--accent),transparent);
+    background-size:100% 320%;animation:var(--scan);box-shadow:0 0 12px var(--glow);}
+  .pv{height:124px;border-radius:11px;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,var(--surface),var(--border));
+    display:grid;place-items:center;}
+  .eq{display:flex;align-items:flex-end;gap:4px;height:46px;}
+  .eq i{width:5px;background:linear-gradient(var(--accent),var(--accent2));
+    border-radius:3px;height:30%;animation:eq 1s ease-in-out infinite;}
+  .eq i:nth-child(2){animation-delay:.15s}.eq i:nth-child(3){animation-delay:.3s}
+  .eq i:nth-child(4){animation-delay:.45s}.eq i:nth-child(5){animation-delay:.6s}
+  .pvring{position:absolute;right:10px;bottom:10px;}
+  .pvlabel{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text);
+    margin-top:12px;font-weight:600;}
+  .sdot{width:9px;height:9px;border-radius:50%;background:var(--success);
+    box-shadow:0 0 0 0 var(--glow);animation:beat 2.4s ease-in-out infinite;}
+  .pvsub{font-size:11px;color:var(--text2);margin-top:6px;line-height:1.6;}
+
+  .statusbar{height:32px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 14px;font-size:11.5px;color:var(--text2);background:var(--statusbar);
+    border-top:1px solid var(--border);position:relative;z-index:6;
+    transition:background-color var(--t);}
+  .sbright{display:flex;align-items:center;gap:8px;}
+  .ring{width:16px;height:16px;}
+
+  .notes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px;}
+  .note{background:#1b1b23;border:1px solid #2e2e38;border-radius:13px;padding:16px 18px;}
+  .note h3{margin:0 0 8px;font-size:14px;color:#fff;display:flex;align-items:center;gap:8px;}
+  .note .tg{font-size:10.5px;padding:2px 9px;border-radius:20px;background:var(--accent);
+    color:#fff;}
+  .note p{margin:0;font-size:12.5px;color:#bcbcc4;line-height:1.75;}
+
+  .pal{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px;}
+  .chip{display:flex;align-items:center;gap:8px;background:#1b1b23;border:1px solid #2e2e38;
+    border-radius:9px;padding:6px 10px;}
+  .chip .c{width:18px;height:18px;border-radius:5px;border:1px solid #0003;}
+  .chip .t{font-size:11px;color:#c9c9cf;line-height:1.2;}
+  .chip .t b{color:#fff;font-weight:600;}
+
+  @keyframes aurora{0%{background-position:0 0}100%{background-position:320% 0}}
+  @keyframes auroraGlow{0%,100%{box-shadow:0 0 0 1px var(--accent),0 0 10px var(--glow)}
+    50%{box-shadow:0 0 0 1px var(--accent),0 0 24px var(--glow)}}
+  @keyframes peachMesh{0%{transform:translate(-4%,-3%) rotate(0)}
+    100%{transform:translate(4%,3%) rotate(6deg)}}
+  @keyframes shim{from{left:-60%}to{left:130%}}
+  @keyframes neonGlow{0%,100%{box-shadow:0 0 0 1px var(--accent),0 0 10px var(--glow)}
+    50%{box-shadow:0 0 0 1px var(--accent),0 0 28px var(--glow)}}
+  @keyframes scan{0%{background-position:0 0}100%{background-position:0 320%}}
+  @keyframes rip{to{transform:scale(3.2);opacity:0}}
+  @keyframes beat{0%,100%{transform:scale(1);box-shadow:0 0 0 0 var(--glow)}
+    50%{transform:scale(1.4);box-shadow:0 0 0 6px transparent}}
+  @keyframes eq{0%,100%{height:30%}50%{height:100%}}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important}
+    .win,.titlebar,.toolbar,.side,.preview,.statusbar,.row,.tbtn,.navind,.navitem
+    {transition:background-color .2s,color .2s,border-color .2s !important}
+  }
+  @media(max-width:780px){.themes{grid-template-columns:1fr 1fr}.notes{grid-template-columns:1fr}
+    .body{flex-direction:column}.side{width:auto;border-right:none;border-bottom:1px solid var(--border)}
+    .preview{width:auto;border-left:none;border-top:1px solid var(--border)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>主窗口 · 动态动效主题（精装版）</h1>
+  <p class="sub">四款<b>精雕细琢</b>的动态主题。点击卡片即时切换 —— 标题栏流光、状态呼吸点、行悬停位移、选中辉光、按钮按压缩放 + 水波纹、均衡器跳动、进度环描边动画都会随之演示。
+  所有颜色仍严格映射到 <code>AppTheme</code> 字段，落地时自动跟随主题。底部调色板实时跟随切换。</p>
+
+  <div class="themes" id="themes">
+    <div class="tpill on" data-set="aurora">
+      <div class="sw" style="background:linear-gradient(135deg,#46e7c8,#5ad1ff)"></div>
+      <div class="nm">星河 Aurora</div>
+      <div class="ds">深色 · 极光流光 + 选中辉光呼吸</div></div>
+    <div class="tpill" data-set="peach">
+      <div class="sw" style="background:linear-gradient(135deg,#ff7a59,#ff5d8f)"></div>
+      <div class="nm">蜜桃薄暮 Peach</div>
+      <div class="ds">浅色 · 暖色网格缓动 + 柔光晕</div></div>
+    <div class="tpill" data-set="mercury">
+      <div class="sw" style="background:linear-gradient(135deg,#5b6cff,#39c2ff)"></div>
+      <div class="nm">液态水银 Mercury</div>
+      <div class="ds">浅色 · 毛玻璃 + 扫光 + 水波纹</div></div>
+    <div class="tpill" data-set="neon">
+      <div class="sw" style="background:linear-gradient(135deg,#c45cff,#ff4ecd)"></div>
+      <div class="nm">霓虹梦境 Neon</div>
+      <div class="ds">深色 · 霓虹辉光 + 扫描线</div></div>
+  </div>
+
+  <div class="stage">
+    <div class="win" id="win">
+      <div class="titlebar">
+        <div class="lights"><i></i><i></i><i></i></div>
+        <div class="appname">IPTV 直播源检测</div>
+        <div class="search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+          搜索频道 / 地址
+        </div>
+        <div class="ttoggle" title="主题">
+          <svg viewBox="0 0 24 24"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="tbtn p"><svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9z"/></svg>开始检测</div>
+        <div class="tbtn"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>导入</div>
+        <div class="tbtn"><svg viewBox="0 0 24 24"><path d="M12 21V9M7 14l5-5 5 5M5 3h14"/></svg>导出</div>
+        <div class="tbtn"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>分组</div>
+      </div>
+      <div class="body">
+        <div class="side">
+          <div class="navind" id="navind"></div>
+          <div class="navitem on" data-i="0"><span class="ic"></span>全部频道</div>
+          <div class="navitem" data-i="1"><span class="ic"></span>在线</div>
+          <div class="navitem" data-i="2"><span class="ic"></span>超时</div>
+          <div class="navitem" data-i="3"><span class="ic"></span>未检测</div>
+          <div class="navitem" data-i="4"><span class="ic"></span>分组管理</div>
+        </div>
+        <div class="main">
+          <div class="grid">
+            <div class="gh"><span>名称</span><span>地址</span><span>延迟</span><span>状态</span></div>
+            <div class="row"><div class="logo">C1</div><div class="rc"><div class="nm">CCTV-1 综合</div><div class="ad">http://10.0.0.5:554/live/1</div></div><div class="lat"><div class="latbar"><i style="width:42%"></i></div>23ms</div><span class="pill ok">在线</span></div>
+            <div class="row sel"><div class="logo">HN</div><div class="rc"><div class="nm">湖南卫视</div><div class="ad">http://10.0.0.5:554/live/2</div></div><div class="lat"><div class="latbar"><i style="width:66%"></i></div>41ms</div><span class="pill ok">在线</span></div>
+            <div class="row"><div class="logo">ZJ</div><div class="rc"><div class="nm">浙江卫视</div><div class="ad">http://10.0.0.6:554/live/3</div></div><div class="lat"><div class="latbar"><i style="width:8%;background:var(--warn)"></i></div>—</div><span class="pill bad">超时</span></div>
+            <div class="row"><div class="logo">GD</div><div class="rc"><div class="nm">广东卫视</div><div class="ad">http://10.0.0.6:554/live/4</div></div><div class="lat"><div class="latbar"><i style="width:34%"></i></div>18ms</div><span class="pill ok">在线</span></div>
+            <div class="row"><div class="logo">BJ</div><div class="rc"><div class="nm">北京卫视</div><div class="ad">http://10.0.0.7:554/live/5</div></div><div class="lat">—</div><span class="pill off">未检测</span></div>
+          </div>
+        </div>
+        <div class="preview">
+          <div class="pv"><div class="eq"><i></i><i></i><i></i><i></i><i></i></div>
+            <svg class="pvring" viewBox="0 0 36 36" width="34" height="34">
+              <circle cx="18" cy="18" r="15" fill="none" stroke="var(--border)" stroke-width="3"/>
+              <circle cx="18" cy="18" r="15" fill="none" stroke="var(--accent)" stroke-width="3"
+                stroke-linecap="round" stroke-dasharray="94" stroke-dashoffset="34"
+                transform="rotate(-90 18 18)" style="transition:stroke-dashoffset 1s var(--ease)"/>
+            </svg>
+          </div>
+          <div class="pvlabel"><span class="sdot"></span>检测中…</div>
+          <div class="pvsub">当前：湖南卫视<br>1920×1080 · 2.4 Mbps<br>已用 1.2s</div>
+        </div>
+      </div>
+      <div class="statusbar">
+        <div>共 5 个源 · 3 在线 · 1 超时 · 1 未检测</div>
+        <div class="sbright">
+          <svg class="ring" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="15" fill="none" stroke="var(--border)" stroke-width="3"/>
+            <circle cx="18" cy="18" r="15" fill="none" stroke="var(--accent)" stroke-width="3"
+              stroke-linecap="round" stroke-dasharray="94" stroke-dashoffset="52"
+              transform="rotate(-90 18 18)" style="transition:stroke-dashoffset 1s var(--ease)"/>
+          </svg>
+          进度 45%
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <div class="note"><h3>星河 Aurora <span class="tg">深空</span></h3>
+      <p>标题栏底部极光带 13s 匀速流动；选中行辉光 4.2s 呼吸。冷色薄荷+青，科技感强，长时间观看不疲劳。</p></div>
+    <div class="note"><h3>蜜桃薄暮 Peach <span class="tg">暖光</span></h3>
+      <p>整窗暖色网格背景 18s 缓动漂移 + 柔光晕；浅暖底色，温馨、亲和，适合日间使用。</p></div>
+    <div class="note"><h3>液态水银 Mercury <span class="tg">玻璃</span></h3>
+      <p>毛玻璃面板（强模糊）+ 按钮 hover 高光扫过 + 按下水波纹（JS 真实 ripple）。冷静、通透、高级。</p></div>
+    <div class="note"><h3>霓虹梦境 Neon <span class="tg">夜光</span></h3>
+      <p>选中行霓虹辉光 2.4s 呼吸 + 预览面板扫描线。高饱和紫粉仅用于"焦点"，暗夜环境极具辨识度。</p></div>
+  </div>
+
+  <div class="pal" id="pal"></div>
+</div>
+
+<script>
+  const pills=document.querySelectorAll('.tpill');
+  const navind=document.getElementById('navind');
+  const navitems=document.querySelectorAll('.navitem');
+  function setTheme(t){
+    document.documentElement.setAttribute('data-theme',t);
+    pills.forEach(p=>p.classList.toggle('on',p.dataset.set===t));
+    renderPalette();
+  }
+  pills.forEach(p=>p.addEventListener('click',()=>setTheme(p.dataset.set)));
+
+  // 侧栏滑动指示条
+  function moveInd(el){navind.style.transform='translateY('+(el.offsetTop-14)+'px)';}
+  navitems.forEach(n=>n.addEventListener('click',()=>{
+    navitems.forEach(x=>x.classList.remove('on'));n.classList.add('on');moveInd(n);
+  }));
+  moveInd(navitems[0]);
+
+  // 按钮水波纹（响应按压）
+  document.querySelectorAll('.tbtn').forEach(b=>b.addEventListener('pointerdown',e=>{
+    const r=b.getBoundingClientRect();
+    const s=Math.max(r.width,r.height);
+    const d=document.createElement('span');d.className='ripple';
+    d.style.width=d.style.height=s+'px';
+    d.style.left=(e.clientX-r.left-s/2)+'px';
+    d.style.top=(e.clientY-r.top-s/2)+'px';
+    b.appendChild(d);setTimeout(()=>d.remove(),600);
+  }));
+
+  const keys=['Bg','BgAlt','Surface','Border','TextPrimary','TextSecondary','Accent',
+    'Accent2','NavBg','HeaderBg','SelectRow','StatusBarBg','PlayBtnBg','CopyBtnBg',
+    'LinkTextColor','SuccessColor','ErrorColor','WarnColor','InfoColor'];
+  const map={'Bg':'--bg','BgAlt':'--bgalt','Surface':'--surface','Border':'--border',
+    'TextPrimary':'--text','TextSecondary':'--text2','Accent':'--accent','Accent2':'--accent2',
+    'NavBg':'--nav','HeaderBg':'--header','SelectRow':'--sel','StatusBarBg':'--statusbar',
+    'PlayBtnBg':'--play','CopyBtnBg':'--copy','LinkTextColor':'--link','SuccessColor':'--success',
+    'ErrorColor':'--error','WarnColor':'--warn','InfoColor':'--info'};
+  function renderPalette(){
+    const cs=getComputedStyle(document.documentElement),pal=document.getElementById('pal');
+    pal.innerHTML='';
+    keys.forEach(k=>{const c=cs.getPropertyValue(map[k]).trim();
+      pal.insertAdjacentHTML('beforeend',`<div class="chip"><div class="c" style="background:${c}"></div>
+        <div class="t"><b>${k}</b><span>${c}</span></div></div>`);});
+  }
+  setTheme('aurora');
+</script>
+</body>
+</html>

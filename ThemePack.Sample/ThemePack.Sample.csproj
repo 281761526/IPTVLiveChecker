@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>ThemePack.Sample</AssemblyName>
+    <RootNamespace>ThemePack.Sample</RootNamespace>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>14.0</LangVersion>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <!-- 主题 DLL 由主程序反射加载，不需要拷贝依赖到输出目录 -->
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <!-- 输出到独立目录，避免与主程序输出混淆 -->
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 引用主程序 exe，继承 AppTheme 基类；Private=false 防止把主 exe 也复制到主题包输出目录 -->
+    <Reference Include="IPTVLiveChecker">
+      <HintPath>..\bin\$(Configuration)\net472\IPTVLiveChecker.exe</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- AppTheme 继承链需要 System.Drawing.Color -->
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+
+  <!-- 构建完成后把主题 DLL 复制到主程序 themes/ 目录，方便直接运行验证 -->
+  <Target Name="CopyThemeDllToMainOutput" AfterTargets="Build">
+    <PropertyGroup>
+      <MainThemesDir>..\bin\$(Configuration)\net472\themes</MainThemesDir>
+    </PropertyGroup>
+    <MakeDir Directories="$(MainThemesDir)" Condition="!Exists($(MainThemesDir))" />
+    <Copy SourceFiles="$(TargetPath)"
+          DestinationFolder="$(MainThemesDir)"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

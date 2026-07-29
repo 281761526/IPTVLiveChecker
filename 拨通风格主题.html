@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPTV 拨通风格主题预览</title>
+<style>
+  :root { --r:16px; --t:0.25s; }
+  * { box-sizing:border-box; margin:0; padding:0; font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+  body { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:28px 16px 48px;
+         background:var(--bg); color:var(--text); transition:background var(--t),color var(--t); }
+
+  /* ---------- 主题色板 ---------- */
+  body[data-theme="neon"]  { --bg:#0a0e1a; --panel:rgba(20,28,48,.7); --panel-brd:rgba(0,229,255,.35);
+                              --accent:#00e5ff; --accent2:#ff2bd6; --text:#e8f6ff; --sub:rgba(232,246,255,.55);
+                              --btn:#13203c; --btn-hover:#1b2c52; --glow:0 0 18px rgba(0,229,255,.55); --radius:14px; }
+  body[data-theme="retro"] { --bg:#c9b89a; --panel:#e7d8b8; --panel-brd:#a8916a;
+                              --accent:#8b3a2b; --accent2:#caa24a; --text:#3a2c1a; --sub:#7a6244;
+                              --btn:#d8c49a; --btn-hover:#cdb585; --glow:inset 0 2px 4px rgba(255,255,255,.5),0 3px 6px rgba(90,60,30,.35); --radius:10px; }
+  body[data-theme="glass"] { --bg:linear-gradient(135deg,#6a8cff 0%,#b18cff 55%,#ff8cc8 100%);
+                              --panel:rgba(255,255,255,.18); --panel-brd:rgba(255,255,255,.45);
+                              --accent:#ffffff; --accent2:#ffd166; --text:#ffffff; --sub:rgba(255,255,255,.8);
+                              --btn:rgba(255,255,255,.22); --btn-hover:rgba(255,255,255,.34); --glow:0 8px 32px rgba(0,0,0,.18); --radius:20px; }
+  body[data-theme="eye"]   { --bg:#101a12; --panel:#16241a; --panel-brd:rgba(120,200,140,.3);
+                              --accent:#7bd88f; --accent2:#9fe08a; --text:#d6f5dc; --sub:rgba(214,245,220,.6);
+                              --btn:#1c3022; --btn-hover:#24402c; --glow:0 0 14px rgba(123,216,143,.4); --radius:12px; }
+
+  h1 { font-size:22px; letter-spacing:2px; margin-bottom:4px; }
+  .tag { color:var(--sub); font-size:13px; margin-bottom:18px; }
+
+  /* 主题切换 */
+  .switcher { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:26px; }
+  .switcher button { cursor:pointer; border:1px solid var(--panel-brd); background:var(--btn);
+                     color:var(--text); padding:8px 16px; border-radius:999px; font-size:13px; transition:var(--t); }
+  .switcher button:hover { background:var(--btn-hover); }
+  .switcher button.on { background:var(--accent); color:#0a0e1a; border-color:var(--accent); box-shadow:var(--glow); }
+
+  /* 布局 */
+  .stage { display:flex; gap:24px; flex-wrap:wrap; justify-content:center; width:100%; max-width:760px; }
+  .panel { background:var(--panel); border:1px solid var(--panel-brd); border-radius:var(--radius);
+           box-shadow:var(--glow); backdrop-filter:blur(14px); padding:22px; transition:var(--t); }
+
+  /* 频道显示 */
+  .screen { text-align:center; padding:18px; border-radius:calc(var(--radius) - 4px);
+            background:rgba(0,0,0,.28); margin-bottom:18px; }
+  .screen .ch { font-size:46px; font-weight:700; letter-spacing:3px; color:var(--accent); text-shadow:var(--glow); }
+  .screen .nm { color:var(--sub); font-size:14px; margin-top:4px; min-height:18px; }
+
+  /* 拨号盘 */
+  .pad { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .key { aspect-ratio:1; border:1px solid var(--panel-brd); background:var(--btn); color:var(--text);
+         border-radius:calc(var(--radius) - 6px); font-size:24px; font-weight:600; cursor:pointer;
+         display:flex; flex-direction:column; align-items:center; justify-content:center; transition:var(--t);
+         box-shadow:var(--glow); }
+  .key small { font-size:10px; font-weight:400; color:var(--sub); letter-spacing:1px; margin-top:2px; }
+  .key:hover { background:var(--btn-hover); transform:translateY(-2px); }
+  .key:active { transform:translateY(1px) scale(.96); }
+
+  .dial { margin-top:16px; width:100%; padding:14px; border:none; border-radius:calc(var(--radius) - 4px);
+          font-size:18px; font-weight:700; letter-spacing:4px; cursor:pointer; color:#0a0e1a;
+          background:linear-gradient(135deg,var(--accent),var(--accent2)); box-shadow:var(--glow); transition:var(--t); }
+  .dial:hover { filter:brightness(1.1); }
+  .dial:active { transform:scale(.98); }
+  .clear { margin-top:10px; width:100%; padding:9px; border:1px solid var(--panel-brd); background:transparent;
+           color:var(--sub); border-radius:calc(var(--radius) - 6px); cursor:pointer; font-size:13px; }
+
+  /* 频道列表 */
+  .list { width:280px; }
+  .list h2 { font-size:15px; letter-spacing:1px; margin-bottom:14px; color:var(--text); }
+  .item { display:flex; gap:10px; align-items:center; padding:10px 12px; border-radius:10px;
+          cursor:pointer; transition:var(--t); border:1px solid transparent; }
+  .item:hover { background:var(--btn); }
+  .item.sel { background:var(--btn); border-color:var(--accent); }
+  .item .no { width:34px; height:34px; flex:none; border-radius:8px; display:flex; align-items:center;
+              justify-content:center; font-weight:700; background:var(--btn); color:var(--accent); border:1px solid var(--panel-brd); }
+  .item .meta b { display:block; font-size:14px; }
+  .item .meta span { font-size:12px; color:var(--sub); }
+  .item .dot { margin-left:auto; width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:var(--glow); }
+  .item .dot.off { background:var(--sub); box-shadow:none; opacity:.4; }
+</style>
+</head>
+<body data-theme="neon">
+  <h1>IPTV · 拨通风格</h1>
+  <div class="tag">按频道号拨台 — 四款 Web 主题实时切换</div>
+
+  <div class="switcher">
+    <button data-set="neon" class="on">霓虹拨通</button>
+    <button data-set="retro">复古拨盘</button>
+    <button data-set="glass">玻璃拨通</button>
+    <button data-set="eye">护眼拨通</button>
+  </div>
+
+  <div class="stage">
+    <div class="panel">
+      <div class="screen">
+        <div class="ch" id="chNo">—</div>
+        <div class="nm" id="chNm">输入频道号后点击「拨通」</div>
+      </div>
+      <div class="pad">
+        <div class="key" data-k="1">1<small>·</small></div>
+        <div class="key" data-k="2">2<small>ABC</small></div>
+        <div class="key" data-k="3">3<small>DEF</small></div>
+        <div class="key" data-k="4">4<small>GHI</small></div>
+        <div class="key" data-k="5">5<small>JKL</small></div>
+        <div class="key" data-k="6">6<small>MNO</small></div>
+        <div class="key" data-k="7">7<small>PQRS</small></div>
+        <div class="key" data-k="8">8<small>TUV</small></div>
+        <div class="key" data-k="9">9<small>WXYZ</small></div>
+        <div class="key" data-k="*">*<small>回看</small></div>
+        <div class="key" data-k="0">0<small>+</small></div>
+        <div class="key" data-k="#">#<small>收藏</small></div>
+      </div>
+      <button class="dial" id="dial">拨 通</button>
+      <button class="clear" id="clear">清除</button>
+    </div>
+
+    <div class="panel list">
+      <h2>频道列表</h2>
+      <div id="list"></div>
+    </div>
+  </div>
+
+<script>
+  const chs = [
+    {no:1,nm:"CCTV-1 综合",on:true},{no:5,nm:"CCTV-5 体育",on:true},
+    {no:9,nm:"CCTV-9 纪录",on:false},{no:13,nm:"东方卫视",on:true},
+    {no:21,nm:"浙江卫视",on:true},{no:33,nm:"湖南卫视",on:false},
+    {no:48,nm:"广东卫视",on:true},{no:66,nm:"深圳卫视",on:true},
+    {no:88,nm:"CCTV-8 影视",on:true},{no:99,nm:"CHC 电影",on:false},
+  ];
+  const listEl = document.getElementById("list");
+  chs.forEach(c => {
+    const d = document.createElement("div");
+    d.className = "item"; d.dataset.no = c.no;
+    d.innerHTML = `<div class="no">${c.no}</div><div class="meta"><b>${c.nm}</b><span>${c.on?'直播中':'信号中断'}</span></div><div class="dot ${c.on?'':'off'}"></div>`;
+    d.onclick = () => pick(c);
+    listEl.appendChild(d);
+  });
+
+  let input = "";
+  const chNo = document.getElementById("chNo"), chNm = document.getElementById("chNm");
+  document.querySelectorAll(".key").forEach(k => k.onclick = () => {
+    if (input.length < 4) { input += k.dataset.k; render(); }
+  });
+  document.getElementById("clear").onclick = () => { input=""; render(); };
+  document.getElementById("dial").onclick = () => {
+    const n = parseInt(input,10);
+    const c = chs.find(x => x.no === n);
+    if (c) pick(c); else { chNm.textContent = "未找到频道 "+input; }
+  };
+  function pick(c){ input = String(c.no); render(); chNm.textContent = c.nm + (c.on?' · 直播中':' · 信号中断');
+    document.querySelectorAll(".item").forEach(i=>i.classList.toggle("sel", i.dataset.no==c.no)); }
+  function render(){ chNo.textContent = input || "—"; if(!input) chNm.textContent="输入频道号后点击「拨通」"; }
+
+  document.querySelectorAll(".switcher button").forEach(b => b.onclick = () => {
+    document.body.dataset.theme = b.dataset.set;
+    document.querySelectorAll(".switcher button").forEach(x=>x.classList.remove("on"));
+    b.classList.add("on");
+  });
+</script>
+</body>
+</html>

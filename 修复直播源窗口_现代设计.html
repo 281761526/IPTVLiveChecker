@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>修复直播源窗口 · 现代风格设计方案</title>
+<style>
+  :root{
+    --bg:#0e0e14; --bg2:#14141c; --surface:#1b1b25; --surface2:#22222e;
+    --line:#2c2c3a; --text:#e8e8f0; --text2:#a0a0b4; --text3:#6b6b80;
+    --accent:#007bff; --accent2:#3b9bff; --accent-soft:rgba(0,123,255,.14);
+    --ok:#2ecc71; --bad:#ff5d6c; --warn:#ffb020;
+    --radius:14px; --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#16161f 0%,var(--bg) 55%);
+    color:var(--text);font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.55;padding:32px 20px 64px;}
+  .wrap{max-width:1080px;margin:0 auto;}
+  h1{font-size:26px;margin:0 0 4px;letter-spacing:.3px;}
+  h1 .em{color:var(--accent2);}
+  .sub{color:var(--text2);font-size:14px;margin:0 0 28px;}
+  .sec-t{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);
+    margin:38px 0 16px;border-left:3px solid var(--accent);padding-left:10px;}
+
+  /* ===== 现状分析卡片 ===== */
+  .facts{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .card{background:linear-gradient(180deg,var(--surface),var(--bg2));border:1px solid var(--line);
+    border-radius:var(--radius);padding:16px 18px;}
+  .card h3{margin:0 0 8px;font-size:15px;}
+  .card.fact{border-left:3px solid var(--text3);}
+  .card.pro{border-left:3px solid var(--bad);}
+  .card ul{margin:0;padding-left:18px;font-size:13px;color:var(--text2);}
+  .card ul li{margin:4px 0;}
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;margin-bottom:8px;}
+  .tag.f{background:#2a2a36;color:var(--text2);}
+  .tag.p{background:rgba(255,93,108,.14);color:var(--bad);}
+
+  /* ===== 设计稿区 ===== */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .design{background:linear-gradient(180deg,var(--surface),var(--bg2));border:1px solid var(--line);
+    border-radius:18px;overflow:hidden;display:flex;flex-direction:column;}
+  .design.reco{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-soft),0 14px 40px -18px var(--accent);}
+  .dhead{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+  .dhead .name{font-weight:600;font-size:15px;}
+  .dhead .name small{display:block;color:var(--text3);font-weight:400;font-size:11px;margin-top:2px;}
+  .badge{font-size:11px;background:var(--accent);color:#fff;padding:3px 9px;border-radius:999px;font-weight:600;}
+  .stage{padding:22px 16px;display:flex;justify-content:center;align-items:center;min-height:330px;
+    background:repeating-linear-gradient(45deg,#101018,#101018 10px,#0d0d14 10px,#0d0d14 20px);}
+  .ddesc{padding:14px 16px;font-size:12.5px;color:var(--text2);border-top:1px solid var(--line);}
+  .ddesc b{color:var(--text);}
+  .ddesc .pros{margin:8px 0 0;padding-left:16px;}
+  .ddesc .pros li{margin:3px 0;}
+
+  /* ===== 模拟窗体通用 ===== */
+  .win{width:300px;background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    box-shadow:0 20px 50px -20px rgba(0,0,0,.8);font-size:12px;overflow:hidden;}
+  .win .titlebar{height:30px;display:flex;align-items:center;padding:0 12px;gap:7px;
+    background:var(--surface2);border-bottom:1px solid var(--line);}
+  .win .titlebar .dot{width:9px;height:9px;border-radius:50%;}
+  .win .titlebar .t{color:var(--text2);font-size:11.5px;margin-left:4px;}
+  .win .body{padding:16px 16px 18px;}
+  .lbl{color:var(--text2);font-size:11px;margin:0 0 5px;display:block;}
+  .ro{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;
+    color:var(--text3);font-family:var(--mono);font-size:11px;word-break:break-all;margin-bottom:12px;}
+  .inp{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:8px;
+    padding:9px 10px;color:var(--text);font-family:var(--mono);font-size:11.5px;outline:none;}
+  .row2{display:flex;gap:8px;margin-bottom:12px;}
+  .row2 .inp{flex:1;}
+  .btns{display:flex;gap:8px;margin-top:14px;}
+  .btn{flex:1;text-align:center;padding:9px 0;border-radius:9px;font-size:12px;font-weight:600;cursor:default;}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text2);}
+  .btn.primary{background:var(--accent);color:#fff;border:1px solid var(--accent);}
+
+  /* A: 玻璃拟态 */
+  .win.glass{background:rgba(30,30,42,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.10);
+    border-top:1px solid rgba(0,123,255,.55);box-shadow:0 24px 60px -22px rgba(0,123,255,.5);}
+  .win.glass .titlebar{background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.07);}
+  .win.glass .inp{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:999px;}
+  .win.glass .chip{background:var(--accent-soft);border:1px solid rgba(0,123,255,.4);border-radius:999px;
+    padding:8px 12px;font-family:var(--mono);font-size:11px;color:var(--text);word-break:break-all;}
+  .win.glass .chip .m{color:var(--text3);}
+  .win.glass .btn.primary{border-radius:999px;box-shadow:0 8px 22px -8px var(--accent);}
+  .win.glass .btn.ghost{border-radius:999px;}
+
+  /* B: Fluent 分栏 */
+  .win.fluent{border-radius:12px;}
+  .win.fluent .body{padding-left:20px;position:relative;}
+  .win.fluent .body::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:4px;
+    border-radius:4px;background:var(--accent);}
+  .win.fluent .lbl{text-transform:uppercase;letter-spacing:1px;font-size:9.5px;color:var(--text3);}
+  .win.fluent .result{background:var(--accent-soft);border:1px solid rgba(0,123,255,.35);border-radius:9px;
+    padding:9px 10px;font-family:var(--mono);font-size:11px;word-break:break-all;margin-bottom:12px;}
+  .win.fluent .result .p{color:var(--text3);}
+  .win.fluent .result .h{color:var(--accent2);font-weight:600;}
+  .win.fluent .btn.primary{border-radius:7px;}
+
+  /* C: 行内编辑 + 差异 */
+  .win.inline .urlbar{background:var(--bg2);border:1px solid var(--line);border-radius:9px;
+    padding:9px 10px;font-family:var(--mono);font-size:11px;margin-bottom:10px;word-break:break-all;}
+  .win.inline .urlbar .fix{color:var(--text3);}
+  .win.inline .urlbar .edit{background:rgba(0,123,255,.16);color:var(--accent2);border-radius:4px;padding:0 3px;}
+  .win.inline .urlbar .lock{color:var(--text3);opacity:.7;}
+  .win.inline .diff{font-family:var(--mono);font-size:11px;margin:0 0 12px;line-height:1.7;}
+  .win.inline .diff .old{color:var(--bad);text-decoration:line-through;}
+  .win.inline .diff .arr{color:var(--text3);margin:0 5px;}
+  .win.inline .diff .new{color:var(--ok);font-weight:600;}
+  .win.inline .btn.primary{border-radius:999px;}
+
+  footer{margin-top:34px;color:var(--text3);font-size:12.5px;text-align:center;}
+  footer b{color:var(--accent2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>修复直播源窗口 · <span class="em">现代风格设计方案</span></h1>
+  <p class="sub">先基于现有代码做事实分析，再给出 3 款可直接落地的可视化界面设计，供你选择。</p>
+
+  <div class="sec-t">一、现状分析（代码事实 vs 我的判断）</div>
+  <div class="facts">
+    <div class="card fact">
+      <span class="tag f">代码事实</span>
+      <h3>当前窗口构成（ShowReplaceUrlDialog）</h3>
+      <ul>
+        <li>固定 <b>480×320</b> 对话框，绝对像素布局（Location/Size 手写坐标）。</li>
+        <li>标题为整句："将可用IP+端口或网址替换为新地址"。</li>
+        <li>字段：<b>原始地址</b>(只读框)、<b>新IP/域名</b>、<b>新端口</b>、<b>预览</b>(只读框，由 protocol+host+port+path 拼接)。</li>
+        <li>按钮：<b>确定 / 取消</b>（均为 outline 描边样式，无主次）。</li>
+        <li>逻辑：输入时实时拼接预览；输入 "ip:port" 自动拆分；确定后改 ch.Url 并重置状态。</li>
+        <li>字体偏小（7.5f / 7f），纯文本无图标、无分组、无语法高亮。</li>
+      </ul>
+    </div>
+    <div class="card pro">
+      <span class="tag p">可改进点（建议，非事实）</span>
+      <h3>体验与视觉上的短板</h3>
+      <ul>
+        <li><b>校验滞后</b>：仅点"确定"才提示"IP/域名不能为空"，应在输入时实时校验。</li>
+        <li><b>信息冗余</b>：原始地址 + 预览两个只读框，预览本质上就是"新地址"，可合并为带差异高亮的单一结果。</li>
+        <li><b>无主次按钮</b>：确定/取消同权，关键操作不突出。</li>
+        <li><b>无语法高亮</b>：URL 是一长串，protocol / host / path 混在一起难读。</li>
+        <li><b>标题冗长</b>：可凝练为"修复直播源地址"。</li>
+        <li>绝对坐标布局在极端 DPI 下仍偏挤，建议改用流式/锚定布局。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec-t">二、三款现代风格设计（可视化）</div>
+  <div class="grid3">
+
+    <!-- 设计 A -->
+    <div class="design">
+      <div class="dhead">
+        <div class="name">方案 A · 玻璃拟态居中卡<small>Glassmorphism · 圆角 + 毛玻璃</small></div>
+      </div>
+      <div class="stage">
+        <div class="win glass">
+          <div class="titlebar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="t">修复直播源地址</span></div>
+          <div class="body">
+            <span class="lbl">原始地址</span>
+            <div class="ro">http://192.168.1.100:8080/live/tv1.m3u8</div>
+            <span class="lbl">新 IP / 域名</span>
+            <div class="inp">10.0.0.5</div>
+            <span class="lbl">新端口</span>
+            <div class="inp">554</div>
+            <span class="lbl">实时结果</span>
+            <div class="chip"><span class="m">http://</span>10.0.0.5:554<span class="m">/live/tv1.m3u8</span></div>
+            <div class="btns">
+              <div class="btn ghost">取消</div>
+              <div class="btn primary">确定</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ddesc">
+        <b>风格</b>：居中卡片 + 毛玻璃背景 + 顶部蓝色高光描边，输入框改为胶囊形。
+        <ul class="pros">
+          <li>柔和、轻盈，最"现代感"。</li>
+          <li>实时结果用胶囊 chip 呈现，圆角统一。</li>
+          <li>主次按钮分明（确定为蓝色实心胶囊）。</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 设计 B -->
+    <div class="design reco">
+      <div class="dhead">
+        <div class="name">方案 B · Fluent 分栏高亮<small>侧边强调条 + 语法高亮结果</small></div>
+        <span class="badge">推荐</span>
+      </div>
+      <div class="stage">
+        <div class="win fluent">
+          <div class="titlebar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="t">修复直播源地址</span></div>
+          <div class="body">
+            <span class="lbl">原始地址</span>
+            <div class="ro">http://192.168.1.100:8080/live/tv1.m3u8</div>
+            <span class="lbl">新 IP / 域名</span>
+            <div class="inp">10.0.0.5</div>
+            <span class="lbl">新端口</span>
+            <div class="inp">554</div>
+            <span class="lbl">新地址预览</span>
+            <div class="result"><span class="p">http://</span><span class="h">10.0.0.5:554</span><span class="p">/live/tv1.m3u8</span></div>
+            <div class="btns">
+              <div class="btn ghost">取消</div>
+              <div class="btn primary">确定替换</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ddesc">
+        <b>风格</b>：左侧 4px 蓝色强调条 + 标签大写字母、结果区做 <b>语法高亮</b>（protocol 灰、host 蓝）。
+        <ul class="pros">
+          <li>层级清晰、信息密度高，最贴合工具类软件。</li>
+          <li>URL 分段着色，一眼看懂哪段被改。</li>
+          <li>主按钮文案"确定替换"更明确。</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 设计 C -->
+    <div class="design">
+      <div class="dhead">
+        <div class="name">方案 C · 行内编辑 + 差异<small>就地改 URL · 变更红绿对比</small></div>
+      </div>
+      <div class="stage">
+        <div class="win inline">
+          <div class="titlebar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="t">修复直播源地址</span></div>
+          <div class="body">
+            <span class="lbl">在地址中直接修改 IP / 端口（路径已锁定）</span>
+            <div class="urlbar"><span class="fix">http://</span><span class="edit">10.0.0.5:554</span><span class="lock">/live/tv1.m3u8</span></div>
+            <div class="diff">
+              <span class="old">192.168.1.100:8080</span><span class="arr">→</span><span class="new">10.0.0.5:554</span>
+            </div>
+            <div class="btns">
+              <div class="btn ghost">取消</div>
+              <div class="btn primary">应用</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ddesc">
+        <b>风格</b>：把整条 URL 当作可编辑行，仅 host:port 段高亮可改，path 锁定；下方用 <b>红绿差异</b>展示变更。
+        <ul class="pros">
+          <li>最贴近"所见即所得"，改哪看哪。</li>
+          <li>差异对比直观，降低误操作。</li>
+          <li>一步到位，无需先填原始再填新值。</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    以上为 <b>可视化设计稿</b>（HTML 模拟）。选定一款后，我可将其落地为 WinForms 代码（匹配现有主题/圆角/暗色标题栏）。
+  </footer>
+</div>
+</body>
+</html>

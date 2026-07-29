@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>修复直播源窗口 · 现代风格方案选择</title>
+<style>
+  :root{
+    --bg:#0e0e14; --bg2:#14141c; --surface:#1b1b25; --surface2:#22222e;
+    --line:#2c2c3a; --text:#e8e8f0; --text2:#a0a0b4; --text3:#6b6b80;
+    --accent:#3b9bff; --accent-soft:rgba(59,155,255,.14);
+    --ok:#2ecc71; --bad:#ff5d6c; --warn:#ffb020;
+    --radius:14px; --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#16161f 0%,var(--bg) 55%);
+    color:var(--text);font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.55;padding:32px 18px 80px;}
+  .wrap{max-width:1180px;margin:0 auto;}
+  h1{font-size:26px;margin:0 0 4px;letter-spacing:.3px;}
+  h1 .em{color:var(--accent);}
+  .sub{color:var(--text2);font-size:14px;margin:0 0 22px;}
+
+  /* 现状分析 */
+  .sec-t{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);
+    margin:34px 0 14px;border-left:3px solid var(--accent);padding-left:10px;}
+  .facts{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .card{background:linear-gradient(180deg,var(--surface),var(--bg2));border:1px solid var(--line);
+    border-radius:var(--radius);padding:16px 18px;}
+  .card h3{margin:0 0 8px;font-size:15px;}
+  .card.fact{border-left:3px solid var(--text3);}
+  .card.pro{border-left:3px solid var(--bad);}
+  .card ul{margin:0;padding-left:18px;font-size:13px;color:var(--text2);}
+  .card ul li{margin:4px 0;}
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;margin-bottom:8px;}
+  .tag.f{background:#2a2a36;color:var(--text2);}
+  .tag.p{background:rgba(255,93,108,.14);color:var(--bad);}
+
+  /* 选择结果横幅 */
+  #choicebar{display:none;position:sticky;top:12px;z-index:30;margin:18px 0;
+    background:linear-gradient(90deg,rgba(59,155,255,.18),rgba(59,155,255,.04));
+    border:1px solid rgba(59,155,255,.5);border-radius:12px;padding:12px 16px;
+    font-size:14px;color:var(--text);box-shadow:0 10px 30px -12px var(--accent);}
+  #choicebar b{color:var(--accent);}
+
+  /* 画廊 */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+  .design{background:linear-gradient(180deg,var(--surface),var(--bg2));border:1px solid var(--line);
+    border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:.2s;}
+  .design.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent-soft),0 16px 44px -18px var(--accent);}
+  .design.reco{border-color:var(--accent);}
+  .dhead{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .dhead .name{font-weight:600;font-size:15px;}
+  .dhead .name small{display:block;color:var(--text3);font-weight:400;font-size:11px;margin-top:2px;}
+  .badge{font-size:11px;background:var(--accent);color:#fff;padding:3px 9px;border-radius:999px;font-weight:600;white-space:nowrap;}
+  .badge.cur{background:#2a2a36;color:var(--text2);}
+  .stage{padding:22px 16px;display:flex;justify-content:center;align-items:center;min-height:336px;
+    background:repeating-linear-gradient(45deg,#101018,#101018 10px,#0d0d14 10px,#0d0d14 20px);}
+  .stage.light{background:repeating-linear-gradient(45deg,#eef1f4,#eef1f4 10px,#e7ebef 10px,#e7ebef 20px);}
+  .ddesc{padding:14px 16px;font-size:12.5px;color:var(--text2);border-top:1px solid var(--line);}
+  .ddesc b{color:var(--text);}
+  .pick{margin-top:10px;width:100%;padding:9px 0;border-radius:9px;border:1px solid var(--accent);
+    background:var(--accent);color:#fff;font-weight:600;cursor:pointer;font-size:12.5px;}
+  .pick:hover{filter:brightness(1.08);}
+  .design.selected .pick{background:transparent;color:var(--accent);}
+
+  /* 通用模拟窗体 */
+  .win{width:300px;background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    box-shadow:0 20px 50px -20px rgba(0,0,0,.8);font-size:12px;overflow:hidden;}
+  .win .titlebar{height:30px;display:flex;align-items:center;padding:0 12px;gap:7px;
+    background:var(--surface2);border-bottom:1px solid var(--line);}
+  .win .titlebar .dot{width:9px;height:9px;border-radius:50%;}
+  .win .titlebar .t{color:var(--text2);font-size:11.5px;margin-left:4px;}
+  .win .body{padding:16px 16px 18px;}
+  .lbl{color:var(--text2);font-size:11px;margin:0 0 5px;display:block;}
+  .ro{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;
+    color:var(--text3);font-family:var(--mono);font-size:11px;word-break:break-all;margin-bottom:12px;}
+  .inp{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:8px;
+    padding:9px 10px;color:var(--text);font-family:var(--mono);font-size:11.5px;outline:none;}
+  .inp:focus{border-color:var(--accent);}
+  .row2{display:flex;gap:8px;margin-bottom:12px;}
+  .row2 .inp{flex:1;}
+  .btns{display:flex;gap:8px;margin-top:14px;}
+  .btn{flex:1;text-align:center;padding:9px 0;border-radius:9px;font-size:12px;font-weight:600;cursor:default;}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text2);}
+  .btn.primary{background:var(--accent);color:#fff;border:1px solid var(--accent);}
+
+  /* A: 玻璃拟态 */
+  .win.glass{background:rgba(30,30,42,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.10);
+    border-top:1px solid rgba(59,155,255,.55);box-shadow:0 24px 60px -22px rgba(59,155,255,.5);}
+  .win.glass .titlebar{background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.07);}
+  .win.glass .inp{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:999px;}
+  .win.glass .chip{background:var(--accent-soft);border:1px solid rgba(59,155,255,.4);border-radius:999px;
+    padding:9px 13px;font-family:var(--mono);font-size:11px;color:var(--text);word-break:break-all;margin-bottom:12px;}
+  .win.glass .chip .m{color:var(--text3);}
+  .win.glass .chip .h{color:#7cc0ff;font-weight:600;}
+  .win.glass .btn.primary{border-radius:999px;box-shadow:0 8px 22px -8px var(--accent);}
+  .win.glass .btn.ghost{border-radius:999px;}
+
+  /* C: 行内编辑 + 差异 */
+  .win.inline .urlbar{background:var(--bg2);border:1px solid var(--line);border-radius:9px;
+    padding:10px;font-family:var(--mono);font-size:11px;margin-bottom:10px;word-break:break-all;line-height:1.6;}
+  .win.inline .urlbar .fix{color:var(--text3);}
+  .win.inline .urlbar .edit{background:rgba(59,155,255,.18);color:#7cc0ff;border-radius:4px;padding:0 3px;font-weight:600;}
+  .win.inline .urlbar .lock{color:var(--text3);opacity:.8;}
+  .win.inline .diff{font-family:var(--mono);font-size:11px;margin:0 0 12px;line-height:1.7;
+    background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;}
+  .win.inline .diff .old{color:var(--bad);text-decoration:line-through;}
+  .win.inline .diff .arr{color:var(--text3);margin:0 5px;}
+  .win.inline .diff .new{color:var(--ok);font-weight:600;}
+  .win.inline .btn.primary{border-radius:999px;}
+
+  /* D: 护眼浅色 */
+  .win.light{background:#f6f8f4;border:1px solid #dde4dc;box-shadow:0 20px 50px -20px rgba(40,70,50,.35);}
+  .win.light .titlebar{background:#e9efe8;border-bottom:1px solid #dde4dc;}
+  .win.light .titlebar .t{color:#4a5a4f;}
+  .win.light .body{color:#28332c;}
+  .win.light .lbl{color:#6a7a6f;}
+  .win.light .ro{background:#eaf0e9;border:1px solid #d7e0d6;color:#8a978d;}
+  .win.light .inp{background:#ffffff;border:1px solid #cdd8cd;color:#28332c;}
+  .win.light .inp:focus{border-color:#3aa66b;}
+  .win.light .result{background:rgba(58,166,107,.12);border:1px solid rgba(58,166,107,.4);border-radius:9px;
+    padding:10px;font-family:var(--mono);font-size:11px;word-break:break-all;margin-bottom:12px;}
+  .win.light .result .p{color:#8a978d;}
+  .win.light .result .h{color:#1f9d5b;font-weight:600;}
+  .win.light .btn.ghost{background:transparent;border:1px solid #cdd8cd;color:#6a7a6f;}
+  .win.light .btn.primary{background:#3aa66b;border:1px solid #3aa66b;color:#fff;}
+  .win.light .accentbar{position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:4px;background:#3aa66b;}
+
+  /* E: 霓虹暗夜 */
+  .win.neon{background:#0a0a12;border:1px solid rgba(0,255,224,.35);
+    box-shadow:0 0 26px -6px rgba(0,255,224,.45),0 0 60px -20px rgba(255,0,200,.4);}
+  .win.neon .titlebar{background:#10101c;border-bottom:1px solid rgba(0,255,224,.25);}
+  .win.neon .titlebar .t{color:#9affe9;}
+  .win.neon .lbl{color:#5fd9c8;}
+  .win.neon .ro{background:#0d0d18;border:1px solid rgba(0,255,224,.2);color:#4a6b66;}
+  .win.neon .inp{background:#0d0d18;border:1px solid rgba(0,255,224,.35);border-radius:7px;
+    color:#c8fff5;font-family:var(--mono);}
+  .win.neon .inp:focus{border-color:#00ffe0;box-shadow:0 0 10px rgba(0,255,224,.4);}
+  .win.neon .result{background:rgba(0,255,224,.08);border:1px solid rgba(0,255,224,.4);border-radius:8px;
+    padding:10px;font-family:var(--mono);font-size:11px;word-break:break-all;margin-bottom:12px;}
+  .win.neon .result .p{color:#4a6b66;}
+  .win.neon .result .h{color:#00ffe0;font-weight:600;text-shadow:0 0 8px rgba(0,255,224,.6);}
+  .win.neon .btn.ghost{background:transparent;border:1px solid rgba(0,255,224,.4);color:#9affe9;}
+  .win.neon .btn.primary{background:linear-gradient(90deg,#00ffe0,#ff00c8);border:none;color:#06121a;
+    box-shadow:0 0 18px -4px rgba(0,255,224,.6);}
+
+  footer{margin-top:34px;color:var(--text3);font-size:12.5px;text-align:center;}
+  footer b{color:var(--accent);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>修复直播源窗口 · <span class="em">现代风格方案选择</span></h1>
+  <p class="sub">已读取真实代码（<code>ShowReplaceUrlDialog</code>）：当前线上用的是「方案 B · Fluent 分栏高亮」。
+  下面给出 4 款可替代的现代风格，<b>每个都能在示例里实时输入 IP/端口看预览</b>，点「选这个」即可选定，我随后可落地为 WinForms 代码。</p>
+
+  <div id="choicebar">已选择：<b id="choice">—</b>　（我会把该风格实现到修复直播源窗口）</div>
+
+  <div class="sec-t">一、现状分析（基于代码事实）</div>
+  <div class="facts">
+    <div class="card fact">
+      <span class="tag f">代码事实</span>
+      <h3>当前窗口构成</h3>
+      <ul>
+        <li>固定 <b>480×320</b> 对话框，绝对像素布局（SX/SY 缩放）。</li>
+        <li>标题「修复直播源地址」；暗色标题栏（SetFormDarkModeTitleBar）。</li>
+        <li>字段：<b>原始地址</b>(只读)、<b>新 IP/域名</b>、<b>新端口</b>、<b>新地址预览</b>(RichTextBox 语法高亮)。</li>
+        <li>颜色全部由 theme 派生（accent / surface），<b>自动适配明暗主题</b>。</li>
+        <li>按钮：<b>取消</b>(描边) + <b>确定替换</b>(实心强调)，主按钮在右侧。</li>
+        <li>逻辑：输入实时拼接预览；输入 "ip:port" 自动拆分；<b>仅点确定才校验非空</b>。</li>
+      </ul>
+    </div>
+    <div class="card pro">
+      <span class="tag p">可改进点（供方案参考）</span>
+      <h3>体验与视觉短板</h3>
+      <ul>
+        <li><b>校验滞后</b>：空值要等点「确定」才提示，应在输入时实时校验。</li>
+        <li><b>两个只读框</b>：原始地址 + 预览本质重复，可合并或弱化原始地址。</li>
+        <li><b>无语法高亮差异对比</b>：仅高亮整段 host，未对比"改前→改后"。</li>
+        <li><b>未提供浅色/护眼变体</b>：长时间修源仍偏暗。</li>
+        <li>极端 DPI 下偏挤，建议适当加大内边距与高度。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec-t">二、四款现代风格（可交互可视化，点「选这个」选定）</div>
+  <div class="grid">
+
+    <!-- 方案 A · 玻璃拟态 -->
+    <div class="design" data-name="方案 A · 玻璃拟态居中卡">
+      <div class="dhead">
+        <div class="name">方案 A · 玻璃拟态居中卡<small>Glassmorphism · 毛玻璃 + 胶囊输入</small></div>
+      </div>
+      <div class="stage">
+        <div class="win glass">
+          <div class="titlebar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="t">修复直播源地址</span></div>
+          <div class="body">
+            <span class="lbl">原始地址</span>
+            <div class="ro">http://192.168.1.100:8080/live/tv1.m3u8</div>
+            <span class="lbl">新 IP / 域名</span>
+            <input class="inp ip" value="10.0.0.5">
+            <span class="lbl">新端口</span>
+            <input class="inp port" value="554">
+            <span class="lbl">实时结果</span>
+            <div class="chip"><span class="m">http://</span><span data-host class="h">10.0.0.5</span>:<span data-port class="h">554</span><span class="m">/live/tv1.m3u8</span></div>
+            <div class="btns">
+              <div class="btn ghost">取消</div>
+              <div class="btn primary">确定</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ddesc">
+        <b>风格</b>：毛玻璃背景 + 顶部蓝色高光描边，输入框为胶囊形，结果用圆角 chip。
+        <ul style="margin:8px 0 0;padding-left:16px;">
+          <li>最"轻盈现代"，适合暗色主程序。</li>
+          <li>主次按钮分明（确定=蓝色实心胶囊）。</li>
+          <li>缺点：毛玻璃在 WinForms 需自绘，落地成本略高。</li>
+        </ul>
+        <button class="pick">选这个</button>
+      </div>
+    </div>
+
+    <!-- 方案 C · 行内编辑 + 差异 -->
+    <div class="design" data-name="方案 C · 行内编辑+差异">
+      <div class="dhead">
+        <div class="name">方案 C · 行内编辑 + 差异<small>就地改 URL · 红绿变更对比</small></div>
+      </div>
+      <div class="stage">
+        <div class="win inline">
+          <div class="titlebar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="t">修复直播源地址</span></div>
+          <div class="body">
+            <span class="lbl">直接在地址中修改 IP / 端口（路径已锁定）</span>
+            <div class="urlbar"><span class="fix">http://</span><span data-host class="edit">10.0.0.5</span>:<span data-port class="edit">554</span><span class="lock">/live/tv1.m3u8</span></div>
+            <div class="diff"><span class="old">192.168.1.100:8080</span><span class="arr">→</span><span class="new" data-full>10.0.0.5:554</span></div>
+            <div class="btns">
+              <div class="btn ghost">取消</div>
+              <div class="btn primary">应用</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ddesc">
+        <b>风格</b>：整条 URL 当作可编辑行，仅 host:port 段高亮可改，path 锁定；下方红绿差异展示变更。
+        <ul style="margin:8px 0 0;padding-left:16px;">
+          <li>"所见即所得"，改哪看哪，误操作最低。</li>
+          <li>差异对比直观，最适合批量修源。</li>
+          <li>落地需自定义 URL 行编辑器（中等成本）。</li>
+        </ul>
+        <button class="pick">选这个</button>
+      </div>
+    </div>
+
+    <!-- 方案 D · 护眼浅色 -->
+    <div class="design" data-name="方案 D · 护眼浅色">
+      <div class="dhead">
+        <div class="name">方案 D · 护眼浅色<small>柔和薄荷绿 · 长时间不刺眼</small></div>
+      </div>
+      <div class="stage light">
+        <div class="win light" style="position:relative;">
+          <div class="accentbar"></div>
+          <div class="titlebar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="t">修复直播源地址</span></div>
+          <div class="body">
+            <span class="lbl">原始地址</span>
+            <div class="ro">http://192.168.1.100:8080/live/tv1.m3u8</div>
+            <span class="lbl">新 IP / 域名</span>
+            <input class="inp ip" value="10.0.0.5">
+            <span class="lbl">新端口</span>
+            <input class="inp port" value="554">
+            <span class="lbl">新地址预览</span>
+            <div class="result"><span class="p">http://</span><span data-host class="h">10.0.0.5</span>:<span data-port class="h">554</span><span class="p">/live/tv1.m3u8</span></div>
+            <div class="btns">
+              <div class="btn ghost">取消</div>
+              <div class="btn primary">确定替换</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ddesc">
+        <b>风格</b>：浅色护眼底 + 薄荷绿强调条，语法高亮（protocol 灰 / host 绿）。
+        <ul style="margin:8px 0 0;padding-left:16px;">
+          <li>适合长时间修源，眼睛更舒适。</li>
+          <li>沿用 Fluent 分栏结构，落地成本最低（改色即可）。</li>
+          <li>与主程序暗色风格形成"明/暗双模式"。</li>
+        </ul>
+        <button class="pick">选这个</button>
+      </div>
+    </div>
+
+    <!-- 方案 E · 霓虹暗夜 -->
+    <div class="design" data-name="方案 E · 霓虹暗夜">
+      <div class="dhead">
+        <div class="name">方案 E · 霓虹暗夜<small>Neon · 青/品红辉光</small></div>
+      </div>
+      <div class="stage">
+        <div class="win neon">
+          <div class="titlebar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="t">修复直播源地址</span></div>
+          <div class="body">
+            <span class="lbl">原始地址</span>
+            <div class="ro">http://192.168.1.100:8080/live/tv1.m3u8</div>
+            <span class="lbl">新 IP / 域名</span>
+            <input class="inp ip" value="10.0.0.5">
+            <span class="lbl">新端口</span>
+            <input class="inp port" value="554">
+            <span class="lbl">新地址预览</span>
+            <div class="result"><span class="p">http://</span><span data-host class="h">10.0.0.5</span>:<span data-port class="h">554</span><span class="p">/live/tv1.m3u8</span></div>
+            <div class="btns">
+              <div class="btn ghost">取消</div>
+              <div class="btn primary">确定替换</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ddesc">
+        <b>风格</b>：近黑底 + 青色辉光边框，主按钮青→品红渐变发光，host 段霓虹高亮。
+        <ul style="margin:8px 0 0;padding-left:16px;">
+          <li>科技感最强，适合"极客/暗夜"用户群。</li>
+          <li>辉光用 GDI 阴影即可近似，落地中等成本。</li>
+          <li>对比度高，弱光环境清晰。</li>
+        </ul>
+        <button class="pick">选这个</button>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    以上为 <b>可交互可视化设计稿</b>（HTML 模拟，输入 IP/端口即实时更新预览）。选定一款后，我可将其落地为
+    WinForms 代码，并保留现有"按主题自动配色"的能力（让 accent/surface 由 theme 派生）。
+    当前线上实现为 <b>方案 B · Fluent 分栏高亮</b>（参考 R7303–R7498）。
+  </footer>
+</div>
+
+<script>
+  // 通用：输入 IP/端口 → 实时更新预览（模拟真实 UpdatePreview 逻辑）
+  function bind(id){
+    var root = document.getElementById(id);
+    var ip = root.querySelector('.ip');
+    var port = root.querySelector('.port');
+    function upd(){
+      var h = (ip.value || '').trim() || '192.168.1.100';
+      var p = (port.value || '').trim() || '8080';
+      var hostEl = root.querySelector('[data-host]');
+      var portEl = root.querySelector('[data-port]');
+      var fullEl = root.querySelector('[data-full]');
+      if (hostEl) hostEl.textContent = h;
+      if (portEl) portEl.textContent = p;
+      if (fullEl) fullEl.textContent = h + ':' + p;
+    }
+    ip.addEventListener('input', upd);
+    port.addEventListener('input', upd);
+    upd();
+  }
+  ['m'] && document.querySelectorAll('.design .win').forEach(function(w){
+    // 每个 .win 内部可能有多个 .win（嵌套），仅绑定最外层卡片内的
+  });
+  // 逐卡片绑定（用卡片而非全局，避免重复）
+  document.querySelectorAll('.design').forEach(function(card){
+    var win = card.querySelector('.win');
+    if(!win) return;
+    // 给 win 一个临时 id 供 bind 使用
+    var tmp = 'win_' + Math.random().toString(36).slice(2);
+    win.id = tmp;
+    bind(tmp);
+  });
+
+  // 选择逻辑
+  document.querySelectorAll('.pick').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.design').forEach(function(d){ d.classList.remove('selected'); });
+      var card = btn.closest('.design');
+      card.classList.add('selected');
+      var name = card.getAttribute('data-name');
+      document.getElementById('choice').textContent = name;
+      document.getElementById('choicebar').style.display = 'block';
+      document.getElementById('choicebar').scrollIntoView({behavior:'smooth', block:'center'});
+    });
+  });
+</script>
+</body>
+</html>

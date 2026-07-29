@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web 搜索窗口 · UI 设计方案</title>
+<style>
+:root{
+  --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#242434;
+  --surface:#1e1e2e; --surface-2:#282838;
+  --line:#2e2e40; --line-2:#3a3a50;
+  --text:#e4e4f0; --text-2:#a0a0b8; --text-3:#6a6a82;
+  --accent:#4f8cff; --accent-2:#6ba0ff; --accent-soft:rgba(79,140,255,.15);
+  --ok:#3dd68c; --warn:#ffb84d; --danger:#ff5d6c;
+  --radius:16px; --radius-sm:10px; --radius-xs:6px;
+  --shadow-sm:0 2px 8px rgba(0,0,0,.25);
+  --shadow-md:0 8px 24px rgba(0,0,0,.35);
+  --shadow-lg:0 20px 60px -20px rgba(0,0,0,.55);
+  --mono:"JetBrains Mono","Fira Code","SFMono-Regular",Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  background:var(--bg-0);
+  background-image:
+    radial-gradient(1200px 500px at 100% -10%,rgba(79,140,255,.12) 0%,transparent 50%),
+    radial-gradient(800px 400px at -10% 100%,rgba(61,214,140,.08) 0%,transparent 50%),
+    linear-gradient(180deg,var(--bg-0) 0%,var(--bg-1) 100%);
+  color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;
+  padding:40px 24px 80px;min-height:100vh;
+}
+.container{max-width:1280px;margin:0 auto}
+
+/* ===== 顶部介绍 ===== */
+.hero{text-align:center;margin-bottom:48px}
+.hero .badge{
+  display:inline-block;padding:6px 16px;border-radius:999px;
+  background:var(--accent-soft);color:var(--accent-2);font-size:12px;font-weight:600;
+  letter-spacing:.5px;margin-bottom:16px;border:1px solid rgba(79,140,255,.25);
+}
+.hero h1{font-size:36px;font-weight:700;letter-spacing:-.5px;margin-bottom:10px}
+.hero h1 .highlight{
+  background:linear-gradient(135deg,var(--accent) 0%,#8b5cf6 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero p{color:var(--text-2);font-size:15px;max-width:620px;margin:0 auto}
+
+/* ===== 方案导航 ===== */
+.nav-tabs{
+  display:flex;justify-content:center;gap:8px;margin-bottom:40px;flex-wrap:wrap;
+}
+.nav-tab{
+  padding:10px 20px;border-radius:999px;background:var(--surface);border:1px solid var(--line);
+  color:var(--text-2);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;
+}
+.nav-tab:hover{background:var(--surface-2);color:var(--text);border-color:var(--line-2)}
+.nav-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ===== 方案区块 ===== */
+.scheme{margin-bottom:64px}
+.scheme-header{
+  display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;
+  padding:20px 24px;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);
+}
+.scheme-num{
+  flex-shrink:0;width:40px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),#8b5cf6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:700;color:#fff;
+}
+.scheme-info h2{font-size:20px;font-weight:600;margin-bottom:4px}
+.scheme-info .sub{color:var(--text-3);font-size:13px}
+.scheme-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.tag{
+  padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;
+  background:var(--bg-3);color:var(--text-2);
+}
+.tag.accent{background:var(--accent-soft);color:var(--accent-2)}
+
+/* ===== 预览区 ===== */
+.preview-wrap{
+  display:grid;grid-template-columns:1fr 320px;gap:24px;
+}
+.preview{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;position:relative;
+}
+.preview-window{
+  margin:0 auto;width:100%;max-width:780px;
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  box-shadow:var(--shadow-lg);
+}
+.win-titlebar{
+  height:32px;display:flex;align-items:center;padding:0 14px;gap:8px;
+  background:var(--surface-2);border-bottom:1px solid var(--line);
+}
+.traffic{display:flex;gap:6px}
+.traffic span{width:12px;height:12px;border-radius:50%}
+.traffic .r{background:#ff5f57}
+.traffic .y{background:#febc2e}
+.traffic .g{background:#28c840}
+.win-title{color:var(--text-3);font-size:12px;margin-left:auto;margin-right:auto}
+
+/* ===== 方案说明侧栏 ===== */
+.sidebar{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:24px;display:flex;flex-direction:column;gap:18px;
+}
+.sidebar h3{font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px}
+.sidebar h3:not(:first-child){margin-top:8px}
+.sidebar p,.sidebar li{color:var(--text-2);font-size:13px;line-height:1.6}
+.sidebar ul{padding-left:18px}
+.sidebar li{margin:4px 0}
+.sidebar .feature{
+  padding:12px 14px;background:var(--bg-2);border-radius:var(--radius-sm);
+  border:1px solid var(--line);
+}
+.sidebar .feature .label{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.sidebar .feature .value{font-size:13px;color:var(--text);font-weight:500}
+.sidebar .recommend{
+  padding:14px;background:linear-gradient(135deg,rgba(79,140,255,.15),rgba(139,92,246,.15));
+  border:1px solid rgba(79,140,255,.3);border-radius:var(--radius-sm);
+}
+.sidebar .recommend .title{color:var(--accent-2);font-size:12px;font-weight:600;margin-bottom:4px}
+.sidebar .recommend p{color:var(--text-2);font-size:12px}
+
+/* =============================================== */
+/* 方案A：极简科技风 - Glassmorphism                */
+/* =============================================== */
+.style-a .preview-window{
+  background:linear-gradient(180deg,#1a1a28 0%,#14141e 100%);
+  backdrop-filter:blur(20px);
+}
+.style-a .win-titlebar{
+  background:rgba(40,40,56,.8);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.style-a .nav-bar{
+  padding:12px 16px;display:flex;align-items:center;gap:10px;
+  background:rgba(30,30,42,.6);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.style-a .engine-group{display:flex;gap:6px}
+.style-a .engine-chip{
+  padding:6px 14px;border-radius:999px;font-size:12px;font-weight:500;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  color:var(--text-2);cursor:pointer;transition:all .2s;
+}
+.style-a .engine-chip.active{
+  background:linear-gradient(135deg,var(--accent),#8b5cf6);
+  color:#fff;border-color:transparent;box-shadow:0 4px 14px -4px var(--accent);
+}
+.style-a .engine-chip:hover:not(.active){background:rgba(255,255,255,.08);color:var(--text)}
+.style-a .search-rule{
+  padding:6px 12px;border-radius:999px;font-size:12px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  color:var(--text-2);display:flex;align-items:center;gap:6px;
+}
+.style-a .search-rule::after{content:"▾";font-size:10px}
+.style-a .nav-center{flex:1;display:flex;justify-content:center}
+.style-a .addr-bar{
+  width:100%;max-width:480px;padding:8px 16px;border-radius:999px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--text-3);
+}
+.style-a .addr-bar .lock{color:var(--text-3);opacity:.5}
+.style-a .addr-bar .domain{color:var(--accent-2)}
+.style-a .addr-bar .path{color:var(--text-3)}
+.style-a .nav-right{display:flex;gap:8px;align-items:center}
+.style-a .icon-btn{
+  width:32px;height:32px;border-radius:10px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-2);cursor:pointer;transition:all .2s;font-size:14px;
+}
+.style-a .icon-btn:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.style-a .icon-btn.extract{background:linear-gradient(135deg,rgba(61,214,140,.2),rgba(61,214,140,.1));border-color:rgba(61,214,140,.3);color:var(--ok);font-size:11px;width:auto;padding:0 14px;font-weight:600}
+.style-a .icon-btn.extract:hover{background:linear-gradient(135deg,rgba(61,214,140,.3),rgba(61,214,140,.2))}
+
+.style-a .content-area{
+  height:360px;background:linear-gradient(180deg,#12121a,#0e0e14);
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+}
+.style-a .content-area::before{
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0px,rgba(255,255,255,.02) 1px,transparent 1px,transparent 16px);
+}
+.style-a .web-mock{
+  width:85%;max-width:580px;background:#1a1a24;border-radius:12px;padding:20px;
+  border:1px solid rgba(255,255,255,.06);position:relative;z-index:1;
+}
+.style-a .web-mock .mock-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.style-a .web-mock .mock-logo{
+  width:28px;height:28px;border-radius:8px;
+  background:linear-gradient(135deg,var(--accent),#8b5cf6);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;
+}
+.style-a .web-mock .mock-title{font-size:14px;font-weight:600}
+.style-a .web-mock .mock-url{font-family:var(--mono);font-size:11px;color:var(--text-3)}
+.style-a .web-mock .mock-body{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:12px}
+.style-a .web-mock .mock-cell{
+  height:60px;border-radius:8px;background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.04);
+}
+.style-a .web-mock .mock-cell.wide{grid-column:span 2;height:40px}
+.style-a .status-bar{
+  height:28px;background:rgba(30,30,42,.8);backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,255,255,.04);
+  display:flex;align-items:center;padding:0 16px;gap:20px;
+  font-size:11px;color:var(--text-3);
+}
+.style-a .status-bar .url{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.style-a .status-bar .badge-s{padding:2px 8px;border-radius:4px;background:rgba(61,214,140,.15);color:var(--ok);font-weight:600}
+
+/* =============================================== */
+/* 方案B：专业工具风 - VS Code风格                  */
+/* =============================================== */
+.style-b .preview-window{
+  background:#1e1e2e;display:grid;grid-template-columns:56px 200px 1fr;
+  grid-template-rows:32px 38px 1fr 24px;grid-template-areas:
+    "title title title"
+    "sidebar nav nav"
+    "sidebar content content"
+    "status status status";
+}
+.style-b .win-titlebar{grid-area:title;background:#181824;border-bottom:1px solid #2a2a3a}
+.style-b .sidebar-icons{
+  grid-area:sidebar;background:#181824;border-right:1px solid #2a2a3a;
+  display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:16px;
+}
+.style-b .sidebar-icons .icon{
+  width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  color:#6a6a82;cursor:pointer;font-size:16px;transition:all .2s;
+}
+.style-b .sidebar-icons .icon:hover{color:var(--text)}
+.style-b .sidebar-icons .icon.active{color:var(--accent);background:rgba(79,140,255,.15)}
+.style-b .sidebar-icons .divider{width:24px;height:1px;background:#2a2a3a;margin:4px 0}
+
+.style-b .side-panel{
+  background:#1a1a28;border-right:1px solid #2a2a3a;padding:12px;
+  display:flex;flex-direction:column;gap:8px;overflow-y:auto;
+}
+.style-b .side-panel .section-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#5a5a72;margin-top:8px;font-weight:600}
+.style-b .side-panel .list-item{
+  padding:8px 10px;border-radius:6px;font-size:12px;cursor:pointer;
+  color:var(--text-3);display:flex;align-items:center;gap:8px;
+  border-left:2px solid transparent;transition:all .15s;
+}
+.style-b .side-panel .list-item:hover{background:rgba(255,255,255,.03);color:var(--text-2)}
+.style-b .side-panel .list-item.active{background:rgba(79,140,255,.1);color:var(--text);border-left-color:var(--accent)}
+.style-b .side-panel .list-item .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.style-b .side-panel .list-item .count{margin-left:auto;font-size:10px;color:var(--text-3)}
+.style-b .side-panel .engine-list{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.style-b .side-panel .engine-tag{
+  padding:4px 8px;border-radius:4px;font-size:10px;background:rgba(255,255,255,.04);
+  color:var(--text-3);cursor:pointer;border:1px solid transparent;
+}
+.style-b .side-panel .engine-tag.active{background:var(--accent);color:#fff}
+
+.style-b .nav-bar{
+  padding:0 12px;display:flex;align-items:center;gap:8px;
+  background:#1e1e2e;border-bottom:1px solid #2a2a3a;
+}
+.style-b .nav-bar .breadcrumbs{
+  display:flex;align-items:center;gap:4px;font-family:var(--mono);font-size:11px;color:var(--text-3);
+}
+.style-b .nav-bar .breadcrumbs .sep{color:#3a3a50}
+.style-b .nav-bar .breadcrumbs .current{color:var(--accent-2)}
+.style-b .nav-bar .tools{margin-left:auto;display:flex;gap:6px}
+.style-b .nav-bar .tool-btn{
+  padding:4px 10px;border-radius:4px;font-size:11px;background:#252535;border:1px solid #2a2a3a;
+  color:var(--text-2);cursor:pointer;display:flex;align-items:center;gap:4px;
+}
+.style-b .nav-bar .tool-btn:hover{background:#2e2e42;color:var(--text)}
+.style-b .nav-bar .tool-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.style-b .content-area{
+  height:360px;background:#16161e;position:relative;overflow:hidden;
+}
+.style-b .content-area .editor-tabs{
+  height:30px;display:flex;background:#1e1e2e;border-bottom:1px solid #2a2a3a;
+}
+.style-b .content-area .editor-tab{
+  padding:0 14px;display:flex;align-items:center;gap:6px;font-size:11px;
+  color:var(--text-3);border-right:1px solid #2a2a3a;cursor:pointer;
+  border-top:2px solid transparent;
+}
+.style-b .content-area .editor-tab.active{color:var(--text);background:#16161e;border-top-color:var(--accent)}
+.style-b .content-area .editor-tab .close{opacity:0;font-size:10px}
+.style-b .content-area .editor-tab:hover .close{opacity:1}
+.style-b .content-area .mock-page{padding:20px}
+.style-b .content-area .code-block{
+  background:#1a1a28;border-radius:6px;padding:14px;font-family:var(--mono);font-size:11px;
+  border:1px solid #2a2a3a;line-height:1.8;
+}
+.style-b .content-area .code-block .key{color:#c792ea}
+.style-b .content-area .code-block .str{color:var(--ok)}
+.style-b .content-area .code-block .num{color:var(--warn)}
+.style-b .content-area .code-block .com{color:#5a5a72;font-style:italic}
+.style-b .content-area .result-panel{
+  margin-top:12px;padding:12px;background:#1a1a28;border-radius:6px;
+  border:1px solid #2a2a3a;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+}
+.style-b .content-area .result-item{padding:8px;background:#252535;border-radius:4px}
+.style-b .content-area .result-item .label{font-size:10px;color:var(--text-3);text-transform:uppercase}
+.style-b .content-area .result-item .val{font-size:14px;font-weight:600;color:var(--accent-2);margin-top:2px}
+
+.style-b .status-bar{
+  height:24px;background:var(--accent);color:#fff;padding:0 12px;
+  display:flex;align-items:center;font-size:10.5px;gap:16px;font-weight:500;
+}
+.style-b .status-bar .branch{display:flex;align-items:center;gap:4px}
+.style-b .status-bar .branch::before{content:"●";font-size:8px}
+.style-b .status-bar .right{margin-left:auto;display:flex;gap:12px}
+.style-b .status-bar .right span{opacity:.9}
+
+/* =============================================== */
+/* 方案C：沉浸影院风                                */
+/* =============================================== */
+.style-c .preview-window{background:#000;border-radius:14px}
+.style-c .content-area{
+  height:400px;background:#000;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.style-c .content-area::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(79,140,255,.08) 0%,transparent 60%);
+}
+.style-c .video-mock{
+  width:100%;height:100%;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#0a0a14 0%,#141428 50%,#0a0a14 100%);
+}
+.style-c .video-mock::after{
+  content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:80px;height:80px;border-radius:50%;
+  background:rgba(255,255,255,.1);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;
+}
+.style-c .video-mock .play-icon{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:48px;height:48px;color:rgba(255,255,255,.8);z-index:2;
+}
+.style-c .floating-nav{
+  position:absolute;top:0;left:0;right:0;z-index:10;
+  padding:14px 18px;display:flex;align-items:center;gap:12px;
+  background:linear-gradient(180deg,rgba(0,0,0,.7) 0%,transparent 100%);
+  transition:opacity .3s;
+}
+.style-c .floating-nav.show{opacity:1}
+.style-c .floating-nav .brand{
+  font-size:14px;font-weight:700;color:#fff;letter-spacing:1px;
+  display:flex;align-items:center;gap:8px;
+}
+.style-c .floating-nav .brand::before{
+  content:"";width:24px;height:24px;border-radius:6px;
+  background:linear-gradient(135deg,var(--accent),#8b5cf6);
+}
+.style-c .floating-nav .search-box{
+  flex:1;max-width:360px;margin:0 auto;
+  position:relative;
+}
+.style-c .floating-nav .search-box input{
+  width:100%;padding:8px 14px 8px 36px;border-radius:999px;
+  background:rgba(255,255,255,.12);backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.15);color:#fff;font-size:12px;outline:none;
+}
+.style-c .floating-nav .search-box input::placeholder{color:rgba(255,255,255,.5)}
+.style-c .floating-nav .search-box::before{
+  content:"🔍";position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  font-size:12px;opacity:.6;
+}
+.style-c .floating-nav .engine-switch{
+  display:flex;gap:4px;padding:3px;border-radius:999px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
+}
+.style-c .floating-nav .engine-switch .opt{
+  padding:4px 12px;border-radius:999px;font-size:11px;color:rgba(255,255,255,.6);
+  cursor:pointer;transition:all .2s;
+}
+.style-c .floating-nav .engine-switch .opt.active{background:rgba(255,255,255,.2);color:#fff}
+
+.style-c .bottom-controls{
+  position:absolute;bottom:0;left:0;right:0;z-index:10;
+  padding:20px 24px 16px;
+  background:linear-gradient(0deg,rgba(0,0,0,.85) 0%,transparent 100%);
+  transition:opacity .3s;
+}
+.style-c .progress-bar{
+  height:3px;border-radius:2px;background:rgba(255,255,255,.15);
+  position:relative;margin-bottom:12px;cursor:pointer;
+}
+.style-c .progress-bar .fill{
+  height:100%;border-radius:2px;
+  background:linear-gradient(90deg,var(--accent),#8b5cf6);
+  width:35%;position:relative;
+}
+.style-c .progress-bar .fill::after{
+  content:"";position:absolute;right:-5px;top:50%;transform:translateY(-50%);
+  width:10px;height:10px;border-radius:50%;background:#fff;
+  box-shadow:0 0 12px rgba(79,140,255,.6);
+}
+.style-c .ctrl-row{display:flex;align-items:center;gap:16px;color:rgba(255,255,255,.7)}
+.style-c .ctrl-row .ctrl-btn{
+  width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.1);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.15);cursor:pointer;color:#fff;font-size:14px;
+  transition:all .2s;
+}
+.style-c .ctrl-row .ctrl-btn.play{width:44px;height:44px;background:#fff;color:#000;font-size:16px}
+.style-c .ctrl-row .ctrl-btn:hover{background:rgba(255,255,255,.2)}
+.style-c .ctrl-row .time{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.6)}
+.style-c .ctrl-row .spacer{flex:1}
+.style-c .ctrl-row .vol-control{display:flex;align-items:center;gap:6px;font-size:14px}
+.style-c .ctrl-row .vol-bar{width:60px;height:3px;background:rgba(255,255,255,.2);border-radius:2px}
+.style-c .ctrl-row .vol-bar .fill{width:70%;height:100%;background:#fff;border-radius:2px}
+.style-c .ctrl-row .badge-live{
+  padding:4px 10px;border-radius:4px;background:rgba(255,93,108,.9);
+  color:#fff;font-size:10px;font-weight:700;letter-spacing:1px;
+  display:flex;align-items:center;gap:4px;
+}
+.style-c .ctrl-row .badge-live::before{
+  content:"";width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 1.5s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* =============================================== */
+/* 方案D：仪表盘风                                  */
+/* =============================================== */
+.style-d .preview-window{
+  background:#0f0f1a;display:grid;grid-template-columns:260px 1fr;
+  grid-template-rows:48px 1fr;grid-template-areas:
+    "header header"
+    "sidebar main";
+}
+.style-d .win-titlebar{grid-area:header;background:#12121f;border-bottom:1px solid #1e1e30}
+.style-d .top-nav{
+  grid-area:header;background:#12121f;border-bottom:1px solid #1e1e30;
+  padding:0 16px;display:flex;align-items:center;gap:12px;height:100%;
+}
+.style-d .top-nav .logo{
+  font-size:15px;font-weight:700;background:linear-gradient(135deg,var(--accent),#8b5cf6);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  display:flex;align-items:center;gap:8px;
+}
+.style-d .top-nav .logo::before{
+  content:"📊";font-size:16px;
+}
+.style-d .top-nav .search-input{
+  flex:1;max-width:400px;margin:0 auto;
+  padding:7px 14px;border-radius:999px;background:#1e1e30;border:1px solid #2a2a40;
+  color:var(--text);font-size:12px;outline:none;font-family:var(--mono);
+}
+.style-d .top-nav .search-input::placeholder{color:var(--text-3)}
+.style-d .top-nav .user-actions{display:flex;gap:8px}
+.style-d .top-nav .action{
+  padding:6px 12px;border-radius:8px;background:#1e1e30;border:1px solid #2a2a40;
+  font-size:12px;color:var(--text-2);cursor:pointer;display:flex;align-items:center;gap:6px;
+}
+.style-d .top-nav .action.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.style-d .dashboard-sidebar{
+  grid-area:sidebar;background:#12121f;border-right:1px solid #1e1e30;
+  padding:16px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;
+}
+.style-d .dashboard-sidebar .panel-title{
+  font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-3);
+  font-weight:600;margin-bottom:4px;
+}
+.style-d .stat-cards{display:flex;flex-direction:column;gap:10px}
+.style-d .stat-card{
+  padding:12px;background:#1a1a28;border-radius:10px;border:1px solid #252538;
+}
+.style-d .stat-card .stat-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.style-d .stat-card .stat-icon{
+  width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+}
+.style-d .stat-card .stat-icon.blue{background:rgba(79,140,255,.15);color:var(--accent)}
+.style-d .stat-card .stat-icon.green{background:rgba(61,214,140,.15);color:var(--ok)}
+.style-d .stat-card .stat-icon.orange{background:rgba(255,184,77,.15);color:var(--warn)}
+.style-d .stat-card .stat-value{font-size:22px;font-weight:700;color:var(--text)}
+.style-d .stat-card .stat-value .unit{font-size:12px;color:var(--text-3);font-weight:400;margin-left:2px}
+.style-d .stat-card .stat-change{font-size:10px;margin-top:4px}
+.style-d .stat-card .stat-change.up{color:var(--ok)}
+.style-d .stat-card .stat-change.down{color:var(--danger)}
+
+.style-d .source-list{display:flex;flex-direction:column;gap:6px}
+.style-d .source-item{
+  padding:8px 10px;border-radius:8px;background:#1a1a28;border:1px solid #252538;
+  cursor:pointer;display:flex;align-items:center;gap:10px;font-size:11px;
+  transition:all .15s;
+}
+.style-d .source-item:hover{background:#222238}
+.style-d .source-item.active{border-color:var(--accent);background:rgba(79,140,255,.1)}
+.style-d .source-item .src-icon{width:24px;height:24px;border-radius:6px;background:#252538;display:flex;align-items:center;justify-content:center;font-size:10px}
+.style-d .source-item .src-info{flex:1;min-width:0}
+.style-d .source-item .src-name{color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.style-d .source-item .src-url{color:var(--text-3);font-size:10px;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.style-d .source-item .src-status{width:6px;height:6px;border-radius:50%}
+.style-d .source-item .src-status.online{background:var(--ok);box-shadow:0 0 6px var(--ok)}
+.style-d .source-item .src-status.offline{background:var(--danger)}
+
+.style-d .dashboard-main{
+  grid-area:main;padding:16px;background:#0f0f1a;overflow-y:auto;
+}
+.style-d .dashboard-main .main-header{
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;
+}
+.style-d .dashboard-main .main-title{font-size:16px;font-weight:600}
+.style-d .dashboard-main .main-actions{display:flex;gap:8px}
+.style-d .dashboard-main .tab-btn{
+  padding:6px 14px;border-radius:6px;background:#1a1a28;border:1px solid #252538;
+  color:var(--text-2);font-size:12px;cursor:pointer;
+}
+.style-d .dashboard-main .tab-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.style-d .web-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.style-d .web-card{
+  background:#1a1a28;border:1px solid #252538;border-radius:12px;overflow:hidden;
+}
+.style-d .web-card .card-header{
+  padding:10px 14px;border-bottom:1px solid #252538;display:flex;justify-content:space-between;align-items:center;
+}
+.style-d .web-card .card-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.style-d .web-card .card-title .live-dot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 6px var(--ok)}
+.style-d .web-card .card-actions{display:flex;gap:4px}
+.style-d .web-card .mini-btn{
+  width:24px;height:24px;border-radius:6px;background:#252538;display:flex;align-items:center;justify-content:center;
+  color:var(--text-3);cursor:pointer;font-size:10px;
+}
+.style-d .web-card .mini-btn:hover{color:var(--text);background:#32324a}
+.style-d .web-card .card-body{
+  height:140px;background:#141420;position:relative;overflow:hidden;
+}
+.style-d .web-card .card-body .page-preview{
+  width:100%;height:100%;padding:10px;
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto;gap:6px;
+}
+.style-d .web-card .card-body .ph{
+  background:rgba(255,255,255,.04);border-radius:4px;
+}
+.style-d .web-card .card-body .ph.header{grid-column:1/-1;height:14px}
+.style-d .web-card .card-body .ph.cell{height:28px}
+.style-d .web-card .card-footer{
+  padding:8px 14px;border-top:1px solid #252538;display:flex;justify-content:space-between;
+  font-size:11px;color:var(--text-3);
+}
+
+/* ===== 底部选择区 ===== */
+.picker{
+  margin-top:48px;padding:28px;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);text-align:center;
+}
+.picker h2{font-size:20px;margin-bottom:6px}
+.picker p{color:var(--text-2);font-size:14px;margin-bottom:20px}
+.picker-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.picker-card{
+  padding:18px;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius-sm);
+  cursor:pointer;transition:all .2s;text-align:left;
+}
+.picker-card:hover{border-color:var(--accent);background:var(--bg-3);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.picker-card .pk-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.picker-card .pk-desc{font-size:12px;color:var(--text-2)}
+.picker-card .pk-preview{
+  height:48px;border-radius:8px;margin-bottom:10px;position:relative;overflow:hidden;
+}
+.picker-card.a .pk-preview{background:linear-gradient(135deg,#1a1a28,#242438)}
+.picker-card.a .pk-preview::after{content:"Glass";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:10px}
+.picker-card.b .pk-preview{background:linear-gradient(180deg,#181824,#1a1a28)}
+.picker-card.b .pk-preview::after{content:"Pro";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:10px}
+.picker-card.c .pk-preview{background:linear-gradient(180deg,#000,#0a0a14)}
+.picker-card.c .pk-preview::after{content:"Cinema";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:10px}
+.picker-card.d .pk-preview{background:linear-gradient(135deg,#0f0f1a,#12121f)}
+.picker-card.d .pk-preview::after{content:"Dashboard";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:10px}
+
+@media(max-width:960px){
+  .preview-wrap{grid-template-columns:1fr}
+  .picker-cards{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Hero -->
+<section class="hero">
+  <div class="badge">UI 设计方案 · Web 搜索窗口</div>
+  <h1>4 款现代风格 <span class="highlight">可视化方案</span></h1>
+  <p>针对 IPTVLiveChecker 的 Web 搜索窗口，提供 4 种截然不同的界面风格。每款方案在布局语义、信息架构、组件形态、字体层级上均有显著差异，选定后可直接落地为 WinForms 代码。</p>
+</section>
+
+<!-- =============================================== -->
+<!-- 方案 A -->
+<!-- =============================================== -->
+<section class="scheme style-a">
+  <div class="scheme-header">
+    <div class="scheme-num">A</div>
+    <div class="scheme-info">
+      <h2>极简科技风 · Glassmorphism</h2>
+      <p class="sub">毛玻璃 + 胶囊形 + 微渐变 · 轻盈现代</p>
+      <div class="scheme-tags">
+        <span class="tag accent">推荐</span>
+        <span class="tag">玻璃拟态</span>
+        <span class="tag">圆角胶囊</span>
+        <span class="tag">微渐变</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-wrap">
+    <!-- 预览 -->
+    <div class="preview">
+      <div class="preview-window">
+        <div class="win-titlebar">
+          <div class="traffic"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+          <div class="win-title">IPTV 直播源搜索</div>
+        </div>
+
+        <!-- 导航栏 -->
+        <div class="nav-bar">
+          <div class="engine-group">
+            <div class="engine-chip active">FOFA</div>
+            <div class="engine-chip">Quake</div>
+            <div class="engine-chip">Hunter</div>
+          </div>
+
+          <div class="search-rule">
+            <span>智慧桌面</span>
+          </div>
+
+          <div class="nav-center">
+            <div class="addr-bar">
+              <span class="lock">🔒</span>
+              <span class="domain">fofa.info</span>
+              <span class="path">/result?q=body%3D%22</span>
+            </div>
+          </div>
+
+          <div class="nav-right">
+            <div class="icon-btn extract">⚡ IP提取</div>
+            <div class="icon-btn">⟲</div>
+            <div class="icon-btn">⋮</div>
+          </div>
+        </div>
+
+        <!-- 内容区 -->
+        <div class="content-area">
+          <div class="web-mock">
+            <div class="mock-header">
+              <div class="mock-logo">F</div>
+              <div>
+                <div class="mock-title">FOFA 网络空间测绘</div>
+                <div class="mock-url">fofa.info/result?q=body%3D%22/iptv/live%22</div>
+              </div>
+            </div>
+            <div class="mock-body">
+              <div class="mock-cell wide"></div>
+              <div class="mock-cell"></div>
+              <div class="mock-cell"></div>
+              <div class="mock-cell"></div>
+              <div class="mock-cell"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 状态栏 -->
+        <div class="status-bar">
+          <span class="url">🔒 https://fofa.info/result?q=body%3D%22/iptv/live/zh_cn.js%22</span>
+          <span class="badge-s">● IP 提取: 就绪</span>
+          <span>引擎: FOFA</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 说明 -->
+    <div class="sidebar">
+      <div class="recommend">
+        <div class="title">✨ 推荐场景</div>
+        <p>追求现代感、轻量化的用户。适合作为默认风格。</p>
+      </div>
+
+      <h3>设计特点</h3>
+      <ul>
+        <li>导航栏使用毛玻璃 (backdrop-blur) 效果，内容区若隐若现</li>
+        <li>所有按钮/输入框采用圆角胶囊形 (999px radius)</li>
+        <li>搜索引擎切换为 Chip 组，当前项用渐变填充</li>
+        <li>地址栏居中显示，简化信息密度</li>
+        <li>IP 提取按钮为绿色高亮操作按钮</li>
+      </ul>
+
+      <h3>落地映射</h3>
+      <div class="feature">
+        <div class="label">WinForms 实现</div>
+        <div class="value">使用 Region + Paint 绘制圆角，Panel 作容器，字体 11-12pt</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================== -->
+<!-- 方案 B -->
+<!-- =============================================== -->
+<section class="scheme style-b">
+  <div class="scheme-header">
+    <div class="scheme-num">B</div>
+    <div class="scheme-info">
+      <h2>专业工具风 · VS Code</h2>
+      <p class="sub">侧边栏 + 语法高亮 + 效率优先 · 高密度信息</p>
+      <div class="scheme-tags">
+        <span class="tag">编辑器风格</span>
+        <span class="tag">侧边导航</span>
+        <span class="tag">代码高亮</span>
+        <span class="tag">状态栏</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-wrap">
+    <!-- 预览 -->
+    <div class="preview">
+      <div class="preview-window">
+        <div class="win-titlebar">
+          <div class="traffic"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+          <div class="win-title">IPTV Live Checker — Search Workspace</div>
+        </div>
+
+        <!-- 左侧图标栏 -->
+        <div class="sidebar-icons">
+          <div class="icon active">🔍</div>
+          <div class="icon">📁</div>
+          <div class="icon">⚙️</div>
+          <div class="divider"></div>
+          <div class="icon">📊</div>
+          <div class="icon">🌐</div>
+        </div>
+
+        <!-- 侧边面板 -->
+        <div class="side-panel">
+          <div class="section-title">搜索引擎</div>
+          <div class="engine-list">
+            <div class="engine-tag active">FOFA</div>
+            <div class="engine-tag">Quake</div>
+            <div class="engine-tag">Hunter</div>
+            <div class="engine-tag">ZoomEye</div>
+            <div class="engine-tag">Shodan</div>
+          </div>
+
+          <div class="section-title">搜索规则</div>
+          <div class="list-item active">
+            <span class="dot"></span>
+            <span>智慧桌面</span>
+            <span class="count">12</span>
+          </div>
+          <div class="list-item">
+            <span class="dot" style="background:var(--ok)"></span>
+            <span>智慧光迅</span>
+            <span class="count">8</span>
+          </div>
+          <div class="list-item">
+            <span class="dot" style="background:var(--warn)"></span>
+            <span>华视美达</span>
+            <span class="count">5</span>
+          </div>
+
+          <div class="section-title">历史记录</div>
+          <div class="list-item">
+            <span>📄</span>
+            <span>2026-07-28</span>
+          </div>
+          <div class="list-item">
+            <span>📄</span>
+            <span>2026-07-27</span>
+          </div>
+        </div>
+
+        <!-- 导航面包屑 -->
+        <div class="nav-bar">
+          <div class="breadcrumbs">
+            <span>🔍 搜索工作区</span>
+            <span class="sep">›</span>
+            <span>FOFA</span>
+            <span class="sep">›</span>
+            <span class="current">智慧桌面</span>
+          </div>
+          <div class="tools">
+            <div class="tool-btn">📋 复制</div>
+            <div class="tool-btn primary">⚡ 开始提取</div>
+          </div>
+        </div>
+
+        <!-- 内容区 -->
+        <div class="content-area">
+          <div class="editor-tabs">
+            <div class="editor-tab active">智慧桌面 — 结果 (12)</div>
+            <div class="editor-tab">FOFA 查询</div>
+            <div class="editor-tab">提取日志</div>
+          </div>
+          <div class="mock-page">
+            <div class="code-block">
+              <span class="com">// 搜索规则: 智慧桌面</span><br>
+              <span class="key">query</span>: <span class="str">"body=\"/iptv/live/zh_cn.js\""</span>,<br>
+              <span class="key">engine</span>: <span class="str">"FOFA"</span>,<br>
+              <span class="key">results</span>: [<br>
+              &nbsp;&nbsp;<span class="str">"192.168.1.100:8080"</span>,<br>
+              &nbsp;&nbsp;<span class="str">"10.0.0.5:554"</span>,<br>
+              &nbsp;&nbsp;<span class="str">"172.16.0.1:8080"</span><br>
+              ]
+            </div>
+            <div class="result-panel">
+              <div class="result-item">
+                <div class="label">发现IP</div>
+                <div class="val">12</div>
+              </div>
+              <div class="result-item">
+                <div class="label">有效端口</div>
+                <div class="val">5</div>
+              </div>
+              <div class="result-item">
+                <div class="label">直播源</div>
+                <div class="val">3</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 状态栏 -->
+        <div class="status-bar">
+          <div class="branch">main</div>
+          <span>FOFA · 智慧桌面</span>
+          <div class="right">
+            <span>↻ 就绪</span>
+            <span>⚡ 自动提取: 开</span>
+            <span>UTF-8</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 说明 -->
+    <div class="sidebar">
+      <div class="recommend">
+        <div class="title">✨ 推荐场景</div>
+        <p>开发者/技术人员，偏好高效工作流，需要侧边栏导航和多标签。</p>
+      </div>
+
+      <h3>设计特点</h3>
+      <ul>
+        <li>三栏布局：图标栏 + 侧边面板 + 编辑区</li>
+        <li>搜索规则列表带状态圆点和计数徽章</li>
+        <li>内容区使用标签页切换不同视图</li>
+        <li>搜索结果以代码块语法高亮展示</li>
+        <li>底部状态栏采用主题色，显示分支/编码/状态</li>
+      </ul>
+
+      <h3>落地映射</h3>
+      <div class="feature">
+        <div class="label">WinForms 实现</div>
+        <div class="value">SplitContainer 分栏，TreeView 侧边导航，RichTextBox 代码显示</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================== -->
+<!-- 方案 C -->
+<!-- =============================================== -->
+<section class="scheme style-c">
+  <div class="scheme-header">
+    <div class="scheme-num">C</div>
+    <div class="scheme-info">
+      <h2>沉浸影院风 · Cinema</h2>
+      <p class="sub">全屏沉浸式 + 自动隐藏控件 + 电影级体验</p>
+      <div class="scheme-tags">
+        <span class="tag">全屏沉浸</span>
+        <span class="tag">自动隐藏</span>
+        <span class="tag">进度条</span>
+        <span class="tag">LIVE 标签</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-wrap">
+    <!-- 预览 -->
+    <div class="preview">
+      <div class="preview-window">
+        <div class="content-area">
+          <div class="video-mock">
+            <!-- 浮动顶部导航 -->
+            <div class="floating-nav show">
+              <div class="brand">IPTV LIVE</div>
+              <div class="search-box">
+                <input type="text" placeholder="搜索直播源地址...">
+              </div>
+              <div class="engine-switch">
+                <div class="opt active">FOFA</div>
+                <div class="opt">Quake</div>
+                <div class="opt">Hunter</div>
+              </div>
+            </div>
+
+            <!-- 播放按钮 -->
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:20;border:1px solid rgba(255,255,255,.2)">
+              <span style="color:#fff;font-size:18px;margin-left:3px">▶</span>
+            </div>
+
+            <!-- 底部控制栏 -->
+            <div class="bottom-controls">
+              <div class="progress-bar">
+                <div class="fill"></div>
+              </div>
+              <div class="ctrl-row">
+                <div class="ctrl-btn play">▶</div>
+                <div class="ctrl-btn">⏮</div>
+                <div class="ctrl-btn">⏭</div>
+                <span class="time">00:00 / 120:00</span>
+                <div class="spacer"></div>
+                <div class="badge-live">LIVE</div>
+                <div class="ctrl-btn">🔊</div>
+                <div class="vol-control">
+                  <div class="vol-bar"><div class="fill"></div></div>
+                </div>
+                <div class="ctrl-btn">⛶</div>
+                <div class="ctrl-btn">⚙️</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 说明 -->
+    <div class="sidebar">
+      <div class="recommend">
+        <div class="title">✨ 推荐场景</div>
+        <p>沉浸式观看，追求最大显示区域，适合长时间观看直播的用户。</p>
+      </div>
+
+      <h3>设计特点</h3>
+      <ul>
+        <li>纯黑背景最大化观看区域</li>
+        <li>顶部/底部控件半透明覆盖，自动隐藏</li>
+        <li>进度条采用胶囊形 + 渐变填充</li>
+        <li>LIVE 标签带脉冲动效 (pulse animation)</li>
+        <li>播放/暂停按钮加大突出 (44px)</li>
+        <li>支持全屏、画中画、音量调节</li>
+      </ul>
+
+      <h3>落地映射</h3>
+      <div class="feature">
+        <div class="label">WinForms 实现</div>
+        <div class="value">MouseMove 显示控件、MouseLeave 隐藏，Panel 覆盖层，DoubleBuffered 防闪烁</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================== -->
+<!-- 方案 D -->
+<!-- =============================================== -->
+<section class="scheme style-d">
+  <div class="scheme-header">
+    <div class="scheme-num">D</div>
+    <div class="scheme-info">
+      <h2>仪表盘风 · Dashboard</h2>
+      <p class="sub">左侧数据面板 + 右侧多标签浏览 · 数据驱动</p>
+      <div class="scheme-tags">
+        <span class="tag">数据统计</span>
+        <span class="tag">卡片列表</span>
+        <span class="tag">多源浏览</span>
+        <span class="tag">实时状态</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-wrap">
+    <!-- 预览 -->
+    <div class="preview">
+      <div class="preview-window">
+        <div class="win-titlebar">
+          <div class="traffic"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+          <div class="win-title">IPTV Live Checker · Dashboard</div>
+        </div>
+
+        <!-- 顶部导航 -->
+        <div class="top-nav">
+          <div class="logo">IPTV Checker</div>
+          <input class="search-input" placeholder="🔍 输入搜索规则或URL...">
+          <div class="user-actions">
+            <div class="action">⚙️ 设置</div>
+            <div class="action primary">＋ 新任务</div>
+          </div>
+        </div>
+
+        <!-- 侧边栏 -->
+        <div class="dashboard-sidebar">
+          <div class="panel-title">实时统计</div>
+          <div class="stat-cards">
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon blue">📡</div>
+                <div class="stat-change up">↑ 12%</div>
+              </div>
+              <div class="stat-value">247<span class="unit">IPs</span></div>
+              <div style="font-size:10px;color:var(--text-3);margin-top:4px">已发现直播源</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon green">🟢</div>
+                <div class="stat-change up">↑ 5</div>
+              </div>
+              <div class="stat-value">36<span class="unit">在线</span></div>
+              <div style="font-size:10px;color:var(--text-3);margin-top:4px">当前可访问</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon orange">⚠️</div>
+                <div class="stat-change down">↓ 3</div>
+              </div>
+              <div class="stat-value">12<span class="unit">异常</span></div>
+              <div style="font-size:10px;color:var(--text-3);margin-top:4px">待检查</div>
+            </div>
+          </div>
+
+          <div class="panel-title">数据源列表</div>
+          <div class="source-list">
+            <div class="source-item active">
+              <div class="src-icon">F</div>
+              <div class="src-info">
+                <div class="src-name">FOFA · 智慧桌面</div>
+                <div class="src-url">fofa.info/result?q=...</div>
+              </div>
+              <div class="src-status online"></div>
+            </div>
+            <div class="source-item">
+              <div class="src-icon">Q</div>
+              <div class="src-info">
+                <div class="src-name">Quake · 智慧光迅</div>
+                <div class="src-url">quake.360.net/search</div>
+              </div>
+              <div class="src-status online"></div>
+            </div>
+            <div class="source-item">
+              <div class="src-icon">H</div>
+              <div class="src-info">
+                <div class="src-name">Hunter · 华视美达</div>
+                <div class="src-url">hunter.qianxin.com</div>
+              </div>
+              <div class="src-status offline"></div>
+            </div>
+            <div class="source-item">
+              <div class="src-icon">Z</div>
+              <div class="src-info">
+                <div class="src-name">ZoomEye · 综合搜索</div>
+                <div class="src-url">zoomeye.hack.com</div>
+              </div>
+              <div class="src-status online"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="dashboard-main">
+          <div class="main-header">
+            <div class="main-title">搜索监控中心</div>
+            <div class="main-actions">
+              <div class="tab-btn active">全部</div>
+              <div class="tab-btn">FOFA</div>
+              <div class="tab-btn">Quake</div>
+              <div class="tab-btn">Hunter</div>
+            </div>
+          </div>
+
+          <div class="web-grid">
+            <div class="web-card">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="live-dot"></span>
+                  FOFA · 智慧桌面
+                </div>
+                <div class="card-actions">
+                  <div class="mini-btn">↻</div>
+                  <div class="mini-btn">⛶</div>
+                  <div class="mini-btn">⋯</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="page-preview">
+                  <div class="ph header"></div>
+                  <div class="ph cell"></div>
+                  <div class="ph cell"></div>
+                  <div class="ph cell"></div>
+                  <div class="ph cell"></div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <span>192.168.1.100:8080</span>
+                <span>12 结果</span>
+              </div>
+            </div>
+
+            <div class="web-card">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="live-dot" style="background:var(--warn)"></span>
+                  Quake · 智慧光迅
+                </div>
+                <div class="card-actions">
+                  <div class="mini-btn">↻</div>
+                  <div class="mini-btn">⛶</div>
+                  <div class="mini-btn">⋯</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="page-preview">
+                  <div class="ph header"></div>
+                  <div class="ph cell"></div>
+                  <div class="ph cell"></div>
+                  <div class="ph cell"></div>
+                  <div class="ph cell"></div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <span>10.0.0.5:554</span>
+                <span>8 结果</span>
+              </div>
+            </div>
+
+            <div class="web-card">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="live-dot" style="background:var(--danger)"></span>
+                  Hunter · 华视美达
+                </div>
+                <div class="card-actions">
+                  <div class="mini-btn">↻</div>
+                  <div class="mini-btn">⛶</div>
+                  <div class="mini-btn">⋯</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="page-preview">
+                  <div class="ph header"></div>
+                  <div class="ph cell"></div>
+                  <div class="ph cell"></div>
+                  <div class="ph cell"></div>
+                  <div class="ph cell"></div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <span>离线</span>
+                <span>5 结果</span>
+              </div>
+            </div>
+
+            <div class="web-card">
+              <div class="card-header">
+                <div class="card-title">
+                  <span class="live-dot"></span>
+                  ZoomEye · 综合搜索
+                </div>
+                <div class="card-actions">
+                  <div class="mini-btn">↻</div>
+                  <div class="mini-btn">⛶</div>
+                  <div class="mini-btn">⋯</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="page-preview">
+                  <div class="ph header"></div>
+                  <div class="ph cell"></div>
+                  <div class="ph cell"></div>
+                  <div class="ph cell"></div>
+                  <div class="ph cell"></div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <span>172.16.0.1:8080</span>
+                <span>15 结果</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 说明 -->
+    <div class="sidebar">
+      <div class="recommend">
+        <div class="title">✨ 推荐场景</div>
+        <p>需要同时监控多个数据源，以数据驱动的方式查看整体搜索状态。</p>
+      </div>
+
+      <h3>设计特点</h3>
+      <ul>
+        <li>左侧数据面板展示实时统计卡片</li>
+        <li>数据源列表带在线/离线状态指示灯</li>
+        <li>主区域为多标签卡片式浏览</li>
+        <li>每张 Web 卡片内嵌迷你预览</li>
+        <li>统计卡片带环比变化百分比</li>
+      </ul>
+
+      <h3>落地映射</h3>
+      <div class="feature">
+        <div class="label">WinForms 实现</div>
+        <div class="value">SplitContainer 分栏，FlowLayoutPanel 卡片列表，WebView2 嵌入每个卡片</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================== -->
+<!-- 底部选择区 -->
+<!-- =============================================== -->
+<section class="picker">
+  <h2>选择你喜欢的风格</h2>
+  <p>点击下方卡片，告诉我你倾向哪一款方案，我将把它落地为 WinForms 代码</p>
+  <div class="picker-cards">
+    <div class="picker-card a" onclick="document.getElementById('style-a').scrollIntoView({behavior:'smooth'})">
+      <div class="pk-preview"></div>
+      <div class="pk-name">A · 极简科技风</div>
+      <div class="pk-desc">毛玻璃 + 胶囊形 · 轻盈现代</div>
+    </div>
+    <div class="picker-card b" onclick="document.getElementById('style-b').scrollIntoView({behavior:'smooth'})">
+      <div class="pk-preview"></div>
+      <div class="pk-name">B · 专业工具风</div>
+      <div class="pk-desc">VS Code 风格 · 高效工作流</div>
+    </div>
+    <div class="picker-card c" onclick="document.getElementById('style-c').scrollIntoView({behavior:'smooth'})">
+      <div class="pk-preview"></div>
+      <div class="pk-name">C · 沉浸影院风</div>
+      <div class="pk-desc">全屏沉浸式 · 电影级体验</div>
+    </div>
+    <div class="picker-card d" onclick="document.getElementById('style-d').scrollIntoView({behavior:'smooth'})">
+      <div class="pk-preview"></div>
+      <div class="pk-name">D · 仪表盘风</div>
+      <div class="pk-desc">数据驱动 · 多源监控</div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+// 点击导航标签平滑滚动
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.target;
+    const el = document.querySelector('.' + target);
+    if (el) el.scrollIntoView({behavior: 'smooth'});
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+// 方案导航标签点击事件
+const tabConfig = [
+  {selector: '.nav-tab', targetAttr: 'data-target', targets: ['style-a', 'style-b', 'style-c', 'style-d']}
+];
+
+// 简单的导航标签创建
+const navTabsContainer = document.querySelector('.nav-tabs');
+if (navTabsContainer && navTabsContainer.children.length === 0) {
+  const styles = [
+    {id: 'style-a', label: 'A · 极简科技风'},
+    {id: 'style-b', label: 'B · 专业工具风'},
+    {id: 'style-c', label: 'C · 沉浸影院风'},
+    {id: 'style-d', label: 'D · 仪表盘风'}
+  ];
+  styles.forEach((s, i) => {
+    const tab = document.createElement('div');
+    tab.className = 'nav-tab' + (i === 0 ? ' active' : '');
+    tab.textContent = s.label;
+    tab.setAttribute('data-target', s.id);
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const el = document.querySelector('.' + s.id);
+      if (el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+    });
+    navTabsContainer.appendChild(tab);
+  });
+}
+</script>
+</body>
+</html>

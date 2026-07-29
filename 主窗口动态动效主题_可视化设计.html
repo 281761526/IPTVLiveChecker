@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主窗口动态动效主题 · 可视化设计</title>
+<style>
+  :root{
+    --bg:#1d1d1f; --bgalt:#2a2a2e; --surface:#333337; --border:#444448;
+    --text:#f5f5f7; --text2:#a1a1a6; --accent:#2997ff; --primary:#2997ff;
+    --nav:#242427; --header:rgba(40,40,44,.72); --selrow:#2997ff;
+    --statusbar:#242427; --play:#34c759; --copy:#5e5ce6; --link:#2997ff;
+    --success:#34c759; --error:#ff453a; --warn:#ff9f0a; --info:#64d2ff;
+    --radius:12px; --motion:0.35s; --glow:rgba(41,151,255,.55);
+    --titlebar-fx:none; --row-fx:none; --btn-fx:none; --statusdot-fx:none;
+    --scan-fx:none; --glass:blur(24px) saturate(180%);
+  }
+  /* ===== 4 套主题：配色 + 动效参数 ===== */
+  [data-theme="aurora"]{
+    --bg:#16181d; --bgalt:#1f232b; --surface:#262b34; --border:#36404d;
+    --text:#eef3fb; --text2:#9fb0c3; --accent:#5ad1ff; --primary:#5ad1ff;
+    --nav:#191c22; --header:rgba(25,28,34,.66); --selrow:#5ad1ff;
+    --statusbar:#191c22; --play:#46e0a8; --copy:#7c8cff; --link:#5ad1ff;
+    --success:#46e0a8; --error:#ff6b81; --warn:#ffd166; --info:#7c8cff;
+    --glow:rgba(90,209,255,.6);
+    --titlebar-fx:auroraFlow 9s linear infinite;
+    --row-fx:auroraGlow 4.5s ease-in-out infinite;
+  }
+  [data-theme="breath"]{
+    --bg:#f5f5f7; --bgalt:#ffffff; --surface:#ffffff; --border:#e2e2e7;
+    --text:#1d1d1f; --text2:#6e6e73; --accent:#0071e3; --primary:#0071e3;
+    --nav:#ecedf0; --header:rgba(255,255,255,.7); --selrow:#0071e3;
+    --statusbar:#ecedf0; --play:#34c759; --copy:#5e5ce6; --link:#0071e3;
+    --success:#248a3d; --error:#d70015; --warn:#b25000; --info:#0071e3;
+    --glow:rgba(0,113,227,.32);
+    --statusdot-fx:breath 2.4s ease-in-out infinite;
+    --rowenter-fx:rowIn .5s cubic-bezier(.2,.8,.2,1) both;
+  }
+  [data-theme="liquid"]{
+    --bg:#fbf7f2; --bgalt:#ffffff; --surface:rgba(255,255,255,.72);
+    --border:#eadfd2; --text:#2b2620; --text2:#7a6f60; --accent:#e8820c;
+    --primary:#e8820c; --nav:#f3ece2; --header:rgba(255,250,244,.55);
+    --selrow:#e8820c; --statusbar:#f3ece2; --play:#3aa657; --copy:#9a6bff;
+    --link:#c2410c; --success:#3aa657; --error:#e0492b; --warn:#c2410c;
+    --info:#0a7ea4; --glow:rgba(232,130,12,.35);
+    --glass:blur(30px) saturate(160%);
+    --btn-fx:shimmer 1.4s ease-out;
+  }
+  [data-theme="neon"]{
+    --bg:#0c0c14; --bgalt:#14141f; --surface:#181826; --border:#2a2a44;
+    --text:#eae6ff; --text2:#9a8fd0; --accent:#bf5af2; --primary:#bf5af2;
+    --nav:#101019; --header:rgba(16,16,25,.6); --selrow:#bf5af2;
+    --statusbar:#101019; --play:#39e6c3; --copy:#5e5ce6; --link:#bf5af2;
+    --success:#39e6c3; --error:#ff4d6d; --warn:#ffb74d; --info:#6ab7ff;
+    --glow:rgba(191,90,242,.6);
+    --row-fx:neonGlow 2.2s ease-in-out infinite;
+    --scan-fx:scan 3.5s linear infinite;
+  }
+
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",
+    "PingFang SC","Microsoft YaHei",Roboto,sans-serif;
+    background:radial-gradient(1200px 600px at 50% -10%,#2a2a3a,#101016 60%);
+    color:#f5f5f7;padding:28px 18px 60px;}
+  .wrap{max-width:1080px;margin:0 auto;}
+  h1{font-size:24px;font-weight:700;letter-spacing:-.02em;margin:0 0 4px;}
+  .sub{color:#a1a1a6;font-size:13px;margin:0 0 22px;line-height:1.6;}
+  .themes{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:26px;}
+  .tpill{flex:1 1 200px;border:1px solid #3a3a40;background:#1c1c22;
+    border-radius:12px;padding:14px 16px;cursor:pointer;transition:transform .2s,
+    border-color .2s,box-shadow .2s;user-select:none;}
+  .tpill:hover{transform:translateY(-2px);}
+  .tpill.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),
+    0 8px 28px rgba(0,0,0,.4);}
+  .tpill .nm{font-weight:650;font-size:15px;display:flex;align-items:center;
+    gap:8px;}
+  .tpill .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);}
+  .tpill .ds{color:#a1a1a6;font-size:12px;margin-top:6px;line-height:1.5;}
+
+  /* ===== 主窗口 mockup ===== */
+  .win{position:relative;border-radius:var(--radius);overflow:hidden;
+    background:var(--bg);border:1px solid var(--border);
+    box-shadow:0 30px 80px rgba(0,0,0,.55);transition:background-color var(--motion),
+    border-color var(--motion);}
+  [data-theme="breath"] .win,[data-theme="liquid"] .win{
+    box-shadow:0 30px 80px rgba(0,0,0,.18);}
+  .titlebar{height:42px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 14px;background:var(--header);
+    backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
+    border-bottom:1px solid var(--border);position:relative;transition:background-color var(--motion);}
+  [data-theme="aurora"] .titlebar::after,[data-theme="neon"] .titlebar::after{
+    content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
+    background:linear-gradient(90deg,transparent,var(--accent),#ff5ed2,
+      var(--accent),transparent);background-size:300% 100%;
+    animation:var(--titlebar-fx);}
+  [data-theme="neon"] .titlebar::after{box-shadow:0 0 12px var(--glow);}
+  .title{font-size:13px;font-weight:600;color:var(--text);letter-spacing:.2px;}
+  .traffic{display:flex;gap:8px;}
+  .traffic i{width:12px;height:12px;border-radius:50%;display:block;
+    background:#3a3a40;}
+  [data-theme="breath"] .traffic i,[data-theme="liquid"] .traffic i{background:#d2d2d7;}
+  .toolbar{display:flex;gap:8px;padding:8px 12px;background:var(--bgalt);
+    border-bottom:1px solid var(--border);transition:background-color var(--motion);}
+  .tbtn{font-size:12px;color:var(--text);background:var(--surface);
+    border:1px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;
+    position:relative;overflow:hidden;transition:transform .12s ease-out,
+    background-color var(--motion),border-color var(--motion);}
+  .tbtn:active{transform:scale(.94);}
+  [data-theme="liquid"] .tbtn::after{content:"";position:absolute;top:0;left:-60%;
+    width:50%;height:100%;background:linear-gradient(100deg,transparent,
+    rgba(255,255,255,.55),transparent);transform:skewX(-18deg);}
+  [data-theme="liquid"] .tbtn:hover::after{animation:var(--btn-fx);left:120%;}
+  .tbtn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .body2{display:flex;min-height:360px;}
+  .side{width:170px;background:var(--nav);padding:12px 10px;
+    border-right:1px solid var(--border);transition:background-color var(--motion);}
+  .navitem{font-size:12.5px;color:var(--text2);padding:9px 11px;border-radius:8px;
+    margin-bottom:4px;cursor:pointer;transition:background-color .18s,color .18s;
+    display:flex;align-items:center;gap:8px;}
+  .navitem .ic{width:7px;height:7px;border-radius:2px;background:var(--text2);}
+  .navitem:hover{background:var(--surface);color:var(--text);}
+  .navitem.on{background:var(--accent);color:#fff;}
+  .navitem.on .ic{background:#fff;}
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .grid{flex:1;padding:10px 12px;overflow:hidden;}
+  .gridhead{display:flex;font-size:11px;color:var(--text2);
+    padding:0 10px 8px;border-bottom:1px solid var(--border);
+    transition:color var(--motion),border-color var(--motion);}
+  .gridhead span{flex:1;}
+  .gridhead span:last-child{flex:0 0 90px;text-align:right;}
+  .row{display:flex;align-items:center;font-size:12.5px;color:var(--text);
+    padding:10px;border-radius:9px;margin-bottom:5px;cursor:pointer;
+    background:var(--surface);border:1px solid transparent;
+    transition:background-color .18s,transform .18s,border-color .18s,
+    box-shadow .25s;animation:var(--rowenter-fx);}
+  .row:hover{transform:translateX(3px);}
+  .row span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .row span:last-child{flex:0 0 90px;text-align:right;color:var(--text2);}
+  .row.sel{background:color-mix(in srgb,var(--selrow) 16%,var(--surface));
+    border-color:var(--selrow);animation:var(--row-fx);}
+  [data-theme="neon"] .row.sel{box-shadow:0 0 0 1px var(--accent),
+    0 0 18px var(--glow);}
+  .badge{font-size:11px;padding:2px 8px;border-radius:20px;
+    background:var(--success);color:#fff;}
+  .badge.warn{background:var(--warn);}
+  .preview{width:230px;background:var(--bgalt);border-left:1px solid var(--border);
+    padding:12px;transition:background-color var(--motion);position:relative;
+    overflow:hidden;}
+  [data-theme="neon"] .preview::before{content:"";position:absolute;left:0;top:0;
+    width:2px;height:100%;background:linear-gradient(var(--accent),transparent);
+    background-size:100% 300%;animation:var(--scan-fx);box-shadow:0 0 10px var(--glow);}
+  .pvbox{height:120px;border-radius:10px;background:linear-gradient(135deg,
+    var(--surface),var(--border));position:relative;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;color:var(--text2);
+    font-size:11px;}
+  .statusdot{width:9px;height:9px;border-radius:50%;background:var(--success);
+    display:inline-block;margin-right:6px;animation:var(--statusdot-fx);}
+  .pvlabel{font-size:12px;color:var(--text);margin-top:12px;display:flex;
+    align-items:center;}
+  .pvsub{font-size:11px;color:var(--text2);margin-top:6px;line-height:1.5;}
+  .statusbar{height:30px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 14px;font-size:11.5px;color:var(--text2);background:var(--statusbar);
+    border-top:1px solid var(--border);transition:background-color var(--motion);}
+  .prog{width:120px;height:5px;border-radius:4px;background:var(--border);
+    overflow:hidden;position:relative;}
+  .prog i{position:absolute;left:0;top:0;height:100%;width:45%;
+    background:var(--accent);border-radius:4px;animation:slide 2.6s ease-in-out
+    infinite;}
+
+  /* ===== 动效说明 ===== */
+  .notes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px;}
+  .note{background:#1b1b21;border:1px solid #2e2e34;border-radius:12px;
+    padding:16px 18px;}
+  .note h3{margin:0 0 8px;font-size:14px;color:#fff;display:flex;align-items:center;
+    gap:8px;}
+  .note .tag{font-size:11px;padding:2px 8px;border-radius:20px;
+    background:var(--accent);color:#fff;}
+  .note p{margin:0;font-size:12.5px;color:#b8b8be;line-height:1.7;}
+  .pal{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px;}
+  .chip{display:flex;align-items:center;gap:8px;background:#1b1b21;
+    border:1px solid #2e2e34;border-radius:9px;padding:6px 10px;}
+  .chip .c{width:18px;height:18px;border-radius:5px;border:1px solid #00000033;}
+  .chip .t{font-size:11px;color:#c9c9cf;line-height:1.2;}
+  .chip .t b{color:#fff;font-weight:600;}
+
+  /* ===== keyframes ===== */
+  @keyframes auroraFlow{0%{background-position:0% 0}100%{background-position:300% 0}}
+  @keyframes auroraGlow{0%,100%{box-shadow:0 0 0 1px var(--accent),
+    0 0 10px var(--glow)}50%{box-shadow:0 0 0 1px var(--accent),0 0 22px var(--glow)}}
+  @keyframes breath{0%,100%{transform:scale(1);opacity:1}
+    50%{transform:scale(1.35);opacity:.55}}
+  @keyframes rowIn{from{opacity:0;transform:translateY(10px)}
+    to{opacity:1;transform:translateY(0)}}
+  @keyframes shimmer{from{left:-60%}to{left:120%}}
+  @keyframes neonGlow{0%,100%{box-shadow:0 0 0 1px var(--accent),0 0 10px var(--glow)}
+    50%{box-shadow:0 0 0 1px var(--accent),0 0 26px var(--glow)}}
+  @keyframes scan{0%{background-position:0 0}100%{background-position:0 300%}}
+  @keyframes slide{0%{left:-45%}50%{left:100%}100%{left:-45%}}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;}
+    .win,.titlebar,.toolbar,.side,.preview,.statusbar,.row{transition:background-color .2s,color .2s,border-color .2s !important;}
+  }
+  @media(max-width:760px){.notes{grid-template-columns:1fr}.body2{flex-direction:column}
+    .side{width:auto;border-right:none;border-bottom:1px solid var(--border)}
+    .preview{width:auto;border-left:none;border-top:1px solid var(--border)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>主窗口 · 动态动效主题</h1>
+  <p class="sub">四款"会动"的主题。点击上方卡片即时切换 —— 标题栏流光、状态脉冲、行入场、按钮扫光、选中辉光等动效都会随之演示。
+  所有颜色仍严格映射到 <code>AppTheme</code> 字段，落地时自动跟随主题切换。<br>
+  <span style="color:#7c8cff">提示：</span>右上角"检测中"圆点为呼吸动效，数据行悬停会轻移，选中行带辉光脉动。</p>
+
+  <div class="themes" id="themes">
+    <div class="tpill on" data-set="aurora"><div class="nm"><span class="dot"></span>极光流光</div>
+      <div class="ds">深色 · 标题栏极光渐变流动 + 选中行柔和辉光呼吸</div></div>
+    <div class="tpill" data-set="breath"><div class="nm"><span class="dot"></span>呼吸脉冲</div>
+      <div class="ds">浅色 · 状态呼吸圆点 + 行入场淡入 + 切换微缩放</div></div>
+    <div class="tpill" data-set="liquid"><div class="nm"><span class="dot"></span>液态玻璃</div>
+      <div class="ds">浅色 · 毛玻璃标题栏 + 按钮 hover 液态扫光 + 按压水波</div></div>
+    <div class="tpill" data-set="neon"><div class="nm"><span class="dot"></span>霓虹脉动</div>
+      <div class="ds">深色 · 强调色霓虹辉光呼吸 + 预览面板扫描线</div></div>
+  </div>
+
+  <div class="win" id="win">
+    <div class="titlebar">
+      <div class="title">IPTV 直播源检测</div>
+      <div class="traffic"><i></i><i></i><i></i></div>
+    </div>
+    <div class="toolbar">
+      <div class="tbtn primary">开始检测</div>
+      <div class="tbtn">导入</div>
+      <div class="tbtn">导出</div>
+      <div class="tbtn">主题</div>
+    </div>
+    <div class="body2">
+      <div class="side">
+        <div class="navitem on"><span class="ic"></span>全部频道</div>
+        <div class="navitem"><span class="ic"></span>在线</div>
+        <div class="navitem"><span class="ic"></span>超时</div>
+        <div class="navitem"><span class="ic"></span>未检测</div>
+        <div class="navitem"><span class="ic"></span>分组管理</div>
+      </div>
+      <div class="main">
+        <div class="grid">
+          <div class="gridhead"><span>名称</span><span>地址</span><span>延迟</span><span>状态</span></div>
+          <div class="row"><span>CCTV-1 综合</span><span>http://10.0.0.5:554/live/1</span><span>23ms</span><span><span class="badge">在线</span></span></div>
+          <div class="row sel"><span>湖南卫视</span><span>http://10.0.0.5:554/live/2</span><span>41ms</span><span><span class="badge">在线</span></span></div>
+          <div class="row"><span>浙江卫视</span><span>http://10.0.0.6:554/live/3</span><span>—</span><span><span class="badge warn">超时</span></span></div>
+          <div class="row"><span>广东卫视</span><span>http://10.0.0.6:554/live/4</span><span>18ms</span><span><span class="badge">在线</span></span></div>
+          <div class="row"><span>北京卫视</span><span>http://10.0.0.7:554/live/5</span><span>—</span><span><span class="badge warn">未检测</span></span></div>
+        </div>
+      </div>
+      <div class="preview">
+        <div class="pvbox">预览画面</div>
+        <div class="pvlabel"><span class="statusdot"></span>检测中…</div>
+        <div class="pvsub">当前：湖南卫视<br>分辨率 1920×1080 · 2.4 Mbps<br>用时 1.2s</div>
+      </div>
+    </div>
+    <div class="statusbar">
+      <div>共 5 个源 · 3 在线 · 1 超时 · 1 未检测</div>
+      <div class="prog"><i></i></div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <div class="note"><h3>极光流光 <span class="tag">Aurora</span></h3>
+      <p>标题栏底部一条多色极光带缓缓流动（9s 循环，linear 不眩晕）；选中行带柔和辉光做 4.5s 呼吸。动效只动"线"和"光"，不动块，避免干扰阅读。</p></div>
+    <div class="note"><h3>呼吸脉冲 <span class="tag">Breath</span></h3>
+      <p>"检测中"圆点 2.4s 缩放+透明度呼吸（状态可见性）；新数据行入场淡入上移（rowsIn）；主题为浅色，强调"安静、克制"。</p></div>
+    <div class="note"><h3>液态玻璃 <span class="tag">Liquid</span></h3>
+      <p>标题栏半透明毛玻璃 + 背后模糊；按钮 hover 时一道高光从左扫过（shimmer），按下即时缩放到 .94（响应按压）；整体温暖、通透。</p></div>
+    <div class="note"><h3>霓虹脉动 <span class="tag">Neon</span></h3>
+      <p>选中行霓虹辉光 2.2s 呼吸 + 预览面板左侧扫描线循环；适合暗色环境/夜间使用，强调色高饱和发光但仅用于"当前焦点"，不铺满全屏。</p></div>
+  </div>
+
+  <div class="pal" id="pal"></div>
+</div>
+
+<script>
+  const sets={aurora:'极光流光',breath:'呼吸脉冲',liquid:'液态玻璃',neon:'霓虹脉动'};
+  const win=document.getElementById('win');
+  const pills=document.querySelectorAll('.tpill');
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme',t);
+    pills.forEach(p=>p.classList.toggle('on',p.dataset.set===t));
+    renderPalette();
+  }
+  pills.forEach(p=>p.addEventListener('click',()=>applyTheme(p.dataset.set)));
+
+  const keys=['Bg','BgAlt','Surface','Border','TextPrimary','TextSecondary','Accent',
+    'Primary','NavBg','HeaderBg','SelectRow','StatusBarBg','PlayBtnBg','CopyBtnBg',
+    'LinkTextColor','SuccessColor','ErrorColor','WarnColor','InfoColor'];
+  const map={'Bg':'--bg','BgAlt':'--bgalt','Surface':'--surface','Border':'--border',
+    'TextPrimary':'--text','TextSecondary':'--text2','Accent':'--accent','Primary':'--primary',
+    'NavBg':'--nav','HeaderBg':'--header','SelectRow':'--selrow','StatusBarBg':'--statusbar',
+    'PlayBtnBg':'--play','CopyBtnBg':'--copy','LinkTextColor':'--link','SuccessColor':'--success',
+    'ErrorColor':'--error','WarnColor':'--warn','InfoColor':'--info'};
+  function renderPalette(){
+    const root=getComputedStyle(document.documentElement);
+    const pal=document.getElementById('pal');pal.innerHTML='';
+    keys.forEach(k=>{
+      const c=root.getPropertyValue(map[k]).trim();
+      pal.insertAdjacentHTML('beforeend',
+        `<div class="chip"><div class="c" style="background:${c}"></div>
+         <div class="t"><b>${k}</b><span>${c}</span></div></div>`);
+    });
+  }
+  applyTheme('aurora');
+</script>
+</body>
+</html>

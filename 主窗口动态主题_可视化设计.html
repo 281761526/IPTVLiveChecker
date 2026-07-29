@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IPTV 主窗口 · 动态主题可视化设计</title>
+<style>
+  /* ===== 让"随时间/情境自动渐变"的主题能平滑过渡（仅用于本预览，不进 C#） ===== */
+  @property --bg { syntax: '<color>'; inherits: true; initial-value: #0e1116; }
+  @property --surface { syntax: '<color>'; inherits: true; initial-value: #161b22; }
+  @property --accent { syntax: '<color>'; inherits: true; initial-value: #2997ff; }
+  @property --text { syntax: '<color>'; inherits: true; initial-value: #e6edf3; }
+  @property --nav { syntax: '<color>'; inherits: true; initial-value: #0b0e13; }
+  @property --header { syntax: '<color>'; inherits: true; initial-value: #11161d; }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #0e0e10; color: #e8e8ea;
+    font-family: -apple-system, "SF Pro Text", "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+    padding: 38px 22px 70px;
+  }
+  header.page { max-width: 1080px; margin: 0 auto 30px; }
+  header.page h1 { font-size: 26px; font-weight: 700; margin: 0 0 8px; letter-spacing: .3px; }
+  header.page p { color: #a1a1a6; font-size: 14px; line-height: 1.7; margin: 6px 0; }
+  .tag { display: inline-block; font-size: 12px; color: #8e8e93; background: #1c1c1e;
+         border: 1px solid #2c2c2e; border-radius: 20px; padding: 3px 12px; margin-right: 8px; }
+  .grid { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+
+  .card { background: #161618; border: 1px solid #262628; border-radius: 18px; overflow: hidden; }
+  .card .cap { padding: 16px 18px 4px; }
+  .card .cap h3 { margin: 0; font-size: 17px; font-weight: 650; }
+  .card .cap .sub { font-size: 12.5px; color: #9a9aa0; margin-top: 5px; line-height: 1.6; }
+  .card .mech { font-size: 12px; color: #76b7ff; margin: 10px 18px 0; }
+  .card .keys { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 18px 16px; }
+  .card .keys span { font-size: 11px; color: #c7c7cc; background: #202022; border: 1px solid #2e2e30;
+                     border-radius: 6px; padding: 3px 8px; }
+  .swatch { display: inline-block; width: 11px; height: 11px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
+
+  /* ============ 主窗口 Mockup（共用结构） ============ */
+  .stage { padding: 18px; background: radial-gradient(120% 120% at 50% 0%, #1a1a1d, #0c0c0e); display: flex; justify-content: center; }
+  .win {
+    width: 440px; border-radius: 14px; overflow: hidden; position: relative;
+    background: var(--bg); color: var(--text);
+    box-shadow: 0 18px 50px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.05);
+    font-size: 12px;
+  }
+  .titlebar { height: 38px; display: flex; align-items: center; gap: 8px; padding: 0 12px;
+    background: var(--header); border-bottom: 1px solid rgba(128,128,128,.18); }
+  .titlebar .dot { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; box-shadow: 18px 0 #febc2e, 36px 0 #28c840; margin-right: 30px; }
+  .titlebar .tt { font-weight: 600; opacity: .9; font-size: 12.5px; }
+  .titlebar .tg { margin-left: auto; opacity: .55; font-size: 13px; }
+  .toolbar { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 12px;
+    background: var(--header); border-bottom: 1px solid rgba(128,128,128,.12); }
+  .toolbar .tb { font-size: 11px; padding: 5px 11px; border-radius: 7px; background: var(--surface);
+    border: 1px solid rgba(128,128,128,.18); color: var(--text); }
+  .toolbar .tb.acc { background: var(--accent); color: #fff; border-color: transparent; font-weight: 600; }
+  .body { display: flex; height: 232px; }
+  .sidebar { width: 118px; background: var(--nav); padding: 10px 8px; display: flex; flex-direction: column; gap: 5px; }
+  .sidebar .ni { font-size: 11.5px; padding: 7px 9px; border-radius: 7px; opacity: .82; }
+  .sidebar .ni.on { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent); opacity: 1; font-weight: 600; }
+  .gridarea { flex: 1; background: var(--bg); padding: 8px; overflow: hidden; }
+  .row { display: grid; grid-template-columns: 1fr 54px 46px; gap: 6px; padding: 6px 8px; border-radius: 6px; align-items: center; }
+  .row.head { font-size: 10.5px; opacity: .5; text-transform: uppercase; letter-spacing: .5px; }
+  .row .st { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+  .row .ok { background: #34c759; } .row .bad { background: #ff453a; } .row .wait { background: #ffd60a; }
+  .row.sel { background: color-mix(in srgb, var(--accent) 18%, var(--bg)); }
+  .row.sel .name { color: var(--accent); font-weight: 600; }
+  .preview { width: 150px; background: #000; position: relative; overflow: hidden; }
+  .preview .lbl { position: absolute; left: 8px; bottom: 8px; font-size: 10px; color: #fff; opacity: .8; z-index: 2; }
+  .statusbar { height: 28px; display: flex; align-items: center; gap: 12px; padding: 0 12px; font-size: 11px;
+    background: var(--nav); border-top: 1px solid rgba(128,128,128,.15); opacity: .9; }
+
+  /* ============ 主题 A：极光流光 Aurora（动画渐变 + 呼吸光晕） ============ */
+  .t-aurora { --bg:#0b1020; --surface:#13203a; --accent:#38e1c6; --text:#dfeaf5; --nav:#0a0e1c; --header:#0c1426; }
+  .t-aurora .win {
+    background:
+      linear-gradient(125deg,#0b1020,#102a43,#163a5c,#0e2a3a,#0b1020);
+    background-size: 300% 300%;
+    animation: auroraDrift 19s ease-in-out infinite;
+  }
+  .t-aurora .preview::before {
+    content:""; position:absolute; inset:-20%;
+    background: conic-gradient(from 0deg, #0b1020, #1f6f5c, #2a4d7a, #6a3a8a, #0b1020);
+    filter: blur(14px); animation: auroraSpin 16s linear infinite; opacity:.9;
+  }
+  .t-aurora .row.sel { animation: breathe 3.2s ease-in-out infinite; }
+  @keyframes auroraDrift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+  @keyframes auroraSpin { to { transform: rotate(360deg); } }
+  @keyframes breathe { 0%,100%{ box-shadow: inset 0 0 0 1px rgba(56,225,198,.25);} 50%{ box-shadow: inset 0 0 0 1px rgba(56,225,198,.85), 0 0 14px rgba(56,225,198,.35);} }
+
+  /* ============ 主题 B：昼夜律动 DayCycle（按时间自动在 晨/午/昏/夜 间渐变） ============ */
+  .t-daycycle .win { transition: --bg 1.5s, --surface 1.5s, --accent 1.5s, --text 1.5s, --nav 1.5s, --header 1.5s; }
+  /* JS 每 3.6s 切换一组变量，CSS 负责平滑过渡（见底部脚本） */
+
+  /* ============ 主题 C：霓虹脉冲 Neon Pulse（强调色沿色相环流动） ============ */
+  .t-neon { --bg:#0d0d12; --surface:#16161d; --accent:#ff2d95; --text:#f0f0f5; --nav:#0a0a0e; --header:#101018; }
+  .t-neon .tb.acc, .t-neon .row.sel .name, .t-neon .sidebar .ni.on, .t-neon .statusbar b {
+    animation: neonHue 13s linear infinite;
+  }
+  .t-neon .row.sel { box-shadow: inset 0 0 0 1px rgba(255,45,149,.5); }
+  .t-neon .preview::before {
+    content:""; position:absolute; inset:0;
+    background: linear-gradient(135deg,#ff2d95,#7a5cff,#2de2ff,#ff2d95);
+    background-size: 300% 300%; animation: auroraDrift 10s ease infinite, neonHue 13s linear infinite;
+  }
+  @keyframes neonHue { to { filter: hue-rotate(360deg); } }
+
+  /* ============ 主题 D：流体玻璃 Liquid Glass（浅色 + 微动磨砂光泽） ============ */
+  .t-liquid { --bg:#eef1f6; --surface:rgba(255,255,255,.66); --accent:#5e5ce6; --text:#1d1d22; --nav:#e7ebf2; --header:rgba(255,255,255,.6); }
+  .t-liquid .win { backdrop-filter: blur(8px); }
+  .t-liquid .toolbar, .t-liquid .titlebar, .t-liquid .statusbar { backdrop-filter: blur(10px); }
+  .t-liquid .sidebar .ni.on { background: color-mix(in srgb, var(--accent) 16%, transparent); }
+  .t-liquid .row.sel { background: color-mix(in srgb, var(--accent) 12%, #fff); }
+  .t-liquid .preview::before {
+    content:""; position:absolute; inset:-30%;
+    background: radial-gradient(40% 40% at 30% 30%, rgba(94,92,230,.5), transparent 60%),
+                radial-gradient(40% 40% at 70% 70%, rgba(255,149,0,.35), transparent 60%);
+    filter: blur(10px); animation: liquidSheen 12s ease-in-out infinite;
+  }
+  @keyframes liquidSheen { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(6%,-4%) scale(1.08);} }
+
+  footer.page { max-width: 1080px; margin: 36px auto 0; font-size: 13px; color: #9a9aa0; line-height: 1.85;
+    border-top: 1px solid #262628; padding-top: 20px; }
+  footer.page b { color: #d6d6db; }
+  footer.page code { background: #202022; padding: 1px 6px; border-radius: 5px; color: #9fd0ff; font-size: 12px; }
+  .note { color: #ff9f0a; }
+</style>
+</head>
+<body>
+<header class="page">
+  <h1>主窗口 · 动态主题可视化设计</h1>
+  <p>
+    <span class="tag">apple-design</span>
+    <span class="tag">动态 / 有生命感</span>
+    <span class="tag">颜色映射 AppTheme 字段</span>
+  </p>
+  <p><b style="color:#e8e8ea">与上一轮"静态主题"的区别：</b>静态主题是一组固定色值；动态主题让界面"活"起来——要么背景/光晕在<b>流动</b>，要么配色随<b>时间/情境</b>自动渐变，要么强调色沿色相环<b>呼吸</b>。下面四款都用 CSS 动画真实演示了"动"的效果（不是截图）。</p>
+  <p>所有颜色仍严格对应现有 <code style="color:#9fd0ff">AppTheme</code> 字段（Bg/Surface/Accent/Text/Nav/Header/SelectRow/StatusBar…），选定后可 1:1 接进 C#。</p>
+</header>
+
+<div class="grid">
+
+  <!-- A 极光流光 -->
+  <div class="card t-aurora">
+    <div class="cap"><h3>A · 极光流光 Aurora</h3>
+      <div class="sub">深色基底上，整窗背景做缓慢的极光渐变漂移，预览窗是流动的光晕，选中行有呼吸光晕。最"活"、最有科技感。</div></div>
+    <div class="mech">机制：单一动画渐变层（背景）+ 选中行 box-shadow 呼吸（~3s 周期）</div>
+    <div class="keys">
+      <span><i class="swatch" style="background:#0b1020"></i>Bg 深蓝黑</span>
+      <span><i class="swatch" style="background:#38e1c6"></i>Accent 薄荷绿</span>
+      <span><i class="swatch" style="background:#163a5c"></i>Surface 蓝</span>
+    </div>
+    <div class="stage">
+      <div class="win">
+        <div class="titlebar"><span class="dot"></span><span class="tt">IPTV 直播源检测</span><span class="tg">▾</span></div>
+        <div class="toolbar"><span class="tb acc">开始检测</span><span class="tb">导出</span><span class="tb">设置</span></div>
+        <div class="body">
+          <div class="sidebar"><div class="ni on">全部频道</div><div class="ni">已失效</div><div class="ni">收藏</div><div class="ni">分组</div></div>
+          <div class="gridarea">
+            <div class="row head"><span>名称</span><span>状态</span><span>延迟</span></div>
+            <div class="row"><span><i class="st ok"></i>CCTV-1</span><span>正常</span><span>32ms</span></div>
+            <div class="row sel"><span class="name">湖南卫视</span><span>正常</span><span>41ms</span></div>
+            <div class="row"><span><i class="st bad"></i>某地方台</span><span>失效</span><span>—</span></div>
+            <div class="row"><span><i class="st wait"></i>测试源</span><span>检测中</span><span>…</span></div>
+          </div>
+          <div class="preview"><span class="lbl">预览 · 湖南卫视</span></div>
+        </div>
+        <div class="statusbar"><span>共 1280 个</span><span><b style="color:var(--accent)">在线 1102</b></span><span>失效 178</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B 昼夜律动 -->
+  <div class="card t-daycycle" id="daycycle">
+    <div class="cap"><h3>B · 昼夜律动 DayCycle</h3>
+      <div class="sub">配色随系统时间自动在 <b>晨→午→昏→夜</b> 间平滑渐变。白天清爽明亮，入夜沉静护眼。演示中每 3.6s 自动切换一相（真实使用按小时切换）。</div></div>
+    <div class="mech">机制：定时器读取 <code style="color:#76b7ff">DateTime.Now.Hour</code> → 在四套调色板间 lerp → 触发重绘</div>
+    <div class="keys">
+      <span>🌅 晨 暖米</span><span>☀️ 午 近白蓝</span><span>🌇 昏 暖紫</span><span>🌙 夜 深墨</span>
+    </div>
+    <div class="stage">
+      <div class="win">
+        <div class="titlebar"><span class="dot"></span><span class="tt">IPTV 直播源检测</span><span class="tg">▾</span></div>
+        <div class="toolbar"><span class="tb acc">开始检测</span><span class="tb">导出</span><span class="tb">设置</span></div>
+        <div class="body">
+          <div class="sidebar"><div class="ni on">全部频道</div><div class="ni">已失效</div><div class="ni">收藏</div><div class="ni">分组</div></div>
+          <div class="gridarea">
+            <div class="row head"><span>名称</span><span>状态</span><span>延迟</span></div>
+            <div class="row"><span><i class="st ok"></i>CCTV-1</span><span>正常</span><span>32ms</span></div>
+            <div class="row sel"><span class="name">湖南卫视</span><span>正常</span><span>41ms</span></div>
+            <div class="row"><span><i class="st bad"></i>某地方台</span><span>失效</span><span>—</span></div>
+            <div class="row"><span><i class="st wait"></i>测试源</span><span>检测中</span><span>…</span></div>
+          </div>
+          <div class="preview" style="background:linear-gradient(135deg,#444,#111)"><span class="lbl">预览 · 湖南卫视</span></div>
+        </div>
+        <div class="statusbar"><span>共 1280 个</span><span><b style="color:var(--accent)">在线 1102</b></span><span>失效 178</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C 霓虹脉冲 -->
+  <div class="card t-neon">
+    <div class="cap"><h3>C · 霓虹脉冲 Neon Pulse</h3>
+      <div class="sub">深色基底，强调色（按钮/选中行/链接/预览）沿色相环平滑流动，像呼吸的霓虹。视觉冲击强，适合"酷"的定位。</div></div>
+    <div class="mech">机制：强调色元素挂 <code style="color:#76b7ff">hue-rotate</code> 动画（13s 一轮）</div>
+    <div class="keys">
+      <span><i class="swatch" style="background:#ff2d95"></i>Accent 品红起点</span>
+      <span>→ 紫 → 青 流动</span>
+    </div>
+    <div class="stage">
+      <div class="win">
+        <div class="titlebar"><span class="dot"></span><span class="tt">IPTV 直播源检测</span><span class="tg">▾</span></div>
+        <div class="toolbar"><span class="tb acc">开始检测</span><span class="tb">导出</span><span class="tb">设置</span></div>
+        <div class="body">
+          <div class="sidebar"><div class="ni on">全部频道</div><div class="ni">已失效</div><div class="ni">收藏</div><div class="ni">分组</div></div>
+          <div class="gridarea">
+            <div class="row head"><span>名称</span><span>状态</span><span>延迟</span></div>
+            <div class="row"><span><i class="st ok"></i>CCTV-1</span><span>正常</span><span>32ms</span></div>
+            <div class="row sel"><span class="name">湖南卫视</span><span>正常</span><span>41ms</span></div>
+            <div class="row"><span><i class="st bad"></i>某地方台</span><span>失效</span><span>—</span></div>
+            <div class="row"><span><i class="st wait"></i>测试源</span><span>检测中</span><span>…</span></div>
+          </div>
+          <div class="preview"><span class="lbl">预览 · 湖南卫视</span></div>
+        </div>
+        <div class="statusbar"><span>共 1280 个</span><span><b>在线 1102</b></span><span>失效 178</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D 流体玻璃 -->
+  <div class="card t-liquid">
+    <div class="cap"><h3>D · 流体玻璃 Liquid Glass</h3>
+      <div class="sub">浅色 + 毛玻璃质感，面板半透明、背后有缓慢游移的光泽，干净通透。最"苹果官网"的那一类轻盈感。</div></div>
+    <div class="mech">机制：面板 <code style="color:#76b7ff">backdrop-filter: blur</code> + 光泽层缓慢位移</div>
+    <div class="keys">
+      <span><i class="swatch" style="background:#eef1f6"></i>Bg 浅雾</span>
+      <span><i class="swatch" style="background:#5e5ce6"></i>Accent 靛蓝</span>
+    </div>
+    <div class="stage">
+      <div class="win">
+        <div class="titlebar"><span class="dot"></span><span class="tt">IPTV 直播源检测</span><span class="tg">▾</span></div>
+        <div class="toolbar"><span class="tb acc">开始检测</span><span class="tb">导出</span><span class="tb">设置</span></div>
+        <div class="body">
+          <div class="sidebar"><div class="ni on">全部频道</div><div class="ni">已失效</div><div class="ni">收藏</div><div class="ni">分组</div></div>
+          <div class="gridarea">
+            <div class="row head"><span>名称</span><span>状态</span><span>延迟</span></div>
+            <div class="row"><span><i class="st ok"></i>CCTV-1</span><span>正常</span><span>32ms</span></div>
+            <div class="row sel"><span class="name">湖南卫视</span><span>正常</span><span>41ms</span></div>
+            <div class="row"><span><i class="st bad"></i>某地方台</span><span>失效</span><span>—</span></div>
+            <div class="row"><span><i class="st wait"></i>测试源</span><span>检测中</span><span>…</span></div>
+          </div>
+          <div class="preview" style="background:linear-gradient(135deg,#9aa,#556)"><span class="lbl">预览 · 湖南卫视</span></div>
+        </div>
+        <div class="statusbar"><span>共 1280 个</span><span><b style="color:var(--accent)">在线 1102</b></span><span>失效 178</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="page">
+  <b>实现要点（选定后我接进 C#，无需改布局）</b><br>
+  1. 在 <code>AppTheme.cs</code> 新增动态主题定义（Aurora/DayCycle/Neon/Liquid 各自的字段值，DayCycle 含 4 套相位调色板）。<br>
+  2. 标题栏 <code>themeMenu</code> 追加对应项，调用 <code>SetTheme(...)</code> / 新增 <code>SetDynamicTheme(name)</code>。<br>
+  3. <b>动态驱动</b>：用 <code>System.Windows.Forms.Timer</code> 一个低频定时器（DayCycle 按分钟/小时；Aurora/Neon 视觉流动可仅作用于"背景层"一个 Panel，不逐个重绘网格）。<br>
+  <span class="note">⚠ 重要性能边界（apple-design 原则：避免每帧重排）：</span>WinForms 的控件颜色是逐个设置的，<b>绝不要</b>每 16ms 遍历几百行网格重设 BackColor（会闪烁/卡顿）。正确做法：<br>
+  • 静态控件只在"相位变化"时（如整点）重算一次主题并整体刷新；<br>
+  • 真正连续动效（渐变漂移、呼吸光晕）只画在<b>单一背景层</b>（自定义 <code>OnPaint</code> 的 Panel，双缓冲），与数据网格解耦；<br>
+  • 强调色呼吸只 <code>Invalidate()</code> 选中行/主按钮等少数控件，而非整窗。<br>
+  <b>待你确认：</b>沙箱是 Linux 只能出 HTML 演示，请在本机浏览器打开本文件看"动"的效果；选定哪一款（或想混搭，如"DayCycle 的底 + Neon 的强调色"）告诉我，我立即接入并编译验证。
+</footer>
+
+<script>
+  // 仅用于演示"昼夜律动"：每 3.6s 在 晨/午/昏/夜 四套调色板间切换，CSS @property 负责平滑过渡
+  const phases = [
+    { bg:'#f3ece1', surface:'#fff7ec', accent:'#e8915b', text:'#4a3f35', nav:'#efe3d4', header:'#f6ede0' }, // 晨
+    { bg:'#f5f7fa', surface:'#ffffff', accent:'#0071e3', text:'#1d1d1f', nav:'#eef2f7', header:'#f0f3f8' }, // 午
+    { bg:'#2a2230', surface:'#352b3d', accent:'#ff8a5b', text:'#f3e9e0', nav:'#241d2b', header:'#2e2535' }, // 昏
+    { bg:'#0e1116', surface:'#161b22', accent:'#2997ff', text:'#e6edf3', nav:'#0b0e13', header:'#11161d' }  // 夜
+  ];
+  let pi = 0;
+  const card = document.getElementById('daycycle');
+  const win = card.querySelector('.win');
+  setInterval(() => {
+    pi = (pi + 1) % phases.length;
+    const p = phases[pi];
+    win.style.setProperty('--bg', p.bg);
+    win.style.setProperty('--surface', p.surface);
+    win.style.setProperty('--accent', p.accent);
+    win.style.setProperty('--text', p.text);
+    win.style.setProperty('--nav', p.nav);
+    win.style.setProperty('--header', p.header);
+  }, 3600);
+</script>
+</body>
+</html>

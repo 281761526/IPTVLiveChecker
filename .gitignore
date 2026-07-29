@@ -1,12 +1,26 @@
-# 编译产物
+# ===== 构建产物 =====
 bin/
 obj/
-*.exe
-*.dll
-# VS配置
+bin_verify/
 .vs/
-*.suo
+outputs/
+
+# ===== 用户/IDE 特定 =====
 *.user
-# 临时文件
+*.suo
+*.userprefs
+.vscode/
+
+# ===== 日志与临时文件 =====
 *.log
-*.tmp
+debug.log
+build_out.txt
+build_output.txt
+build_verify.txt
+$null
+
+# ===== 操作系统 =====
+Thumbs.db
+.DS_Store
+
+# 注意：themes/ 是源文件（运行时需要，csproj 会拷贝），不要忽略。
