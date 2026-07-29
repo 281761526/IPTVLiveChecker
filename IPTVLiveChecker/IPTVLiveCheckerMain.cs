@@ -1125,6 +1125,7 @@ public partial class IPTVLiveCheckerMain : Form
 		if (ofd.ShowDialog() == DialogResult.OK)
 		{
 			customPlayerPath = ofd.FileName;
+			ExternalPlayerHelper.SetCustomPlayer(customPlayerPath);
 			DarkMessageBox.Show("已设置第三方播放器：\n" + customPlayerPath, "设置成功", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 		}
 	}
@@ -20335,15 +20336,20 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			if (!string.IsNullOrWhiteSpace(channelPlayer.CurrentUrl))
 			{
-				try
+				// 使用 ExternalPlayerHelper 自动选择最佳播放器（PotPlayer > VLC > MPV > FFplay > 自定义 > 系统默认）
+				if (!ExternalPlayerHelper.TryPlayFallback(channelPlayer.CurrentUrl))
 				{
-					Process.Start(new ProcessStartInfo(channelPlayer.CurrentUrl)
+					// 兜底：用系统默认方式打开
+					try
 					{
-						UseShellExecute = true
-					});
-				}
-				catch
-				{
+						Process.Start(new ProcessStartInfo(channelPlayer.CurrentUrl)
+						{
+							UseShellExecute = true
+						});
+					}
+					catch
+					{
+					}
 				}
 			}
 		};

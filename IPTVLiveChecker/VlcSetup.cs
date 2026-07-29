@@ -32,20 +32,80 @@ internal static class VlcSetup
 
 	public static void EnsureLibVlcEnvironment()
 	{
-		if (Directory.Exists(LibVlcPath))
+		PlayerLogger.Write("VLC", $"EnsureLibVlcEnvironment 开始 | LibVlcPath={LibVlcPath} | IsLibVlcReady={IsLibVlcReady()}");
+		// 1) 先校验完整运行时是否就绪。未就绪时，尝试从已安装 VLC 补齐。
+		if (!IsLibVlcReady() && VlcDetector.IsVlcInstalled())
 		{
-			Environment.SetEnvironmentVariable("LIBVLC_WIN32_LIBVLC_PATH", LibVlcPath);
-			string pluginPath = Path.Combine(LibVlcPath, "plugins");
-			if (Directory.Exists(pluginPath))
+			PlayerLogger.Write("VLC", "运行时不完整，尝试从已安装VLC复制");
+			try
 			{
-				string existing = Environment.GetEnvironmentVariable("VLC_PLUGIN_PATH");
-				if (string.IsNullOrEmpty(existing))
-				{
-					Environment.SetEnvironmentVariable("VLC_PLUGIN_PATH", pluginPath);
-				}
+				CopyFromInstalledVlc();
+			}
+			catch
+			{
 			}
 		}
+		if (!IsLibVlcReady())
+		{
+			PlayerLogger.Write("VLC", "运行时仍不完整，抛出异常");
+			throw new InvalidOperationException("libvlc 运行时不完整：缺少 libvlc.dll / libvlccore.dll / plugins 目录。请先安装 VLC 播放器或重新运行 VLC 安装向导。");
+		}
+		// 2) 把 libvlc 目录加到 PATH，确保依赖 DLL 能被找到
+		string path = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+		if (!path.Contains(LibVlcPath))
+		{
+			Environment.SetEnvironmentVariable("PATH", LibVlcPath + Path.PathSeparator + path);
+		}
+		Environment.SetEnvironmentVariable("LIBVLC_WIN32_LIBVLC_PATH", LibVlcPath);
+		string pluginPath = Path.Combine(LibVlcPath, "plugins");
+		if (Directory.Exists(pluginPath))
+		{
+			string existing = Environment.GetEnvironmentVariable("VLC_PLUGIN_PATH");
+			if (string.IsNullOrEmpty(existing))
+			{
+				Environment.SetEnvironmentVariable("VLC_PLUGIN_PATH", pluginPath);
+			}
+		}
+		// 3) 强制加载核心 dll，验证依赖链是否完整。
+		// 如果 LoadLibrary 失败（缺少 MinGW 运行时库等），尝试从已安装 VLC 重新复制所有 DLL。
+		IntPtr hCore = LoadLibrary(Path.Combine(LibVlcPath, "libvlccore.dll"));
+		PlayerLogger.Write("VLC", $"LoadLibrary(libvlccore.dll) | handle={hCore}");
+		if (hCore == IntPtr.Zero && VlcDetector.IsVlcInstalled())
+		{
+			PlayerLogger.Write("VLC", "libvlccore.dll加载失败，重新尝试从已安装VLC复制");
+			try
+			{
+				CopyFromInstalledVlc();
+			}
+			catch
+			{
+			}
+			hCore = LoadLibrary(Path.Combine(LibVlcPath, "libvlccore.dll"));
+		}
+		if (hCore == IntPtr.Zero)
+		{
+			int err = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+			PlayerLogger.Write("VLC", $"libvlccore.dll最终加载失败 | error={err}");
+			throw new InvalidOperationException(
+				"无法加载 libvlccore.dll（错误码 " + err + "）。" +
+				"可能缺少依赖 DLL（libgcc_s_seh-1.dll / libwinpthread-1.dll / libstdc++-6.dll）。" +
+				"请删除 libvlc 文件夹后重启程序，或重新安装 VLC。");
+		}
+		IntPtr hVlc = LoadLibrary(Path.Combine(LibVlcPath, "libvlc.dll"));
+		PlayerLogger.Write("VLC", $"LoadLibrary(libvlc.dll) | handle={hVlc}");
+		if (hVlc == IntPtr.Zero)
+		{
+			int err = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+			PlayerLogger.Write("VLC", $"libvlc.dll加载失败 | error={err}");
+			throw new InvalidOperationException(
+				"无法加载 libvlc.dll（错误码 " + err + "）。" +
+				"可能缺少依赖 DLL。请删除 libvlc 文件夹后重启程序。");
+		}
+		PlayerLogger.Write("VLC", "EnsureLibVlcEnvironment 完成，所有DLL加载成功");
 	}
+
+	[System.Runtime.InteropServices.DllImport("kernel32", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
+	private static extern IntPtr LoadLibrary(string lpFileName);
 
 	public static bool CopyFromInstalledVlc()
 	{
@@ -62,9 +122,18 @@ internal static class VlcSetup
 		try
 		{
 			Directory.CreateDirectory(LibVlcPath);
-			CopyFileSafe(Path.Combine(vlcDir, "libvlc.dll"), Path.Combine(LibVlcPath, "libvlc.dll"));
-			CopyFileSafe(Path.Combine(vlcDir, "libvlccore.dll"), Path.Combine(LibVlcPath, "libvlccore.dll"));
+			// 复制 VLC 安装目录中的所有 DLL（包括 libvlc.dll、libvlccore.dll
+			// 以及它们依赖的 MinGW 运行时库：libgcc_s_seh-1.dll、libwinpthread-1.dll、
+			// libstdc++-6.dll 等。缺少这些依赖 DLL 会导致 LoadLibrary 失败，
+			// VLC 无法初始化，播放器完全不可用。）
+			foreach (string dll in Directory.GetFiles(vlcDir, "*.dll"))
+			{
+				string name = Path.GetFileName(dll);
+				CopyFileSafe(dll, Path.Combine(LibVlcPath, name));
+			}
+			// 复制 vlc.exe（fallback 外部播放器需要）
 			CopyFileSafe(Path.Combine(vlcDir, "vlc.exe"), Path.Combine(LibVlcPath, "vlc.exe"));
+			// 复制 plugins 目录（解码器、解复用器、网络协议等）
 			CopyDirectory(Path.Combine(vlcDir, "plugins"), Path.Combine(LibVlcPath, "plugins"));
 			TouchInitFlag();
 			return IsLibVlcReady();

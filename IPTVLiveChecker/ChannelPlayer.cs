@@ -157,7 +157,50 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		{
 			_dpiScale = g.DpiX / 96f;
 		}
-		InitializePlayer();
+		PlayerLogger.Write("PLAYER", $"构造函数开始 | DPI={_dpiScale:F2} | VideoView.HandleCreated={_videoView.IsHandleCreated}");
+		// 推迟到 VideoView Handle 创建后再初始化 VLC，避免因无 Handle 导致
+		// _videoView.MediaPlayer 赋值失败 → 误进 fallback 面板
+		_videoView.HandleCreated += delegate
+		{
+			PlayerLogger.Write("HANDLE", $"VideoView.HandleCreated 触发 | Handle={_videoView.Handle} | libVLC_ready={_libVLC != null}");
+			InitializePlayer();
+		};
+		// 备份触发点：如果 VideoView.HandleCreated 因控件层级问题未触发，
+		// ChannelPlayer 自身的 HandleCreated 和 Load 也会尝试初始化
+		base.HandleCreated += delegate
+		{
+			PlayerLogger.Write("HANDLE", $"ChannelPlayer.HandleCreated 触发 | VideoView.Handle={_videoView?.Handle ?? IntPtr.Zero}");
+			if (_libVLC == null && !base.IsDisposed)
+			{
+				InitializePlayer();
+			}
+		};
+		base.Load += delegate
+		{
+			PlayerLogger.Write("PLAYER", $"ChannelPlayer.Load 触发 | libVLC_ready={_libVLC != null} | VideoView.Handle={_videoView?.Handle ?? IntPtr.Zero}");
+			if (_libVLC == null && !base.IsDisposed)
+			{
+				InitializePlayer();
+			}
+		};
+		// 关键修复：如果 HandleCreated 在事件绑定前已触发（WinForms 常见竞态），
+		// 这里主动检查并补触发 InitializePlayer
+		if (_videoView.IsHandleCreated && _libVLC == null && !base.IsDisposed)
+		{
+			PlayerLogger.Write("PLAYER", $"构造函数主动检查补初始化 | VideoView.Handle={_videoView.Handle}");
+			InitializePlayer();
+		}
+		// 延迟初始化：在控件完全显示后再尝试一次，确保所有父容器布局已完成
+		// 使用 BeginInvoke 确保在消息处理空闲时执行
+		base.BeginInvoke((Action)delegate
+		{
+			PlayerLogger.Write("PLAYER", $"BeginInvoke 延迟初始化检查 | libVLC_ready={_libVLC != null} | VideoView.Handle={_videoView?.Handle ?? IntPtr.Zero}");
+			if (_libVLC == null && !base.IsDisposed && _videoView.IsHandleCreated)
+			{
+				InitializePlayer();
+			}
+		});
+		PlayerLogger.Write("PLAYER", "构造函数完成，所有初始化钩子已绑定");
 		Application.AddMessageFilter(this);
 	}
 
@@ -247,7 +290,8 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		this._fallbackPanel = new System.Windows.Forms.Panel
 		{
 			Dock = System.Windows.Forms.DockStyle.Fill,
-			BackColor = System.Drawing.Color.FromArgb(24, 24, 28)
+			BackColor = System.Drawing.Color.FromArgb(24, 24, 28),
+			Visible = false
 		};
 		this._fallbackLabel = new System.Windows.Forms.Label
 		{
@@ -261,14 +305,13 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		};
 		this._openExternalBtn = new System.Windows.Forms.Button
 		{
-			Size = new System.Drawing.Size(160, 34),
+			Size = new System.Drawing.Size(180, 34),
 			FlatStyle = System.Windows.Forms.FlatStyle.Flat,
 			ForeColor = System.Drawing.Color.White,
 			BackColor = System.Drawing.Color.FromArgb(0, 122, 255),
-			Text = "用默认播放器打开",
+			Text = "用外部播放器打开",
 			Cursor = System.Windows.Forms.Cursors.Hand,
-			AutoSize = true,
-			AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink,
+			AutoSize = false,
 			Padding = new System.Windows.Forms.Padding(14, 6, 14, 6),
 			UseCompatibleTextRendering = true
 		};
@@ -277,10 +320,20 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		{
 			this.OnOpenExternalRequested();
 		};
+		// Dock=Top 的 label 先添加，Dock=None 的 button 后添加，确保 label 占据正确的顶部空间
+		this._fallbackPanel.Controls.Add(this._fallbackLabel);
 		this._fallbackPanel.Controls.Add(this._openExternalBtn);
-		this._fallbackPanel.Resize += delegate
+		// 触发一次初始布局（稍后 SizeChanged 会再触发一次）
+		this._fallbackPanel.SizeChanged += delegate
 		{
-			this._openExternalBtn.Location = new System.Drawing.Point((int)((float)(this._fallbackPanel.Width - this._openExternalBtn.Width) / 2f), (int)((float)(this._fallbackPanel.Height - this._openExternalBtn.Height) / 2f) + 20);
+			LayoutFallbackContent();
+		};
+		this._fallbackPanel.VisibleChanged += delegate
+		{
+			if (this._fallbackPanel.Visible)
+			{
+				LayoutFallbackContent();
+			}
 		};
 		this.BuildControlBar();
 		base.Controls.Add(this._videoView);
@@ -290,6 +343,55 @@ public class ChannelPlayer : UserControl, IMessageFilter
 
 	/// <summary>底部控制栏高度（含 DPI 缩放），供外部按 16:9 精确计算播放器容器高度。</summary>
 	public int ControlBarHeight => (_controlBar != null) ? _controlBar.Height : ((int)(52f * _dpiScale));
+
+	/// <summary>重新布局 fallback 面板中的 label（顶部）和 button（剩余区域居中）。</summary>
+	private void LayoutFallbackContent()
+	{
+		if (this._fallbackPanel == null || this._fallbackLabel == null || this._openExternalBtn == null)
+		{
+			return;
+		}
+		// 强制应用 Dock 布局，让 label 占满顶部
+		this._fallbackPanel.PerformLayout();
+		int panelW = this._fallbackPanel.ClientSize.Width;
+		int panelH = this._fallbackPanel.ClientSize.Height;
+		int logBtnW = this._openExternalBtn.Width;
+		int logBtnH = this._openExternalBtn.Height;
+		PlayerLogger.Write("LAYOUT", $"LayoutFallbackContent | panel={panelW}x{panelH} | btn={logBtnW}x{logBtnH} | panel.Visible={_fallbackPanel.Visible} | label.Text={_fallbackLabel.Text?.Substring(0, Math.Min(30, _fallbackLabel.Text?.Length ?? 0))}");
+		// 面板尺寸还未确定时（如构造阶段 ClientSize=0），使用 BeginInvoke 延迟重试
+		if (panelW <= 0 || panelH <= 0)
+		{
+			// 避免无限循环：只排队一次
+			if (!this._layoutPending)
+			{
+				this._layoutPending = true;
+				this.BeginInvoke((Action)delegate
+				{
+					this._layoutPending = false;
+					LayoutFallbackContent();
+				});
+			}
+			return;
+		}
+		int labelH = this._fallbackLabel.Visible ? this._fallbackLabel.Height : 0;
+		int availH = Math.Max(0, panelH - labelH);
+		// 按钮宽度：固定 160，但不超过面板宽度减去边距
+		int btnW = Math.Min(160, panelW - 20);
+		if (btnW < 80)
+		{
+			btnW = 80;
+		}
+		int btnH = this._openExternalBtn.Height > 0 ? this._openExternalBtn.Height : 34;
+		int x = (panelW - btnW) / 2;
+		int y = labelH + (availH - btnH) / 2;
+		if (y < labelH + 10)
+		{
+			y = labelH + 10;
+		}
+		this._openExternalBtn.SetBounds(x, y, btnW, btnH);
+	}
+
+	private bool _layoutPending;
 
 	private void BuildControlBar()
 	{
@@ -664,19 +766,48 @@ public class ChannelPlayer : UserControl, IMessageFilter
 
 	private void InitializePlayer()
 	{
+		// 防止重复初始化（HandleCreated/Load 可能多次触发）
+		if (_libVLC != null)
+		{
+			PlayerLogger.Write("INIT", "InitializePlayer 被跳过：libVLC 已存在");
+			return;
+		}
+		PlayerLogger.Write("INIT", $"InitializePlayer 开始 | VideoView.Handle={(_videoView != null ? _videoView.Handle : IntPtr.Zero)} | IsHandleCreated={_videoView?.IsHandleCreated} | IsDisposed={base.IsDisposed}");
+		long initStart = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 		try
 		{
+			// 确保 VideoView 的 handle 已创建，否则 MediaPlayer 赋值会失败
+			if (_videoView != null && !_videoView.IsHandleCreated)
+			{
+				PlayerLogger.Write("INIT", $"强制创建 VideoView Handle");
+				_ = _videoView.Handle;
+				PlayerLogger.Write("INIT", $"Handle 创建完成 | Handle={_videoView.Handle}");
+			}
+			PlayerLogger.Write("INIT", "调用 VlcSetup.EnsureLibVlcEnvironment()");
 			VlcSetup.EnsureLibVlcEnvironment();
+			// 关键修复：显式调用 Core.Initialize 指定 native 库路径
+			// LibVLCSharp 3.8.2 内部搜索逻辑期望 win-x64 子目录结构，
+			// 但我们的 DLL 在 libvlc\ 根目录。手动 LoadLibrary 成功但 LibVLCSharp
+			// 不会复用已加载模块，必须通过 Core.Initialize 传入正确路径。
+			string libvlcPath = VlcSetup.GetLibVlcPath();
+			PlayerLogger.Write("INIT", $"调用 Core.Initialize(path) | path={libvlcPath}");
+			LibVLCSharp.Shared.Core.Initialize(libvlcPath);
+			PlayerLogger.Write("INIT", "Core.Initialize 完成，创建 LibVLC 实例");
 			_libVLC = new LibVLC();
+			PlayerLogger.Write("INIT", "创建 MediaPlayer 实例");
 			_mediaPlayer = new MediaPlayer(_libVLC);
+			PlayerLogger.Write("INIT", "赋值 VideoView.MediaPlayer");
 			_videoView.MediaPlayer = _mediaPlayer;
 			IsAvailable = true;
 			_videoView.Visible = true;
 			_fallbackPanel.Visible = false;
 			_controlBar.Visible = true;
+			long elapsed = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - initStart;
+			PlayerLogger.Write("INIT", $"初始化成功！耗时={elapsed}ms | IsAvailable={IsAvailable}");
 		_mediaPlayer.Playing += delegate
 		{
 			_lastKnownPlaying = true;
+			PlayerLogger.Write("PLAY", $"媒体开始播放 | url={_currentName}");
 			BeginInvoke((Action)delegate
 			{
 				UpdatePlayPauseIcon();
@@ -688,6 +819,7 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		_mediaPlayer.Paused += delegate
 		{
 			_lastKnownPlaying = false;
+			PlayerLogger.Write("PLAY", $"媒体暂停 | url={_currentName}");
 			BeginInvoke((Action)delegate
 			{
 				UpdatePlayPauseIcon();
@@ -697,6 +829,7 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		_mediaPlayer.Stopped += delegate
 		{
 			_lastKnownPlaying = false;
+			PlayerLogger.Write("PLAY", $"媒体停止 | url={_currentName}");
 			// 通知正在等待停播的切台操作，可安全开始播放
 			TaskCompletionSource<bool> tcs = _stopTcs;
 			if (tcs != null)
@@ -720,6 +853,7 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		_mediaPlayer.EndReached += delegate
 		{
 			_lastKnownPlaying = false;
+			PlayerLogger.Write("PLAY", $"媒体播放结束 | url={_currentName}");
 			BeginInvoke((Action)delegate
 			{
 				UpdatePlayPauseIcon();
@@ -734,7 +868,35 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			_videoView.Visible = false;
 			_fallbackPanel.Visible = true;
 			_controlBar.Visible = false;
-			_fallbackLabel.Text = "预览播放器不可用：" + ex.GetType().Name + "\n将使用外部播放器打开。";
+			PlayerLogger.WriteError("INIT", ex);
+			// 显示详细的错误信息，帮助诊断 VLC 加载失败的原因
+			string detail = ex.Message;
+			if (ex is System.ComponentModel.Win32Exception || ex is DllNotFoundException)
+			{
+				detail = "无法加载 VLC 核心库。\n请删除程序目录下的 libvlc 文件夹后重启，\n程序将自动从已安装的 VLC 复制完整文件。\n\n详情：" + ex.Message;
+			}
+			else if (ex is InvalidOperationException)
+			{
+				detail = ex.Message;
+			}
+			else
+			{
+				detail = "预览播放器不可用：" + ex.GetType().Name + "\n" + ex.Message;
+			}
+			_fallbackLabel.Text = detail;
+			// 检测可用的外部播放器，更新按钮文字
+			ExternalPlayerHelper.PlayerInfo ext = ExternalPlayerHelper.FindBestPlayer();
+			if (ext != null && ext.Type != ExternalPlayerHelper.PlayerType.SystemDefault)
+			{
+				_openExternalBtn.Text = "用 " + ext.DisplayName + " 打开";
+				PlayerLogger.Write("INIT", $"VLC失败，检测到外部播放器: {ext.DisplayName} | path={ext.Path}");
+			}
+			else
+			{
+				_openExternalBtn.Text = "用系统默认播放器打开";
+				PlayerLogger.Write("INIT", "VLC失败，未检测到外部播放器，使用系统默认");
+			}
+			LayoutFallbackContent();
 		}
 	}
 
@@ -742,20 +904,68 @@ public class ChannelPlayer : UserControl, IMessageFilter
 	{
 		_currentUrl = url;
 		_currentName = name ?? string.Empty;
+		PlayerLogger.Write("LOAD", $"LoadChannel 进入 | name={name} | url={url} | IsAvailable={IsAvailable} | libVLC_ready={_libVLC != null} | VideoView.Handle={_videoView?.Handle ?? IntPtr.Zero}");
+		// 如果 VideoView handle 已创建但还没初始化 VLC，这里先同步初始化，避免竞态
+		if (!IsAvailable && _libVLC == null && _videoView != null && _videoView.IsHandleCreated && !base.IsDisposed)
+		{
+			PlayerLogger.Write("LOAD", "Handle已创建但VLC未初始化，同步初始化");
+			InitializePlayer();
+		}
+		// 如果 handle 还没创建，用 BeginInvoke 延迟重试（等控件完全显示后再初始化）
+		if (!IsAvailable && _libVLC == null && _videoView != null && !_videoView.IsHandleCreated && !base.IsDisposed)
+		{
+			PlayerLogger.Write("LOAD", "Handle未创建，进入延迟初始化分支");
+			// 先显示 loading 状态
+			_fallbackLabel.Text = "播放器正在初始化，请稍候...";
+			_fallbackPanel.Visible = true;
+			LayoutFallbackContent();
+			string pendingUrl = url;
+			string pendingName = name;
+			base.BeginInvoke((Action)delegate
+			{
+				if (base.IsDisposed) return;
+				PlayerLogger.Write("LOAD", "延迟初始化: 执行InitializePlayer");
+				InitializePlayer();
+				if (IsAvailable)
+				{
+					PlayerLogger.Write("LOAD", "延迟初始化成功，重新加载频道");
+					// 初始化成功后重新加载频道
+					LoadChannel(pendingUrl, pendingName);
+				}
+				else
+				{
+					PlayerLogger.Write("LOAD", "延迟初始化仍然失败，显示fallback");
+					// 初始化仍然失败，显示 fallback
+					_fallbackLabel.Text = "预览播放器初始化失败\n请点击下方按钮用外部播放器打开：\n" + pendingName;
+					_fallbackPanel.Visible = true;
+					LayoutFallbackContent();
+				}
+			});
+			return;
+		}
 		if (string.IsNullOrWhiteSpace(url))
 		{
+			PlayerLogger.Write("LOAD", "URL为空，显示未选择状态");
 			if (!IsAvailable)
 			{
 				_fallbackLabel.Text = "未选择频道";
+				_fallbackPanel.Visible = true;
+				LayoutFallbackContent();
 			}
 			return;
 		}
 		if (!IsAvailable)
 		{
+			PlayerLogger.Write("LOAD", $"播放器不可用，显示fallback | name={name}");
 			_fallbackLabel.Text = "预览不可用，点击下方按钮用外部播放器打开：\n" + name;
+			_fallbackPanel.Visible = true;
+			LayoutFallbackContent();
 			return;
 		}
+		// VLC 已就绪，隐藏 fallback 面板（防止上次显示 fallback 后没切回来）
+		_fallbackPanel.Visible = false;
 		int token = Interlocked.Increment(ref _loadToken);
+		PlayerLogger.Write("LOAD", $"开始加载频道 | token={token} | name={name}");
 		Uri uri;
 		try
 		{
@@ -763,6 +973,7 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		}
 		catch
 		{
+			PlayerLogger.Write("LOAD", $"URL解析失败: {url}");
 			return;
 		}
 		// 标记切台进行中：禁止 UI 线程在切换期间访问 libvlc，避免死锁卡死
@@ -774,6 +985,8 @@ public class ChannelPlayer : UserControl, IMessageFilter
 	// → 再播放新媒体。这一步解决了 WinForms 下停播与播放争用视频输出导致 UI 卡死的经典问题。
 	private void LoadChannelCore(int token, Uri uri, string name)
 	{
+		PlayerLogger.Write("CORE", $"LoadChannelCore 开始 | token={token} | name={name}");
+		long coreStart = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 		try
 		{
 			bool wasPlaying = false;
@@ -799,10 +1012,13 @@ public class ChannelPlayer : UserControl, IMessageFilter
 				}
 				try
 				{
+					PlayerLogger.Write("CORE", $"调用 _mediaPlayer.Stop() | wasPlaying={wasPlaying}");
 					_mediaPlayer?.Stop();
+					PlayerLogger.Write("CORE", "Stop() 调用完成");
 				}
-				catch
+				catch (Exception stopEx)
 				{
+					PlayerLogger.WriteError("CORE", stopEx);
 				}
 				Media previousMedia = _currentMedia;
 				_currentMedia = null;
@@ -867,8 +1083,12 @@ public class ChannelPlayer : UserControl, IMessageFilter
 					return;
 				}
 				_currentMedia = media;
+				PlayerLogger.Write("CORE", $"调用 _mediaPlayer.Play(media) | name={name}");
 				_mediaPlayer.Play(media);
+				PlayerLogger.Write("CORE", "Play() 调用完成");
 			}
+			long elapsed = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - coreStart;
+			PlayerLogger.Write("CORE", $"LoadChannelCore 完成 | 耗时={elapsed}ms | name={name}");
 			BeginInvoke((Action)delegate
 			{
 				if (base.IsDisposed)
@@ -881,6 +1101,7 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		}
 		catch (Exception ex)
 		{
+			PlayerLogger.WriteError("CORE", ex);
 			if (!base.IsDisposed && token == _loadToken)
 			{
 				BeginInvoke((Action)delegate
@@ -1480,6 +1701,18 @@ public class ChannelPlayer : UserControl, IMessageFilter
 
 	protected virtual void OnOpenExternalRequested()
 	{
+		// 先尝试用 ExternalPlayerHelper 自动选择最佳播放器
+		if (!string.IsNullOrWhiteSpace(_currentUrl))
+		{
+			ExternalPlayerHelper.PlayerInfo best = ExternalPlayerHelper.FindBestPlayer();
+			PlayerLogger.Write("EXT", $"自动选择播放器: {best.DisplayName} | type={best.Type} | path={best.Path}");
+			if (ExternalPlayerHelper.Play(_currentUrl, best))
+			{
+				return;
+			}
+			PlayerLogger.Write("EXT", "外部播放器启动失败，回退到事件委托");
+		}
+		// 如果 ExternalPlayerHelper 失败，回退到原始事件委托（由主窗体处理）
 		this.OpenExternalRequested?.Invoke(this, EventArgs.Empty);
 	}
 

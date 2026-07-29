@@ -6,8 +6,8 @@ namespace IPTVLiveChecker;
 internal static class AppConstants
 {
 	// ===== 版本信息 =====
-	public const string CurrentVersion = "v1.0.1";
-	public const int CurrentVersionCode = 101;
+	public const string CurrentVersion = "v1.0.2";
+	public const int CurrentVersionCode = 102;
 
 	// ===== 网络 =====
 	public const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";

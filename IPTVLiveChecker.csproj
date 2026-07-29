@@ -17,21 +17,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Content Include="themes/极光玻璃.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="themes/霓光梦境.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <Target Name="CopyThemesToOutput" AfterTargets="Build;Publish">
-    <ItemGroup>
-      <_ThemeFiles Include="$(MSBuildProjectDirectory)/themes/*.json" />
-    </ItemGroup>
-    <MakeDir Directories="$(OutDir)/themes" Condition="'@(_ThemeFiles)' != ''" />
-    <Copy SourceFiles="@(_ThemeFiles)" DestinationFolder="$(OutDir)/themes" SkipUnchangedFiles="true" Condition="'@(_ThemeFiles)' != ''" />
-  </Target>
+  <!-- 主题已封装进 ThemePack.Sample.dll，不再需要 JSON 文件 -->
   <ItemGroup>
     <PackageReference Include="LibVLCSharp" Version="3.8.2" />
     <PackageReference Include="LibVLCSharp.WinForms" Version="3.8.2" />
@@ -65,10 +51,21 @@
     </ItemGroup>
     <Copy SourceFiles="@(_UpdaterExe)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
   </Target>
+  <!-- 构建主题包 DLL（依赖主 exe，必须在主程序构建后编译）。
+       ThemePack.Sample 引用主程序 exe 继承 AppTheme，编译后自动拷贝到 themes/ 目录。 -->
+  <Target Name="BuildThemePack" AfterTargets="CopyUpdaterToOutput">
+    <!-- 清理输出目录中的旧 JSON 主题文件（已封装进 DLL，JSON 优先加载会导致 DLL 主题被忽略） -->
+    <ItemGroup>
+      <_OldJsonThemes Include="$(OutDir)/themes/*.json" />
+    </ItemGroup>
+    <Delete Files="@(_OldJsonThemes)" Condition="'@(_OldJsonThemes)' != ''" />
+    <Exec
+      Command="dotnet build &quot;$(MSBuildProjectDirectory)\ThemePack.Sample\ThemePack.Sample.csproj&quot; -c $(Configuration) --nologo -v q" />
+  </Target>
   <!-- 构建完成后为主 exe 追加完整性签名尾部。
        Md5Embedder 为 net8.0 构建期工具，无法被 net472 主项目以 ProjectReference 引用，
        故在此用 dotnet 先确保它已生成，再运行它对主 exe 签名。 -->
-  <Target Name="EmbedExeSignature" AfterTargets="CopyUpdaterToOutput">
+  <Target Name="EmbedExeSignature" AfterTargets="BuildThemePack">
     <Exec
       Command="dotnet build &quot;$(MSBuildProjectDirectory)\Md5Embedder\Md5Embedder.csproj&quot; -c $(Configuration) --nologo -v q" />
     <ItemGroup>

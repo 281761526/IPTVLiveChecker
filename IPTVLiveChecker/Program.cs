@@ -25,6 +25,33 @@ internal static class Program
 	[STAThread]
 	private static void Main()
 	{
+		// 初始化播放器诊断日志
+		PlayerLogger.Initialize();
+		PlayerLogger.Write("SYSTEM", $"程序启动 | StartupPath={Application.StartupPath}");
+		// 在任何 LibVLCSharp 代码之前设置 VLC 运行时环境变量。
+		// LibVLCSharp 的 LibVLC 静态构造函数会读取 LIBVLC_WIN32_LIBVLC_PATH 来定位 libvlc.dll，
+		// 必须在首次引用 LibVLC 类型之前就设置好，否则 DllImport 找不到子目录中的 libvlc.dll。
+		try
+		{
+			string libvlcPath = Path.Combine(Application.StartupPath, "libvlc");
+			if (Directory.Exists(libvlcPath))
+			{
+				Environment.SetEnvironmentVariable("LIBVLC_WIN32_LIBVLC_PATH", libvlcPath);
+				string pluginPath = Path.Combine(libvlcPath, "plugins");
+				if (Directory.Exists(pluginPath))
+				{
+					Environment.SetEnvironmentVariable("VLC_PLUGIN_PATH", pluginPath);
+				}
+				string path = Environment.GetEnvironmentVariable("PATH") ?? "";
+				if (!path.Contains(libvlcPath))
+				{
+					Environment.SetEnvironmentVariable("PATH", libvlcPath + Path.PathSeparator + path);
+				}
+			}
+		}
+		catch
+		{
+		}
 		Application.EnableVisualStyles();
 		Application.SetCompatibleTextRenderingDefault(defaultValue: false);
 		DarkMessageBox.IsDarkProvider = IsSystemDarkMode;
@@ -84,6 +111,7 @@ internal static class Program
 					}
 					if (config.IsForceUpdate)
 					{
+						// 强制更新：用户只能选择"立即更新"或"退出程序"，两者都结束当前进程
 						ShowForcedUpdateDialog(config, AppConstants.CurrentVersion);
 						return;
 					}
@@ -117,7 +145,7 @@ internal static class Program
 
 	internal static UpdateConfig FetchUpdateConfig(string url, int timeoutSeconds = 15)
 	{
-		//IL_0000: Unknown result type (might be due to invalid IL or missing references)
+		//IL_0000: Unknown result type (might be due to invalid IL or missing request)
 		//IL_0006: Expected O, but got Unknown
 		try
 		{
@@ -125,7 +153,8 @@ internal static class Program
 			try
 			{
 				client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
-				string json = client.GetStringAsync(url).Result;
+				// 使用 GetAwaiter().GetResult() 避免在 STAThread 上同步阻塞异步方法导致的死锁
+				string json = client.GetStringAsync(url).ConfigureAwait(false).GetAwaiter().GetResult();
 				Dictionary<string, object> dict = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(json);
 				if (dict == null)
 				{
@@ -361,8 +390,8 @@ internal static class Program
 		{
 			Text = "立即更新",
 			Font = new Font("Microsoft YaHei", 11f, FontStyle.Bold),
-			Location = new Point(140, 305),
-			Size = new Size(180, 40),
+			Location = new Point(70, 305),
+			Size = new Size(150, 40),
 			FlatStyle = FlatStyle.Flat,
 			BackColor = Color.FromArgb(64, 158, 255),
 			ForeColor = Color.White,
@@ -374,7 +403,25 @@ internal static class Program
 			confirmed = true;
 			dlg.Close();
 		};
+		Button btnExit = new Button
+		{
+			Text = "退出程序",
+			Font = new Font("Microsoft YaHei", 11f),
+			Location = new Point(240, 305),
+			Size = new Size(150, 40),
+			FlatStyle = FlatStyle.Flat,
+			BackColor = Color.FromArgb(60, 65, 80),
+			ForeColor = Color.FromArgb(200, 205, 215),
+			Cursor = Cursors.Hand
+		};
+		btnExit.FlatAppearance.BorderSize = 0;
+		btnExit.Click += delegate
+		{
+			confirmed = false;
+			dlg.Close();
+		};
 		dlg.Controls.Add(btnUpdate);
+		dlg.Controls.Add(btnExit);
 		dlg.ShowDialog();
 		if (confirmed)
 		{

@@ -1,5 +1,5 @@
 # IPTVLiveChecker
-IPTV直播源检测工具 v1.0.1（正式版）
+IPTV直播源检测工具 v1.0.2（正式版）
 开发者：半步沧桑
 反馈邮箱：xiaomiren0510@gmail.com
 
@@ -17,6 +17,15 @@ IPTV直播源检测工具 v1.0.1（正式版）
 - 内置自动更新（Updater）：联网检测新版本并一键升级
 
 ## 更新日志
+### v1.0.2（2026-07-30）
+1. 修复 VLC 播放器初始化失败/黑屏：提前设置 libvlc 环境变量，自动补齐缺失依赖 DLL
+2. 修复更新检查在部分环境死锁导致卡死的问题
+3. 强制更新新增"退出程序"按钮，不再强制必须更新
+4. 新增外部播放器支持（PotPlayer/VLC/MPV/FFplay/自定义），播放失败可一键外放
+5. 新增播放诊断日志（logs/player_*.log），便于排障
+6. 修复预览窗/主题/对话框若干细节问题
+7. 主题包整理与内置主题优化
+
 ### v1.0.1（2026-07-29）
 1. 修复界面卡顿 BUG
 2. 修复扫源 BUG
@@ -36,4 +45,4 @@ IPTV直播源检测工具 v1.0.1（正式版）
 使用前请阅读 `DISCLAIMER.md` 免责文件，本工具仅作技术学习用途，违规使用产生的全部法律责任由使用者自行承担。
 
 ## 下载
-前往 [Releases](https://github.com/281761526/IPTVLiveChecker/releases) 下载最新版本 `IPTVLiveChecker_v1.0.1.zip`，解压后运行 `IPTVLiveChecker.exe` 即可（需 Windows 10 / 11）。
+前往 [Releases](https://github.com/281761526/IPTVLiveChecker/releases) 下载最新版本 `IPTVLiveChecker_v1.0.2.zip`，解压后运行 `IPTVLiveChecker.exe` 即可（需 Windows 10 / 11）。
