@@ -1,5 +1,5 @@
 # IPTVLiveChecker
-IPTV直播源检测工具 Beta 1.0
+IPTV直播源检测工具 v 1.0.2
 开发者：半步沧桑
 反馈邮箱：xiaomiren0510@gmail.com
 
@@ -18,5 +18,6 @@ IPTV直播源检测工具 Beta 1.0
 
 ## 使用须知
 使用前请阅读 `DISCLAIMER.md` 免责文件，本工具仅作技术学习用途，违规使用产生的全部法律责任由使用者自行承担。
-<img width="2249" height="1329" alt="image" src="https://github.com/user-attachments/assets/202f0b01-a196-4766-a9bb-b26849d0a544" />
-<img width="1658" height="1206" alt="image" src="https://github.com/user-attachments/assets/074631b6-c828-4f1f-bd3b-52ce3a66c07d" />
+<img width="2558" height="1518" alt="image" src="https://github.com/user-attachments/assets/2cfee82f-7c5d-46ed-868c-52567f4885b8" />
+<img width="2558" height="1521" alt="image" src="https://github.com/user-attachments/assets/141b280f-49c3-49a3-bff0-692a04c2bbe8" />
+
