@@ -268,6 +268,20 @@ public class AppTheme
 
 	public List<Color> GradientStops { get; set; }
 
+	// ===== 字体自定义（可选；留空则使用主程序全局字体设置）=====
+	/// <summary>字体族名称（如 "Microsoft YaHei", "Segoe UI"）。留空则继承用户设置。</summary>
+	public string FontFamily { get; set; }
+
+	/// <summary>基础字号缩放因子（1.0 = 默认大小，1.1 = 放大 10%）。仅当 FontFamily 非空时生效。</summary>
+	public double FontScale { get; set; } = 1.0;
+
+	// ===== 布局参数（可选；0 或负值表示使用主程序默认值）=====
+	/// <summary>圆角半径（px，DPI 缩放前）。0 = 直角，6 = 默认圆角，-1 = 使用默认。</summary>
+	public int CornerRadius { get; set; } = -1;
+
+	/// <summary>控件间距缩放因子（1.0 = 默认间距）。用于微调按钮/面板之间的留白。</summary>
+	public double SpacingScale { get; set; } = 1.0;
+
 	/// <summary>
 	/// 派生主题可覆写此方法执行复杂初始化（派生颜色、读取资源、条件逻辑等）。
 	/// 内置主题不需要覆写；外部 DLL 主题可在构造函数或此方法中设置全部字段。
