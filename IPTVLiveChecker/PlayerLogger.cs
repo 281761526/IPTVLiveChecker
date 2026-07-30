@@ -38,6 +38,7 @@ internal static class PlayerLogger
 			}
 			string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
 			_logPath = Path.Combine(logDir, $"player_{timestamp}.log");
+			EnforceLogRetention(logDir);
 			_initThreadId = Thread.CurrentThread.ManagedThreadId;
 			bool append = false;
 			_writer = new StreamWriter(_logPath, append, Encoding.UTF8, 65536)
@@ -51,6 +52,40 @@ internal static class PlayerLogger
 		{
 			_logPath = string.Empty;
 			System.Diagnostics.Debug.WriteLine($"PlayerLogger init failed: {ex.Message}");
+		}
+	}
+
+	private const int MaxLogFiles = 10;
+
+	/// <summary>
+	/// 日志文件数量上限 10：超出时按文件名（时间缀前缀可字典序比较）从最旧开始删除，
+	/// 每创建一个新文件最多删除一个旧文件，保持目录内不超过 10 个。
+	/// </summary>
+	private static void EnforceLogRetention(string logDir)
+	{
+		try
+		{
+			string[] files = Directory.GetFiles(logDir, "player_*.log");
+			if (files.Length <= MaxLogFiles)
+			{
+				return;
+			}
+			// 文件名形如 player_yyyyMMdd_HHmmss.log，字典序即时间序，最旧在前
+			Array.Sort(files);
+			int toDelete = files.Length - MaxLogFiles;
+			for (int i = 0; i < toDelete; i++)
+			{
+				try
+				{
+					File.Delete(files[i]);
+				}
+				catch
+				{
+				}
+			}
+		}
+		catch
+		{
 		}
 	}
 

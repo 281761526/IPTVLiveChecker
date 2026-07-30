@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -22,9 +23,28 @@ internal static class Program
 
 	private static readonly int Md5SignatureLen = "IPTV_MD5_V1____".Length;
 
+	private const string SingleInstanceMutexName = "Global\\IPTVLiveChecker_SingleInstance_7C3F9A21";
+
+	private static Mutex _singleInstanceMutex;
+
 	[STAThread]
 	private static void Main()
 	{
+		// 单实例限制：同一时间仅允许一个进程运行，降低内存占用
+		try
+		{
+			_singleInstanceMutex = new Mutex(true, SingleInstanceMutexName, out bool createdNew);
+			if (!createdNew)
+			{
+				MessageBox.Show("程序已在运行中，请勿重复启动。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return;
+			}
+		}
+		catch
+		{
+			// 互斥体创建失败（如权限不足）时不阻止启动
+		}
+
 		// 初始化播放器诊断日志
 		PlayerLogger.Initialize();
 		PlayerLogger.Write("SYSTEM", $"程序启动 | StartupPath={Application.StartupPath}");

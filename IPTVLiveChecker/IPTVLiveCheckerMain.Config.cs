@@ -39,6 +39,7 @@ public partial class IPTVLiveCheckerMain
 		sb.AppendLine("IptvHistoryIps=" + string.Join("|", iptvHistoryIps));
 		sb.AppendLine($"DisclaimerAgreed={disclaimerAgreed}");
 		sb.AppendLine($"SkipDisclaimerPrompt={skipDisclaimerPrompt}");
+		sb.AppendLine($"AutoSwitchExternal={autoSwitchExternalPlayer}");
 		File.WriteAllText(configPath, sb.ToString(), Encoding.UTF8);
 	}
 
@@ -182,8 +183,12 @@ public partial class IPTVLiveCheckerMain
 				case "SkipDisclaimerPrompt":
 					bool.TryParse(value, out skipDisclaimerPrompt);
 					break;
+				case "AutoSwitchExternal":
+					bool.TryParse(value, out autoSwitchExternalPlayer);
+					break;
 				}
 			}
+			ChannelPlayer.EnableAutoSwitchExternal = autoSwitchExternalPlayer;
 		}
 		catch (IOException)
 		{

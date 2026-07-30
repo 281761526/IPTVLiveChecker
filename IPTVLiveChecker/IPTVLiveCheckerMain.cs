@@ -1054,6 +1054,9 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private int detectConcurrency = 10;
 
+	// 预览窗：VLC 播不了某链接时，自动切换外部播放器（内嵌）
+	private bool autoSwitchExternalPlayer = false;
+
 	private string detectEngine = "HTTP";
 
 	private string customPlayerPath = "";
@@ -1827,7 +1830,7 @@ public partial class IPTVLiveCheckerMain : Form
 		int engineCardH = SY(105); // 检测引擎卡片高度
 		int perfCardH = SY(125); // 性能设置卡片高度
 		int funcCardH = SY(270); // 功能开关卡片高度
-		int customCardH = SY(190); // 个性化卡片高度
+		int customCardH = SY(225); // 个性化卡片高度（含“自动切换外部播放器”开关）
 		int cardGap = SY(12); // 卡片之间的垂直间距
 		int btnPanelH = SY(65); // 底部按钮面板高度
 		int contentTotalH = engineCardH + perfCardH + customCardH + cardGap * 3 + scrollBottomPad; // 全部卡片+间距的总高度
@@ -2285,6 +2288,25 @@ public partial class IPTVLiveCheckerMain : Form
 			Anchor = AnchorStyles.Top | AnchorStyles.Right
 		};
 		customCard.Controls.Add(togglePreview);
+		// 标签：预览窗自动切换外部播放器（内嵌）
+		Label autoSwitchExtLabel = new Label
+		{
+			Text = "预览窗自动切外部播放器(内嵌)",
+			Font = GetFont(9.5f),
+			ForeColor = textColor,
+			Size = new Size(SY(240), 24),
+			Location = At(SY(15), SY(169))
+		};
+		customCard.Controls.Add(autoSwitchExtLabel);
+		// 开关：VLC 无法播放某链接时，自动将视频内嵌切换到 PotPlayer/MPV
+		ToggleSwitch toggleAutoSwitch = new ToggleSwitch
+		{
+			Checked = autoSwitchExternalPlayer,
+			Size = new Size(SY(80), SY(30)),
+			Location = At(cardWidth - SY(110), SY(168)),
+			Anchor = AnchorStyles.Top | AnchorStyles.Right
+		};
+		customCard.Controls.Add(toggleAutoSwitch);
 		customCard.Size = new Size(cardWidth, customCardH);
 		scrollContainer.Controls.Add(customCard);
 		cardY += customCardH + cardGap;
@@ -2330,6 +2352,8 @@ public partial class IPTVLiveCheckerMain : Form
 				theme = MakeEffectiveTheme();
 				disclaimerAgreed = false;
 				skipDisclaimerPrompt = false;
+				autoSwitchExternalPlayer = false;
+				ChannelPlayer.EnableAutoSwitchExternal = false;
 				iptvHistoryIps = new List<string>();
 				loginDataPath = "";
 				rbHttp.Checked = true;
@@ -2342,6 +2366,7 @@ public partial class IPTVLiveCheckerMain : Form
 				toggleWatch.Checked = false;
 				toggleSearchBtn.Checked = false;
 				toggleSkipDisclaimer.Checked = false;
+				toggleAutoSwitch.Checked = false;
 				txtPlayerPath.Text = "";
 				if (cmbFont.Items.Contains("Microsoft YaHei"))
 				{
@@ -2393,6 +2418,8 @@ public partial class IPTVLiveCheckerMain : Form
 			watchSearchWindow = toggleWatch.Checked;
 			autoParseLink = toggleAutoParse.Checked;
 			showSearchButton = toggleSearchBtn.Checked;
+			autoSwitchExternalPlayer = toggleAutoSwitch.Checked;
+			ChannelPlayer.EnableAutoSwitchExternal = autoSwitchExternalPlayer;
 			if (previewPanel != null)
 			{
 				bool flag = togglePreview.Checked;

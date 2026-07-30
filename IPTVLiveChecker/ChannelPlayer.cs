@@ -142,6 +142,21 @@ public class ChannelPlayer : UserControl, IMessageFilter
 
 	private AppTheme _currentTheme;
 
+	// 外部播放器内嵌宿主（VLC 播不了某链接时自动切换进来）
+	private EmbeddedExternalPlayerHost _embedHost;
+
+	// 是否已切换到外部播放器内嵌模式（避免同一链接重复触发）
+	private bool _switchedToExternal;
+
+	// 当前链接是否已被 VLC 成功渲染过（用于区分“正在缓冲”与“真播不了”）
+	private bool _hasPlayedSuccessfully;
+
+	// 播放超时判定：Play 后若干秒内未开始渲染即视为 VLC 无法播放
+	private System.Windows.Forms.Timer _failTimer;
+
+	// 全局开关：预览窗在 VLC 失败时自动切换外部播放器（内嵌）
+	public static bool EnableAutoSwitchExternal { get; set; }
+
 	public bool IsAvailable { get; private set; }
 
 	public string CurrentUrl => _currentUrl;
@@ -201,6 +216,17 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			}
 		});
 		PlayerLogger.Write("PLAYER", "构造函数完成，所有初始化钩子已绑定");
+		// 外部播放器内嵌宿主：默认隐藏，VLC 失败时切上来
+		_embedHost = new EmbeddedExternalPlayerHost
+		{
+			Dock = DockStyle.Fill,
+			Visible = false,
+			BackColor = System.Drawing.Color.Black
+		};
+		_embedHost.EmbedFailed += OnEmbedFailed;
+		base.Controls.Add(_embedHost);
+		_failTimer = new System.Windows.Forms.Timer { Interval = 10000 };
+		_failTimer.Tick += FailTimer_Tick;
 		Application.AddMessageFilter(this);
 	}
 
@@ -796,6 +822,12 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			_libVLC = new LibVLC();
 			PlayerLogger.Write("INIT", "创建 MediaPlayer 实例");
 			_mediaPlayer = new MediaPlayer(_libVLC);
+			PlayerLogger.Write("INIT", "订阅 VLC EncounteredError 事件");
+			_mediaPlayer.EncounteredError += delegate
+			{
+				PlayerLogger.Write("PLAY", $"VLC 遇到错误（无法播放该链接） | url={_currentName}");
+				BeginInvoke((Action)delegate { HandleVlcPlaybackFailure(); });
+			};
 			PlayerLogger.Write("INIT", "赋值 VideoView.MediaPlayer");
 			_videoView.MediaPlayer = _mediaPlayer;
 			IsAvailable = true;
@@ -810,6 +842,8 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			PlayerLogger.Write("PLAY", $"媒体开始播放 | url={_currentName}");
 			BeginInvoke((Action)delegate
 			{
+				_hasPlayedSuccessfully = true;
+				StopFailTimer();
 				UpdatePlayPauseIcon();
 				StartProgressTimer();
 				// VLC 开始播放时可能重新子类化视频窗口过程，重新挂接我们的双击钩子
@@ -904,6 +938,11 @@ public class ChannelPlayer : UserControl, IMessageFilter
 	{
 		_currentUrl = url;
 		_currentName = name ?? string.Empty;
+		// 切换频道时，若之前已切到外部播放器内嵌，先退回 VLC 模式（新链接可能 VLC 能播）
+		if (_switchedToExternal)
+		{
+			ResetToVlcMode();
+		}
 		PlayerLogger.Write("LOAD", $"LoadChannel 进入 | name={name} | url={url} | IsAvailable={IsAvailable} | libVLC_ready={_libVLC != null} | VideoView.Handle={_videoView?.Handle ?? IntPtr.Zero}");
 		// 如果 VideoView handle 已创建但还没初始化 VLC，这里先同步初始化，避免竞态
 		if (!IsAvailable && _libVLC == null && _videoView != null && _videoView.IsHandleCreated && !base.IsDisposed)
@@ -1083,6 +1122,7 @@ public class ChannelPlayer : UserControl, IMessageFilter
 					return;
 				}
 				_currentMedia = media;
+				_hasPlayedSuccessfully = false;
 				PlayerLogger.Write("CORE", $"调用 _mediaPlayer.Play(media) | name={name}");
 				_mediaPlayer.Play(media);
 				PlayerLogger.Write("CORE", "Play() 调用完成");
@@ -1097,6 +1137,11 @@ public class ChannelPlayer : UserControl, IMessageFilter
 				}
 				UpdatePlayPauseIcon();
 			StartProgressTimer();
+				// 启动播放超时判定：若 10s 内未真正开始渲染，则判定 VLC 无法播放该链接
+				if (!_switchedToExternal && EnableAutoSwitchExternal)
+				{
+					StartFailTimer();
+				}
 		});
 		}
 		catch (Exception ex)
@@ -1165,6 +1210,8 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			{
 			}
 		});
+		StopFailTimer();
+		_embedHost?.Stop();
 	}
 
 	public void StopAsync()
@@ -1211,6 +1258,129 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			{
 			}
 		});
+		StopFailTimer();
+		_embedHost?.Stop();
+	}
+
+	// ===== 自动切换外部播放器（内嵌）相关 =====
+
+	private void StartFailTimer()
+	{
+		try
+		{
+			if (_failTimer != null)
+			{
+				_failTimer.Stop();
+				_failTimer.Start();
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private void StopFailTimer()
+	{
+		try
+		{
+			_failTimer?.Stop();
+		}
+		catch
+		{
+		}
+	}
+
+	private void FailTimer_Tick(object sender, EventArgs e)
+	{
+		StopFailTimer();
+		if (_switchedToExternal || !IsAvailable) return;
+		if (_hasPlayedSuccessfully) return; // 已成功渲染过则认为是正常缓冲/重连，不切换
+		PlayerLogger.Write("PLAY", "播放超时（10s 未开始渲染），判定 VLC 无法播放该链接，尝试切换外部播放器");
+		HandleVlcPlaybackFailure();
+	}
+
+	private void HandleVlcPlaybackFailure()
+	{
+		if (_switchedToExternal || !IsAvailable) return;
+		if (!EnableAutoSwitchExternal) return;
+		if (_hasPlayedSuccessfully) return;
+		TryEmbedExternal(_currentUrl, _currentName);
+	}
+
+	private void TryEmbedExternal(string url, string name)
+	{
+		// 优先 PotPlayer（用户指定），其次 MPV（官方 --wid 嵌入更稳）
+		List<ExternalPlayerHelper.PlayerInfo> players = ExternalPlayerHelper.ScanAllPlayers();
+		ExternalPlayerHelper.PlayerInfo target = players.Find(p => p.Type == ExternalPlayerHelper.PlayerType.PotPlayer)
+			?? players.Find(p => p.Type == ExternalPlayerHelper.PlayerType.MPV);
+		if (target == null)
+		{
+			// 没有可内嵌的播放器，直接以独立窗口打开最佳外部播放器
+			ExternalPlayerHelper.PlayerInfo best = ExternalPlayerHelper.FindBestPlayer();
+			if (ExternalPlayerHelper.Play(url, best))
+			{
+				ShowFallback("VLC 无法播放，已用 " + best.DisplayName + " 打开（独立窗口）", false);
+			}
+			else
+			{
+				ShowFallback("该频道无法预览：" + name + "\n可改用外部播放器打开。", true);
+			}
+			return;
+		}
+		_switchedToExternal = true;
+		try { _mediaPlayer?.Stop(); } catch { }
+		StopFailTimer();
+		// 切到内嵌宿主：隐藏 VLC 控件，显示外部播放器宿主
+		if (_videoView != null) _videoView.Visible = false;
+		if (_controlBar != null) _controlBar.Visible = false;
+		if (_fallbackPanel != null) _fallbackPanel.Visible = false;
+		_embedHost.Visible = true;
+		_embedHost.BringToFront();
+		PlayerLogger.Write("EMBED", $"切换到内嵌外部播放器: {target.DisplayName} | url={url}");
+		_embedHost.Play(url, target);
+	}
+
+	private void OnEmbedFailed(object sender, string reason)
+	{
+		// 内嵌失败，降级为独立窗口打开
+		BeginInvoke((Action)delegate
+		{
+			_embedHost.Visible = false;
+			ExternalPlayerHelper.PlayerInfo best = ExternalPlayerHelper.FindBestPlayer();
+			if (ExternalPlayerHelper.Play(_currentUrl, best))
+			{
+				ShowFallback("VLC 无法播放，已用 " + best.DisplayName + " 打开（独立窗口）", false);
+			}
+			else
+			{
+				ShowFallback("该频道无法预览：" + _currentName + "\n" + reason, true);
+			}
+		});
+	}
+
+	private void ResetToVlcMode()
+	{
+		if (_embedHost != null && _embedHost.Visible)
+		{
+			_embedHost.Stop();
+			_embedHost.Visible = false;
+		}
+		_switchedToExternal = false;
+		_hasPlayedSuccessfully = false;
+		if (IsAvailable)
+		{
+			if (_videoView != null) _videoView.Visible = true;
+			if (_controlBar != null) _controlBar.Visible = true;
+		}
+	}
+
+	private void ShowFallback(string text, bool showButton)
+	{
+		if (_fallbackPanel == null || _fallbackLabel == null) return;
+		_fallbackLabel.Text = text;
+		_fallbackPanel.Visible = true;
+		if (_openExternalBtn != null) _openExternalBtn.Visible = showButton;
+		LayoutFallbackContent();
 	}
 
 	private void TogglePlayPause()
