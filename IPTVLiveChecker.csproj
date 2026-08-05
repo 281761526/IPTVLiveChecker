@@ -17,7 +17,6 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup />
-  <!-- 主题已封装进 ThemePack.Sample.dll，不再需要 JSON 文件 -->
   <ItemGroup>
     <PackageReference Include="LibVLCSharp" Version="3.8.2" />
     <PackageReference Include="LibVLCSharp.WinForms" Version="3.8.2" />
@@ -32,10 +31,6 @@
     <!-- 排除子项目源码，避免主项目误编译出多个入口点 -->
     <Compile Remove="Updater\**\*.cs" />
     <Compile Remove="Md5Embedder\**\*.cs" />
-    <Compile Remove="ThemePack.Sample\**\*.cs" />
-    <Content Remove="Updater\**\*" />
-    <Content Remove="Md5Embedder\**\*" />
-    <Content Remove="ThemePack.Sample\**\*" />
   </ItemGroup>
   <ItemGroup>
     <!-- 仅保证构建顺序，不引用其程序集（net472 主项目只能引用 net472 项目） -->
@@ -51,21 +46,9 @@
     </ItemGroup>
     <Copy SourceFiles="@(_UpdaterExe)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
   </Target>
-  <!-- 构建主题包 DLL（依赖主 exe，必须在主程序构建后编译）。
-       ThemePack.Sample 引用主程序 exe 继承 AppTheme，编译后自动拷贝到 themes/ 目录。 -->
-  <Target Name="BuildThemePack" AfterTargets="CopyUpdaterToOutput">
-    <!-- 清理输出目录中的旧 JSON 主题文件（已封装进 DLL，JSON 优先加载会导致 DLL 主题被忽略） -->
-    <ItemGroup>
-      <_OldJsonThemes Include="$(OutDir)/themes/*.json" />
-    </ItemGroup>
-    <Delete Files="@(_OldJsonThemes)" Condition="'@(_OldJsonThemes)' != ''" />
-    <Exec
-      Command="dotnet build &quot;$(MSBuildProjectDirectory)\ThemePack.Sample\ThemePack.Sample.csproj&quot; -c $(Configuration) --nologo -v q" />
-  </Target>
-  <!-- 构建完成后为主 exe 追加完整性签名尾部。
-       Md5Embedder 为 net8.0 构建期工具，无法被 net472 主项目以 ProjectReference 引用，
-       故在此用 dotnet 先确保它已生成，再运行它对主 exe 签名。 -->
-  <Target Name="EmbedExeSignature" AfterTargets="BuildThemePack">
+  <!-- 构建完成后为主 exe 追加完整性签名尾部（Md5Embedder 为 net8.0 构建期工具，先构建再运行签名）。
+       必须在 CopyUpdaterToOutput 之后执行，确保 exe 完整后再追加 MD5 尾部签名。 -->
+  <Target Name="EmbedExeSignature" AfterTargets="CopyUpdaterToOutput">
     <Exec
       Command="dotnet build &quot;$(MSBuildProjectDirectory)\Md5Embedder\Md5Embedder.csproj&quot; -c $(Configuration) --nologo -v q" />
     <ItemGroup>

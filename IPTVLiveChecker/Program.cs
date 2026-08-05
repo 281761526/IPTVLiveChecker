@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -75,7 +76,7 @@ internal static class Program
 		Application.EnableVisualStyles();
 		Application.SetCompatibleTextRenderingDefault(defaultValue: false);
 		DarkMessageBox.IsDarkProvider = IsSystemDarkMode;
-		DarkMessageBox.ThemeProvider = () => AppTheme.GetAutoTheme();
+		DarkMessageBox.ThemeProvider = () => AppTheme.ResolveFollowSystem(AppConstants.DefaultThemeName);
 		try
 		{
 			DarkMessageBox.IconProvider = () => Icon.ExtractAssociatedIcon(Application.ExecutablePath);
@@ -110,54 +111,51 @@ internal static class Program
 				DarkMessageBox.Show("程序文件完整性校验失败：" + ex3.Message, "安全警告", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 				return;
 			}
-			UpdateConfig config = null;
+			using (IPTVLiveCheckerMain mainForm = new IPTVLiveCheckerMain())
+			{
+				if (mainForm.ShowDisclaimerBeforeStart())
+				{
+					// 更新检查移至后台线程，避免同步网络请求（8s×N 镜像超时）在主窗口创建前阻塞启动
+					mainForm.Load += (s, e) => BeginUpdateCheck(mainForm);
+					Application.Run(mainForm);
+				}
+			}
+			// P0 清理：显式释放单实例互斥体，避免快速重启 / 崩溃重开时 1~5 秒"已在运行"的误判。
+			// 操作系统会在进程终止时回收互斥体，但 Win32 Mutex 的 Global\\ 命名槽位在 .NET Finalizer 排队时可能留一段短暂窗口期，
+			// 这里用 ReleaseMutex + Dispose 确保立即归还，完全关闭重开的体验间隙。
 			try
 			{
-				string[] array = AppConstants.UpdateMirrors;
-				for (int i = 0; i < array.Length; i++)
+				if (_singleInstanceMutex != null)
 				{
-					config = FetchUpdateConfig(array[i], 8);
-					if (config != null)
-					{
-						break;
-					}
-				}
-				if (config != null && config.VersionCode > AppConstants.CurrentVersionCode)
-				{
-					if (!File.Exists(Path.Combine(Application.StartupPath, "Updater.exe")))
-					{
-						DarkMessageBox.Show(BuildUpdateMessage(config) + "\n\n注意: 更新程序(Updater.exe)已丢失，无法自动更新。\n请重新下载完整版本后再使用。", "发现新版本", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-						return;
-					}
-					if (config.IsForceUpdate)
-					{
-						// 强制更新：用户只能选择"立即更新"或"退出程序"，两者都结束当前进程
-						ShowForcedUpdateDialog(config, AppConstants.CurrentVersion);
-						return;
-					}
-					if (DarkMessageBox.Show(BuildUpdateMessage(config) + "\n\n是否更新？", "发现新版本", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
-					{
-						StartUpdater(config.DownloadUrl, config.Md5Checksum);
-						return;
-					}
+					_singleInstanceMutex.ReleaseMutex();
+					_singleInstanceMutex.Dispose();
+					_singleInstanceMutex = null;
 				}
 			}
 			catch
 			{
-			}
-			using IPTVLiveCheckerMain mainForm = new IPTVLiveCheckerMain();
-			if (mainForm.ShowDisclaimerBeforeStart())
-			{
-				Application.Run(mainForm);
+				// 未持有 / 已释放的异常都忽略，不影响正常退出
 			}
 			return;
 		}
 #if DEBUG
-		using IPTVLiveCheckerMain mainForm2 = new IPTVLiveCheckerMain();
-		if (mainForm2.ShowDisclaimerBeforeStart())
+		using (IPTVLiveCheckerMain mainForm2 = new IPTVLiveCheckerMain())
 		{
-			Application.Run(mainForm2);
+			if (mainForm2.ShowDisclaimerBeforeStart())
+			{
+				Application.Run(mainForm2);
+			}
 		}
+		try
+		{
+			if (_singleInstanceMutex != null)
+			{
+				_singleInstanceMutex.ReleaseMutex();
+				_singleInstanceMutex.Dispose();
+				_singleInstanceMutex = null;
+			}
+		}
+		catch { }
 #else
 		DarkMessageBox.Show("程序文件不完整，缺少完整性校验数据。", "安全警告", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 #endif
@@ -351,12 +349,50 @@ internal static class Program
 		return false;
 	}
 
+	[System.Runtime.InteropServices.DllImport("dwmapi.dll", PreserveSig = true)]
+	private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
 	private static bool ShowForcedUpdateDialog(UpdateConfig cfg, string currentVersion)
 	{
 		bool confirmed = false;
+
+		// DPI 缩放
+		float dpiScale = 1f;
+		using (Graphics g = Graphics.FromHwnd(IntPtr.Zero))
+		{
+			dpiScale = g.DpiX / 96f;
+		}
+		int SX(int v) => (int)Math.Round(v * dpiScale);
+
+		// 从 AppTheme 获取主题（ActiveTheme 会自动检测系统明暗模式）
+		AppTheme theme = AppTheme.ActiveTheme;
+		bool isDark = DrawingUtils.IsDarkColor(theme.Bg);
+
+		// 主题色派生
+		Color bg = theme.Bg;
+		Color textPrimary = theme.TextPrimary;
+		Color textSecondary = theme.TextSecondary;
+		Color accent = theme.Primary;
+		Color accentText = DrawingUtils.IsDarkColor(theme.Primary) ? Color.White : Color.Black;
+		Color btnSecondary = theme.Surface;
+		Color btnSecondaryText = theme.TextPrimary;
+		Color warnColor = theme.WarnColor;
+		string fontFamily = theme.FontFamily ?? "Microsoft YaHei UI";
+
+		Font titleFont = new Font(fontFamily, 15f * dpiScale, FontStyle.Bold);
+		Font versionFont = new Font(fontFamily, 9.5f * dpiScale);
+		Font changelogFont = new Font(fontFamily, 9f * dpiScale);
+		Font warningFont = new Font(fontFamily, 8.5f * dpiScale);
+		Font btnFont = new Font(fontFamily, 10.5f * dpiScale, FontStyle.Bold);
+		Font btnExitFont = new Font(fontFamily, 10.5f * dpiScale);
+
+		int dlgW = SX(460);
+		int dlgH = SX(390);
+		int padX = SX(28);
+
 		Form dlg = new Form
 		{
-			Text = "检测到更新",
+			Text = "发现新版本 " + cfg.LatestVersion,
 			StartPosition = FormStartPosition.CenterScreen,
 			FormBorderStyle = FormBorderStyle.FixedDialog,
 			MaximizeBox = false,
@@ -364,82 +400,102 @@ internal static class Program
 			ControlBox = false,
 			ShowInTaskbar = true,
 			TopMost = true,
-			ClientSize = new Size(460, 380),
-			BackColor = Color.FromArgb(28, 32, 42),
-			ForeColor = Color.FromArgb(220, 225, 235),
-			Font = new Font("Microsoft YaHei", 10f),
+			ClientSize = new Size(dlgW, dlgH),
+			BackColor = bg,
+			ForeColor = textPrimary,
+			Font = new Font(fontFamily, 9.5f * dpiScale),
 			Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath)
 		};
+
+		// DWM: 圆角 + 深色/浅色标题栏
+		try
+		{
+			int cornerPref = 2; // DWMWCP_ROUND
+			DwmSetWindowAttribute(dlg.Handle, 33, ref cornerPref, 4);
+			int darkVal = isDark ? 1 : 0;
+			DwmSetWindowAttribute(dlg.Handle, 20, ref darkVal, 4);
+		}
+		catch { }
+
+		int y = SX(22);
 		dlg.Controls.Add(new Label
 		{
 			Text = "发现新版本",
-			Font = new Font("Microsoft YaHei", 16f, FontStyle.Bold),
-			ForeColor = Color.FromArgb(64, 158, 255),
-			Location = new Point(30, 25),
+			Font = titleFont,
+			ForeColor = accent,
+			Location = new Point(padX, y),
 			AutoSize = true
 		});
+		y += SX(38);
 		dlg.Controls.Add(new Label
 		{
-			Text = "当前版本: " + currentVersion + "  ->  新版本: " + cfg.LatestVersion,
-			Font = new Font("Microsoft YaHei", 10f),
-			ForeColor = Color.FromArgb(160, 168, 185),
-			Location = new Point(30, 65),
+			Text = "当前版本: " + currentVersion + "  →  新版本: " + cfg.LatestVersion,
+			Font = versionFont,
+			ForeColor = textSecondary,
+			Location = new Point(padX, y),
 			AutoSize = true
 		});
+		y += SX(30);
+
 		string changelogText = "更新内容:";
-		changelogText = ((cfg.Changelog == null || cfg.Changelog.Count <= 0) ? (changelogText + "\n  暂无详细更新说明") : (changelogText + "\n" + string.Join("\n", cfg.Changelog.Select((string x) => "  " + x))));
+		if (cfg.Changelog != null && cfg.Changelog.Count > 0)
+			changelogText += "\n" + string.Join("\n", cfg.Changelog.Select(x => "  " + x));
+		else
+			changelogText += "\n  暂无详细更新说明";
 		dlg.Controls.Add(new Label
 		{
 			Text = changelogText,
-			Font = new Font("Microsoft YaHei", 9f),
-			ForeColor = Color.FromArgb(180, 188, 200),
-			Location = new Point(30, 100),
-			Size = new Size(400, 150),
-			AutoSize = false
+			Font = changelogFont,
+			ForeColor = textPrimary,
+			Location = new Point(padX, y),
+			Size = new Size(dlgW - padX * 2, SX(155))
 		});
+		y += SX(165);
+
 		dlg.Controls.Add(new Label
 		{
 			Text = "检测到新版本，请点击更新后再使用。",
-			Font = new Font("Microsoft YaHei", 8.5f),
-			ForeColor = Color.FromArgb(255, 150, 50),
-			Location = new Point(30, 260),
-			Size = new Size(400, 30),
-			AutoSize = false
+			Font = warningFont,
+			ForeColor = warnColor,
+			Location = new Point(padX, y),
+			Size = new Size(dlgW - padX * 2, SX(30))
 		});
+		y += SX(40);
+
+		int btnW = SX(155);
+		int btnH = SX(40);
+		int btnGap = SX(14);
+		int totalBtnW = btnW * 2 + btnGap;
+		int btnStartX = (dlgW - totalBtnW) / 2;
+
 		Button btnUpdate = new Button
 		{
 			Text = "立即更新",
-			Font = new Font("Microsoft YaHei", 11f, FontStyle.Bold),
-			Location = new Point(70, 305),
-			Size = new Size(150, 40),
+			Font = btnFont,
+			Location = new Point(btnStartX, y),
+			Size = new Size(btnW, btnH),
 			FlatStyle = FlatStyle.Flat,
-			BackColor = Color.FromArgb(64, 158, 255),
-			ForeColor = Color.White,
+			BackColor = accent,
+			ForeColor = accentText,
 			Cursor = Cursors.Hand
 		};
 		btnUpdate.FlatAppearance.BorderSize = 0;
-		btnUpdate.Click += delegate
-		{
-			confirmed = true;
-			dlg.Close();
-		};
+		btnUpdate.Click += delegate { confirmed = true; dlg.Close(); };
+
 		Button btnExit = new Button
 		{
 			Text = "退出程序",
-			Font = new Font("Microsoft YaHei", 11f),
-			Location = new Point(240, 305),
-			Size = new Size(150, 40),
+			Font = btnExitFont,
+			Location = new Point(btnStartX + btnW + btnGap, y),
+			Size = new Size(btnW, btnH),
 			FlatStyle = FlatStyle.Flat,
-			BackColor = Color.FromArgb(60, 65, 80),
-			ForeColor = Color.FromArgb(200, 205, 215),
+			BackColor = btnSecondary,
+			ForeColor = btnSecondaryText,
 			Cursor = Cursors.Hand
 		};
 		btnExit.FlatAppearance.BorderSize = 0;
-		btnExit.Click += delegate
-		{
-			confirmed = false;
-			dlg.Close();
-		};
+		btnExit.Click += delegate { confirmed = false; dlg.Close(); };
+
 		dlg.Controls.Add(btnUpdate);
 		dlg.Controls.Add(btnExit);
 		dlg.ShowDialog();
@@ -453,6 +509,44 @@ internal static class Program
 	internal static string BuildUpdateMessage(UpdateConfig config)
 	{
 		return $"发现新版本 {config.LatestVersion}\n\n当前版本: {AppConstants.CurrentVersion}\n\n更新内容:\n" + string.Join("\n", config.Changelog.Select(c => "  " + c));
+	}
+
+	/// <summary>在后台线程执行版本检查，完全不阻塞主窗口启动；发现新版本时回到 UI 线程弹窗。</summary>
+	internal static void BeginUpdateCheck(Form owner)
+	{
+		Task.Run(() =>
+		{
+			try
+			{
+				UpdateConfig config = null;
+				foreach (string url in AppConstants.UpdateMirrors)
+				{
+					config = FetchUpdateConfig(url, 8);
+					if (config != null) break;
+				}
+				if (config == null || config.VersionCode <= AppConstants.CurrentVersionCode) return;
+				if (!File.Exists(Path.Combine(Application.StartupPath, "Updater.exe")))
+				{
+					owner.Invoke(new Action(() =>
+						DarkMessageBox.Show(BuildUpdateMessage(config) + "\n\n注意: 更新程序(Updater.exe)已丢失，无法自动更新。\n请重新下载完整版本后再使用。", "发现新版本", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)));
+					return;
+				}
+				if (config.IsForceUpdate)
+				{
+					owner.Invoke(new Action(() => ShowForcedUpdateDialog(config, AppConstants.CurrentVersion)));
+					return;
+				}
+				DialogResult r = (DialogResult)owner.Invoke(new Func<DialogResult>(() =>
+					DarkMessageBox.Show(BuildUpdateMessage(config) + "\n\n是否更新？", "发现新版本", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk)));
+				if (r == DialogResult.Yes)
+				{
+					owner.Invoke(new Action(() => StartUpdater(config.DownloadUrl, config.Md5Checksum)));
+				}
+			}
+			catch
+			{
+			}
+		});
 	}
 
 	internal static void StartUpdater(string downloadUrl, string md5 = "")

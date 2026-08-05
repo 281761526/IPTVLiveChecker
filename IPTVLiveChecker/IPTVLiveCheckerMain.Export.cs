@@ -205,7 +205,7 @@ public partial class IPTVLiveCheckerMain
 	{
 		if (dgvData.SelectedRows.Count > 0)
 		{
-			if (DarkMessageBox.Show("确定删除选中行？", "确认", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+			if (!skipDeleteConfirm && DarkMessageBox.Show("确定删除选中行？", "确认", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
 			{
 				return;
 			}

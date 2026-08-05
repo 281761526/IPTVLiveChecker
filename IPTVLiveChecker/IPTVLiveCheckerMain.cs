@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -673,7 +673,11 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private Panel previewPanel;
 
-	private ChannelPlayer channelPlayer;
+	// 预览窗引擎对照开关：false=VLC(ChannelPlayer)，true=mpv(MpvPlayer)。
+	// 仅改这一处即可把预览窗整体换成 mpv 引擎做 A/B 对比，默认保持 VLC 不变。
+	private const bool UseMpvPreview = false;
+
+	private IChannelPlayer channelPlayer;
 
 	// 预览换台防抖：快速上下移动选中行时合并为一次加载，避免每经过一行都新建 VLC 输入导致卡死
 	private System.Windows.Forms.Timer _previewDebounceTimer;
@@ -683,22 +687,6 @@ public partial class IPTVLiveCheckerMain : Form
 	private bool _isImporting;
 
 	private Button btnTogglePreview;
-
-	private Label _detailName;
-
-	private Label _detailUrl;
-
-	private Label _detailResolution;
-
-	private Label _detailGroup;
-
-	private Label _detailStatus;
-
-	private Label _detailBitrate;
-
-	private string _detailUrlText = "";
-
-	private string _detailGroupText = "";
 
 	private Label _statusStreamInfo;
 
@@ -724,13 +712,37 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private Label _statusTime;
 
+	// 由「频道详情」卡片上移补缺的实时行（隐藏 streamInfo/bitrate 两行后底部留空，恰好补满）
+	private Label _statusLiveStatus;
+	private Label _statusBuffer;
+	private Label _statusDropped;
+	private Label _statusLatency;
+
 	private Panel _linkStatusPanel;
+	// 主题显性元素：信息栏标题右侧红/黄/绿状态点（直播/已加载/错误/空闲）
+	private Panel _linkStatusDot;
+	private Color _linkStatusDotColor = Color.Gray;
+
+	// 预览窗「未播放」占位层：叠在视频控件之上，空闲时显示主题极光+提示，播放时隐藏
+	private PlayerIdleOverlay _playerIdle;
 
 	private System.Windows.Forms.Timer _linkStatusTimer;
 
 	private string _previewChannelName = "";
 
 	private string _previewChannelLocation = "";
+
+	// 「频道详情」面板相关控件（字段声明，曾因历史代码损坏丢失）
+	// 仅保留「地址」一行；链接速度/实时状态/缓冲时长等已并入上方「当前链接状态」面板
+	// 「实时状态」「缓冲时长」已上移至上方状态面板补缺，避免与详情栏重复显示
+	private Panel _detailPanel;
+	private Label _detailUrl;
+	private List<Label> _detailKeyLabels;
+	private List<Label> _detailValLabels;
+	private Action _reflowDetails;
+	private Panel _detailHeader;
+	private Label _detailTitle;
+	private string _detailUrlText = "";
 
 	private Panel titleBarPanel;
 
@@ -763,6 +775,8 @@ public partial class IPTVLiveCheckerMain : Form
 	private readonly int _windowRadius = 10;
 
 	private FormWindowState _lastWindowState = FormWindowState.Normal;
+
+	private bool _suppressRedraw;
 
 	private const int GWL_EXSTYLE = -20;
 
@@ -803,6 +817,12 @@ public partial class IPTVLiveCheckerMain : Form
 	private const int WM_DPICHANGED = 736;
 
 	private const int WM_SETREDRAW = 11;
+
+	private const int WM_ENTERSIZEMOVE = 561;
+
+	private const int WM_EXITSIZEMOVE = 562;
+
+	private const int WM_ERASEBKGND = 20;
 
 	private const int HTLEFT = 10;
 
@@ -908,6 +928,18 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private long _lastStreamTimeMs;
 
+	// 瞬时下载速度采样：记录上次 tick 的累计字节/时间戳，用于 (Δbytes/Δtime) 计算真实实时速率
+	private long _lastReadBytes;
+	private long _lastTickMs;
+	// EWMA 平滑系数（0.25 = 1/4 新值 + 3/4 旧值），避免速度数字剧烈跳动
+	private const float _speedSmoothFactor = 0.25f;
+	private float _smoothedBps;
+	// 实时传输速率（bps）→ 显示为 kb/s / mb/s，独立于 _currentBitrate（平均码率 / 元数据码率）
+	private string _currentLinkSpeed = "";
+	// 引擎无关的独立链接速度探针（Tier A）：优先于播放器内部统计，
+	// 彻底摆脱 VLC 在稳定播放后内部统计冻结/归零导致链接速度显示 0 的问题。
+	private LinkSpeedProbe _linkProbe;
+
 	private bool _showStreamInfoOverlay;
 
 	private System.Windows.Forms.Timer _streamInfoOverlayTimer;
@@ -931,6 +963,8 @@ public partial class IPTVLiveCheckerMain : Form
 	private Label lblProgressText;
 
 	private int progressBarWidth;
+	// 当前活动进度百分比（0-100），用于窗口尺寸变化时按当前宽度重算 progressBarWidth
+	private int _activeProgressPct;
 
 	private Panel emptyStatePanel;
 
@@ -955,6 +989,13 @@ public partial class IPTVLiveCheckerMain : Form
 	private TextBox txtSearchBox;
 
 	private HttpClient httpClient;
+
+	// 共享 HTTP 处理器：复用连接池，避免高并发检测时反复 new HttpClient 造成 TIME_WAIT 堆积 / 端口耗尽
+	private static readonly HttpClientHandler _sharedHttpHandler = new HttpClientHandler { MaxConnectionsPerServer = 64 };
+	private static HttpClient CreateSharedHttpClient()
+	{
+		return new HttpClient(_sharedHttpHandler, disposeHandler: false);
+	}
 
 	private Dictionary<string, string> ipLocationCache = new Dictionary<string, string>();
 
@@ -989,6 +1030,7 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private Button btnStartDetect;
 
+	// 「停止检测 / 重新检测」二合一按钮（检测中=停止，停止后=重新检测）
 	private Button btnStopDetect;
 
 	private Button btnExport;
@@ -1057,9 +1099,10 @@ public partial class IPTVLiveCheckerMain : Form
 	// 预览窗：VLC 播不了某链接时，自动切换外部播放器（内嵌）
 	private bool autoSwitchExternalPlayer = false;
 
-	private string detectEngine = "HTTP";
+	// 列表删除：选中行后按 Delete 是否跳过确认对话框直接删除
+	private bool skipDeleteConfirm = false;
 
-	private string customPlayerPath = "";
+	private string detectEngine = "HTTP";
 
 	private string ffplayPath = "";
 
@@ -1100,6 +1143,7 @@ public partial class IPTVLiveCheckerMain : Form
 	private List<ChannelInfo> allChannels = new List<ChannelInfo>();
 
 	private AppTheme theme = AppTheme.GetAutoTheme();
+	private bool _subscribedFxPhase;
     private IContainer components = null;
 
 	private Color ColorPurple => theme.Primary;
@@ -1108,9 +1152,9 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private Color ColorPink => theme.Accent;
 
-	private Color ColorGreen => Color.FromArgb(76, 175, 80);
+	private Color ColorGreen => theme.SuccessColor; // 跟随主题成功色（原硬编码 76,175,80）
 
-	private Color ColorOrange => Color.FromArgb(255, 152, 0);
+	private Color ColorOrange => theme.WarnColor; // 跟随主题警告色（原硬编码 255,152,0）
 
 	private Color ColorStatusBar => theme.StatusBarBg;
 
@@ -1119,19 +1163,6 @@ public partial class IPTVLiveCheckerMain : Form
 	private Color ColorNavNormal => theme.TextSecondary;
 
 	private Color ColorBorder => theme.Border;
-
-	private void SetCustomPlayerPath()
-	{
-		using OpenFileDialog ofd = new OpenFileDialog();
-		ofd.Filter = "可执行文件|*.exe|所有文件|*.*";
-		ofd.Title = "选择播放器exe文件（如vlc.exe、mpv.exe、potplayer等）";
-		if (ofd.ShowDialog() == DialogResult.OK)
-		{
-			customPlayerPath = ofd.FileName;
-			ExternalPlayerHelper.SetCustomPlayer(customPlayerPath);
-			DarkMessageBox.Show("已设置第三方播放器：\n" + customPlayerPath, "设置成功", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-		}
-	}
 
 	private void CboGroup_SelectedIndexChanged(object sender, EventArgs e)
 	{
@@ -1169,15 +1200,16 @@ public partial class IPTVLiveCheckerMain : Form
 			for (int i = 0; i < filteredChannels.Count; i++)
 			{
 				ChannelInfo ch2 = filteredChannels[i];
-				DataGridViewRow dataGridViewRow = dgvData.Rows[i];
-				dataGridViewRow.Cells[0].Value = ch2.Name;
-				dataGridViewRow.Cells[1].Value = ch2.Url;
-				dataGridViewRow.Cells[2].Value = ch2.Location;
-				dataGridViewRow.Cells[3].Value = ch2.Resolution;
-				dataGridViewRow.Cells[4].Value = ch2.Speed;
-				dataGridViewRow.Cells[5].Value = (string.IsNullOrWhiteSpace(ch2.Group) ? "未分组" : ch2.Group);
-				dataGridViewRow.Cells[6].Value = ch2.Status;
-				dataGridViewRow.Cells[7].Value = "";
+			DataGridViewRow dataGridViewRow = dgvData.Rows[i];
+			dataGridViewRow.Cells["colIndex"].Value = (i + 1).ToString();
+			dataGridViewRow.Cells["colName"].Value = ch2.Name;
+			dataGridViewRow.Cells["colUrl"].Value = ch2.Url;
+			dataGridViewRow.Cells["colLocation"].Value = ch2.Location;
+			dataGridViewRow.Cells["colResolution"].Value = ch2.Resolution;
+			dataGridViewRow.Cells["colSpeed"].Value = ch2.Speed;
+			dataGridViewRow.Cells["colGroup"].Value = (string.IsNullOrWhiteSpace(ch2.Group) ? "未分组" : ch2.Group);
+			dataGridViewRow.Cells["colStatus"].Value = ch2.Status;
+			dataGridViewRow.Cells["colAction"].Value = "";
 			}
 		}
 		finally
@@ -1415,6 +1447,96 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			btnScanSource.Enabled = true;
 		}
+		RefreshCombinedButton();
+	}
+
+	// 「停止检测 / 重新检测」二合一按钮状态刷新：
+	//  - 正在检测  → 显示"停止检测"(红)，可点击
+	//  - 已停止    → 显示"重新检测"(橙)，仅在存在"未检测/检测中"频道时可点击
+	private void RefreshCombinedButton()
+	{
+		if (btnStopDetect == null)
+		{
+			return;
+		}
+		bool hasData = allChannels != null && allChannels.Count > 0;
+		bool hasPending = allChannels != null && allChannels.Any((ChannelInfo c) => c.Status == "未检测" || c.Status == "检测中");
+		btnStopDetect.Visible = hasData;
+		if (isDetecting)
+		{
+			btnStopDetect.Text = "停止检测";
+			btnStopDetect.BackColor = theme.ErrorColor;
+			btnStopDetect.ForeColor = Color.White;
+			btnStopDetect.FlatAppearance.MouseOverBackColor = Color.FromArgb(Math.Min(255, theme.ErrorColor.R + 20), Math.Min(255, theme.ErrorColor.G + 20), Math.Min(255, theme.ErrorColor.B + 20));
+			btnStopDetect.Enabled = true;
+		}
+		else
+		{
+			btnStopDetect.Text = "重新检测";
+			btnStopDetect.BackColor = theme.WarnColor;
+			btnStopDetect.ForeColor = Color.White;
+			btnStopDetect.FlatAppearance.MouseOverBackColor = Color.FromArgb(Math.Min(255, theme.WarnColor.R + 20), Math.Min(255, theme.WarnColor.G + 20), Math.Min(255, theme.WarnColor.B + 20));
+			btnStopDetect.Enabled = hasPending;
+		}
+		btnStopDetect.Invalidate();
+	}
+
+	// 合并按钮点击事件：根据当前状态切换「停止检测」与「重新检测」
+	private async void BtnCombined_Click(object sender, EventArgs e)
+	{
+		if (isDetecting)
+		{
+			// 正在检测 → 执行「停止检测」
+			if (DarkMessageBox.Show("确定要停止检测吗？已检测的数据将被保留。", "停止检测", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+			{
+				cts?.Cancel();
+				isDetecting = false;
+				isPaused = false;
+				btnStartDetect.Text = "开始检测";
+				btnStartDetect.BackColor = theme.InfoColor;
+				btnStartDetect.ForeColor = Color.White;
+				if (btnScanSource != null)
+				{
+					btnScanSource.Enabled = true;
+				}
+				RefreshCombinedButton();
+			}
+			return;
+		}
+		// 已停止 → 执行「重新检测」(仅检测未检测/检测中频道)
+		if (allChannels == null || allChannels.Count == 0)
+		{
+			return;
+		}
+		int pending = allChannels.Count((ChannelInfo c) => c.Status == "未检测" || c.Status == "检测中");
+		if (pending == 0)
+		{
+			DarkMessageBox.Show("没有需要重新检测的新频道（所有频道均已检测完成）。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			RefreshCombinedButton();
+			return;
+		}
+		await CheckAndDownloadComponentsAsync();
+		isDetecting = true;
+		isPaused = false;
+		btnStartDetect.Text = "暂停检测";
+		btnStartDetect.BackColor = ColorOrange;
+		btnStartDetect.ForeColor = Color.White;
+		if (btnScanSource != null)
+		{
+			btnScanSource.Enabled = false;
+		}
+		RefreshCombinedButton();
+		await StartDetection(incremental: true);
+		isDetecting = false;
+		isPaused = false;
+		btnStartDetect.Text = "开始检测";
+		btnStartDetect.BackColor = theme.InfoColor;
+		btnStartDetect.ForeColor = Color.White;
+		if (btnScanSource != null)
+		{
+			btnScanSource.Enabled = true;
+		}
+		RefreshCombinedButton();
 	}
 
 	private void BtnExport_Click(object sender, EventArgs e)
@@ -1440,6 +1562,9 @@ public partial class IPTVLiveCheckerMain : Form
 				break;
 			case 3:
 				ExportToTxt(sfd.FileName, merge: false);
+				break;
+			case 4:
+				ExportToTxtMergeUrl(sfd.FileName);
 				break;
 			case 5:
 				ExportToM3uMergeLogo(sfd.FileName);
@@ -1554,10 +1679,23 @@ public partial class IPTVLiveCheckerMain : Form
 			};
 			animTimer.Start();
 		};
-		btn.Paint += delegate(object s, PaintEventArgs e)
-		{
+		// 是否处于"沉浸式动态主题"（玻璃/动画）：按钮所在面板透明，需改用半透明主题色融入流动背景，而非父面板的透明色（否则露出死灰色块）。
+			AppTheme at = AppTheme.ActiveTheme;
+			bool immersiveFx = at != null && (at.GlassEnabled || !string.IsNullOrEmpty(at.AnimationType));
+			btn.Paint += delegate(object s, PaintEventArgs e)
+			{
 			e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-			using (SolidBrush brush = new SolidBrush((btn.Parent != null) ? btn.Parent.BackColor : Color.White))
+			Color baseFill;
+			if (immersiveFx)
+			{
+				// 沉浸式：父面板透明，使用半透明 Surface 作底层，让 ThemeFx 动效背景透出，避免按钮四周出现实色色块
+				baseFill = Color.FromArgb(110, at.Surface.R, at.Surface.G, at.Surface.B);
+			}
+			else
+			{
+				baseFill = (btn.Parent != null) ? btn.Parent.BackColor : Color.White;
+			}
+			using (SolidBrush brush = new SolidBrush(baseFill))
 			{
 				e.Graphics.FillRectangle(brush, 0, 0, btn.Width, btn.Height);
 			}
@@ -1578,6 +1716,51 @@ public partial class IPTVLiveCheckerMain : Form
 			{
 				using SolidBrush brush2 = new SolidBrush(color4);
 				e.Graphics.FillPath(brush2, path2);
+			}
+			// 沉浸式动态主题：叠加随动效相位变化的微辉，让按钮与背景动画协调统一（所有动画类型均生效）
+			if (immersiveFx && at != null)
+			{
+				double ph = ThemeFx.CurrentPhase;
+				string atype = (at.AnimationType ?? string.Empty).ToLowerInvariant();
+				using (GraphicsPath clip = GetRoundedPath(rect, num7))
+				{
+					e.Graphics.SetClip(clip);
+				}
+				if (atype == "neon")
+				{
+					float sweep = rect.Width * 0.8f;
+					float x = -sweep + (float)((ph / (Math.PI * 2)) * (rect.Width + sweep * 2));
+					using (LinearGradientBrush shine = new LinearGradientBrush(
+						new PointF(x, rect.Top), new PointF(x + sweep, rect.Bottom),
+						Color.FromArgb(70, at.Primary.R, at.Primary.G, at.Primary.B),
+						Color.FromArgb(0, at.Primary.R, at.Primary.G, at.Primary.B)))
+					{
+						e.Graphics.FillRectangle(shine, rect);
+					}
+				}
+				else if (atype == "aurora" || atype == "fluid")
+				{
+					// 极光/流动：竖向渐变，随相位上下偏移，模拟星云流光
+					float off = (float)(Math.Sin(ph) * rect.Height * 0.25);
+					using (LinearGradientBrush shine = new LinearGradientBrush(
+						new PointF(rect.Left, rect.Top + off), new PointF(rect.Left, rect.Bottom + off),
+						Color.FromArgb(55, at.Primary.R, at.Primary.G, at.Primary.B),
+						Color.FromArgb(10, at.Accent.R, at.Accent.G, at.Accent.B)))
+					{
+						e.Graphics.FillRectangle(shine, rect);
+					}
+				}
+				else if (atype == "pulse" || atype == "breath")
+				{
+					// 脉动/呼吸：整体亮度随相位起伏
+					float k = 0.5f + 0.5f * (float)Math.Abs(Math.Sin(ph));
+					int a = (int)(60 * k);
+					using (SolidBrush shine = new SolidBrush(Color.FromArgb(a, at.Primary.R, at.Primary.G, at.Primary.B)))
+					{
+						e.Graphics.FillRectangle(shine, rect);
+					}
+				}
+				e.Graphics.ResetClip();
 			}
 			if (bw > 0 && bc != Color.Empty)
 			{
@@ -1621,6 +1804,15 @@ public partial class IPTVLiveCheckerMain : Form
 				};
 			}
 		};
+		// immersive dynamic theme: subscribe to animation phase so the button refreshes with the background
+		if (immersiveFx)
+		{
+			ThemeFx.PhaseTick += delegate
+			{
+				if (btn.IsDisposed) return;
+				btn.Invalidate();
+			};
+		}
 		btn.Invalidate();
 	}
 
@@ -1811,7 +2003,17 @@ public partial class IPTVLiveCheckerMain : Form
 		Color bgColor = theme.Bg; // 设置窗口整体背景色（取当前主题背景）
 		Color textColor = theme.TextPrimary; // 主文本颜色
 		Color accentColor = pal.Neon; // 强调/高亮色（霓虹色，用于按钮高亮、链接等）
-		Color borderColor = pal.Border; // 通用边框颜色
+		Color borderColor = pal.Border; // 通用边框颜色（卡片外框，允许半透明柔和描边）
+																 // 按钮专用描边色：去除半透明（alpha=255），确保 Outline 按钮边框/文字在浅/深背景下都清晰锐利
+																 // 同时比 accentColor 再加深 15% 保证在豆沙绿等浅亮主题上足够醒目
+		Color buttonOutlineColor = DrawingUtils.IsDarkColor(accentColor)
+			? Color.FromArgb(255, Math.Min(accentColor.R + 35, 255), Math.Min(accentColor.G + 35, 255), Math.Min(accentColor.B + 35, 255))
+			: Color.FromArgb(255, Math.Max(accentColor.R - 45, 0), Math.Max(accentColor.G - 45, 0), Math.Max(accentColor.B - 45, 0));
+		// Outline 按钮文字颜色：使用主题 TextPrimary 的不透明深色色阶（再加深 20%），
+		// 避免与按钮面板背景色（bgColor）过于接近导致"看不太清"
+		Color buttonTextOutline = DrawingUtils.IsDarkColor(textColor)
+			? Color.FromArgb(255, Math.Min(textColor.R + 40, 255), Math.Min(textColor.G + 40, 255), Math.Min(textColor.B + 40, 255))
+			: Color.FromArgb(255, Math.Max(textColor.R - 50, 0), Math.Max(textColor.G - 50, 0), Math.Max(textColor.B - 50, 0));
 		Color engineCardBg = ControlPaint.Light(theme.Surface, 0.06f); // 检测引擎卡片底色（在表面色上轻微提亮）
 		Color engineCardBorder = pal.Border; // 检测引擎卡片边框色
 		Color perfCardBg = ControlPaint.Light(theme.Surface, 0.06f); // 性能设置卡片底色
@@ -1830,7 +2032,7 @@ public partial class IPTVLiveCheckerMain : Form
 		int engineCardH = SY(105); // 检测引擎卡片高度
 		int perfCardH = SY(125); // 性能设置卡片高度
 		int funcCardH = SY(270); // 功能开关卡片高度
-		int customCardH = SY(225); // 个性化卡片高度（含“自动切换外部播放器”开关）
+		int customCardH = SY(187); // 个性化卡片高度（含"删除免确认"开关）
 		int cardGap = SY(12); // 卡片之间的垂直间距
 		int btnPanelH = SY(65); // 底部按钮面板高度
 		int contentTotalH = engineCardH + perfCardH + customCardH + cardGap * 3 + scrollBottomPad; // 全部卡片+间距的总高度
@@ -1862,12 +2064,12 @@ public partial class IPTVLiveCheckerMain : Form
 		};
 		Panel engineCard = CreateCard(engineCardBg, engineCardBorder);
 		PaintCardBorder(engineCard, engineCardBorder);
-		// 卡片标题“检测引擎”（加粗字体）
+		// 卡片标题"检测引擎"（加粗字体）
 		Label engineTitle = new Label
 		{
 			Text = "检测引擎",
 			Font = GetFont(11f, FontStyle.Bold),
-			ForeColor = (isDark ? Color.FromArgb(100, 180, 255) : Color.FromArgb(30, 100, 180)),
+			ForeColor = theme.Primary,
 			Size = new Size(cardWidth - SY(30), 28),
 			Location = At(SY(15), SY(12)),
 			Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
@@ -1901,7 +2103,7 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			Text = "提示：HTTP模式不支持分辨率检测",
 			Font = GetFont(8.5f),
-			ForeColor = (isDark ? Color.FromArgb(200, 100, 100) : Color.FromArgb(200, 80, 80)),
+			ForeColor = theme.ErrorColor,
 			Size = new Size(cardWidth - SY(30), 22),
 			Location = At(SY(15), SY(78)),
 			Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
@@ -1916,15 +2118,15 @@ public partial class IPTVLiveCheckerMain : Form
 		// 性能设置卡片标题（加粗，橙色调）
 		Label perfTitle = new Label
 		{
-			Text = "\ud83d\ude80 性能设置",
+			Text = "◆ 性能设置",
 			Font = GetFont(11f, FontStyle.Bold),
-			ForeColor = (isDark ? Color.FromArgb(255, 160, 80) : Color.FromArgb(200, 100, 30)),
+			ForeColor = theme.WarnColor,
 			Size = new Size(cardWidth - SY(30), 28),
 			Location = At(SY(15), SY(12)),
 			Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
 		};
 		perfCard.Controls.Add(perfTitle);
-		Color perfTipColor = (isDark ? Color.FromArgb(255, 180, 100) : Color.FromArgb(200, 100, 30)); // 性能提示文字颜色（橙色，随主题明暗取不同亮度）
+		Color perfTipColor = theme.WarnColor; // 性能提示文字颜色（从主题派生，自动适配明暗模式）
 		// 标签：并发检测数量
 		Label concurrencyLabel = new Label
 		{
@@ -1994,15 +2196,15 @@ public partial class IPTVLiveCheckerMain : Form
 		perfCard.Size = new Size(cardWidth, perfCardH);
 		scrollContainer.Controls.Add(perfCard);
 		cardY += perfCardH + cardGap;
-		// 功能开关卡片容器（默认隐藏，由底部“高级功能”按钮展开/收起）
+		// 功能开关卡片容器（默认隐藏，由底部"高级功能"按钮展开/收起）
 		Panel funcCard = CreateCard(funcCardBg, funcCardBorder);
 		PaintCardBorder(funcCard, funcCardBorder);
 		// 功能开关卡片标题（加粗，绿色调）
 		Label funcTitle = new Label
 		{
-			Text = "\ud83c\udfaf 功能开关",
+			Text = "◆ 功能开关",
 			Font = GetFont(11f, FontStyle.Bold),
-			ForeColor = (isDark ? Color.FromArgb(120, 220, 150) : Color.FromArgb(40, 160, 80)),
+			ForeColor = theme.SuccessColor,
 			Size = new Size(cardWidth - SY(30), 28),
 			Location = At(SY(15), SY(12)),
 			Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
@@ -2084,7 +2286,7 @@ public partial class IPTVLiveCheckerMain : Form
 			Anchor = AnchorStyles.Top | AnchorStyles.Right
 		};
 		funcCard.Controls.Add(toggleAutoParse);
-		// 标签：搜索功能（主界面是否显示“搜索”导航按钮）
+		// 标签：搜索功能（主界面是否显示"搜索"导航按钮）
 		Label searchBtnLabel = new Label
 		{
 			Text = "搜索功能",
@@ -2094,7 +2296,7 @@ public partial class IPTVLiveCheckerMain : Form
 			Location = At(SY(15), SY(196))
 		};
 		funcCard.Controls.Add(searchBtnLabel);
-		// 开关：搜索功能（控制主界面“搜索”按钮可见性）
+		// 开关：搜索功能（控制主界面"搜索"按钮可见性）
 		ToggleSwitch toggleSearchBtn = new ToggleSwitch
 		{
 			Checked = showSearchButton,
@@ -2132,7 +2334,7 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			Text = "个性化",
 			Font = GetFont(11f, FontStyle.Bold),
-			ForeColor = (isDark ? Color.FromArgb(200, 150, 255) : Color.FromArgb(120, 60, 180)),
+			ForeColor = theme.Accent,
 			Size = new Size(cardWidth - SY(30), 28),
 			Location = At(SY(15), SY(12)),
 			Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
@@ -2149,7 +2351,7 @@ public partial class IPTVLiveCheckerMain : Form
 		};
 		customCard.Controls.Add(fontLabel);
 		int cmbFontW = SX(220); // 字体下拉框宽度
-		int btnBrowseW = SX(75); // “应用”/“浏览”按钮宽度
+		int btnBrowseW = SX(75); // "应用"/"浏览"按钮宽度
 		int btnRightMargin = SX(20); // 右侧按钮距卡片右边距
 		int inputBtnGap = SX(12); // 输入框与按钮之间的水平间距
 		// 字体下拉选择框（只选不填，列出系统所有字体族）
@@ -2178,7 +2380,7 @@ public partial class IPTVLiveCheckerMain : Form
 			cmbFont.SelectedIndex = 0;
 		}
 		customCard.Controls.Add(cmbFont);
-		// “应用”按钮：将选中的字体立即生效并保存
+		// "应用"按钮：将选中的字体立即生效并保存
 		Button btnFontApply = new Button
 		{
 			Text = "应用",
@@ -2209,62 +2411,12 @@ public partial class IPTVLiveCheckerMain : Form
 			}
 		};
 		customCard.Controls.Add(btnFontApply);
-		// 标签：第三方播放器（用于双击播放直播源）
-		Label playerLabel = new Label
-		{
-			Text = "第三方播放器",
-			Font = GetFont(9.5f),
-			ForeColor = textColor,
-			Size = new Size(SY(100), 24),
-			Location = At(SY(15), SY(85))
-		};
-		customCard.Controls.Add(playerLabel);
-		int playerInputW = cardWidth - SX(130) - btnRightMargin - btnBrowseW - inputBtnGap; // 播放器路径输入框宽度（按卡片宽度自适应）
-		// 输入框：第三方播放器可执行文件路径
-		TextBox txtPlayerPath = new TextBox
-		{
-			Text = customPlayerPath,
-			Font = GetFont(9f),
-			ForeColor = textColor,
-			BackColor = bgColor,
-			BorderStyle = BorderStyle.FixedSingle,
-			Size = new Size(playerInputW, SY(28)),
-			Location = At(cardWidth - btnRightMargin - btnBrowseW - inputBtnGap - playerInputW, SY(83)),
-			Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
-		};
-		customCard.Controls.Add(txtPlayerPath);
-		// “浏览...”按钮：打开文件选择对话框挑选播放器 exe
-		Button btnBrowsePlayer = new Button
-		{
-			Text = "浏览...",
-			Font = GetFont(9f),
-			ForeColor = Color.White,
-			BackColor = accentColor,
-			FlatStyle = FlatStyle.Flat,
-			Size = new Size(btnBrowseW, SY(28)),
-			Location = At(cardWidth - btnRightMargin - btnBrowseW, SY(83)),
-			Cursor = Cursors.Hand,
-			Anchor = AnchorStyles.Top | AnchorStyles.Right
-		};
-		btnBrowsePlayer.FlatAppearance.BorderSize = 0;
-		btnBrowsePlayer.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, btnBrowseW, SY(28)), 6));
-		btnBrowsePlayer.Click += delegate
-		{
-			using OpenFileDialog openFileDialog = new OpenFileDialog();
-			openFileDialog.Filter = "可执行文件|*.exe|所有文件|*.*";
-			openFileDialog.Title = "选择第三方播放器";
-			if (openFileDialog.ShowDialog() == DialogResult.OK)
-			{
-				txtPlayerPath.Text = openFileDialog.FileName;
-			}
-		};
-		customCard.Controls.Add(btnBrowsePlayer);
 		// 分隔线（1px 高的 Label，用主题边框色绘制，分隔上方设置与下方预览开关）
 		Label sepLine = new Label
 		{
 			Text = "",
 			Size = new Size(cardWidth - SY(30), 1),
-			Location = At(SY(15), SY(123)),
+			Location = At(SY(15), SY(85)),
 			BackColor = theme.Border,
 			Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
 		};
@@ -2276,7 +2428,7 @@ public partial class IPTVLiveCheckerMain : Form
 			Font = GetFont(9.5f),
 			ForeColor = textColor,
 			Size = new Size(SY(240), 24),
-			Location = At(SY(15), SY(133))
+			Location = At(SY(15), SY(95))
 		};
 		customCard.Controls.Add(previewToggleLabel);
 		// 开关：预览窗（控制主界面右侧内嵌播放器是否显示）
@@ -2284,34 +2436,34 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			Checked = (previewPanel != null && previewPanel.Visible),
 			Size = new Size(SY(80), SY(30)),
-			Location = At(cardWidth - SY(110), SY(132)),
+			Location = At(cardWidth - SY(110), SY(94)),
 			Anchor = AnchorStyles.Top | AnchorStyles.Right
 		};
 		customCard.Controls.Add(togglePreview);
-		// 标签：预览窗自动切换外部播放器（内嵌）
-		Label autoSwitchExtLabel = new Label
+		// 标签：删除免确认（选中行后按 Delete 直接删除，不弹确认框）
+		Label skipDeleteLabel = new Label
 		{
-			Text = "预览窗自动切外部播放器(内嵌)",
+			Text = "删除免确认（Delete 直接删除）",
 			Font = GetFont(9.5f),
 			ForeColor = textColor,
 			Size = new Size(SY(240), 24),
-			Location = At(SY(15), SY(169))
+			Location = At(SY(15), SY(131))
 		};
-		customCard.Controls.Add(autoSwitchExtLabel);
-		// 开关：VLC 无法播放某链接时，自动将视频内嵌切换到 PotPlayer/MPV
-		ToggleSwitch toggleAutoSwitch = new ToggleSwitch
+		customCard.Controls.Add(skipDeleteLabel);
+		// 开关：选中行后按 Delete 删除时跳过确认对话框
+		ToggleSwitch toggleSkipDelete = new ToggleSwitch
 		{
-			Checked = autoSwitchExternalPlayer,
+			Checked = skipDeleteConfirm,
 			Size = new Size(SY(80), SY(30)),
-			Location = At(cardWidth - SY(110), SY(168)),
+			Location = At(cardWidth - SY(110), SY(130)),
 			Anchor = AnchorStyles.Top | AnchorStyles.Right
 		};
-		customCard.Controls.Add(toggleAutoSwitch);
+		customCard.Controls.Add(toggleSkipDelete);
 		customCard.Size = new Size(cardWidth, customCardH);
 		scrollContainer.Controls.Add(customCard);
 		cardY += customCardH + cardGap;
 		scrollContainer.AutoScrollMinSize = new Size(cardWidth, contentTotalH); // 设置滚动容器最小尺寸，保证卡片可完整滚动显示
-		// 底部按钮面板（停靠在窗口底部，承载“恢复默认/确定/取消/高级功能”按钮）
+		// 底部按钮面板（停靠在窗口底部，承载"恢复默认/确定/取消/高级功能"按钮）
 		Panel btnPanel = new Panel
 		{
 			Dock = DockStyle.Bottom,
@@ -2321,7 +2473,7 @@ public partial class IPTVLiveCheckerMain : Form
 		};
 		ctx.Body.Controls.Add(btnPanel);
 		ctx.Body.Controls.Add(scrollContainer);
-		// “恢复默认”按钮：经二次确认后将全部设置重置为默认值
+		// "恢复默认"按钮：经二次确认后将全部设置重置为默认值
 		Button btnReset = new Button
 		{
 			Text = "恢复默认",
@@ -2332,7 +2484,7 @@ public partial class IPTVLiveCheckerMain : Form
 			Size = new Size(SY(110), SY(35)),
 			Cursor = Cursors.Hand
 		};
-		StyleOutlineButton(btnReset, 17, borderColor, textColor);
+		StyleOutlineButton(btnReset, 17, buttonOutlineColor, buttonTextOutline);
 		btnReset.Click += delegate
 		{
 			if (DarkMessageBox.Show("确定要恢复所有设置为默认值吗？", "恢复默认", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -2343,17 +2495,15 @@ public partial class IPTVLiveCheckerMain : Form
 				autoClearInvalid = false;
 				persistList = true;
 				autoParseLink = false;
-				customPlayerPath = "";
 				watchSearchWindow = false;
 				showSearchButton = false;
 				autoExtractIpPort = false;
 				customFontFamily = "Microsoft YaHei";
-				themePreference = "青瓷薄荷";
+				themePreference = AppConstants.DefaultThemeName;
 				theme = MakeEffectiveTheme();
 				disclaimerAgreed = false;
 				skipDisclaimerPrompt = false;
-				autoSwitchExternalPlayer = false;
-				ChannelPlayer.EnableAutoSwitchExternal = false;
+				skipDeleteConfirm = false;
 				iptvHistoryIps = new List<string>();
 				loginDataPath = "";
 				rbHttp.Checked = true;
@@ -2366,8 +2516,7 @@ public partial class IPTVLiveCheckerMain : Form
 				toggleWatch.Checked = false;
 				toggleSearchBtn.Checked = false;
 				toggleSkipDisclaimer.Checked = false;
-				toggleAutoSwitch.Checked = false;
-				txtPlayerPath.Text = "";
+				toggleSkipDelete.Checked = false;
 				if (cmbFont.Items.Contains("Microsoft YaHei"))
 				{
 					cmbFont.SelectedItem = "Microsoft YaHei";
@@ -2387,7 +2536,7 @@ public partial class IPTVLiveCheckerMain : Form
 				dlg.Invalidate(true);
 			}
 		};
-		// “确定”按钮：收集各控件值、保存配置、应用主题后关闭窗口
+		// "确定"按钮：收集各控件值、保存配置、应用主题后关闭窗口
 		Button btnOK = new Button
 		{
 			Text = "确定",
@@ -2414,12 +2563,10 @@ public partial class IPTVLiveCheckerMain : Form
 			autoClearInvalid = toggleAutoClear.Checked;
 			skipDisclaimerPrompt = toggleSkipDisclaimer.Checked;
 			persistList = togglePersist.Checked;
-			customPlayerPath = txtPlayerPath.Text;
 			watchSearchWindow = toggleWatch.Checked;
 			autoParseLink = toggleAutoParse.Checked;
 			showSearchButton = toggleSearchBtn.Checked;
-			autoSwitchExternalPlayer = toggleAutoSwitch.Checked;
-			ChannelPlayer.EnableAutoSwitchExternal = autoSwitchExternalPlayer;
+			skipDeleteConfirm = toggleSkipDelete.Checked;
 			if (previewPanel != null)
 			{
 				bool flag = togglePreview.Checked;
@@ -2453,7 +2600,7 @@ public partial class IPTVLiveCheckerMain : Form
 			dlg.DialogResult = DialogResult.OK;
 			dlg.Close();
 		};
-		// “取消”按钮：不保存任何修改，直接关闭窗口
+		// "取消"按钮：不保存任何修改，直接关闭窗口
 		Button btnCancel = new Button
 		{
 			Text = "取消",
@@ -2464,7 +2611,7 @@ public partial class IPTVLiveCheckerMain : Form
 			Size = new Size(SY(110), SY(35)),
 			Cursor = Cursors.Hand
 		};
-		StyleOutlineButton(btnCancel, 17, borderColor, textColor);
+		StyleOutlineButton(btnCancel, 17, buttonOutlineColor, buttonTextOutline);
 		btnCancel.Click += delegate
 		{
 			dlg.Close();
@@ -2506,7 +2653,7 @@ public partial class IPTVLiveCheckerMain : Form
 				dlg.Location = At(screenWorkArea.Left + (screenWorkArea.Width - dlg.Width) / 2, screenWorkArea.Top + (screenWorkArea.Height - dlg.Height) / 2);
 			}
 		};
-		// “高级功能”按钮（默认隐藏，悬停“恢复默认”3 秒彩蛋后出现）：点击展开/收起“功能开关”卡片
+		// "高级功能"按钮（默认隐藏，悬停"恢复默认"3 秒彩蛋后出现）：点击展开/收起"功能开关"卡片
 		Button btnAdvanced = new Button
 		{
 			Text = "高级功能",
@@ -2529,14 +2676,14 @@ public partial class IPTVLiveCheckerMain : Form
 		btnPanel.Controls.Add(btnReset);
 		btnPanel.Controls.Add(btnOK);
 		btnPanel.Controls.Add(btnCancel);
-		// 彩蛋计时器：悬停“恢复默认”按钮满 3 秒后显示“高级功能”按钮
+		// 彩蛋计时器：悬停"恢复默认"按钮满 3 秒后显示"高级功能"按钮
 		System.Windows.Forms.Timer advEggTimer = new System.Windows.Forms.Timer
 		{
 			Interval = 3000
 		};
 		try
 		{
-			// 彩蛋计时器：鼠标移出“高级功能”按钮 1 秒后将其隐藏
+			// 彩蛋计时器：鼠标移出"高级功能"按钮 1 秒后将其隐藏
 			System.Windows.Forms.Timer advHideTimer = new System.Windows.Forms.Timer
 			{
 				Interval = 1000
@@ -2554,7 +2701,7 @@ public partial class IPTVLiveCheckerMain : Form
 					advHideTimer.Stop();
 					btnAdvanced.Visible = false;
 				};
-				// 彩蛋逻辑：递归为控件及其子控件挂接鼠标事件——悬停“恢复默认”启动显示计时器、移出则取消
+				// 彩蛋逻辑：递归为控件及其子控件挂接鼠标事件——悬停"恢复默认"启动显示计时器、移出则取消
 		Action<Control> resetWireUpWithEgg = null;
 				resetWireUpWithEgg = delegate(Control ctrl)
 				{
@@ -2577,7 +2724,7 @@ public partial class IPTVLiveCheckerMain : Form
 					}
 				};
 				resetWireUpWithEgg(btnReset);
-				// 彩蛋逻辑：为“高级功能”按钮挂接鼠标事件——悬停取消隐藏计时器、移出则启动隐藏计时器
+				// 彩蛋逻辑：为"高级功能"按钮挂接鼠标事件——悬停取消隐藏计时器、移出则启动隐藏计时器
 		Action<Control> advWireUpWithHide = null;
 				advWireUpWithHide = delegate(Control ctrl)
 				{
@@ -2712,9 +2859,9 @@ public partial class IPTVLiveCheckerMain : Form
 			Panel topCard = new Panel
 			{
 				Location = At(cx, y),
-				Size = new Size(cw, topCardH),
-				BackColor = Color.Transparent
+				Size = new Size(cw, topCardH)
 			};
+			ThemeFx.EnableTransparent(topCard);
 			ctx.Body.Controls.Add(topCard);
 			Font topTitleFont = GetFont(SF(15f), FontStyle.Bold);
 			Font verFont = GetFont(SF(9.5f));
@@ -2731,9 +2878,9 @@ public partial class IPTVLiveCheckerMain : Form
 			Panel iconPanel = new Panel
 			{
 				Location = At(startX, iconY),
-				Size = new Size(iconSize, iconSize),
-				BackColor = Color.Transparent
+				Size = new Size(iconSize, iconSize)
 			};
+			ThemeFx.EnableTransparent(iconPanel);
 			iconPanel.Paint += delegate(object s, PaintEventArgs e)
 			{
 				using Graphics graphics = e.Graphics;
@@ -2826,9 +2973,9 @@ public partial class IPTVLiveCheckerMain : Form
 				Panel itemPanel = new Panel
 				{
 					Location = At(itemX, itemY),
-					Size = new Size(colW - SX(8), itemH - SY(4)),
-					BackColor = Color.Transparent
+					Size = new Size(colW - SX(8), itemH - SY(4))
 				};
+				ThemeFx.EnableTransparent(itemPanel);
 				itemPanel.MouseEnter += delegate
 				{
 					itemPanel.BackColor = ControlPaint.Light(featureCardBg, 0.1f);
@@ -2883,7 +3030,7 @@ public partial class IPTVLiveCheckerMain : Form
 			Font promoLeftFont = GetFont(SF(12f), FontStyle.Bold);
 			Font promoMidFont = GetFont(SF(10f));
 			Font promoRightFont = GetFont(SF(9.5f), FontStyle.Italic);
-			string promoLeftText = "\ud83c\udfaf 关注公众号";
+			string promoLeftText = "★ 关注公众号";
 			string promoMidText = "微信搜一搜「文娱茶话会」";
 			string promoRightText = "点击复制";
 			Size promoLeftSize = TextRenderer.MeasureText(promoLeftText, promoLeftFont);
@@ -2897,7 +3044,7 @@ public partial class IPTVLiveCheckerMain : Form
 				Text = promoLeftText,
 				Font = promoLeftFont,
 				Size = promoLeftSize,
-				ForeColor = (isDark ? Color.FromArgb(120, 220, 140) : Color.FromArgb(40, 140, 70)),
+				ForeColor = theme.SuccessColor,
 				BackColor = Color.Transparent,
 				TextAlign = ContentAlignment.MiddleLeft
 			};
@@ -2919,7 +3066,7 @@ public partial class IPTVLiveCheckerMain : Form
 				Text = promoRightText,
 				Font = promoRightFont,
 				Size = promoRightSize,
-				ForeColor = (isDark ? Color.FromArgb(100, 200, 120) : Color.FromArgb(60, 160, 90)),
+				ForeColor = theme.SuccessColor,
 				BackColor = Color.Transparent,
 				TextAlign = ContentAlignment.MiddleRight
 			};
@@ -2947,7 +3094,7 @@ public partial class IPTVLiveCheckerMain : Form
 			}
 			int promoImgX = (cw - promoImgW) / 2;
 			int promoImgY = num2;
-			Color greenBorderColor = (isDark ? Color.FromArgb(60, 160, 90) : Color.FromArgb(80, 180, 110));
+			Color greenBorderColor = theme.SuccessColor;
 			Panel imgPanel = new Panel
 			{
 				Location = At(promoImgX - borderSize, promoImgY - borderSize),
@@ -2980,8 +3127,8 @@ public partial class IPTVLiveCheckerMain : Form
 			promoCard.Controls.Add(imgPanel);
 			imgPanel.BringToFront();
 			Color promoNormalBg = promoCardBg;
-			Color promoHoverBg = (isDark ? Color.FromArgb(35, 60, 48) : Color.FromArgb(225, 242, 228));
-			Color promoPressBg = (isDark ? Color.FromArgb(42, 70, 55) : Color.FromArgb(210, 235, 218));
+			Color promoHoverBg = ControlPaint.Light(theme.Surface, isDark ? 0.08f : 0.04f);
+			Color promoPressBg = ControlPaint.Light(theme.Surface, isDark ? 0.14f : 0.08f);
 			bool promoIsHover = false;
 			Action<Control> promoWireUp = null;
 			promoWireUp = delegate(Control ctrl)
@@ -3066,9 +3213,9 @@ public partial class IPTVLiveCheckerMain : Form
 			{
 				Location = At(SX(16), infoCardY),
 				Size = new Size(infoCardW, infoCardH),
-				BackColor = Color.Transparent,
 				Cursor = Cursors.Hand
 			};
+			ThemeFx.EnableTransparent(emailCard);
 			emailCard.Paint += delegate(object s, PaintEventArgs e)
 			{
 				using Graphics graphics = e.Graphics;
@@ -3078,8 +3225,8 @@ public partial class IPTVLiveCheckerMain : Form
 				graphics.DrawPath(pen, path);
 			};
 			Color emailNormalBg = Color.Transparent;
-			Color emailHoverBg = (isDark ? Color.FromArgb(40, 52, 75) : Color.FromArgb(225, 233, 248));
-			Color emailPressBg = (isDark ? Color.FromArgb(50, 65, 90) : Color.FromArgb(210, 222, 245));
+			Color emailHoverBg = ControlPaint.Light(theme.Surface, isDark ? 0.06f : 0.03f);
+			Color emailPressBg = ControlPaint.Light(theme.Surface, isDark ? 0.12f : 0.06f);
 			bool emailIsHover = false;
 			Action<Control> emailWireUp = null;
 			emailWireUp = delegate(Control ctrl)
@@ -3140,7 +3287,7 @@ public partial class IPTVLiveCheckerMain : Form
 			fbCard.Controls.Add(emailCard);
 			Label lblEmailIcon = new Label
 			{
-				Text = "\ud83d\udce7",
+				Text = "✉",
 				Font = GetFont(SF(14f)),
 				Location = At(SX(12), SY(13)),
 				Size = new Size(SX(28), SY(28)),
@@ -3176,9 +3323,9 @@ public partial class IPTVLiveCheckerMain : Form
 			{
 				Location = At(SX(16) + infoCardW + SX(12), infoCardY),
 				Size = new Size(infoCardW, infoCardH),
-				BackColor = Color.Transparent,
 				Cursor = Cursors.Hand
 			};
+			ThemeFx.EnableTransparent(tgCard);
 			tgCard.Paint += delegate(object s, PaintEventArgs e)
 			{
 				using Graphics graphics = e.Graphics;
@@ -3188,8 +3335,8 @@ public partial class IPTVLiveCheckerMain : Form
 				graphics.DrawPath(pen, path);
 			};
 			Color tgNormalBg = Color.Transparent;
-			Color tgHoverBg = (isDark ? Color.FromArgb(40, 52, 75) : Color.FromArgb(225, 233, 248));
-			Color tgPressBg = (isDark ? Color.FromArgb(50, 65, 90) : Color.FromArgb(210, 222, 245));
+			Color tgHoverBg = ControlPaint.Light(theme.Surface, isDark ? 0.06f : 0.03f);
+			Color tgPressBg = ControlPaint.Light(theme.Surface, isDark ? 0.12f : 0.06f);
 			bool tgIsHover = false;
 			bool isTgRevealed = false;
 			Action<Control> tgWireUp = null;
@@ -3257,7 +3404,7 @@ public partial class IPTVLiveCheckerMain : Form
 			fbCard.Controls.Add(tgCard);
 			Label lblTgIcon = new Label
 			{
-				Text = "\ud83d\udcbb",
+				Text = "⌨",
 				Font = GetFont(SF(14f)),
 				Location = At(SX(12), SY(13)),
 				Size = new Size(SX(28), SY(28)),
@@ -3320,7 +3467,7 @@ public partial class IPTVLiveCheckerMain : Form
 				Text = "— Designed by 半步沧桑 —",
 				Font = authorFont,
 				AutoSize = true,
-				ForeColor = (isDark ? Color.FromArgb(110, 120, 135) : Color.FromArgb(170, 180, 195)),
+				ForeColor = theme.TextSecondary,
 				BackColor = Color.Transparent,
 				TextAlign = ContentAlignment.MiddleCenter
 			};
@@ -3361,7 +3508,7 @@ public partial class IPTVLiveCheckerMain : Form
 						{
 							tgEggTimer.Stop();
 							isTgRevealed = true;
-							lblTgIcon.Text = "\ud83d\udce2";
+							lblTgIcon.Text = "✈";
 							lblTgTitle.Text = "TG 频道";
 							lblTgChannel.Text = "t.me/+jTncKg0Vbrg5YjI1";
 						};
@@ -4018,7 +4165,7 @@ public partial class IPTVLiveCheckerMain : Form
 				if (num2 && FFComponentsReady())
 				{
 					detectEngine = "FFMPEG";
-					DarkMessageBox.Show(this, "\ud83c\udf89 FFmpeg 组件安装成功！\n\n已自动切换到【完整检测模式】\n\n• 将获取视频分辨率信息\n• 支持内置播放器播放", "安装成功", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+					DarkMessageBox.Show(this, "✓ FFmpeg 组件安装成功！\n\n已自动切换到【完整检测模式】\n\n• 将获取视频分辨率信息\n• 支持内置播放器播放", "安装成功", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 				}
 				else
 				{
@@ -4061,7 +4208,7 @@ public partial class IPTVLiveCheckerMain : Form
 		Point At(int x, int yy) => new Point(x, yy);
 		Label lblTitle = new Label
 		{
-			Text = "⏳ 正在下载 FFmpeg 组件（播放和检测功能必需）",
+			Text = "正在下载 FFmpeg 组件（播放和检测功能必需）",
 			Font = GetFont(SF(11f), FontStyle.Bold),
 			ForeColor = pal.GhostText,
 			Location = At(SX(20), SY(18)),
@@ -4247,7 +4394,7 @@ public partial class IPTVLiveCheckerMain : Form
 							Log("已复制组件到：" + appDir);
 							FindFFplay();
 							SetProgress(100);
-							SetStatus("✅ 安装完成！");
+							SetStatus("✓ 安装完成！");
 							Log("FFmpeg 组件安装成功！");
 							downloadSuccess = true;
 							await Task.Delay(500);
@@ -4504,7 +4651,7 @@ public partial class IPTVLiveCheckerMain : Form
 							Log($"共复制 {dllCount} 个依赖 DLL 文件");
 							FindFFplay();
 							SetProgress(100);
-							SetStatus("✅ 安装完成！");
+							SetStatus("✓ 安装完成！");
 							Log("MediaInfo 组件安装成功！");
 							downloadSuccess = true;
 							await Task.Delay(500);
@@ -5441,7 +5588,7 @@ public partial class IPTVLiveCheckerMain : Form
 			object core = coreProp.GetValue(sender);
 			if (!isSuccess || core == null)
 			{
-				// 显式暴露初始化失败，避免“窗口打开但空白、无任何报错”的体验。
+				// 显式暴露初始化失败，避免"窗口打开但空白、无任何报错"的体验。
 				DarkMessageBox.Show(
 					"WebView2 内核初始化失败，无法加载网页。\n\n原因: " + (initError ?? "CoreWebView2 为 null（运行时可能未安装或被禁用）"),
 					"WebView2 初始化失败", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -5787,7 +5934,7 @@ public partial class IPTVLiveCheckerMain : Form
 						{
 							//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 							//IL_0018: Expected O, but got Unknown
-							HttpClient httpClient2 = new HttpClient(new HttpClientHandler { MaxConnectionsPerServer = 32 });
+							HttpClient httpClient2 = CreateSharedHttpClient();
 							try
 							{
 								httpClient2.Timeout = TimeSpan.FromSeconds(2.5);
@@ -5849,16 +5996,18 @@ public partial class IPTVLiveCheckerMain : Form
 												if (statusBarRef != null && !statusBarRef.IsDisposed)
 												{
 													progressBarWidth = statusBarRef.ClientSize.Width * pct / 100;
+													_activeProgressPct = pct;
 													if (progressBarWidth > 0)
 													{
 														UpdateLabelColorsBasedOnProgress();
 													}
 													else
 													{
-														RestoreLabelColors();
-													}
-													statusBarRef.Refresh();
-												}
+			RestoreLabelColors();
+		}
+		statusBarRef.Refresh();
+		RefreshCombinedButton();
+	}
 											});
 										}
 										catch
@@ -5938,7 +6087,7 @@ public partial class IPTVLiveCheckerMain : Form
 			}
 			else
 			{
-				HttpClient httpClient = new HttpClient(new HttpClientHandler { MaxConnectionsPerServer = 32 });
+				HttpClient httpClient = CreateSharedHttpClient();
 				try
 				{
 					httpClient.Timeout = TimeSpan.FromSeconds(8.0);
@@ -6091,6 +6240,7 @@ public partial class IPTVLiveCheckerMain : Form
 					lblAvailable.Text = "可用: 0";
 					lblPercent.Text = "0.00%";
 					progressBarWidth = 0;
+					_activeProgressPct = 0;
 					RestoreLabelColors();
 					statusBarRef.PerformLayout();
 					LayoutStatusBar(statusBarRef);
@@ -6165,6 +6315,28 @@ public partial class IPTVLiveCheckerMain : Form
 			Marshal.WriteInt32(m.LParam, 20, screen.WorkingArea.Top);
 			Marshal.WriteInt32(m.LParam, 8, screen.WorkingArea.Width);
 			Marshal.WriteInt32(m.LParam, 12, screen.WorkingArea.Height);
+		}
+		else if (m.Msg == WM_ENTERSIZEMOVE)
+		{
+			// 开始拖动/缩放窗口：仅挂起 ThemeFx 动效重绘（PhaseTick 订阅方会检查 _suppressRedraw），
+			// 但**不再**发送 WM_SETREDRAW(0) 冻结窗口——冻结会让拖动期间窗口停止响应 WM_PAINT，
+			// 新暴露区域保留脏像素，正是"拖动有残影"的根因。保持正常绘制 + 停动效即可既不残影也不卡顿。
+			base.WndProc(ref m);
+			_suppressRedraw = true;
+		}
+		else if (m.Msg == WM_EXITSIZEMOVE)
+		{
+			// 结束拖动/缩放：恢复动效并一次性刷新整个界面（含动态主题背景）
+			base.WndProc(ref m);
+			_suppressRedraw = false;
+			RefreshWindowTheme();
+		}
+		else if (m.Msg == WM_ERASEBKGND)
+		{
+			// 吞掉背景擦除：所有可视区域均由自绘链路（ThemeFxBackground / 各控件 OnPaint）完全覆盖，
+			// 放行会先刷一层控件底色再绘内容，形成切换主题/缩放时的白底或旧底色闪烁。
+			m.Result = (IntPtr)1;
+			return;
 		}
 		else if (m.Msg == 132 && base.WindowState != FormWindowState.Maximized)
 		{
@@ -6483,7 +6655,18 @@ public partial class IPTVLiveCheckerMain : Form
 		switch (sortedColumn)
 		{
 		case "colName":
-			cmp = (ChannelInfo a, ChannelInfo b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal) * asc;
+			cmp = delegate(ChannelInfo a, ChannelInfo b)
+			{
+				string na = (a.Name ?? string.Empty);
+				string nb = (b.Name ?? string.Empty);
+				bool naNum = int.TryParse(na, out int ia);
+				bool nbNum = int.TryParse(nb, out int ib);
+				if (naNum && nbNum)
+				{
+					return ia.CompareTo(ib) * asc;
+				}
+				return string.Compare(na, nb, StringComparison.Ordinal) * asc;
+			};
 			break;
 		case "colUrl":
 			cmp = (ChannelInfo a, ChannelInfo b) => string.Compare(a.Url, b.Url, StringComparison.Ordinal) * asc;
@@ -6521,7 +6704,7 @@ public partial class IPTVLiveCheckerMain : Form
 		return DrawingUtils.RoundedRect(r, radius);
 	}
 
-	private void DrawStatusTag(Graphics g, Rectangle bounds, string text, Color bg, Color border, Color foreColor)
+	private void DrawStatusTag(Graphics g, Rectangle bounds, string text, Color bg, Color border, Color foreColor, bool glow = false)
 	{
 		int tagH = SY(22);
 		int tagPad = SX(10);
@@ -6530,11 +6713,42 @@ public partial class IPTVLiveCheckerMain : Form
 		int tagX = bounds.X + (bounds.Width - tagW) / 2;
 		int tagY = bounds.Y + (bounds.Height - tagH) / 2;
 		Rectangle tagRect = new Rectangle(tagX, tagY, tagW, tagH);
+		AppTheme atTag = AppTheme.ActiveTheme;
+		bool tagFx = atTag != null && (atTag.GlassEnabled || !string.IsNullOrEmpty(atTag.AnimationType));
+		// 动态主题 + 悬停/选中：状态标签按自身状态色(绿/黄/红)外层发光，像被“点亮”。
+		// 仅在悬停/选中时由行重绘触发，不引入持续计时器，零卡顿风险。
+		if (glow && tagFx)
+		{
+			double phg = ThemeFx.CurrentPhase;
+			float pulse = 0.5f + 0.5f * (float)Math.Sin(phg * 1.5);
+			int baseA = (int)(38 + 34 * pulse);
+			using (GraphicsPath glowPath = RoundedRectPath(
+				new Rectangle(tagRect.X - 5, tagRect.Y - 5, tagRect.Width + 10, tagRect.Height + 10), SX(13)))
+			{
+				for (int i = 3; i >= 1; i--)
+				{
+					int a = (int)(baseA * (i / 3.0));
+					using Pen gp = new Pen(Color.FromArgb(a, foreColor.R, foreColor.G, foreColor.B), i * 1.6f);
+					g.DrawPath(gp, glowPath);
+				}
+			}
+		}
 		using (GraphicsPath path = RoundedRectPath(tagRect, SX(11)))
 		{
 			using (SolidBrush bgBrush = new SolidBrush(bg))
 			{
 				g.FillPath(bgBrush, path);
+			}
+			if (tagFx)
+			{
+				double pht = ThemeFx.CurrentPhase;
+				float k = (float)(0.5 + 0.5 * Math.Sin(pht));
+				// 悬停/选中时呼吸微光更强，强化“点亮”感；常态保持极轻呼吸
+				int shineA = glow ? (int)(70 + 45 * k) : (int)(45 * k);
+				using (SolidBrush shine = new SolidBrush(Color.FromArgb(shineA, foreColor.R, foreColor.G, foreColor.B)))
+				{
+					g.FillPath(shine, path);
+				}
 			}
 			using Pen pen = new Pen(border, 1f);
 			g.DrawPath(pen, path);
@@ -6544,13 +6758,110 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private void DrawRoundedButton(Graphics g, Rectangle rect, string text, Color bg, Color foreColor)
 	{
+		bool neon = IsDynamicFx();
+		if (neon)
+		{
+			double ph = ThemeFx.CurrentPhase;
+			int pulse = (int)(8 + 6 * (0.5 + 0.5 * Math.Sin(ph * 2.0)));
+			using (GraphicsPath glowPath = RoundedRectPath(rect, SX(4)))
+			{
+				using (Pen glow = new Pen(ThemeFx.Glass(theme.Primary, 90), pulse))
+				{
+					g.DrawPath(glow, glowPath);
+				}
+			}
+		}
 		using (GraphicsPath path = RoundedRectPath(rect, SX(4)))
 		{
 			using SolidBrush bgBrush = new SolidBrush(bg);
 			g.FillPath(bgBrush, path);
 		}
+		if (neon)
+		{
+			double ph = ThemeFx.CurrentPhase;
+			float sweep = rect.Height * 2.2f;
+			float x = rect.Left - sweep + (float)((ph / (Math.PI * 2)) * (rect.Width + sweep * 2));
+			using (GraphicsPath clip = RoundedRectPath(rect, SX(4)))
+			{
+				g.SetClip(clip);
+				using LinearGradientBrush shine = new LinearGradientBrush(
+					new PointF(x, rect.Top), new PointF(x + sweep, rect.Bottom),
+					Color.FromArgb(120, 255, 255, 255), Color.FromArgb(0, 255, 255, 255));
+				g.FillRectangle(shine, rect);
+				g.ResetClip();
+			}
+		}
 		using Font btnFont = GetFont(SF(6.7f));
 		TextRenderer.DrawText(g, text, btnFont, rect, foreColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+	}
+
+	private bool IsNeonFx()
+	{
+		return theme != null && string.Equals(theme.AnimationType, "neon", StringComparison.OrdinalIgnoreCase);
+	}
+
+	private bool IsDynamicFx()
+	{
+		return theme != null && (theme.GlassEnabled || !string.IsNullOrEmpty(theme.AnimationType));
+	}
+
+	private void TitleBar_FxPaint(object sender, PaintEventArgs e)
+	{
+		if (!IsDynamicFx()) return;
+		AppTheme at = AppTheme.ActiveTheme;
+		Panel tb = (Panel)sender;
+		Graphics g = e.Graphics;
+		g.SmoothingMode = SmoothingMode.AntiAlias;
+		int h = tb.ClientSize.Height;
+		int w = tb.ClientSize.Width;
+		double ph = ThemeFx.CurrentPhase;
+		int bandH = 3;
+		Rectangle band = new Rectangle(0, h - bandH, w, bandH);
+		using (GraphicsPath clip = RoundedRectPath(new Rectangle(0, 0, w, h), 0))
+		{
+			g.SetClip(clip);
+		}
+		float sweep = w * 0.6f;
+		float x = -sweep + (float)((ph / (Math.PI * 2)) * (w + sweep * 2));
+		Color fxColor = (at != null) ? at.Primary : theme.Primary;
+		using (LinearGradientBrush flow = new LinearGradientBrush(
+			new PointF(x, h - bandH), new PointF(x + sweep, h),
+			Color.FromArgb(0, fxColor.R, fxColor.G, fxColor.B),
+			Color.FromArgb(220, fxColor.R, fxColor.G, fxColor.B)))
+		{
+			g.FillRectangle(flow, band);
+		}
+		g.ResetClip();
+	}
+
+	private bool SubscribeFxPhase()
+	{
+		if (_subscribedFxPhase) return true;
+		_subscribedFxPhase = true;
+		ThemeFx.PhaseTick += delegate
+		{
+			if (_suppressRedraw) return;
+			if (!IsDynamicFx()) return;
+			titleBarPanel?.Invalidate();
+			// 注意：dgvData(AuroraGrid) 自身已通过独立 160ms 计时器自绘，无需在此重复 Invalidate，
+			// 否则每帧额外全表重绘会造成卡顿与拖影，故移除。
+			// 沉浸式下所有导航按钮(文件/解析/搜索/设置/关于)均需随 PhaseTick 持续重绘，
+			// 以保证"脉冲辉光+边缘发光+流光微辉"节奏一致；仅当光标仍悬停该按钮时才高频刷新
+			// (hover 态由 PaintNavButton 的实时光标判定驱动)，移出后由本处每帧 Invalidate 维持脉冲。
+			foreach (Button navBtn in new Button[] { btnNavFile, btnNavDetect, btnNavSearch, btnNavSettings, btnNavAbout })
+			{
+				if (navBtn != null && !navBtn.IsDisposed && navBtn.Visible)
+				{
+					navBtn.Invalidate();
+				}
+			}
+			lblProgressText?.Invalidate();
+			lblPercent?.Invalidate();
+			// 注意：搜索区 searchPanelRef/searchBoxHostRef/cboGroupHost/cboGroup 的背景均为不透明固定色
+			// （theme.BgAlt / theme.Surface），并不透出 ThemeFx 动态背景，无需随 PhaseTick 每帧重绘；
+			// 此前每帧 Invalidate 会导致内部 TextBox(cboGroup) 在父擦除瞬间重画而闪烁，故移除。
+		};
+		return true;
 	}
 
 	private Image CreateMenuIcon(string iconType, Color color)
@@ -6564,8 +6875,11 @@ public partial class IPTVLiveCheckerMain : Form
 				g.SmoothingMode = SmoothingMode.AntiAlias;
 				using SolidBrush bg = new SolidBrush(color);
 				using GraphicsPath rounded = RoundedRectPath(new Rectangle(1, 1, s - 2, s - 2), 3);
-				using Pen white = new Pen(Color.White, 1.5f);
-				using SolidBrush whiteB = new SolidBrush(Color.White);
+				// 图标前景随底色亮度自适应：浅色主题下底色变亮时自动转深色描线，避免白线消失。
+				// 变量名沿用 white/whiteB 以免改动下方 170 余行绘制代码。
+				Color glyphColor = DrawingUtils.IsDarkColor(color) ? Color.White : Color.FromArgb(28, 28, 30);
+				using Pen white = new Pen(glyphColor, 1.5f);
+				using SolidBrush whiteB = new SolidBrush(glyphColor);
 				g.FillPath(bg, rounded);
 				if (iconType != null)
 				{
@@ -6577,7 +6891,18 @@ public partial class IPTVLiveCheckerMain : Form
 						case 't':
 							if (iconType == "detect")
 							{
-								g.DrawString("⚡", new Font("Segoe UI Symbol", 9f), whiteB, 0f, 0f);
+								// 原 DrawString("⚡", new Font(...))：U+26A1 走彩色 emoji 字形不随主题变色，
+								// 且每次调用都 new Font 未释放。改为矢量闪电，吃 whiteB（已按底色亮度自适应）。
+								float u = (float)s / 16f;
+								g.FillPolygon(whiteB, new PointF[6]
+								{
+									new PointF(9.3f * u, 1.8f * u),
+									new PointF(4.1f * u, 8.9f * u),
+									new PointF(7.4f * u, 8.9f * u),
+									new PointF(6.5f * u, 14.2f * u),
+									new PointF(11.9f * u, 7.0f * u),
+									new PointF(8.6f * u, 7.0f * u)
+								});
 							}
 							break;
 						case 'n':
@@ -6598,8 +6923,23 @@ public partial class IPTVLiveCheckerMain : Form
 						case 'x':
 							if (iconType == "fixAll")
 							{
-								g.DrawString("\ud83d\udd27", new Font("Segoe UI Symbol", 7f), whiteB, 0f, 1f);
-								g.DrawString("↻", new Font("Segoe UI Symbol", 7f), whiteB, 7f, 1f);
+								// 原 DrawString("\ud83d\udd27"=🔧 U+1F527) 为 emoji 呈现，走彩色位图字形不随主题变色，
+								// 且每次调用 new Font 未释放。改为矢量「扳手 + 双箭头(批量)」，吃 glyphColor。
+								float ua = (float)s / 16f;
+								using (Pen wr = new Pen(glyphColor, 1.7f * ua)
+								{
+									StartCap = LineCap.Round,
+									EndCap = LineCap.Round,
+									LineJoin = LineJoin.Round
+								})
+								{
+									g.DrawLine(wr, 2.0f * ua, 10.4f * ua, 5.2f * ua, 7.2f * ua);
+									g.DrawArc(wr, 4.4f * ua, 3.0f * ua, 4.2f * ua, 4.2f * ua, 355f, 280f);
+									g.DrawLine(wr, 9.4f * ua, 6.6f * ua, 12.0f * ua, 9.6f * ua);
+									g.DrawLine(wr, 12.0f * ua, 9.6f * ua, 9.4f * ua, 12.6f * ua);
+									g.DrawLine(wr, 12.6f * ua, 6.6f * ua, 15.2f * ua, 9.6f * ua);
+									g.DrawLine(wr, 15.2f * ua, 9.6f * ua, 12.6f * ua, 12.6f * ua);
+								}
 							}
 							break;
 						}
@@ -6678,7 +7018,18 @@ public partial class IPTVLiveCheckerMain : Form
 						case 'f':
 							if (iconType == "fix")
 							{
-								g.DrawString("\ud83d\udd27", new Font("Segoe UI Symbol", 9f), whiteB, 0f, 0f);
+								// 同上：🔧 emoji 字形不随主题变色，改为矢量扳手（开口环 + 斜手柄）。
+								float uf = (float)s / 16f;
+								using (Pen wr2 = new Pen(glyphColor, 2.1f * uf)
+								{
+									StartCap = LineCap.Round,
+									EndCap = LineCap.Round,
+									LineJoin = LineJoin.Round
+								})
+								{
+									g.DrawLine(wr2, 4.2f * uf, 12.0f * uf, 9.0f * uf, 7.2f * uf);
+									g.DrawArc(wr2, 8.0f * uf, 2.3f * uf, 5.6f * uf, 5.6f * uf, 355f, 280f);
+								}
 							}
 							break;
 						case 's':
@@ -6738,18 +7089,68 @@ public partial class IPTVLiveCheckerMain : Form
 	private void DgvData_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
 	{
 		e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+		// 沉浸式动态主题：单元格背景改为裁切绘制流动极光（复用到 AuroraGrid 离屏位图），形成磨砂玻璃透极光；否则走内置 PaintBackground
+		void PaintCellBack(DataGridViewCellPaintingEventArgs ce)
+		{
+			if (dgvData is AuroraGrid ag && ag.IsAuroraOn && !AnimationSettings.ReduceMotion)
+			{
+				ag.PaintAurora(ce.Graphics, ce.CellBounds);
+			}
+			else
+			{
+				ce.PaintBackground(ce.ClipBounds, cellsPaintSelectionBackground: false);
+			}
+		}
+		bool auroraCells = dgvData is AuroraGrid agc && agc.IsAuroraOn && !AnimationSettings.ReduceMotion;
 		if (e.RowIndex == -1 && e.ColumnIndex >= 0)
 		{
-			e.PaintBackground(e.ClipBounds, cellsPaintSelectionBackground: false);
+			// 不使用内置 PaintBackground（会绘制内置红色排序箭头），完全自绘列头
 			string colName = dgvData.Columns[e.ColumnIndex].Name;
 			bool isSorted = colName == sortedColumn;
+			AppTheme atHead = AppTheme.ActiveTheme;
 			using (SolidBrush bgBrush = new SolidBrush(theme.HeaderBg))
 			{
 				e.Graphics.FillRectangle(bgBrush, e.CellBounds);
 			}
-			using (Pen pen = new Pen(theme.Border, 1f))
+			// 沉浸式动态主题：列头叠加随相位流动的极光微辉，与背景动画一致
+			if (atHead != null && (atHead.GlassEnabled || !string.IsNullOrEmpty(atHead.AnimationType)))
 			{
-				e.Graphics.DrawLine(pen, e.CellBounds.Left, e.CellBounds.Bottom - 1, e.CellBounds.Right, e.CellBounds.Bottom - 1);
+				double ph = ThemeFx.CurrentPhase;
+				string atype = (atHead.AnimationType ?? "").ToLowerInvariant();
+				float off = (float)(Math.Sin(ph + e.ColumnIndex * 0.6) * e.CellBounds.Height * 0.3);
+				Color hc = atHead.Primary;
+				if (atype == "aurora" || atype == "fluid")
+				{
+					hc = (e.ColumnIndex % 2 == 0) ? atHead.Primary : atHead.Accent;
+				}
+				using (LinearGradientBrush hb = new LinearGradientBrush(
+					new PointF(e.CellBounds.Left, e.CellBounds.Top + off),
+					new PointF(e.CellBounds.Left, e.CellBounds.Bottom + off),
+					Color.FromArgb(70, hc.R, hc.G, hc.B),
+					Color.FromArgb(0, hc.R, hc.G, hc.B)))
+				{
+					e.Graphics.FillRectangle(hb, e.CellBounds);
+				}
+			}
+			AppTheme atEdge = AppTheme.ActiveTheme;
+			if (atEdge != null && (atEdge.GlassEnabled || !string.IsNullOrEmpty(atEdge.AnimationType)))
+			{
+				// 动态主题：列头底部加 2px 主题色高光边（随相位呼吸），强化“主题在用”的视觉识别；静态主题保持 1px 边框
+				Color edge = atEdge.Primary;
+				double edgePh = ThemeFx.CurrentPhase;
+				int edgeAdd = (int)(40 + 35 * Math.Sin(edgePh + e.ColumnIndex * 0.5));
+				edge = Color.FromArgb(255, Math.Min(255, edge.R + edgeAdd), Math.Min(255, edge.G + edgeAdd), Math.Min(255, edge.B + edgeAdd));
+				using (Pen edgePen = new Pen(edge, 2f))
+				{
+					e.Graphics.DrawLine(edgePen, e.CellBounds.Left, e.CellBounds.Bottom - 1, e.CellBounds.Right, e.CellBounds.Bottom - 1);
+				}
+			}
+			else
+			{
+				using (Pen pen = new Pen(theme.Border, 1f))
+				{
+					e.Graphics.DrawLine(pen, e.CellBounds.Left, e.CellBounds.Bottom - 1, e.CellBounds.Right, e.CellBounds.Bottom - 1);
+				}
 			}
 			if (e.ColumnIndex < dgvData.Columns.Count - 1)
 			{
@@ -6765,6 +7166,12 @@ public partial class IPTVLiveCheckerMain : Form
 				TextFormatFlags tff = TextFormatFlags.VerticalCenter;
 				tff = ((!(colName == "colName") && !(colName == "colUrl")) ? (tff | TextFormatFlags.HorizontalCenter) : (tff | TextFormatFlags.Default));
 				Color headerColor = (isSorted ? theme.Primary : theme.TextPrimary);
+				if (isSorted && atHead != null && (atHead.GlassEnabled || !string.IsNullOrEmpty(atHead.AnimationType)))
+				{
+					double phc = ThemeFx.CurrentPhase;
+					int add = (int)(60 + 50 * Math.Sin(phc));
+					headerColor = Color.FromArgb(255, Math.Min(255, theme.Primary.R + add), Math.Min(255, theme.Primary.G + add), Math.Min(255, theme.Primary.B + add));
+				}
 				TextRenderer.DrawText(e.Graphics, headerText, headerFont, textRect, headerColor, tff);
 				if (isSorted && colName != "colAction")
 				{
@@ -6793,38 +7200,46 @@ public partial class IPTVLiveCheckerMain : Form
 			}
 			if (colName2 == "colStatus")
 			{
-				e.PaintBackground(e.ClipBounds, cellsPaintSelectionBackground: false);
-				int r = e.RowIndex;
-				bool selected = dgvData.Rows[r].Selected;
-				bool isHover = _hoverRow == r;
-				if (selected)
-				{
-					using SolidBrush selBrush = new SolidBrush(theme.SelectRow);
-					e.Graphics.FillRectangle(selBrush, e.CellBounds);
-				}
-				else if (isHover)
-				{
-					using SolidBrush hoverBrush = new SolidBrush(DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(65, 60, 80) : Color.FromArgb(245, 240, 252));
-					e.Graphics.FillRectangle(hoverBrush, e.CellBounds);
-				}
-				string status = e.Value?.ToString() ?? "";
-				switch (status)
-				{
-				case "可用":
-					DrawStatusTag(e.Graphics, e.CellBounds, status, theme.StatusTagBg, theme.StatusTagBorder, theme.SuccessColor);
-					break;
-				case "不可用":
-				{
-					Color bg2 = (DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(80, 40, 40) : Color.FromArgb(255, 235, 235));
-					DrawStatusTag(e.Graphics, e.CellBounds, status, bg2, theme.ErrorColor, theme.ErrorColor);
-					break;
-				}
-				case "检测中":
-				{
-					Color bg = (DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(80, 65, 30) : Color.FromArgb(255, 248, 230));
-					DrawStatusTag(e.Graphics, e.CellBounds, status, bg, theme.WarnColor, theme.WarnColor);
-					break;
-				}
+			PaintCellBack(e);
+			int r = e.RowIndex;
+		bool selected = dgvData.Rows[r].Selected;
+		bool isHover = _hoverRow == r;
+		// 动态主题 + 悬停/选中 → 状态标签按自身状态色(绿/黄/红)发光点亮；静态主题不发光
+		AppTheme atRow = AppTheme.ActiveTheme;
+		bool fxRow = atRow != null && (atRow.GlassEnabled || !string.IsNullOrEmpty(atRow.AnimationType));
+		bool statusGlow = (selected || isHover) && fxRow;
+		if (selected)
+		{
+			Color sc = auroraCells ? Color.FromArgb(180, theme.SelectRow.R, theme.SelectRow.G, theme.SelectRow.B) : theme.SelectRow;
+			using SolidBrush selBrush = new SolidBrush(sc);
+			e.Graphics.FillRectangle(selBrush, e.CellBounds);
+		}
+		else if (isHover)
+		{
+			Color hc = auroraCells
+				? (DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(110, 60, 80) : Color.FromArgb(225, 240, 252))
+				: (DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(65, 60, 80) : Color.FromArgb(245, 240, 252));
+			using SolidBrush hoverBrush = new SolidBrush(hc);
+			e.Graphics.FillRectangle(hoverBrush, e.CellBounds);
+		}
+			string status = e.Value?.ToString() ?? "";
+			switch (status)
+			{
+			case "可用":
+				DrawStatusTag(e.Graphics, e.CellBounds, status, theme.StatusTagBg, theme.StatusTagBorder, theme.SuccessColor, statusGlow);
+				break;
+			case "不可用":
+			{
+				Color bg2 = (DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(80, 40, 40) : Color.FromArgb(255, 235, 235));
+				DrawStatusTag(e.Graphics, e.CellBounds, status, bg2, theme.ErrorColor, theme.ErrorColor, statusGlow);
+				break;
+			}
+			case "检测中":
+			{
+				Color bg = (DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(80, 65, 30) : Color.FromArgb(255, 248, 230));
+				DrawStatusTag(e.Graphics, e.CellBounds, status, bg, theme.WarnColor, theme.WarnColor, statusGlow);
+				break;
+			}
 				default:
 					TextRenderer.DrawText(e.Graphics, status, dgvData.Font, e.CellBounds, theme.TextSecondary, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
 					break;
@@ -6838,20 +7253,24 @@ public partial class IPTVLiveCheckerMain : Form
 			}
 			if (colName2 == "colAction")
 			{
-				e.PaintBackground(e.ClipBounds, cellsPaintSelectionBackground: false);
+				PaintCellBack(e);
 				int r2 = e.RowIndex;
-				bool selected2 = dgvData.Rows[r2].Selected;
-				bool isHover2 = _hoverRow == r2;
-				if (selected2)
-				{
-					using SolidBrush selBrush2 = new SolidBrush(theme.SelectRow);
-					e.Graphics.FillRectangle(selBrush2, e.CellBounds);
-				}
-				else if (isHover2)
-				{
-					using SolidBrush hoverBrush2 = new SolidBrush(DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(65, 60, 80) : Color.FromArgb(245, 240, 252));
-					e.Graphics.FillRectangle(hoverBrush2, e.CellBounds);
-				}
+			bool selected2 = dgvData.Rows[r2].Selected;
+			bool isHover2 = _hoverRow == r2;
+			if (selected2)
+			{
+				Color sc2 = auroraCells ? Color.FromArgb(180, theme.SelectRow.R, theme.SelectRow.G, theme.SelectRow.B) : theme.SelectRow;
+				using SolidBrush selBrush2 = new SolidBrush(sc2);
+				e.Graphics.FillRectangle(selBrush2, e.CellBounds);
+			}
+			else if (isHover2)
+			{
+				Color hc2 = auroraCells
+					? (DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(110, 60, 80) : Color.FromArgb(225, 240, 252))
+					: (DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(65, 60, 80) : Color.FromArgb(245, 240, 252));
+				using SolidBrush hoverBrush2 = new SolidBrush(hc2);
+				e.Graphics.FillRectangle(hoverBrush2, e.CellBounds);
+			}
 				int cellW = e.CellBounds.Width;
 				int cellH = e.CellBounds.Height;
 				int btnH = SY(26);
@@ -6904,18 +7323,26 @@ public partial class IPTVLiveCheckerMain : Form
 				e.Handled = true;
 				return;
 			}
-			e.PaintBackground(e.ClipBounds, cellsPaintSelectionBackground: false);
+			PaintCellBack(e);
 			int r3 = e.RowIndex;
 			bool isSelected = dgvData.Rows[r3].Selected;
 			bool isHover3 = _hoverRow == r3;
+			AppTheme atCell = AppTheme.ActiveTheme;
+			bool fxCell = atCell != null && (atCell.GlassEnabled || !string.IsNullOrEmpty(atCell.AnimationType));
+			// 动态主题下链接列加一条随相位呼吸的主题色发光线，强化“链接”识别；静态主题不加
+			bool urlGlow = (colName2 == "colUrl") && fxCell && !isSelected && !isHover3;
 			if (isSelected)
 			{
-				using SolidBrush selBrush3 = new SolidBrush(theme.SelectRow);
+				Color sc3 = auroraCells ? Color.FromArgb(180, theme.SelectRow.R, theme.SelectRow.G, theme.SelectRow.B) : theme.SelectRow;
+				using SolidBrush selBrush3 = new SolidBrush(sc3);
 				e.Graphics.FillRectangle(selBrush3, e.CellBounds);
 			}
 			else if (isHover3)
 			{
-				using SolidBrush hoverBrush3 = new SolidBrush(DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(65, 60, 80) : Color.FromArgb(245, 240, 252));
+				Color hc3 = auroraCells
+					? (DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(110, 60, 80) : Color.FromArgb(225, 240, 252))
+					: (DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(65, 60, 80) : Color.FromArgb(245, 240, 252));
+				using SolidBrush hoverBrush3 = new SolidBrush(hc3);
 				e.Graphics.FillRectangle(hoverBrush3, e.CellBounds);
 			}
 			string cellText = e.FormattedValue?.ToString() ?? "";
@@ -6952,6 +7379,20 @@ public partial class IPTVLiveCheckerMain : Form
 					TextRenderer.DrawText(e.Graphics, cellText, baseFont, textRect2, textColor, tff2);
 				}
 			}
+			if (urlGlow)
+			{
+				// 动态主题下链接列底部随相位呼吸的主题色发光线（alpha 70~125），强化“链接”识别；静态主题不加
+				double urlPh = ThemeFx.CurrentPhase;
+				int urlA = (int)(70 + 55 * (0.5 + 0.5 * Math.Sin(urlPh)));
+				Color urlLine = Color.FromArgb(urlA, theme.LinkTextColor.R, theme.LinkTextColor.G, theme.LinkTextColor.B);
+				int lineY = e.CellBounds.Bottom - 4;
+				int lineX = e.CellBounds.X + SX(10);
+				int lineW = e.CellBounds.Width - SX(20);
+				using (Pen urlPen = new Pen(urlLine, 1f))
+				{
+					e.Graphics.DrawLine(urlPen, lineX, lineY, lineX + lineW, lineY);
+				}
+			}
 			using (Pen pen4 = new Pen(DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(55, 55, 65) : Color.FromArgb(242, 242, 247), 1f))
 			{
 				e.Graphics.DrawLine(pen4, e.CellBounds.Left, e.CellBounds.Bottom - 1, e.CellBounds.Right, e.CellBounds.Bottom - 1);
@@ -6966,9 +7407,9 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			return;
 		}
-		dgvData.ClearSelection();
-		dgvData.Rows[e.RowIndex].Selected = true;
-		if (e.ColumnIndex != 7)
+		// 选择交由 DataGridView 默认行为处理（普通点击单选 / Ctrl 切换 / Shift 范围选），
+		// 不再强制 ClearSelection，否则会清掉鼠标按下时已建立的多选状态。
+		if (dgvData.Columns[e.ColumnIndex].Name != "colAction")
 		{
 			return;
 		}
@@ -6986,7 +7427,7 @@ public partial class IPTVLiveCheckerMain : Form
 		int startY = (cellH - btnH) / 2;
 		Rectangle copyBtnRect = new Rectangle(startX, startY, btnW, btnH);
 		Rectangle playBtnRect = new Rectangle(startX + btnW + gap, startY, btnW, btnH);
-		string url = dgvData.Rows[e.RowIndex].Cells[1].Value?.ToString() ?? "";
+		string url = dgvData.Rows[e.RowIndex].Cells["colUrl"].Value?.ToString() ?? "";
 		if (string.IsNullOrWhiteSpace(url))
 		{
 			return;
@@ -6999,14 +7440,7 @@ public partial class IPTVLiveCheckerMain : Form
 		else if (playBtnRect.Contains(relX, relY))
 		{
 			StartButtonPress(e.RowIndex, 1);
-			if (!string.IsNullOrWhiteSpace(customPlayerPath) && File.Exists(customPlayerPath))
-			{
-				PlayChannelCustom(url);
-			}
-			else
-			{
-				StartPreview(url);
-			}
+			StartPreview(url);
 		}
 	}
 
@@ -7016,7 +7450,7 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			return -1;
 		}
-		Rectangle cellRect = dgvData.GetCellDisplayRectangle(7, rowIndex, cutOverflow: false);
+		Rectangle cellRect = dgvData.GetCellDisplayRectangle(dgvData.Columns["colAction"].Index, rowIndex, cutOverflow: false);
 		if (cellRect.Width <= 0)
 		{
 			return -1;
@@ -7048,7 +7482,7 @@ public partial class IPTVLiveCheckerMain : Form
 	{
 		_clickRow = row;
 		_clickBtn = btn;
-		dgvData.InvalidateCell(7, row);
+		dgvData.InvalidateCell(dgvData.Columns["colAction"].Index, row);
 		if (_btnFlashTimer == null)
 		{
 			_btnFlashTimer = new System.Windows.Forms.Timer
@@ -7063,7 +7497,7 @@ public partial class IPTVLiveCheckerMain : Form
 				_btnFlashTimer.Stop();
 				if (clickRow >= 0)
 				{
-					dgvData.InvalidateCell(7, clickRow);
+					dgvData.InvalidateCell(dgvData.Columns["colAction"].Index, clickRow);
 				}
 			};
 		}
@@ -7073,9 +7507,9 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private void DgvData_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
 	{
-		if (e.ColumnIndex == 7 && e.RowIndex >= 0)
+		if (dgvData.Columns[e.ColumnIndex].Name == "colAction" && e.RowIndex >= 0)
 		{
-			Rectangle cellRect = dgvData.GetCellDisplayRectangle(7, e.RowIndex, cutOverflow: false);
+			Rectangle cellRect = dgvData.GetCellDisplayRectangle(dgvData.Columns["colAction"].Index, e.RowIndex, cutOverflow: false);
 			int btnIdx = GetActionBtnIndex(e.RowIndex, cellRect.X + e.X, cellRect.Y + e.Y);
 			int oldHoverRow = _hoverRow;
 			int oldHoverBtn = _hoverBtn;
@@ -7127,15 +7561,15 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private void DgvData_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
 	{
-		if (e.ColumnIndex == 7 && e.RowIndex >= 0)
+		if (dgvData.Columns[e.ColumnIndex].Name == "colAction" && e.RowIndex >= 0)
 		{
-			Rectangle cellRect = dgvData.GetCellDisplayRectangle(7, e.RowIndex, cutOverflow: false);
+			Rectangle cellRect = dgvData.GetCellDisplayRectangle(dgvData.Columns["colAction"].Index, e.RowIndex, cutOverflow: false);
 			int btnIdx = GetActionBtnIndex(e.RowIndex, cellRect.X + e.X, cellRect.Y + e.Y);
 			if (btnIdx >= 0)
 			{
 				_pressRow = e.RowIndex;
 				_pressBtn = btnIdx;
-				dgvData.InvalidateCell(7, e.RowIndex);
+				dgvData.InvalidateCell(dgvData.Columns["colAction"].Index, e.RowIndex);
 			}
 		}
 	}
@@ -7147,7 +7581,7 @@ public partial class IPTVLiveCheckerMain : Form
 			int oldRow = _pressRow;
 			_pressRow = -1;
 			_pressBtn = -1;
-			dgvData.InvalidateCell(7, oldRow);
+			dgvData.InvalidateCell(dgvData.Columns["colAction"].Index, oldRow);
 		}
 	}
 
@@ -7209,7 +7643,7 @@ public partial class IPTVLiveCheckerMain : Form
 			{
 				Text = "✓",
 				Font = GetFont(SF(11f), FontStyle.Bold),
-				ForeColor = Color.FromArgb(46, 189, 96),
+				ForeColor = theme.SuccessColor,
 				Location = At(SX(18), SY(12)),
 				AutoSize = true,
 				BackColor = Color.Transparent
@@ -7244,7 +7678,7 @@ public partial class IPTVLiveCheckerMain : Form
 			{
 				if (control is Label lbl)
 				{
-					lbl.ForeColor = ((lbl.Text == "✓") ? Color.FromArgb(46, 189, 96) : toastText);
+					lbl.ForeColor = ((lbl.Text == "✓") ? theme.SuccessColor : toastText);
 					lbl.Font = ((lbl.Text == "✓") ? GetFont(SF(11f), FontStyle.Bold) : GetFont(SF(9f), FontStyle.Bold));
 				}
 			}
@@ -7281,13 +7715,13 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private void DgvData_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
 	{
-		if (e.RowIndex >= 0 && e.ColumnIndex == 0)
+		if (e.RowIndex >= 0 && dgvData.Columns[e.ColumnIndex].Name == "colName")
 		{
 			dgvData.BeginEdit(selectAll: true);
 		}
-		else if (e.RowIndex >= 0 && e.ColumnIndex == 1)
+		else if (e.RowIndex >= 0 && dgvData.Columns[e.ColumnIndex].Name == "colUrl")
 		{
-			string url = dgvData.Rows[e.RowIndex].Cells[1].Value?.ToString();
+			string url = dgvData.Rows[e.RowIndex].Cells["colUrl"].Value?.ToString();
 			if (!string.IsNullOrWhiteSpace(url))
 			{
 				ShowReplaceUrlDialog(url);
@@ -7319,10 +7753,10 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private void DgvData_CellEndEdit(object sender, DataGridViewCellEventArgs e)
 	{
-		if (e.RowIndex >= 0 && e.ColumnIndex == 0)
+		if (e.RowIndex >= 0 && dgvData.Columns[e.ColumnIndex].Name == "colName")
 		{
-			string url = dgvData.Rows[e.RowIndex].Cells[1].Value?.ToString();
-			string newName = dgvData.Rows[e.RowIndex].Cells[0].Value?.ToString() ?? "";
+			string url = dgvData.Rows[e.RowIndex].Cells["colUrl"].Value?.ToString();
+			string newName = dgvData.Rows[e.RowIndex].Cells["colName"].Value?.ToString() ?? "";
 			ChannelInfo ch = allChannels.FirstOrDefault((ChannelInfo c) => c.Url == url);
 			if (ch != null && !string.IsNullOrWhiteSpace(newName))
 			{
@@ -7425,14 +7859,16 @@ public partial class IPTVLiveCheckerMain : Form
 		};
 		{
 			int d = outerR * 2;
-			GraphicsPath tp = new GraphicsPath();
-			tp.AddArc(0, 0, d, d, 180f, 90f);
-			tp.AddArc(panelW - d, 0, d, d, 270f, 90f);
-			tp.AddLine(panelW, outerR, panelW, titleH);
-			tp.AddLine(panelW, titleH, 0, titleH);
-			tp.AddLine(0, titleH, 0, outerR);
-			tp.CloseFigure();
-			titlePanel.Region = new Region(tp);
+			using (GraphicsPath tp = new GraphicsPath())
+			{
+				tp.AddArc(0, 0, d, d, 180f, 90f);
+				tp.AddArc(panelW - d, 0, d, d, 270f, 90f);
+				tp.AddLine(panelW, outerR, panelW, titleH);
+				tp.AddLine(panelW, titleH, 0, titleH);
+				tp.AddLine(0, titleH, 0, outerR);
+				tp.CloseFigure();
+				titlePanel.Region = new Region(tp);
+			}
 		}
 		titlePanel.Paint += delegate (object s, PaintEventArgs e)
 		{
@@ -7839,14 +8275,16 @@ public partial class IPTVLiveCheckerMain : Form
 		};
 		{
 			int d = outerR * 2;
-			GraphicsPath tp = new GraphicsPath();
-			tp.AddArc(0, 0, d, d, 180f, 90f);
-			tp.AddArc(panelW - d, 0, d, d, 270f, 90f);
-			tp.AddLine(panelW, outerR, panelW, titleH);
-			tp.AddLine(panelW, titleH, 0, titleH);
-			tp.AddLine(0, titleH, 0, outerR);
-			tp.CloseFigure();
-			titlePanel.Region = new Region(tp);
+			using (GraphicsPath tp = new GraphicsPath())
+			{
+				tp.AddArc(0, 0, d, d, 180f, 90f);
+				tp.AddArc(panelW - d, 0, d, d, 270f, 90f);
+				tp.AddLine(panelW, outerR, panelW, titleH);
+				tp.AddLine(panelW, titleH, 0, titleH);
+				tp.AddLine(0, titleH, 0, outerR);
+				tp.CloseFigure();
+				titlePanel.Region = new Region(tp);
+			}
 		}
 		titlePanel.Paint += delegate (object s, PaintEventArgs e)
 		{
@@ -8188,7 +8626,7 @@ public partial class IPTVLiveCheckerMain : Form
 		if (dgvData.SelectedRows.Count > 0)
 		{
 			int idx = dgvData.SelectedRows[0].Index;
-			dgvData.CurrentCell = dgvData.Rows[idx].Cells[0];
+			dgvData.CurrentCell = dgvData.Rows[idx].Cells["colName"];
 			dgvData.BeginEdit(selectAll: true);
 		}
 		else
@@ -8235,19 +8673,6 @@ public partial class IPTVLiveCheckerMain : Form
 			PlayChannelFFplay(url);
 		};
 		playMenu.Items.Add(ffplayItem);
-		bool hasCustom = !string.IsNullOrWhiteSpace(customPlayerPath) && File.Exists(customPlayerPath);
-		ToolStripMenuItem customItem = new ToolStripMenuItem(hasCustom ? ("第三方播放器 (" + Path.GetFileName(customPlayerPath) + ")") : "第三方播放器(未设置)");
-		customItem.Enabled = hasCustom;
-		customItem.Click += delegate
-		{
-			PlayChannelCustom(url);
-		};
-		playMenu.Items.Add(customItem);
-		playMenu.Items.Add(new ToolStripSeparator());
-		playMenu.Items.Add("设置第三方播放器路径...", null, delegate
-		{
-			SetCustomPlayerPath();
-		});
 		if (hasFFplay)
 		{
 			playMenu.Items.Add(new ToolStripSeparator());
@@ -8507,11 +8932,11 @@ public partial class IPTVLiveCheckerMain : Form
 			if (dgvData.SelectedRows.Count > 0)
 			{
 				DataGridViewRow row = dgvData.SelectedRows[0];
-				_currentChannelName = row.Cells[0].Value?.ToString() ?? "";
+				_currentChannelName = row.Cells["colName"].Value?.ToString() ?? "";
 			}
 			if (string.IsNullOrWhiteSpace(_currentResolution) && dgvData.SelectedRows.Count > 0)
 			{
-				string backupResolution = dgvData.SelectedRows[0].Cells[3].Value?.ToString() ?? "";
+				string backupResolution = dgvData.SelectedRows[0].Cells["colResolution"].Value?.ToString() ?? "";
 				if (!string.IsNullOrWhiteSpace(backupResolution) && backupResolution != "0x0" && backupResolution != "未检测")
 				{
 					_currentResolution = backupResolution;
@@ -8522,12 +8947,8 @@ public partial class IPTVLiveCheckerMain : Form
 				FindFFplay();
 			}
 			string playerPath = ffplayPath;
-			if (string.IsNullOrWhiteSpace(playerPath) || !File.Exists(playerPath))
-			{
-				playerPath = customPlayerPath;
-			}
-			if (string.IsNullOrWhiteSpace(playerPath) || !File.Exists(playerPath))
-			{
+		if (string.IsNullOrWhiteSpace(playerPath) || !File.Exists(playerPath))
+		{
 				using OpenFileDialog ofd = new OpenFileDialog();
 				ofd.Filter = "播放器程序|*.exe|所有文件|*.*";
 				ofd.Title = "未找到FFplay，请选择播放器exe文件（ffplay.exe/vlc.exe/potplayer/mpv.exe等）";
@@ -8538,14 +8959,10 @@ public partial class IPTVLiveCheckerMain : Form
 				}
 				string selected = ofd.FileName;
 				if (Path.GetFileName(selected).ToLower() == "ffplay.exe")
-				{
-					ffplayPath = selected;
-				}
-				else
-				{
-					customPlayerPath = selected;
-				}
-				playerPath = selected;
+			{
+				ffplayPath = selected;
+			}
+			playerPath = selected;
 			}
 			bool isFfplay = Path.GetFileName(playerPath).ToLower() == "ffplay.exe";
 			_runningPlayer = new Process();
@@ -8886,29 +9303,6 @@ public partial class IPTVLiveCheckerMain : Form
 		}
 	}
 
-	private void PlayChannelCustom(string url)
-	{
-		try
-		{
-			if (string.IsNullOrWhiteSpace(customPlayerPath) || !File.Exists(customPlayerPath))
-			{
-				DarkMessageBox.Show("未设置第三方播放器路径或文件不存在。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-				SetCustomPlayerPath();
-				return;
-			}
-			Process.Start(new ProcessStartInfo
-			{
-				FileName = customPlayerPath,
-				Arguments = "\"" + url + "\"",
-				UseShellExecute = true
-			});
-		}
-		catch (Exception ex)
-		{
-			DarkMessageBox.Show("第三方播放器播放失败：\n" + ex.Message, "播放失败", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-		}
-	}
-
 	private void DgvData_Paint(object sender, PaintEventArgs e)
 	{
 		if (dgvData == null)
@@ -8921,7 +9315,8 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			return;
 		}
-		using SolidBrush bgBrush = new SolidBrush(theme.BgAlt);
+		bool stripImmersive = theme != null && (theme.GlassEnabled || !string.IsNullOrEmpty(theme.AnimationType));
+		using SolidBrush bgBrush = new SolidBrush(stripImmersive ? Color.FromArgb(170, theme.BgAlt.R, theme.BgAlt.G, theme.BgAlt.B) : theme.BgAlt);
 		e.Graphics.FillRectangle(bgBrush, displayRight, 0, clientRight - displayRight, dgvData.ClientSize.Height);
 	}
 
@@ -9074,7 +9469,7 @@ public partial class IPTVLiveCheckerMain : Form
 		};
 		Label lblTitle = new Label
 		{
-			Text = "\ud83d\udd0d 直播源生成器",
+			Text = "⚙ 直播源生成器",
 			Font = TITLE_FONT,
 			ForeColor = DarkText,
 			Location = At(CONTENT_PAD, (TITLE_BAR_H - SY(22)) / 2),
@@ -9378,7 +9773,7 @@ public partial class IPTVLiveCheckerMain : Form
 		pnlSmartHint.Region = new Region(CreateRoundedRectPath(new Rectangle(0, 0, pnlSmartHint.Width, pnlSmartHint.Height), SX(6)));
 		Label lblStep1SmartHint = new Label
 		{
-			Text = "\ud83d\udca1 智能识别：输入标准URL进入向导模式；输入带 [起始-结束] 的地址直接生成\n（如 http://example.com/[1-100].m3u8）",
+			Text = "※ 智能识别：输入标准URL进入向导模式；输入带 [起始-结束] 的地址直接生成\n（如 http://example.com/[1-100].m3u8）",
 			Font = HINT_FONT,
 			ForeColor = theme.SuccessColor,
 			Location = At(SX(16), SY(8)),
@@ -9541,9 +9936,9 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			Location = At(CONTENT_PAD, 22),
 			Size = new Size(DLG_W - CONTENT_PAD * 2, 210),
-			BackColor = Color.Transparent,
 			Visible = false
 		};
+		ThemeFx.EnableTransparent(pnlTextOptions);
 		Label lblTextOptTitle = new Label
 		{
 			Text = "选择要替换的选项：",
@@ -9569,10 +9964,10 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			Location = At(0, SY(176)),
 			Size = new Size(DLG_W - CONTENT_PAD * 2, 32),
-			BackColor = Color.Transparent,
 			FlowDirection = FlowDirection.LeftToRight,
 			WrapContents = false
 		};
+		ThemeFx.EnableTransparent(pnlTextBtns);
 		Button btnTextCheckAll = new Button
 		{
 			Text = "全选",
@@ -9715,7 +10110,7 @@ public partial class IPTVLiveCheckerMain : Form
 					pTo.Visible = true;
 					pnlRangeHint.Visible = true;
 					string arg = template.Substring(0, replacePos) + PadNumber(start, padW, padZero) + template.Substring(replacePos + replaceLen);
-					lblStep3Preview.Text = $"✅ 检测到自定义范围格式\n将生成 {end - start + 1} 个源地址\n示例：{arg}";
+					lblStep3Preview.Text = $"✓ 检测到自定义范围格式\n将生成 {end - start + 1} 个源地址\n示例：{arg}";
 					lblStep3Preview.Visible = true;
 					UpdateStepUI();
 				}
@@ -9993,11 +10388,12 @@ public partial class IPTVLiveCheckerMain : Form
 			UpdateStepUI();
 			txtStep1Url.Focus();
 		};
+		bool isLightTheme = !DrawingUtils.IsDarkColor(theme.Bg);
 		Form opacityForm = new Form
 		{
 			FormBorderStyle = FormBorderStyle.None,
-			BackColor = Color.Black,
-			Opacity = 0.35,
+			BackColor = isLightTheme ? theme.Bg : Color.Black,
+			Opacity = isLightTheme ? 0.55 : 0.35,
 			ShowInTaskbar = false,
 			StartPosition = FormStartPosition.Manual,
 			Bounds = base.Bounds
@@ -10155,7 +10551,7 @@ public partial class IPTVLiveCheckerMain : Form
 					GlobalStart = pathStart + m.Groups[1].Index,
 					GlobalEnd = pathStart + m.Groups[1].Index + m.Groups[1].Length,
 					OriginalText = num,
-					Label = "\ud83d\udd22 数字段: " + num,
+					Label = "# 数字段: " + num,
 					Candidates = null
 				});
 			}
@@ -10169,7 +10565,7 @@ public partial class IPTVLiveCheckerMain : Form
 					GlobalStart = pathStart + m2.Groups[1].Index,
 					GlobalEnd = pathStart + m2.Groups[1].Index + m2.Groups[1].Length,
 					OriginalText = res,
-					Label = "\ud83d\udcd0 分辨率: " + res,
+					Label = "▭ 分辨率: " + res,
 					Candidates = new List<string>(ResolutionList)
 				});
 			}
@@ -10207,28 +10603,28 @@ public partial class IPTVLiveCheckerMain : Form
 					if (RxCctv.IsMatch(tok) && cctvSet.Contains(tok))
 					{
 						segType = ScanSegType.CctvChannel;
-						segLabel = "\ud83d\udcfa CCTV频道: " + tok;
+						segLabel = "▣ CCTV频道: " + tok;
 						segCandidates = new List<string>(cctvCandidates);
 						found = true;
 					}
 					else if (payDict.ContainsKey(tok))
 					{
 						segType = ScanSegType.PayChannel;
-						segLabel = "\ud83d\udcfa 付费频道: " + tok;
+						segLabel = "▣ 付费频道: " + tok;
 						segCandidates = payKeys;
 						found = true;
 					}
 					else if (wsDict.ContainsKey(tok))
 					{
 						segType = ScanSegType.WsChannel;
-						segLabel = "\ud83d\udce1 卫视频道: " + tok;
+						segLabel = "◎ 卫视频道: " + tok;
 						segCandidates = wsKeys;
 						found = true;
 					}
 					else if (movieDict.ContainsKey(tok))
 					{
 						segType = ScanSegType.MovieChannel;
-						segLabel = "\ud83c\udfac 影视频道: " + tok;
+						segLabel = "▶ 影视频道: " + tok;
 						segCandidates = movieKeys;
 						found = true;
 					}
@@ -10237,28 +10633,28 @@ public partial class IPTVLiveCheckerMain : Form
 						if (cctvSet.Contains(tok))
 						{
 							segType = ScanSegType.CctvChannel;
-							segLabel = "\ud83d\udcfa CCTV频道: " + tok;
+							segLabel = "▣ CCTV频道: " + tok;
 							segCandidates = new List<string>(cctvCandidates);
 							found = true;
 						}
 						else if (payDict.ContainsKey(tok))
 						{
 							segType = ScanSegType.PayChannel;
-							segLabel = "\ud83d\udcfa 付费频道: " + tok;
+							segLabel = "▣ 付费频道: " + tok;
 							segCandidates = payKeys;
 							found = true;
 						}
 						else if (wsDict.ContainsKey(tok))
 						{
 							segType = ScanSegType.WsChannel;
-							segLabel = "\ud83d\udce1 卫视频道: " + tok;
+							segLabel = "◎ 卫视频道: " + tok;
 							segCandidates = wsKeys;
 							found = true;
 						}
 						else if (movieDict.ContainsKey(tok))
 						{
 							segType = ScanSegType.MovieChannel;
-							segLabel = "\ud83c\udfac 影视频道: " + tok;
+							segLabel = "▶ 影视频道: " + tok;
 							segCandidates = movieKeys;
 							found = true;
 						}
@@ -10312,7 +10708,7 @@ public partial class IPTVLiveCheckerMain : Form
 			{
 				Label noMatch = new Label
 				{
-					Text = "❌ 未找到可生成的字段，请检查URL格式（支持数字段如/123/、频道名如cctv1、分辨率如1080p等）",
+					Text = "✕ 未找到可生成的字段，请检查URL格式（支持数字段如/123/、频道名如cctv1、分辨率如1080p等）",
 					ForeColor = RedHighlight,
 					Font = GetFont(10.5f),
 					Location = At(0, SY(8)),
@@ -10380,16 +10776,16 @@ public partial class IPTVLiveCheckerMain : Form
 						Cursor = Cursors.Hand
 					};
 					int idxI = i3;
-					FlowLayoutPanel rowFlow = new FlowLayoutPanel
-					{
-						Dock = DockStyle.Fill,
-						BackColor = Color.Transparent,
-						WrapContents = false,
-						Margin = new Padding(4),
+				FlowLayoutPanel rowFlow = new FlowLayoutPanel
+				{
+					Dock = DockStyle.Fill,
+					WrapContents = false,
+					Margin = new Padding(4),
 						Padding = new Padding(4, 0, 4, 0),
-						FlowDirection = FlowDirection.LeftToRight
-					};
-					Label lblBefore = new Label
+					FlowDirection = FlowDirection.LeftToRight
+				};
+				ThemeFx.EnableTransparent(rowFlow);
+				Label lblBefore = new Label
 					{
 						Text = fullBefore,
 						Font = URL_FONT,
@@ -10702,7 +11098,7 @@ public partial class IPTVLiveCheckerMain : Form
 				itemY = adjPanel.Bottom;
 				Label lblHint = new Label
 				{
-					Text = "\ud83d\udca1 点击单选按钮选择要生成的字段，绿色●为当前选中。数字段可用 ◀{ {▶ }◀ }▶ 按钮调整大括号框选部分位数（长数字可选子范围），含前导零将保持补零。频道/分辨率段将提供候选列表供选择。",
+					Text = "※ 点击单选按钮选择要生成的字段，绿色●为当前选中。数字段可用 ◀{ {▶ }◀ }▶ 按钮调整大括号框选部分位数（长数字可选子范围），含前导零将保持补零。频道/分辨率段将提供候选列表供选择。",
 					Font = GetFont(8.5f),
 					ForeColor = theme.SuccessColor,
 					Location = At(0, itemY + SY(20)),
@@ -10716,7 +11112,7 @@ public partial class IPTVLiveCheckerMain : Form
 				itemY = lblHint.Bottom + CONTROL_GAP;
 				CheckBox chkMultiRes = new CheckBox
 				{
-					Text = "\ud83d\udcd0 同时生成多个分辨率（1080p/720p/540p/480p/360p）",
+					Text = "▭ 同时生成多个分辨率（1080p/720p/540p/480p/360p）",
 					Font = GetFont(9.5f),
 					ForeColor = (hasResolution ? DarkText : GrayText),
 					Location = At(0, itemY),
@@ -11985,7 +12381,7 @@ public partial class IPTVLiveCheckerMain : Form
 		};
 		RadioButton rbBrowser = new RadioButton
 		{
-			Text = "\ud83c\udf10 浏览器模式",
+			Text = "◎ 浏览器模式",
 			Font = GetFont(14f),
 			ForeColor = TextPrimary,
 			BackColor = PanelBg,
@@ -12009,7 +12405,7 @@ public partial class IPTVLiveCheckerMain : Form
 		ctx.Body.Controls.Add(lblBrowserDesc);
 		RadioButton rbWebView2 = new RadioButton
 		{
-			Text = "\ud83d\udda5\ufe0f WebView2窗口模式",
+			Text = "▣ WebView2窗口模式",
 			Font = GetFont(14f),
 			ForeColor = TextPrimary,
 			BackColor = PanelBg,
@@ -12058,7 +12454,9 @@ public partial class IPTVLiveCheckerMain : Form
 		ctx.Body.Controls.Add(lblStatus);
 		if (!IsWebView2Supported())
 		{
-			lblStatus.Text = "⚠\ufe0f 系统未安装WebView2运行库，选择此模式将自动下载安装";
+			// 去掉 U+FE0F 变体选择符：带 VS16 会强制走彩色 emoji 呈现，不随主题变色；
+			// 裸 U+26A0 默认文本呈现，由 Segoe UI Symbol 单色渲染，跟随 ForeColor。
+			lblStatus.Text = "⚠ 系统未安装WebView2运行库，选择此模式将自动下载安装";
 			lblStatus.ForeColor = (theme.WarnColor);
 		}
 		else
@@ -12091,6 +12489,7 @@ public partial class IPTVLiveCheckerMain : Form
 			Cursor = Cursors.Hand,
 			IsPrimary = false,
 			BorderColor = pal.Border,
+			TextColorX = pal.Label,
 			GlowColor = pal.Glow,
 			GlowEnabled = !pal.SuppressGlow,
 			Radius = 6,
@@ -13013,14 +13412,25 @@ public partial class IPTVLiveCheckerMain : Form
 					}
 				}
 				// 读字段 _addrTextColor（随主题刷新）
+				// 原为 g.DrawString("🔒", ...)：U+1F512 会由 Segoe UI Emoji 以彩色位图字形渲染，
+				// 完全无视传入画刷，导致地址栏锁图标在所有主题下恒为同一彩色，无法换肤。
+				// 改为矢量自绘，严格使用 _addrTextColor，切换主题即同步换色。
 				using (SolidBrush iconBrush = new SolidBrush(_addrTextColor))
+				using (Pen iconPen = new Pen(_addrTextColor, 1.4f))
 				{
-					StringFormat sf = new StringFormat
+					SmoothingMode oldSm = g.SmoothingMode;
+					g.SmoothingMode = SmoothingMode.AntiAlias;
+					int bw = 9;
+					int bh = 7;
+					int bx = 4 + (16 - bw) / 2;
+					int by = (addrBarH - bh) / 2 + 1;
+					using (GraphicsPath lockBody = RoundedRectPath(new Rectangle(bx, by, bw, bh), 2))
 					{
-						Alignment = StringAlignment.Near,
-						LineAlignment = StringAlignment.Center
-					};
-					g.DrawString("🔒", GetFont(9f), iconBrush, new Rectangle(4, 0, 16, addrBarH), sf);
+						g.FillPath(iconBrush, lockBody);
+					}
+					int sw = bw - 4;
+					g.DrawArc(iconPen, bx + (bw - sw) / 2, by - 4, sw, 8, 180f, 180f);
+					g.SmoothingMode = oldSm;
 				}
 			};
 			navPanel.Controls.Add(addrBarHost);
@@ -13122,8 +13532,29 @@ public partial class IPTVLiveCheckerMain : Form
 						Alignment = StringAlignment.Center,
 						LineAlignment = StringAlignment.Center
 					};
-					string btnText = "⚡ IP提取";
-					g.DrawString(btnText, GetFont(10f, FontStyle.Bold), textBrush, cr, sf);
+					// 原 "⚡ IP提取"：U+26A1 由 Segoe UI Emoji 以固定彩色位图渲染，不随主题变色。
+					// 改为矢量闪电 + 纯文字，闪电与文字共用 textBrush，切换主题即时跟随。
+					string btnText = "IP提取";
+					Font btnFont = GetFont(10f, FontStyle.Bold);
+					float boltW = 9f;
+					float boltGap = 4f;
+					float btnTextW = g.MeasureString(btnText, btnFont).Width;
+					float boltX = (float)cr.X + ((float)cr.Width - (boltW + boltGap + btnTextW)) / 2f;
+					float boltMidY = (float)cr.Y + (float)cr.Height / 2f;
+					SmoothingMode oldSmBolt = g.SmoothingMode;
+					g.SmoothingMode = SmoothingMode.AntiAlias;
+					g.FillPolygon(textBrush, new PointF[6]
+					{
+						new PointF(boltX + 5.4f, boltMidY - 7f),
+						new PointF(boltX + 0.6f, boltMidY + 0.7f),
+						new PointF(boltX + 3.7f, boltMidY + 0.7f),
+						new PointF(boltX + 2.9f, boltMidY + 7f),
+						new PointF(boltX + 8.4f, boltMidY - 0.8f),
+						new PointF(boltX + 4.7f, boltMidY - 0.8f)
+					});
+					g.SmoothingMode = oldSmBolt;
+					sf.Alignment = StringAlignment.Near;
+					g.DrawString(btnText, btnFont, textBrush, new RectangleF(boltX + boltW + boltGap, (float)cr.Y, btnTextW + 4f, (float)cr.Height), sf);
 				}
 			};
 			navPanel.Controls.Add(btnExtractIp);
@@ -13271,7 +13702,7 @@ public partial class IPTVLiveCheckerMain : Form
 																{
 																	//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 																	//IL_0018: Expected O, but got Unknown
-																	HttpClient httpClient2 = new HttpClient(new HttpClientHandler { MaxConnectionsPerServer = 32 });
+																	HttpClient httpClient2 = CreateSharedHttpClient();
 																	try
 																	{
 																		httpClient2.Timeout = TimeSpan.FromSeconds(2.5);
@@ -13333,6 +13764,7 @@ public partial class IPTVLiveCheckerMain : Form
 																						if (statusBarRef != null && !statusBarRef.IsDisposed)
 																						{
 																							progressBarWidth = statusBarRef.ClientSize.Width * pct / 100;
+																							_activeProgressPct = pct;
 																							if (progressBarWidth > 0)
 																							{
 																								UpdateLabelColorsBasedOnProgress();
@@ -13441,7 +13873,7 @@ public partial class IPTVLiveCheckerMain : Form
 											}
 											else
 											{
-												HttpClient httpClient = new HttpClient(new HttpClientHandler { MaxConnectionsPerServer = 32 });
+												HttpClient httpClient = CreateSharedHttpClient();
 												try
 												{
 													httpClient.Timeout = TimeSpan.FromSeconds(5.0);
@@ -13592,6 +14024,7 @@ public partial class IPTVLiveCheckerMain : Form
 												lblAvailable.Text = "可用: 0";
 												lblPercent.Text = "0.00%";
 												progressBarWidth = 0;
+												_activeProgressPct = 0;
 												RestoreLabelColors();
 												statusBarRef.PerformLayout();
 												LayoutStatusBar(statusBarRef);
@@ -13732,7 +14165,7 @@ public partial class IPTVLiveCheckerMain : Form
 					DarkMessageBox.Show("自动搜索失败: " + ex3.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 				}
 			};
-			dlg.ShowDialog(this);
+			dlg.Show(this);
 		}
 		catch (Exception ex2)
 		{
@@ -13906,7 +14339,7 @@ public partial class IPTVLiveCheckerMain : Form
 		}
 	}
 
-	/// <summary>根据当前主题判定是否为“动态/毛玻璃”主题，并解析导航栏渐变光斑色（呼应主窗口极光）。</summary>
+	/// <summary>根据当前主题判定是否为"动态/毛玻璃"主题，并解析导航栏渐变光斑色（呼应主窗口极光）。</summary>
 	private void UpdateWebViewDynamicState()
 	{
 		if (theme == null)
@@ -14192,7 +14625,7 @@ public partial class IPTVLiveCheckerMain : Form
 					{
 						//IL_000e: Unknown result type (might be due to invalid IL or missing references)
 						//IL_0018: Expected O, but got Unknown
-						HttpClient httpClient = new HttpClient(new HttpClientHandler { MaxConnectionsPerServer = 32 });
+						HttpClient httpClient = CreateSharedHttpClient();
 						try
 						{
 							httpClient.Timeout = TimeSpan.FromSeconds(2.5);
@@ -14254,6 +14687,7 @@ public partial class IPTVLiveCheckerMain : Form
 											if (statusBarRef != null && !statusBarRef.IsDisposed)
 											{
 												progressBarWidth = statusBarRef.ClientSize.Width * pct / 100;
+												_activeProgressPct = pct;
 												if (progressBarWidth > 0)
 												{
 													UpdateLabelColorsBasedOnProgress();
@@ -15313,6 +15747,7 @@ public partial class IPTVLiveCheckerMain : Form
 						lblAvailable.Text = "可用: 0";
 						lblPercent.Text = "0.00%";
 						progressBarWidth = 0;
+						_activeProgressPct = 0;
 						RestoreLabelColors();
 						statusBarRef.PerformLayout();
 						LayoutStatusBar(statusBarRef);
@@ -16030,12 +16465,28 @@ public partial class IPTVLiveCheckerMain : Form
 		//IL_0364: Unknown result type (might be due to invalid IL or missing references)
 		//IL_036e: Expected O, but got Unknown
 		InitializeComponent();
+		// 任务栏图标必须在窗口句柄创建前设置：本窗体为无边框(FormBorderStyle.None)，
+		// 句柄在 Application.Run 时已创建，若等到 Load 事件再设 Icon，任务栏按钮会登记成空白默认图标。
+		try
+		{
+			using (Icon ex = Icon.ExtractAssociatedIcon(Application.ExecutablePath))
+			{
+				base.Icon = (Icon)ex.Clone();
+			}
+		}
+		catch
+		{
+			try { base.Icon = GenerateAppIcon(); } catch { }
+		}
 		DarkMessageBox.IsDarkProvider = () => theme != null && DrawingUtils.IsDarkColor(theme.Bg);
 		DarkMessageBox.ThemeProvider = () => theme;
 		DarkMessageBox.DpiScale = dpiScale;
+		// 消息框字体走全局字体工厂，与主界面字体设置保持一致（入参已含 DPI 缩放）
+		DarkMessageBox.FontProvider = (size) => GetFont(size);
 		base.FormBorderStyle = FormBorderStyle.None;
 		DoubleBuffered = true;
-		SetStyle(ControlStyles.ResizeRedraw, value: true);
+		// 全程双缓冲 + 单遍绘制：抑制子控件(透明玻璃面板)在拖动/缩放时的背景擦除闪烁
+		SetStyle(ControlStyles.ResizeRedraw | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, value: true);
 		base.KeyPreview = true;
 		AllowDrop = true;
 		base.DragEnter += IPTVLiveCheckerMain_DragEnter;
@@ -16068,9 +16519,11 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private void ApplyTheme()
 	{
+		AppTheme.ActiveTheme = theme;
 		SuspendLayout();
 		try
 		{
+			bool immersive = theme != null && (theme.GlassEnabled || !string.IsNullOrEmpty(theme.AnimationType));
 			BackColor = theme.Border;
 			if (outerWrap != null)
 			{
@@ -16078,28 +16531,58 @@ public partial class IPTVLiveCheckerMain : Form
 			}
 			if (titleBarPanel != null)
 			{
-				titleBarPanel.BackColor = theme.Bg;
 				Color titleBtnHover = (DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(55, 55, 65) : Color.FromArgb(230, 230, 235));
-				if (btnThemeToggle != null)
+				if (immersive)
 				{
-					btnThemeToggle.BackColor = theme.Bg;
-					btnThemeToggle.FlatAppearance.MouseOverBackColor = titleBtnHover;
+					// 沉浸式：标题栏透明并透出 ThemeFx 动态背景，按钮自身也透明融入
+					titleBarPanel.BackColor = Color.Transparent;
+					ThemeFx.EnableTransparent(titleBarPanel);
+					if (btnThemeToggle != null)
+					{
+						btnThemeToggle.BackColor = Color.Transparent;
+						btnThemeToggle.FlatAppearance.MouseOverBackColor = titleBtnHover;
+					}
+					if (btnMin != null)
+					{
+						btnMin.BackColor = Color.Transparent;
+						btnMin.FlatAppearance.MouseOverBackColor = titleBtnHover;
+					}
+					if (btnMax != null)
+					{
+						btnMax.BackColor = Color.Transparent;
+						btnMax.FlatAppearance.MouseOverBackColor = titleBtnHover;
+					}
+					if (btnClose != null)
+					{
+						btnClose.BackColor = Color.Transparent;
+						btnClose.FlatAppearance.MouseOverBackColor = Color.FromArgb(232, 17, 35);
+						btnClose.FlatAppearance.MouseDownBackColor = Color.FromArgb(200, 15, 30);
+					}
 				}
-				if (btnMin != null)
+				else
 				{
-					btnMin.BackColor = theme.Bg;
-					btnMin.FlatAppearance.MouseOverBackColor = titleBtnHover;
-				}
-				if (btnMax != null)
-				{
-					btnMax.BackColor = theme.Bg;
-					btnMax.FlatAppearance.MouseOverBackColor = titleBtnHover;
-				}
-				if (btnClose != null)
-				{
-					btnClose.BackColor = theme.Bg;
-					btnClose.FlatAppearance.MouseOverBackColor = Color.FromArgb(232, 17, 35);
-					btnClose.FlatAppearance.MouseDownBackColor = Color.FromArgb(200, 15, 30);
+					titleBarPanel.BackColor = theme.Bg;
+					if (btnThemeToggle != null)
+					{
+						btnThemeToggle.BackColor = theme.Bg;
+						btnThemeToggle.FlatAppearance.MouseOverBackColor = titleBtnHover;
+					}
+					if (btnMin != null)
+					{
+						btnMin.BackColor = theme.Bg;
+						btnMin.FlatAppearance.MouseOverBackColor = titleBtnHover;
+					}
+					if (btnMax != null)
+					{
+						btnMax.BackColor = theme.Bg;
+						btnMax.FlatAppearance.MouseOverBackColor = titleBtnHover;
+					}
+					if (btnClose != null)
+					{
+						btnClose.BackColor = theme.Bg;
+						btnClose.FlatAppearance.MouseOverBackColor = Color.FromArgb(232, 17, 35);
+						btnClose.FlatAppearance.MouseDownBackColor = Color.FromArgb(200, 15, 30);
+					}
 				}
 				Color navBtnText = (DrawingUtils.IsDarkColor(theme.Bg) ? Color.White : Color.Black);
 				navBtnHoverBg = (DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(60, 60, 60) : Color.FromArgb(230, 230, 230));
@@ -16131,7 +16614,7 @@ public partial class IPTVLiveCheckerMain : Form
 			}
 			if (mainArea != null)
 			{
-				mainArea.BackColor = theme.BgAlt;
+				if (!immersive) mainArea.BackColor = theme.BgAlt;
 				foreach (Control c in mainArea.Controls)
 				{
 					ApplyThemeToControl(c);
@@ -16149,25 +16632,30 @@ public partial class IPTVLiveCheckerMain : Form
 			{
 				actionSepRef.BackColor = theme.Border;
 			}
-			if (dgvData != null)
-			{
-				dgvData.BackgroundColor = theme.BgAlt;
-				dgvData.GridColor = theme.Border;
-				dgvData.ColumnHeadersDefaultCellStyle.BackColor = theme.HeaderBg;
-				dgvData.ColumnHeadersDefaultCellStyle.ForeColor = theme.TextPrimary;
-				dgvData.ColumnHeadersDefaultCellStyle.SelectionBackColor = theme.Primary;
-				dgvData.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
-				dgvData.RowsDefaultCellStyle.BackColor = theme.Surface;
-				dgvData.RowsDefaultCellStyle.ForeColor = theme.TextPrimary;
-				dgvData.RowsDefaultCellStyle.SelectionBackColor = theme.SelectRow;
-				dgvData.RowsDefaultCellStyle.SelectionForeColor = theme.SelectRowText;
-				dgvData.AlternatingRowsDefaultCellStyle.BackColor = theme.Surface;
-				dgvData.AlternatingRowsDefaultCellStyle.ForeColor = theme.TextPrimary;
-				dgvData.AlternatingRowsDefaultCellStyle.SelectionBackColor = theme.SelectRow;
-				dgvData.AlternatingRowsDefaultCellStyle.SelectionForeColor = theme.SelectRowText;
-				dgvData.DefaultCellStyle.SelectionBackColor = theme.SelectRow;
-				dgvData.DefaultCellStyle.SelectionForeColor = theme.SelectRowText;
-			}
+		if (dgvData != null)
+		{
+			bool gridImmersive = theme != null && (theme.GlassEnabled || !string.IsNullOrEmpty(theme.AnimationType));
+			// 沉浸式：行/交替行底色半透明，透出 AuroraGrid 背景的流动极光（磨砂质感）；表头保持 HeaderBg（自带极光微辉）。
+			Color rowBg = gridImmersive ? Color.FromArgb(150, theme.Surface.R, theme.Surface.G, theme.Surface.B) : theme.Surface;
+			// 注意：DataGridView.BackgroundColor 不允许透明色（赋值即抛 ArgumentException），永远用实色
+			dgvData.BackgroundColor = theme.BgAlt;
+			dgvData.GridColor = theme.Border;
+			dgvData.ColumnHeadersDefaultCellStyle.BackColor = theme.HeaderBg;
+			dgvData.ColumnHeadersDefaultCellStyle.ForeColor = theme.TextPrimary;
+			dgvData.ColumnHeadersDefaultCellStyle.SelectionBackColor = theme.Primary;
+			dgvData.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+			dgvData.RowsDefaultCellStyle.BackColor = rowBg;
+			dgvData.RowsDefaultCellStyle.ForeColor = theme.TextPrimary;
+			dgvData.RowsDefaultCellStyle.SelectionBackColor = theme.SelectRow;
+			dgvData.RowsDefaultCellStyle.SelectionForeColor = theme.SelectRowText;
+			dgvData.AlternatingRowsDefaultCellStyle.BackColor = rowBg;
+			dgvData.AlternatingRowsDefaultCellStyle.ForeColor = theme.TextPrimary;
+			dgvData.AlternatingRowsDefaultCellStyle.SelectionBackColor = theme.SelectRow;
+			dgvData.AlternatingRowsDefaultCellStyle.SelectionForeColor = theme.SelectRowText;
+			dgvData.DefaultCellStyle.SelectionBackColor = theme.SelectRow;
+			dgvData.DefaultCellStyle.SelectionForeColor = theme.SelectRowText;
+			if (dgvData is AuroraGrid ag) ag.ConfigureAurora(theme, gridImmersive);
+		}
 			if (darkVScrollBar != null)
 			{
 				darkVScrollBar.TrackColor = theme.BgAlt;
@@ -16222,7 +16710,7 @@ public partial class IPTVLiveCheckerMain : Form
 					}
 				}
 			}
-			ThemePreviewPanel();
+			ThemePreviewPanel(immersive);
 			if (gridContainerRef != null)
 			{
 				gridContainerRef.BackColor = theme.BgAlt;
@@ -16240,10 +16728,60 @@ public partial class IPTVLiveCheckerMain : Form
 					dcbo.ItemHoverBackColor = Color.FromArgb(Math.Min(255, theme.Surface.R + 10), Math.Min(255, theme.Surface.G + 10), Math.Min(255, theme.Surface.B + 10));
 				}
 			}
-			if (emptyLabel != null)
+		if (emptyLabel != null)
+		{
+			emptyLabel.ForeColor = theme.TextSecondary;
+		}
+		// 详情/流媒体信息栏随主题刷新：这些面板与 Label 在创建时只赋过一次颜色，
+		// 而 ApplyThemeToControl 不会遍历 previewPanel 子树（详情栏/状态栏父级均非
+		// statusBarRef/searchPanelRef），换肤后名称与底色仍停留在旧主题——尤其浅色
+		// Apple 主题下，信息栏文字/底色仍为旧暗色，对比度错乱。故在此显式重刷。
+		if (_detailPanel != null)
+		{
+			if (_detailTitle != null)
 			{
-				emptyLabel.ForeColor = theme.TextSecondary;
+				_detailTitle.BackColor = Color.Transparent;
+				_detailTitle.ForeColor = theme.TextPrimary;
 			}
+			if (_detailHeader != null) _detailHeader.BackColor = theme.Border;
+			// 键标签用柔和灰，值标签随主题主文字色
+			if (_detailKeyLabels != null)
+			{
+				foreach (Label k in _detailKeyLabels)
+				{
+					if (k != null)
+					{
+						k.BackColor = Color.Transparent;
+						k.ForeColor = Color.FromArgb(180, 180, 180);
+					}
+				}
+			}
+			if (_detailValLabels != null)
+			{
+				foreach (Label v in _detailValLabels)
+				{
+					if (v != null)
+					{
+						v.BackColor = Color.Transparent;
+						v.ForeColor = theme.TextPrimary;
+					}
+				}
+			}
+			_detailPanel.Invalidate();
+		}
+		if (_linkStatusPanel != null)
+		{
+			foreach (Control c in _linkStatusPanel.Controls)
+			{
+				if (c is Label sl)
+				{
+					sl.BackColor = Color.Transparent;
+					// 加粗标题（"当前链接状态 · 实时"）用 TextPrimary，普通状态行用 TextSecondary
+					sl.ForeColor = (sl.Font != null && sl.Font.Bold) ? theme.TextPrimary : theme.TextSecondary;
+				}
+			}
+			_linkStatusPanel.Invalidate();
+		}
 		if (dataGridViewContextMenu != null)
 		{
 			ApplyMenuTheme(dataGridViewContextMenu);
@@ -16268,7 +16806,7 @@ public partial class IPTVLiveCheckerMain : Form
 			UpdateActionButtonsVisibility();
 			SyncPaletteFromTheme();
 			ApplyGlassFx();
-			ThemeFx.ApplyThemeFx(this, theme);
+			if (!immersive) ThemeFx.ApplyThemeFx(this, theme);
 			// 预览播放器随主题刷新
 			try { channelPlayer?.ApplyTheme(theme); } catch { }
 			// WebView2 搜索窗口的玻璃导航栏随主题刷新
@@ -16293,10 +16831,19 @@ public partial class IPTVLiveCheckerMain : Form
 	/// </summary>
 	private void ApplyGlassFx()
 	{
+		_subscribedFxPhase |= SubscribeFxPhase();
 		if (theme == null)
 		{
 			return;
 		}
+		// 注意：不要在此包 try-catch 吞掉异常——否则 ApplyGlassFxCore 中后续的 ThemeFx.ApplyThemeFx
+		// （负责重建动效背景层 bg 并启动 timer）会被跳过，导致切换动态主题后动效全部失效。
+		// 透明设置异常已由 ThemeFx.EnableTransparent 内部容错消化，不会冒泡到此处。
+		ApplyGlassFxCore();
+	}
+
+	private void ApplyGlassFxCore()
+	{
 		bool immersive = theme.GlassEnabled || !string.IsNullOrEmpty(theme.AnimationType);
 		// 软件图标始终不透明，避免背景透显
 		if (titleIconRef != null)
@@ -16305,22 +16852,75 @@ public partial class IPTVLiveCheckerMain : Form
 		}
 		if (immersive)
 		{
-			// 毛玻璃模式：outerWrap 透明，让极光背景穿过缝隙可见
-			// 所有内部面板使用不透明色（WinForms 半透明 BackColor 不支持真正混合）
-			if (outerWrap != null) outerWrap.BackColor = Color.Transparent;
-			if (titleBarPanel != null) titleBarPanel.BackColor = theme.Bg;
-			if (toolbarRef != null) toolbarRef.BackColor = theme.BgAlt;
-			if (searchPanelRef != null) searchPanelRef.BackColor = theme.BgAlt;
+			// 真实毛玻璃：外层与所有内部面板透明，露出 ThemeFx 动效背景
+			if (outerWrap != null) ThemeFx.EnableTransparent(outerWrap);
+			if (titleBarPanel != null) ThemeFx.EnableTransparent(titleBarPanel);
+			if (toolbarRef != null) ThemeFx.EnableTransparent(toolbarRef);
+			if (searchPanelRef != null) ThemeFx.EnableTransparent(searchPanelRef);
+			if (importHost != null) ThemeFx.EnableTransparent(importHost);
 			if (mainArea != null)
 			{
-				mainArea.BackColor = theme.Surface;
+				ThemeFx.EnableTransparent(mainArea);
 				mainArea.Padding = new Padding(16, 8, 16, 8);
 			}
-			if (actionArea != null) actionArea.BackColor = theme.BgAlt;
-			if (gridContainerRef != null) gridContainerRef.BackColor = theme.BgAlt;
-			if (statusBarContainer != null) statusBarContainer.BackColor = theme.Bg;
-			if (statusBarRef != null) statusBarRef.BackColor = theme.StatusBarBg;
-			if (bottomBarRef != null) bottomBarRef.BackColor = theme.Bg;
+			if (actionArea != null) ThemeFx.EnableTransparent(actionArea);
+			if (gridContainerRef != null) ThemeFx.EnableTransparent(gridContainerRef);
+			if (statusBarContainer != null) ThemeFx.EnableTransparent(statusBarContainer);
+			if (statusBarRef != null) ThemeFx.EnableTransparent(statusBarRef);
+			if (bottomBarRef != null) ThemeFx.EnableTransparent(bottomBarRef);
+			// 搜索区：searchBoxHostRef(半透明 Surface 底盘) + cboGroupHost(半透明 BgAlt 底盘)，由 ThemeFx 动效透出
+			if (searchBoxHostRef != null)
+			{
+				ThemeFx.EnableTransparent(searchBoxHostRef);
+				searchBoxHostRef.Invalidate();
+			}
+			if (txtSearchBox != null && !txtSearchBox.IsDisposed)
+			{
+				// 原生 TextBox 不支持 BackColor alpha 通道（赋 Color.FromArgb(<255,...) 会抛 ArgumentException），
+				// 沉浸式下半透明底盘由 searchBoxHost.Paint 自绘（半透明 Surface 圆角），TextBox 自身只需
+				// 与底盘同色的不透明 BackColor 保持视觉一致；并 try-catch 防御以防其他第三方控件拒绝 BackColor。
+				try
+				{
+					txtSearchBox.BackColor = theme.Surface;
+				}
+				catch (ArgumentException) { }
+				catch { }
+			}
+			if (cboGroupHost != null)
+			{
+				ThemeFx.EnableTransparent(cboGroupHost);
+				cboGroupHost.Invalidate();
+			}
+			if (cboGroup != null && !cboGroup.IsDisposed)
+			{
+				// 原生 ComboBox 不支持 BackColor alpha 通道（赋 Color.FromArgb(<255,...) 会抛 ArgumentException，
+				// DarkComboBox.BackColor setter 会传染到 base.BackColor = value；同样的 ArgumentException 还会
+				// 冒泡到 IDE 并中断后续 ThemeFx.ApplyThemeFx 导致动效失效）。
+				// 沉浸式下 cboGroupHost 已透明化，ComboBox 自身保持不透明实色与底盘视觉一致即可；并 try-catch
+				// 防御以防其他第三方 ComboBox 子类拒绝 BackColor。
+				try
+				{
+					if (cboGroup is DarkComboBox darkCboImm)
+					{
+						// DarkComboBox 自绘：下拉项与边框保留，使用不透明实色
+						darkCboImm.BackColor = theme.BgAlt;
+						darkCboImm.ItemBackColor = theme.Surface;
+						darkCboImm.ItemSelectedBackColor = theme.BgAlt;
+						darkCboImm.ItemHoverBackColor = Color.FromArgb(255, Math.Min(255, theme.Surface.R + 10), Math.Min(255, theme.Surface.G + 10), Math.Min(255, theme.Surface.B + 10));
+					}
+					else
+					{
+						cboGroup.BackColor = theme.BgAlt;
+					}
+				}
+				catch (ArgumentException) { }
+				catch { }
+				cboGroup.Invalidate();
+			}
+			// Label 透出：避免系统 Control 灰底破坏沉浸式透明链
+			if (lblGroupFilter != null) lblGroupFilter.BackColor = Color.Transparent;
+			// 背景控件挂到 outerWrap 底层，由透明链透出
+			ThemeFx.ApplyThemeFx(outerWrap, theme);
 		}
 		else
 		{
@@ -16538,7 +17138,7 @@ public partial class IPTVLiveCheckerMain : Form
 					btn.BackColor = theme.Accent;
 					break;
 				case "export":
-					btn.BackColor = Color.FromArgb(255, 0, 255);
+					btn.BackColor = theme.Primary;
 					btn.ForeColor = Color.White;
 					break;
 				case "border":
@@ -16562,13 +17162,10 @@ public partial class IPTVLiveCheckerMain : Form
 					btn.ForeColor = Color.White;
 					break;
 				case "dynamic":
-				{
-					Color cur = btn.BackColor;
-					int dPrim = Math.Abs(cur.R - ColorPurple.R) + Math.Abs(cur.G - ColorPurple.G) + Math.Abs(cur.B - ColorPurple.B);
-					int dAcc = Math.Abs(cur.R - ColorPink.R) + Math.Abs(cur.G - ColorPink.G) + Math.Abs(cur.B - ColorPink.B);
-					btn.BackColor = ((dPrim <= dAcc) ? theme.Primary : theme.Accent);
+					// 动态主题已移除（WinForms/GDI+ 下不稳定）：原按 ColorPurple/ColorPink 距离判断，
+					// 现统一回退到主题主色，避免引用已删除的残留色。
+					btn.BackColor = theme.Primary;
 					break;
-				}
 				case "parse":
 					btn.BackColor = theme.Primary;
 					btn.ForeColor = Color.White;
@@ -16596,8 +17193,10 @@ public partial class IPTVLiveCheckerMain : Form
 		}
 		if (ctrl is ToggleSwitch ts)
 		{
-			ts.OnColor = theme.SuccessColor;
-			ts.OffColor = DrawingUtils.IsDarkColor(theme.Bg) ? Color.FromArgb(55, 62, 72) : Color.FromArgb(218, 222, 228);
+			// 开关"开"态跟随主题主色（而非固定绿），品红/紫等主题不再出现突兀的绿色开关；
+			// "关"态直接用主题 Border 令牌，保证与分隔线/描边同一套中性色，不再硬编码。
+			ts.OnColor = theme.Primary;
+			ts.OffColor = theme.Border;
 			ts.Invalidate();
 		}
 		foreach (Control child2 in ctrl.Controls)
@@ -16606,41 +17205,35 @@ public partial class IPTVLiveCheckerMain : Form
 		}
 	}
 
-	private void ThemePreviewPanel()
+	private void ThemePreviewPanel(bool immersive)
 	{
-		if (previewPanel != null)
+		if (previewPanel == null) return;
+		// 占位层随主题刷新（颜色/明暗/是否沉浸式）
+		_playerIdle?.Configure(theme, immersive);
+		if (immersive)
+		{
+			// 沉浸式（玻璃/动效主题）：预览窗玻璃化，透出背后流动极光。
+			// 视频容器(playerFrame，内含 ChannelPlayer/MpvPlayer)保持不透明黑底，避免影响播放。
+			ThemeFx.EnableTransparent(previewPanel);
+			previewPanel.BackColor = Color.Transparent;
+			WalkGlass(previewPanel);
+		}
+		else
 		{
 			previewPanel.BackColor = theme.BgAlt;
-			Walk(previewPanel);
+			WalkSolid(previewPanel);
 		}
-		void Walk(Control ctrl)
+
+		void WalkSolid(Control ctrl)
 		{
-			if (ctrl is ChannelPlayer)
-			{
-				return;
-			}
+			if (ctrl is ChannelPlayer || ctrl is MpvPlayer) return;
 			if (ctrl is Panel p)
 			{
-				if (p.Tag is string tagStr && tagStr == "__gap")
-				{
-					p.BackColor = theme.BgAlt;
-				}
-				else if ((p.Dock == DockStyle.Left && p.Width <= 2) || p.Width <= 1)
-				{
-					p.BackColor = theme.Border;
-				}
-				else if (p.Dock == DockStyle.Top && p.Height <= 40)
-				{
-					p.BackColor = theme.Bg;
-				}
-				else if (p.Dock == DockStyle.Bottom && p.Height <= 48)
-				{
-					p.BackColor = theme.Bg;
-				}
-				else
-				{
-					p.BackColor = theme.BgAlt;
-				}
+				if (p.Tag is string tagStr && tagStr == "__gap") p.BackColor = theme.BgAlt;
+				else if ((p.Dock == DockStyle.Left && p.Width <= 2) || p.Width <= 1) p.BackColor = theme.Border;
+				else if (p.Dock == DockStyle.Top && p.Height <= 40) p.BackColor = theme.Bg;
+				else if (p.Dock == DockStyle.Bottom && p.Height <= 48) p.BackColor = theme.Bg;
+				else p.BackColor = theme.BgAlt;
 			}
 			else if (ctrl is Label lbl)
 			{
@@ -16651,27 +17244,57 @@ public partial class IPTVLiveCheckerMain : Form
 				btn.BackColor = theme.Surface;
 				btn.ForeColor = Color.White;
 			}
-			foreach (Control child in ctrl.Controls)
+			foreach (Control child in ctrl.Controls) WalkSolid(child);
+		}
+
+		void WalkGlass(Control ctrl)
+		{
+			if (ctrl is ChannelPlayer || ctrl is MpvPlayer) return;
+			if (ctrl is Panel p)
 			{
-				Walk(child);
+				// 视频宿主容器：保持不透明黑底，其余面板玻璃透出极光
+				bool hasVideo = p.Controls.OfType<ChannelPlayer>().Any() || p.Controls.OfType<MpvPlayer>().Any();
+				if (hasVideo)
+				{
+					p.BackColor = Color.Black;
+				}
+				else if (p.Tag is string tagStr && tagStr == "__gap")
+				{
+					p.BackColor = theme.Bg;
+				}
+				else if ((p.Dock == DockStyle.Left && p.Width <= 2) || p.Width <= 1)
+				{
+					p.BackColor = theme.Border; // 分隔线保持实色
+				}
+				else
+				{
+					// 信息/状态/详情面板：动态主题下改用不透明实色底，不再启用"假透明"。
+					// 透明控件 hover 时会高频重绘并反复拉取背后流动极光背景，叠加未双缓冲导致闪烁(flicker)。
+					// 实色底彻底消除闪烁；窗口级 DWM 毛玻璃仍维持整体玻璃质感。
+					p.BackColor = theme.BgAlt;
+				}
 			}
+			else if (ctrl is Label lbl)
+			{
+				lbl.ForeColor = (lbl.Font.Bold ? theme.TextPrimary : theme.TextSecondary);
+				lbl.BackColor = Color.Transparent;
+			}
+			else if (ctrl is Button { FlatStyle: FlatStyle.Flat } btn && btn.ForeColor == Color.White)
+			{
+				btn.BackColor = theme.Surface;
+				btn.ForeColor = Color.White;
+			}
+			foreach (Control child in ctrl.Controls) WalkGlass(child);
 		}
 	}
 
 	private AppTheme MakeEffectiveTheme()
 	{
-		if (!AppTheme.IsExternalThemesLoaded())
-		{
-			AppTheme.LoadExternalThemes();
-		}
 		AppTheme baseTheme;
-		if (AppTheme.ExternalThemes.TryGetValue(themePreference, out AppTheme ext))
+		if (themePreference == "跟随系统")
 		{
-			baseTheme = ext;
-		}
-		else if (themePreference == "跟随系统")
-		{
-			baseTheme = AppTheme.GetAutoTheme();
+			// 跟随系统：按系统明暗回退内置 Light/Dark 主题
+			baseTheme = AppTheme.ResolveFollowSystem(AppConstants.DefaultThemeName);
 		}
 		else
 		{
@@ -16687,6 +17310,8 @@ public partial class IPTVLiveCheckerMain : Form
 			}
 			if (baseTheme == null)
 			{
+				// 偏好主题已被移除（外部主题已删除）：回退到内置青瓷薄荷
+				themePreference = "青瓷薄荷";
 				baseTheme = AppTheme.MintCeladon;
 			}
 		}
@@ -16731,10 +17356,12 @@ public partial class IPTVLiveCheckerMain : Form
 			if (totalCount > 0)
 			{
 				progressBarWidth = (int)((double)statusBarRef.ClientSize.Width * pct / 100.0);
+				_activeProgressPct = (int)pct;
 			}
 			else
 			{
 				progressBarWidth = 0;
+				_activeProgressPct = 0;
 			}
 			statusBarRef.PerformLayout();
 			LayoutStatusBar(statusBarRef);
@@ -17486,7 +18113,7 @@ public partial class IPTVLiveCheckerMain : Form
 		return ok;
 	}
 
-	private async Task StartDetection()
+	private async Task StartDetection(bool incremental = false)
 	{
 		cts = new CancellationTokenSource();
 		CancellationToken token = cts.Token;
@@ -17494,29 +18121,58 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			btnStopDetect.Enabled = true;
 		}
+		// 目标集合：全量检测 = 全部频道；增量检测（重新检测）= 仅尚未检测的频道（含上次中断残留的"检测中"）
+		IEnumerable<ChannelInfo> targets;
+		if (incremental)
+		{
+			targets = allChannels.Where((ChannelInfo c) => c.Status == "未检测" || c.Status == "检测中").ToList();
+			foreach (ChannelInfo ch in targets)
+			{
+				if (ch.Status == "检测中")
+				{
+					ch.Status = "未检测";
+				}
+				if (string.IsNullOrWhiteSpace(ch.Location))
+				{
+					ch.Location = ExtractLocationFromUrl(ch.Url);
+				}
+			}
+		}
+		else
+		{
+			Parallel.ForEach(allChannels, delegate(ChannelInfo ch)
+			{
+				ch.Status = "未检测";
+				ch.Speed = "";
+				if (string.IsNullOrWhiteSpace(ch.Location))
+				{
+					ch.Location = ExtractLocationFromUrl(ch.Url);
+				}
+				if (string.IsNullOrWhiteSpace(ch.Resolution))
+				{
+					ch.Resolution = "";
+				}
+			});
+			targets = allChannels;
+		}
+		if (targets.Count() == 0)
+		{
+			if (btnStopDetect != null)
+			{
+				btnStopDetect.Enabled = false;
+			}
+			return;
+		}
 		detectedCount = 0;
 		availableCount = 0;
-		totalCount = allChannels.Count;
-		Parallel.ForEach(allChannels, delegate(ChannelInfo ch)
-		{
-			ch.Status = "未检测";
-			ch.Speed = "";
-			if (string.IsNullOrWhiteSpace(ch.Location))
-			{
-				ch.Location = ExtractLocationFromUrl(ch.Url);
-			}
-			if (string.IsNullOrWhiteSpace(ch.Resolution))
-			{
-				ch.Resolution = "";
-			}
-		});
+		totalCount = targets.Count();
 		if (lblProgressText != null && !lblProgressText.IsDisposed)
 		{
-			lblProgressText.Text = "检测进度:";
+			lblProgressText.Text = (incremental ? "重新检测进度:" : "检测进度:");
 		}
 		RefreshGrid();
 		UpdateStatusBar();
-		int concurrency = Math.Min(detectConcurrency, allChannels.Count);
+		int concurrency = Math.Min(detectConcurrency, targets.Count());
 		int uiUpdateCounter = 0;
 		int uiRefreshNeeded = 0;
 		int lastRefreshPercent = -1;
@@ -17543,7 +18199,7 @@ public partial class IPTVLiveCheckerMain : Form
 			SemaphoreSlim sem = new SemaphoreSlim(concurrency, concurrency);
 			try
 			{
-				IEnumerable<Task> tasks = ((IEnumerable<ChannelInfo>)allChannels).Select((Func<ChannelInfo, Task>)async delegate(ChannelInfo ch)
+				IEnumerable<Task> tasks = targets.Select((Func<ChannelInfo, Task>)async delegate(ChannelInfo ch)
 				{
 					await sem.WaitAsync(token);
 					Task<string> ipLocTask = null;
@@ -17778,7 +18434,7 @@ public partial class IPTVLiveCheckerMain : Form
 					((IDisposable)sem).Dispose();
 				}
 			}
-			List<ChannelInfo> failedChannels = allChannels.Where((ChannelInfo c) => c.Status == "不可用").ToList();
+			List<ChannelInfo> failedChannels = targets.Where((ChannelInfo c) => c.Status == "不可用").ToList();
 			if (failedChannels.Count > 0 && !token.IsCancellationRequested)
 			{
 				int fallbackConcurrency = Math.Max(1, Math.Min(5, concurrency / 2));
@@ -18360,8 +19016,44 @@ public partial class IPTVLiveCheckerMain : Form
 		}
 	}
 
+	// 窗口尺寸/状态变化后强制刷新：重新布局子控件并全窗重绘，
+	// 保证动态主题背景(ThemeFx)能立即适配新尺寸，解决最大化切换不刷新的问题。
+	private void RefreshWindowTheme()
+	{
+		if (!base.IsHandleCreated || base.IsDisposed)
+		{
+			return;
+		}
+		SuspendLayout();
+		try
+		{
+			PerformLayout();
+			if (_borderOverlay != null)
+			{
+				_borderOverlay.Invalidate();
+			}
+			if (mainArea != null)
+			{
+				mainArea.Invalidate(true);
+			}
+			if (dgvData != null)
+			{
+				dgvData.Invalidate();
+			}
+		}
+		finally
+		{
+			ResumeLayout(performLayout: true);
+		}
+		base.Invalidate(true);
+		if (titleBarPanel != null)
+		{
+			titleBarPanel.Invalidate(true);
+		}
+	}
+
 	// 可复用的窗口边框：为无边框(FormBorderStyle.None)窗口添加圆角 + 1px 内描边，
-	// 主窗体已自带等价逻辑，这里抽出供“直播源生成器”等自定义窗口复用，保持边界感一致。
+	// 主窗体已自带等价逻辑，这里抽出供"直播源生成器"等自定义窗口复用，保持边界感一致。
 	private static void ApplyWindowChrome(Form f, int radius = 12)
 	{
 		if (f == null || f.IsDisposed)
@@ -18439,6 +19131,7 @@ public partial class IPTVLiveCheckerMain : Form
 			Height = SY(40),
 			BackColor = theme.Bg
 		};
+		titleBarPanel.Paint += TitleBar_FxPaint;
 		typeof(Control).GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(titleBarPanel, true, null);
 		PictureBox titleIcon = (titleIconRef = new PictureBox
 		{
@@ -18506,8 +19199,8 @@ public partial class IPTVLiveCheckerMain : Form
 		}));
 		btnNavFile = new Button
 		{
-			Text = "文件",
-			Size = new Size(navBtnWidth + 20, navBtnHeight),
+			Text = "文件 (F)",
+			Size = new Size(navBtnWidth + 30, navBtnHeight),
 			Location = At(SX(42), navBtnY),
 			BackColor = Color.Transparent,
 			ForeColor = navBtnText,
@@ -18611,20 +19304,53 @@ public partial class IPTVLiveCheckerMain : Form
 			ShowAboutDialog();
 		};
 		titleBarPanel.Controls.Add(btnNavAbout);
+		// 统一设为扁平样式并去掉系统默认边框：消除"灰框"，让 BackColor=Transparent 真正透出标题栏背景，
+		// 外观完全交由 PaintNavButton 自绘（描边/发光/文字），与窗口控制按钮(主题/最小/最大/关闭)视觉一致
+		foreach (Button navBtn in new Button[] { btnNavFile, btnNavDetect, btnNavSearch, btnNavSettings, btnNavAbout })
+		{
+			navBtn.FlatStyle = FlatStyle.Flat;
+			navBtn.FlatAppearance.BorderSize = 0;
+			navBtn.UseVisualStyleBackColor = false;
+		}
 		btnThemeToggle = CreateTitleButton();
 		btnThemeToggle.Tag = "theme";
 		btnThemeToggle.Paint += delegate(object s, PaintEventArgs e)
 		{
 			e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-			Color color = (btnThemeToggle.ClientRectangle.Contains(btnThemeToggle.PointToClient(Cursor.Position)) ? theme.TextPrimary : theme.TextSecondary);
+			bool hov = btnThemeToggle.ClientRectangle.Contains(btnThemeToggle.PointToClient(Cursor.Position));
+			Color color = (hov ? theme.TextPrimary : theme.TextSecondary);
+			// 沉浸式无 hover 持续动效：让符号颜色按 phase 微脉动，与 TitleBar 动效背景同节奏
+			if (IsDynamicFx())
+			{
+				double ph = ThemeFx.CurrentPhase;
+				int add = (int)(22 + 18 * Math.Sin(ph)); // 4~40
+				color = Color.FromArgb(
+					255,
+					Math.Min(255, color.R + add),
+					Math.Min(255, color.G + add),
+					Math.Min(255, color.B + add));
+			}
+			// 动态主题 + 悬停：边缘发光突出
+			if (IsDynamicFx() && hov)
+			{
+				AppTheme atT = AppTheme.ActiveTheme;
+				Color fxT = (atT != null) ? atT.Primary : theme.Primary;
+				Rectangle rT = new Rectangle(1, 1, btnThemeToggle.Width - 3, btnThemeToggle.Height - 3);
+				using GraphicsPath pT = RoundedRectPath(rT, 8);
+				for (int i = 4; i >= 1; i--)
+				{
+					using Pen gp = new Pen(Color.FromArgb(28 * i, fxT.R, fxT.G, fxT.B), i * 1.4f);
+					e.Graphics.DrawPath(gp, pT);
+				}
+			}
 			int num = btnThemeToggle.Width;
 			int num2 = btnThemeToggle.Height;
 			int num3 = num / 2;
 			int num4 = num2 / 2;
 			using Pen pen = new Pen(color, 1.4f);
 			using SolidBrush brush = new SolidBrush(color);
-			int w = 8;
-			int h = 6;
+			int w = hov ? 9 : 8;
+			int h = hov ? 7 : 6;
 			e.Graphics.FillPolygon(brush, new[]
 			{
 				new Point(num3 - w, num4 - h),
@@ -18655,23 +19381,6 @@ public partial class IPTVLiveCheckerMain : Form
 				SetTheme(b);
 			};
 		}
-		if (!AppTheme.IsExternalThemesLoaded())
-		{
-			AppTheme.LoadExternalThemes();
-		}
-		if (AppTheme.ExternalThemes.Count > 0)
-		{
-			themeMenu.Items.Add(new ToolStripSeparator());
-			foreach (AppTheme ex in AppTheme.ExternalThemes.Values)
-			{
-				string exName = ex.Name;
-				themeMenu.Items.Add(exName).Click += delegate
-				{
-					themePreference = exName;
-					SetTheme(ex);
-				};
-			}
-		}
 		btnThemeToggle.Click += delegate
 		{
 			Point pt = btnThemeToggle.PointToScreen(new Point(0, btnThemeToggle.Height));
@@ -18681,13 +19390,44 @@ public partial class IPTVLiveCheckerMain : Form
 		btnMin = CreateTitleButton();
 		btnMin.Paint += delegate(object s, PaintEventArgs e)
 		{
-			Color color = (btnMin.ClientRectangle.Contains(btnMin.PointToClient(Cursor.Position)) ? theme.TextPrimary : theme.TextSecondary);
+			// macOS 风黄色交通灯：常态半透、悬停加亮 + 中心短横浮现
+			e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 			int num = btnMin.Width;
 			int num2 = btnMin.Height;
 			int num3 = num / 2;
 			int num4 = num2 / 2;
-			using Pen pen = new Pen(color, 1.5f);
-			e.Graphics.DrawLine(pen, num3 - 8, num4, num3 + 8, num4);
+			bool hov = btnMin.ClientRectangle.Contains(btnMin.PointToClient(Cursor.Position));
+			int r = 6;
+			Rectangle rectM = new Rectangle(num3 - r, num4 - r, r * 2, r * 2);
+			int pulse = 0;
+			if (IsDynamicFx())
+			{
+				pulse = (int)(14 * (0.5 + 0.5 * Math.Sin(ThemeFx.CurrentPhase)));
+			}
+			Color dimM = Color.FromArgb(140 + pulse, 196, 152, 22);
+			Color hotM = Color.FromArgb(255, 255, 188, 46);
+			using (SolidBrush br = new SolidBrush(hov ? hotM : dimM))
+			{
+				e.Graphics.FillEllipse(br, rectM);
+			}
+			// 动态主题 + 悬停：边缘发光
+			if (IsDynamicFx() && hov)
+			{
+				AppTheme atM = AppTheme.ActiveTheme;
+				Color fxM = (atM != null) ? atM.Primary : theme.Primary;
+				Rectangle rM = new Rectangle(1, 1, btnMin.Width - 3, btnMin.Height - 3);
+				using GraphicsPath pM = RoundedRectPath(rM, 8);
+				for (int i = 3; i >= 1; i--)
+				{
+					using Pen gp = new Pen(Color.FromArgb(22 * i, fxM.R, fxM.G, fxM.B), i * 1.2f);
+					e.Graphics.DrawPath(gp, pM);
+				}
+			}
+			if (hov)
+			{
+				using Pen pen = new Pen(Color.FromArgb(150, 60, 30, 0), 1.4f);
+				e.Graphics.DrawLine(pen, num3 - 4, num4, num3 + 4, num4);
+			}
 		};
 		btnMin.Click += delegate
 		{
@@ -18697,21 +19437,51 @@ public partial class IPTVLiveCheckerMain : Form
 		btnMax = CreateTitleButton();
 		btnMax.Paint += delegate(object s, PaintEventArgs e)
 		{
-			Color color = (btnMax.ClientRectangle.Contains(btnMax.PointToClient(Cursor.Position)) ? theme.TextPrimary : theme.TextSecondary);
-			bool flag = base.WindowState == FormWindowState.Maximized;
+			// macOS 风绿色交通灯：常态半透、悬停加亮 + 中心方块/双层叠浮现
+			e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 			int num = btnMax.Width;
 			int num2 = btnMax.Height;
 			int num3 = num / 2;
 			int num4 = num2 / 2;
-			using Pen pen = new Pen(color, 1.5f);
-			if (flag)
+			bool hov = btnMax.ClientRectangle.Contains(btnMax.PointToClient(Cursor.Position));
+			bool flag = base.WindowState == FormWindowState.Maximized;
+			int r = 6;
+			Rectangle rectX = new Rectangle(num3 - r, num4 - r, r * 2, r * 2);
+			int pulse = 0;
+			if (IsDynamicFx())
 			{
-				e.Graphics.DrawRectangle(pen, num3 - 7, num4 - 5, 9, 9);
-				e.Graphics.DrawRectangle(pen, num3 - 4, num4 - 8, 9, 9);
+				pulse = (int)(14 * (0.5 + 0.5 * Math.Sin(ThemeFx.CurrentPhase)));
 			}
-			else
+			Color dimX = Color.FromArgb(140 + pulse, 30, 170, 70);
+			Color hotX = Color.FromArgb(255, 40, 200, 70);
+			using (SolidBrush br = new SolidBrush(hov ? hotX : dimX))
 			{
-				e.Graphics.DrawRectangle(pen, num3 - 7, num4 - 7, 14, 14);
+				e.Graphics.FillEllipse(br, rectX);
+			}
+			if (IsDynamicFx() && hov)
+			{
+				AppTheme atX = AppTheme.ActiveTheme;
+				Color fxX = (atX != null) ? atX.Primary : theme.Primary;
+				Rectangle rX = new Rectangle(1, 1, btnMax.Width - 3, btnMax.Height - 3);
+				using GraphicsPath pX = RoundedRectPath(rX, 8);
+				for (int i = 3; i >= 1; i--)
+				{
+					using Pen gp = new Pen(Color.FromArgb(22 * i, fxX.R, fxX.G, fxX.B), i * 1.2f);
+					e.Graphics.DrawPath(gp, pX);
+				}
+			}
+			if (hov)
+			{
+				using Pen pen = new Pen(Color.FromArgb(150, 0, 60, 20), 1.4f);
+				if (flag)
+				{
+					e.Graphics.DrawRectangle(pen, num3 - 5, num4 - 3, 6, 6);
+					e.Graphics.DrawRectangle(pen, num3 - 2, num4 - 6, 6, 6);
+				}
+				else
+				{
+					e.Graphics.DrawRectangle(pen, num3 - 4, num4 - 4, 8, 8);
+				}
 			}
 		};
 		btnMax.Click += delegate
@@ -18732,24 +19502,47 @@ public partial class IPTVLiveCheckerMain : Form
 		btnClose.FlatAppearance.MouseDownBackColor = Color.FromArgb(200, 15, 30);
 		btnClose.Paint += delegate(object s, PaintEventArgs e)
 		{
+			// macOS 风红色交通灯：常态半透、悬停加亮 + 中心 X 浮现
+			e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 			bool flag = btnClose.ClientRectangle.Contains(btnClose.PointToClient(Cursor.Position));
 			bool flag2 = Control.MouseButtons == MouseButtons.Left && flag;
 			int num = btnClose.Width;
 			int num2 = btnClose.Height;
 			int num3 = num / 2;
 			int num4 = num2 / 2;
-			Color color = (flag2 ? Color.FromArgb(200, 15, 30) : (flag ? closeBtnHover : btnClose.BackColor));
-			e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-			using (GraphicsPath path = RoundedRectPath(new Rectangle(0, 0, num, num2), 8))
+			int r = 6;
+			Rectangle rectC = new Rectangle(num3 - r, num4 - r, r * 2, r * 2);
+			int pulse = 0;
+			if (IsDynamicFx())
 			{
-				using SolidBrush brush = new SolidBrush(color);
-				e.Graphics.FillPath(brush, path);
+				pulse = (int)(14 * (0.5 + 0.5 * Math.Sin(ThemeFx.CurrentPhase)));
 			}
-			Color color2 = (flag ? closeBtnFg : theme.TextSecondary);
-			int num5 = (flag2 ? 1 : 0);
-			using Pen pen = new Pen(color2, 1.6f);
-			e.Graphics.DrawLine(pen, num3 - 7 + num5, num4 - 7 + num5, num3 + 7 + num5, num4 + 7 + num5);
-			e.Graphics.DrawLine(pen, num3 + 7 + num5, num4 - 7 + num5, num3 - 7 + num5, num4 + 7 + num5);
+			Color dimC = Color.FromArgb(140 + pulse, 200, 50, 50);
+			Color hotC = Color.FromArgb(255, 232, 17, 35);
+			Color circleColor = (flag2 ? Color.FromArgb(255, 200, 15, 30) : (flag ? hotC : dimC));
+			using (SolidBrush br = new SolidBrush(circleColor))
+			{
+				e.Graphics.FillEllipse(br, rectC);
+			}
+			if (IsDynamicFx() && flag)
+			{
+				AppTheme atC = AppTheme.ActiveTheme;
+				Color fxC = (atC != null) ? atC.Primary : theme.Primary;
+				Rectangle rC = new Rectangle(1, 1, btnClose.Width - 3, btnClose.Height - 3);
+				using GraphicsPath pC = RoundedRectPath(rC, 8);
+				for (int i = 3; i >= 1; i--)
+				{
+					using Pen gp = new Pen(Color.FromArgb(22 * i, fxC.R, fxC.G, fxC.B), i * 1.2f);
+					e.Graphics.DrawPath(gp, pC);
+				}
+			}
+			if (flag)
+			{
+				int off = (flag2 ? 1 : 0);
+				using Pen pen = new Pen(Color.FromArgb(220, 255, 255, 255), 1.4f);
+				e.Graphics.DrawLine(pen, num3 - 4 + off, num4 - 4 + off, num3 + 4 + off, num4 + 4 + off);
+				e.Graphics.DrawLine(pen, num3 + 4 + off, num4 - 4 + off, num3 - 4 + off, num4 + 4 + off);
+			}
 		};
 		btnClose.MouseEnter += delegate
 		{
@@ -18778,6 +19571,20 @@ public partial class IPTVLiveCheckerMain : Form
 			Close();
 		};
 		titleBarPanel.Controls.Add(btnClose);
+		// 沉浸式动态主题：标题栏按钮透明融入 ThemeFx 背景，需随动画相位重绘以透出最新背景
+		ThemeFx.PhaseTick += delegate
+		{
+			if (_suppressRedraw) return;
+			if (btnThemeToggle != null && !btnThemeToggle.IsDisposed) btnThemeToggle.Invalidate();
+			if (btnMin != null && !btnMin.IsDisposed) btnMin.Invalidate();
+			if (btnMax != null && !btnMax.IsDisposed) btnMax.Invalidate();
+			if (btnClose != null && !btnClose.IsDisposed) btnClose.Invalidate();
+			if (btnNavFile != null && !btnNavFile.IsDisposed) btnNavFile.Invalidate();
+			if (btnNavDetect != null && !btnNavDetect.IsDisposed) btnNavDetect.Invalidate();
+			if (btnNavSearch != null && !btnNavSearch.IsDisposed) btnNavSearch.Invalidate();
+			if (btnNavSettings != null && !btnNavSettings.IsDisposed) btnNavSettings.Invalidate();
+			if (btnNavAbout != null && !btnNavAbout.IsDisposed) btnNavAbout.Invalidate();
+		};
 		titleBarPanel.Resize += delegate
 		{
 			UpdateTitleAndNav();
@@ -18824,6 +19631,7 @@ public partial class IPTVLiveCheckerMain : Form
 			btn.Paint += PaintNavButton;
 			btn.MouseEnter += delegate
 			{
+				// hover 高亮完全由 PaintNavButton 的"描边+发光"绘制层完成，按钮保持原位、不放大、不推挤邻居
 				btn.Invalidate();
 			};
 			btn.MouseLeave += delegate
@@ -18872,21 +19680,98 @@ public partial class IPTVLiveCheckerMain : Form
 			Graphics g = e.Graphics;
 			g.SmoothingMode = SmoothingMode.AntiAlias;
 			g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-			// 用不透明实色填充按钮背景，避免标题栏（半透明）背后的动态极光透显到按钮上造成"遮挡组件"。
-			Color navSolidBg = Color.FromArgb(255, theme.Bg.R, theme.Bg.G, theme.Bg.B);
+			AppTheme at = AppTheme.ActiveTheme;
+			bool immersive = IsDynamicFx();
+			// 沉浸式主题：父标题栏透明、ThemeFx 背景透出，按钮改用半透明底色，让动态背景融入
+			// 非沉浸式：用不透明实色填充，避免半透明标题栏背后的内容透显造成遮挡
+			Color navSolidBg = immersive
+				? Color.FromArgb(150, at.Bg.R, at.Bg.G, at.Bg.B)
+				: Color.FromArgb(255, theme.Bg.R, theme.Bg.G, theme.Bg.B);
 			using (SolidBrush clearBrush = new SolidBrush(navSolidBg))
 			{
 				g.FillRectangle(clearBrush, 0, 0, btn.Width, btn.Height);
 			}
-			if (btn.ClientRectangle.Contains(btn.PointToClient(Cursor.Position)))
+			// 沉浸式无 hover 持续动效：按 ThemeFx.CurrentPhase 微脉动叠加 Primary 辉光，让标题按钮始终与背景节奏一致
+			if (immersive)
 			{
-				Rectangle rect = new Rectangle(0, 0, btn.Width - 1, btn.Height - 1);
-				using GraphicsPath path = RoundedRectPath(rect, navBtnRadius);
-				using SolidBrush bgBrush = new SolidBrush(navBtnHoverBg);
-				g.FillPath(bgBrush, path);
+				double ph = ThemeFx.CurrentPhase;
+				int pulse = (int)(20 + 14 * Math.Sin(ph)); // 6~34 区间
+				Color fx = (at != null) ? at.Primary : theme.Primary;
+				Rectangle glowRect = new Rectangle(0, 0, btn.Width - 1, btn.Height - 1);
+				using GraphicsPath glowClip = RoundedRectPath(glowRect, navBtnRadius);
+				g.SetClip(glowClip);
+				using SolidBrush glowBrush = new SolidBrush(Color.FromArgb(pulse, fx.R, fx.G, fx.B));
+				g.FillRectangle(glowBrush, glowRect);
+				g.ResetClip();
 			}
-			Rectangle textRect = new Rectangle(8, 0, btn.Width - 16, btn.Height);
-			using SolidBrush textBrush = new SolidBrush(btn.ForeColor);
+			bool hover = btn.ClientRectangle.Contains(btn.PointToClient(Cursor.Position));
+			// 当前主题强调色：用于描边与发光，跟随动态主题
+			// 静态主题优先用 theme.Primary（主题主色），让导航按钮 hover 描边/反光跟随主题整体配色；
+			// 回退到 theme.Accent（点缀色），确保个别未定义 Primary 的主题仍有鲜明 hover 色
+			Color accent = (at != null && at.Accent != Color.Empty)
+				? at.Accent
+				: (theme.Primary != Color.Empty ? theme.Primary : theme.Accent);
+			Rectangle rect = new Rectangle(0, 0, btn.Width - 1, btn.Height - 1);
+			using GraphicsPath path = RoundedRectPath(rect, navBtnRadius);
+			if (hover)
+			{
+				// ① 底色：向 accent tint（比例提高到 0.22，让静态主题 hover 的强调色更鲜明），制造"被托起"的轻反馈
+				Color hoverBg = DrawingUtils.LerpColor(navSolidBg, accent, 0.22f);
+				using (SolidBrush bgBrush = new SolidBrush(hoverBg))
+				{
+					g.FillPath(bgBrush, path);
+				}
+				// ② 单层紧致外发光（强度降级）：避免浅色/静态主题下大光晕糊成一片，焦点更干净
+				Rectangle glowTight = new Rectangle(0, 0, btn.Width - 1, btn.Height - 1);
+				using (GraphicsPath glowPath = RoundedRectPath(glowTight, navBtnRadius))
+				{
+					for (int i = 3; i >= 1; i--)
+					{
+						using Pen p = new Pen(Color.FromArgb(22 * i, accent.R, accent.G, accent.B), i * 1.6f);
+						g.DrawPath(p, glowPath);
+					}
+				}
+				// ③ 实色描边：2px 强调色，从常态暗边升级为亮边，焦点明确
+				using (Pen borderPen = new Pen(accent, 2f))
+				{
+					g.DrawPath(borderPen, path);
+				}
+				// ④ 流光微辉：仅沉浸式主题绘制，避免静态主题下 CurrentPhase 静止导致高光卡死
+				if (immersive)
+				{
+					double ph = ThemeFx.CurrentPhase;
+					float sweep = btn.Height * 2.2f;
+					float x = -sweep + (float)((ph / (Math.PI * 2)) * (btn.Width + sweep * 2));
+					using (GraphicsPath clip = RoundedRectPath(rect, navBtnRadius))
+					{
+						g.SetClip(clip);
+						using LinearGradientBrush shine = new LinearGradientBrush(
+							new PointF(x, 0f), new PointF(x + sweep, btn.Height),
+							Color.FromArgb(110, accent.R, accent.G, accent.B),
+							Color.FromArgb(0, accent.R, accent.G, accent.B));
+						g.FillRectangle(shine, rect);
+						g.ResetClip();
+					}
+				}
+			}
+			else
+			{
+				// 常态基线：1px 半透明 accent 暗描边，让按钮在标题栏中有清晰但不抢眼的轮廓
+				// （灰框已通过 FlatStyle.Flat + BorderSize=0 消除，此处为唯一边界语言，避免"凭空冒框"）
+				using (Pen basePen = new Pen(Color.FromArgb(70, accent.R, accent.G, accent.B), 1f))
+				{
+					g.DrawPath(basePen, path);
+				}
+			}
+			// 内容层：不缩放（避免"跳"），hover 时整体微提亮 + 上移 1px，制造"被轻托起"的精致暗示
+			Rectangle textRect = new Rectangle(8, hover ? -1 : 0, btn.Width - 16, btn.Height);
+			Color textColor = btn.ForeColor;
+			if (hover)
+			{
+				// 向白色插值 12% 提亮（深色/浅色文字都更醒目，且不改变色相）
+				textColor = DrawingUtils.LerpColor(btn.ForeColor, Color.White, 0.12f);
+			}
+			using SolidBrush textBrush = new SolidBrush(textColor);
 			using StringFormat sf = new StringFormat
 			{
 				Alignment = StringAlignment.Center,
@@ -18897,39 +19782,28 @@ public partial class IPTVLiveCheckerMain : Form
 		void UpdateTitleAndNav()
 		{
 			RefreshNavButtonSizes();
-			int num = titleBarPanel.ClientSize.Width;
+			// 标准尺寸、顺序原位排布；hover 突出显示完全由 PaintNavButton 的"描边+双层外发光"绘制层完成，
+			// 不放大、不推挤相邻按钮（避免整排抖动与互相遮挡），交互干净直接。
+			int navBtnRadius = 4;
 			int btnGap = navBtnGap;
-			if (btnNavDetect != null && btnNavSearch != null && btnNavSearch.Visible)
-			{
-				btnGap = btnNavSearch.Left - btnNavDetect.Right;
-			}
 			int currentX = SX(42);
-			if (btnNavFile != null)
+			foreach (Button navBtn in new Button[] { btnNavFile, btnNavDetect, btnNavSearch, btnNavSettings, btnNavAbout })
 			{
-				btnNavFile.Left = currentX;
-				currentX = btnNavFile.Right + btnGap;
-			}
-			if (btnNavDetect != null)
-			{
-				btnNavDetect.Left = currentX;
-				currentX = btnNavDetect.Right + btnGap;
-			}
-			if (btnNavSearch != null && btnNavSearch.Visible)
-			{
-				btnNavSearch.Left = currentX;
-				currentX = btnNavSearch.Right + btnGap;
-			}
-			if (btnNavSettings != null)
-			{
-				btnNavSettings.Left = currentX;
-				currentX = btnNavSettings.Right + btnGap;
-			}
-			if (btnNavAbout != null)
-			{
-				btnNavAbout.Left = currentX;
+				if (navBtn == null || navBtn.IsDisposed || (navBtn == btnNavSearch && !btnNavSearch.Visible))
+				{
+					continue;
+				}
+				navBtn.Left = currentX;
+				navBtn.Region?.Dispose();
+				using (GraphicsPath path = RoundedRectPath(new Rectangle(0, 0, navBtn.Width, navBtn.Height), navBtnRadius))
+				{
+					navBtn.Region = new Region(path);
+				}
+				currentX = navBtn.Right + btnGap;
+				navBtn.Invalidate();
 			}
 			int totalBtnsWidth = btnSize * 4;
-			int startX = num - totalBtnsWidth;
+			int startX = titleBarPanel.ClientSize.Width - totalBtnsWidth;
 			btnThemeToggle.Left = startX;
 			btnMin.Left = startX + btnSize;
 			btnMax.Left = startX + btnSize * 2;
@@ -19333,6 +20207,11 @@ public partial class IPTVLiveCheckerMain : Form
 		_currentDecodedFrames = "";
 		_currentDisplayedFrames = "";
 		_lastStreamTimeMs = 0L;
+		// 切台/加载新频道时，重置瞬时下载速度采样与平滑值（否则会把旧台的累计字节混进来）
+		_lastReadBytes = 0L;
+		_lastTickMs = 0L;
+		_smoothedBps = 0f;
+		_currentLinkSpeed = "";
 	}
 
 	private string SimplifyCodecDisplay(string codec)
@@ -19493,6 +20372,45 @@ public partial class IPTVLiveCheckerMain : Form
 			return $"{(double)bytes / 1048576.0:F1} MB";
 		}
 		return $"{(double)bytes / 1073741824.0:F2} GB";
+	}
+
+	/// <summary>
+	/// 瞬时比特率格式化：bps → kb/s（&lt;1024kb）或 mb/s（≥1024kb），kb/s 保留 1 位小数避免小网速显示为 0。
+	/// 用来显示"链接速度"实时波动，而非媒体流元数据的平均码率。
+	/// </summary>
+	private string FormatBitrate(float bps)
+	{
+		if (bps <= 0f)
+		{
+			return "0 kb/s";
+		}
+		float kbps = bps / 1000f;
+		if (kbps < 1024f)
+		{
+			// 1 位小数：避免 500bps → 0kbps 这种"数字卡死"的观感
+			return kbps < 10f ? $"{kbps:F1} kb/s" : $"{kbps:F0} kb/s";
+		}
+		return $"{kbps / 1024f:F2} mb/s";
+	}
+
+	/// <summary>
+	/// 链接速度双单位显示（参考 YouTube Stats for nerds）：同时输出比特率与字节速率，
+	/// 例如 "14.2 mb/s · 1.78 MB/s"，便于用户无需心算换算即可理解实时传输强度。
+	/// </summary>
+	private string FormatBitrateDual(float bps)
+	{
+		if (bps <= 0f)
+		{
+			return "0 kb/s · 0 MB/s";
+		}
+		double kbps = bps / 1000.0;
+		double mb = kbps / 1024.0;       // 比特率 mb/s
+		double mbPerSec = mb / 8.0;      // 字节速率 MB/s（1 byte = 8 bit）
+		if (kbps < 1024.0)
+		{
+			return $"{kbps:F1} kb/s · {mbPerSec:F2} MB/s";
+		}
+		return $"{mb:F2} mb/s · {mbPerSec:F2} MB/s";
 	}
 
 	private void StartStreamInfoOverlay()
@@ -19775,6 +20693,42 @@ public partial class IPTVLiveCheckerMain : Form
 		return targetHwnd;
 	}
 
+	// 鼠标移出 detailPanel 后，WinForms 立即触发 MouseLeave；如果此时鼠标实际位于某个子控件上
+	// （如地址栏 Label 边框），仍应视为"在卡片内"，不还原放大状态。
+	private bool IsMouseOverDetailPanel(Control detailPanel)
+	{
+		if (detailPanel == null || detailPanel.IsDisposed) return false;
+		Point p = detailPanel.PointToClient(Cursor.Position);
+		// 鼠标在 detailPanel 客户区内（包括其所有子控件），视为未离开
+		if (detailPanel.ClientRectangle.Contains(p)) return true;
+		// 客户端外但可能在子控件 Bounds 内（带边距的容器特例）
+		return false;
+	}
+
+	/// <summary>同步「频道详情」所有值标签的宽度到可用区域（扣除左侧键标签占位 + 右侧内边距），避免被卡片裁切。</summary>
+	private void SyncDetailValueWidths()
+	{
+		if (_detailValLabels == null) return;
+		foreach (Label v in _detailValLabels)
+		{
+			if (v == null || v.IsDisposed || v.Parent == null) continue;
+			int w = v.Parent.ClientSize.Width - v.Left - SX(10);
+			if (w < 40) w = SX(280);
+			// 用 TextRenderer 按目标宽度测量文本所需高度（含 Padding），比 GetPreferredSize 更可靠，
+			// 避免 WinForms Label 在 AutoSize=true 时异步重算高度导致多行文本下半截被裁（"字体隔断"）。
+			Size textSize = TextRenderer.MeasureText(
+				string.IsNullOrEmpty(v.Text) ? "—" : v.Text,
+				v.Font,
+				new Size(w, int.MaxValue),
+				TextFormatFlags.WordBreak | TextFormatFlags.TextBoxControl | TextFormatFlags.Left);
+			int h = Math.Max(v.Font.Height + 4, textSize.Height + v.Padding.Vertical + 2);
+			v.AutoSize = false;
+			v.MaximumSize = new Size(w, 0);
+			v.Width = w;
+			v.Height = h;
+		}
+	}
+
 	private void LoadSelectedChannelToPreview()
 	{
 		if (_isImporting)
@@ -19794,33 +20748,24 @@ public partial class IPTVLiveCheckerMain : Form
 		}
 		string url = urlCell.ToString();
 		string name = row.Cells["colName"].Value?.ToString() ?? "";
-		// 仅更新流媒体信息栏，不自动播放；双击行触发播放
+		// 仅更新频道详情面板（2 列键值设计），不自动播放；双击行触发播放
 		_detailUrlText = url;
-		_detailGroupText = row.Cells["colGroup"].Value?.ToString() ?? "未分组";
-		string dispUrl = ((url.Length > 46) ? (url.Substring(0, 46) + "…") : url);
-		if (_detailName != null)
-		{
-			_detailName.Text = "名称: " + name;
-		}
 		if (_detailUrl != null)
 		{
-			_detailUrl.Text = "地址: " + dispUrl;
-		}
-		if (_detailResolution != null)
-		{
-			_detailResolution.Text = "分辨率: " + (row.Cells["colResolution"].Value?.ToString() ?? "—");
-		}
-		if (_detailGroup != null)
-		{
-			_detailGroup.Text = "分组: " + _detailGroupText;
-		}
-		if (_detailStatus != null)
-		{
-			_detailStatus.Text = "状态: " + (row.Cells["colStatus"].Value?.ToString() ?? "—");
-		}
-		if (_detailBitrate != null)
-		{
-			_detailBitrate.Text = "码率: —";
+			// 显示完整 URL，由 SyncDetailValueWidths 按卡片宽度自动换行，不再截断为 46 字符
+			_detailUrl.Text = url;
+			// 地址值标签左侧有「地址」键占位，可用宽度需扣除该占位；统一由 SyncDetailValueWidths 处理
+			// （所有 detail 值标签共用同一左偏移与右内边距，避免超出卡片被裁切）。
+			try
+			{
+				// 先按 AutoSize 后的键标签宽度对齐值标签，再按可用宽度计算值标签尺寸，最后重排行高
+				_reflowDetails?.Invoke();
+				SyncDetailValueWidths();
+				_reflowDetails?.Invoke();
+			}
+			catch { }
+			// 选中频道时顺带刷新一次实时状态/		catch { }
+		// 选中频道时状态面板已由 _linkStatusTimer 实时刷新（避免切台瞬间显示旧值）
 		}
 		_previewChannelName = name;
 		_previewChannelLocation = row.Cells["colLocation"].Value?.ToString() ?? "";
@@ -20004,6 +20949,8 @@ public partial class IPTVLiveCheckerMain : Form
 			{
 				_lastWindowState = base.WindowState;
 				ApplyWindowShape();
+				// 最大化/还原切换后立即刷新布局与动态主题背景，避免界面延迟适配
+				RefreshWindowTheme();
 			}
 		};
 		base.ResizeEnd += delegate
@@ -20025,7 +20972,7 @@ public partial class IPTVLiveCheckerMain : Form
 			Dock = DockStyle.Fill,
 			BackColor = theme.BgAlt
 		};
-		dgvData = new DataGridView();
+		dgvData = new AuroraGrid();
 		dgvData.Dock = DockStyle.Fill;
 		dgvData.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
 		dgvData.ScrollBars = ScrollBars.None;
@@ -20054,6 +21001,11 @@ public partial class IPTVLiveCheckerMain : Form
 			else if (e.Control && e.Shift && e.KeyCode == Keys.C)
 			{
 				CopyAllLinks();
+				e.SuppressKeyPress = true;
+			}
+			else if (e.KeyCode == Keys.Delete && !dgvData.IsCurrentCellInEditMode)
+			{
+				DeleteRow();
 				e.SuppressKeyPress = true;
 			}
 		};
@@ -20093,6 +21045,7 @@ public partial class IPTVLiveCheckerMain : Form
 		altStyle.Padding = new Padding(SX(10), SY(0), SX(6), SY(0));
 		altStyle.Font = GetFont(SF(6.7f));
 		dgvData.AlternatingRowsDefaultCellStyle = altStyle;
+		dgvData.Columns.Add("colIndex", "#");
 		dgvData.Columns.Add("colName", "名称");
 		dgvData.Columns.Add("colUrl", "链接");
 		dgvData.Columns.Add("colLocation", "归属地");
@@ -20178,6 +21131,7 @@ public partial class IPTVLiveCheckerMain : Form
 		dgvData.Columns["colGroup"].FillWeight = 28f;
 		dgvData.Columns["colStatus"].FillWeight = 30f;
 		dgvData.Columns["colAction"].FillWeight = 30f;
+		dgvData.Columns["colIndex"].FillWeight = 8f;
 		dgvData.Columns["colName"].MinimumWidth = SX(80);
 		dgvData.Columns["colUrl"].MinimumWidth = SX(80);
 		dgvData.Columns["colLocation"].MinimumWidth = SX(55);
@@ -20186,6 +21140,7 @@ public partial class IPTVLiveCheckerMain : Form
 		dgvData.Columns["colGroup"].MinimumWidth = SX(28);
 		dgvData.Columns["colStatus"].MinimumWidth = SX(30);
 		dgvData.Columns["colAction"].MinimumWidth = SX(100);
+		dgvData.Columns["colIndex"].MinimumWidth = SX(26);
 		dgvData.Resize += delegate
 		{
 			ApplyColumnWidthsManual();
@@ -20195,6 +21150,8 @@ public partial class IPTVLiveCheckerMain : Form
 			column.SortMode = DataGridViewColumnSortMode.Programmatic;
 			column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 		}
+		dgvData.Columns["colIndex"].ReadOnly = true;
+		dgvData.Columns["colIndex"].SortMode = DataGridViewColumnSortMode.NotSortable;
 		dgvData.Columns["colName"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
 		dgvData.Columns["colUrl"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
 		dgvData.Columns["colLocation"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
@@ -20293,9 +21250,11 @@ public partial class IPTVLiveCheckerMain : Form
 		};
 		emptyStatePanel = new Panel
 		{
-			BackColor = Color.Transparent,
 			Size = new Size(SX(140), SY(110))
 		};
+		// Panel 默认不支持透明背景色，直接赋 Color.Transparent 会抛 ArgumentException。
+		// 通过 ThemeFx.EnableTransparent 安全启用透明（反射 SetStyle + 已捕获异常）。
+		ThemeFx.EnableTransparent(emptyStatePanel);
 		PictureBox emptyIconBox = new PictureBox
 		{
 			Size = new Size(SX(56), SY(56)),
@@ -20320,6 +21279,11 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			CenterEmptyState();
 		};
+		// ═══════════════════════════════════════════════════════════════════
+		// 右侧预览窗主容器：Dock=Right，固定宽度 360px×DPI，默认隐藏（检测模式下显示）
+		// 内部从上到下依次停靠：视频区(playerFrame) → 控制栏(playerControls) →
+		//   间距(playerGap) → 链接状态栏(linkStatusPanel) → 频道详情卡片(detailPanel)
+		// ═══════════════════════════════════════════════════════════════════
 		previewPanel = new Panel
 		{
 			Dock = DockStyle.Right,
@@ -20327,6 +21291,7 @@ public partial class IPTVLiveCheckerMain : Form
 			BackColor = theme.BgAlt,
 			Visible = false
 		};
+		// 左分隔线：1px 主题色边框，视觉上将预览窗与左侧列表区域分隔开
 		Panel previewSep = new Panel
 		{
 			Dock = DockStyle.Left,
@@ -20334,31 +21299,112 @@ public partial class IPTVLiveCheckerMain : Form
 			BackColor = theme.Border
 		};
 		previewPanel.Controls.Add(previewSep);
-		// 预览窗容器：带线框边框
+		// ═══════════════════════════════════════════════════════════════════
+		// ① 视频播放区容器（playerFrame）
+		// Dock=Top，黑色背景，高度按 16:9 比例动态计算（有最大高度限制）
+		// 内部承载 channelPlayer（VLC 或 MPV），圆角裁剪 + 主题色描边
+		// ═══════════════════════════════════════════════════════════════════
 		Panel playerFrame = new Panel
 		{
 			Dock = DockStyle.Top,
 			Height = SY(270),
-			BackColor = theme.BgAlt,
-			Padding = new Padding(SX(4), 1, 1, 1)
+			BackColor = Color.Black,
+			Padding = new Padding(0)
 		};
+		// 圆角半径（10px×DPI），用于裁剪 playerFrame 为圆角矩形
+		int playerFrameRadius = SY(10);
+		// 圆角裁剪：用 GraphicsPath 构建圆角矩形 Region，裁掉 playerFrame 四角像素
+		void ApplyPlayerFrameRound()
+		{
+			if (playerFrame.IsDisposed) return;
+			using GraphicsPath path = new GraphicsPath();
+			Rectangle r = playerFrame.ClientRectangle;
+			int d = playerFrameRadius * 2;
+			path.AddArc(r.X, r.Y, d, d, 180f, 90f);
+			path.AddArc(r.Right - d, r.Y, d, d, 270f, 90f);
+			path.AddArc(r.Right - d, r.Bottom - d, d, d, 0f, 90f);
+			path.AddArc(r.X, r.Bottom - d, d, d, 90f, 90f);
+			path.CloseFigure();
+			playerFrame.Region = new Region(path);
+		}
+		ApplyPlayerFrameRound();
+		// playerFrame 自绘边框：抗锯齿绘制 1px 主题色圆角描边
 		playerFrame.Paint += delegate(object s, PaintEventArgs pe)
 		{
+			pe.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 			using (Pen pen = new Pen(theme.Border, 1))
 			{
 				Rectangle r = playerFrame.ClientRectangle;
 				r.Inflate(-1, -1);
-				pe.Graphics.DrawRectangle(pen, r);
+				int d = playerFrameRadius * 2;
+				using GraphicsPath path = new GraphicsPath();
+				path.AddArc(r.X, r.Y, d, d, 180f, 90f);
+				path.AddArc(r.Right - d, r.Y, d, d, 270f, 90f);
+				path.AddArc(r.Right - d, r.Bottom - d, d, d, 0f, 90f);
+				path.AddArc(r.X, r.Bottom - d, d, d, 90f, 90f);
+				path.CloseFigure();
+				pe.Graphics.DrawPath(pen, path);
 			}
 		};
-		channelPlayer = new ChannelPlayer
+		// ═══════════════════════════════════════════════════════════════════
+		// ② 播放器实例（channelPlayer）
+		// 根据 UseMpvPreview 配置选择 MPV 或 VLC 引擎，Dock=Fill 填满 playerFrame
+		// ═══════════════════════════════════════════════════════════════════
+		channelPlayer = UseMpvPreview
+			? (IChannelPlayer)new MpvPlayer { Dock = DockStyle.Fill }
+			: new ChannelPlayer { Dock = DockStyle.Fill };
+		_linkProbe = new LinkSpeedProbe();
+		// ═══════════════════════════════════════════════════════════════════
+		// ③ 外部控制栏容器（playerControls）
+		// Dock=Top，承载播放器控制栏（引擎切换/播放暂停/静音/音量/进度/全屏）
+		// 放在视频窗外侧下方，不遮挡画面；高度=控制栏实际高度
+		// ═══════════════════════════════════════════════════════════════════
+		Panel playerControls = new Panel
 		{
-			Dock = DockStyle.Fill
+			Dock = DockStyle.Top,
+			BackColor = theme.BgAlt,
+			Padding = new Padding(0)
 		};
-		// 精确 16:9：按视频区实际宽度反推 playerFrame 高度，消除上下黑边
-		// 视频宽 = 预览窗宽 − 左分隔线1 − Padding左SX(4) − Padding右1
-		int previewVideoW = SX(360) - 1 - SX(4) - 1;
-		playerFrame.Height = (int)Math.Round((double)previewVideoW * 9.0 / 16.0) + channelPlayer.ControlBarHeight + 2;
+		// 从播放器取出控制栏面板，Dock=Fill 填满 playerControls 容器
+		Panel playerControlBar = channelPlayer.ControlBar;
+		playerControlBar.Dock = DockStyle.Fill;
+		playerControlBar.Visible = true; // 控制栏常驻显示，按钮不被隐藏
+		playerControls.Controls.Add(playerControlBar);
+		// 控制栏高度同步：将 playerControls 高度设为播放器控制栏实际高度
+		// 注意：此处不可再设 playerControlBar.Visible，否则会与 VisibleChanged 事件递归
+		void SyncPlayerControlsHeight()
+		{
+			playerControls.Height = channelPlayer.ControlBarHeight;
+		}
+		SyncPlayerControlsHeight();
+		channelPlayer.ControlBarVisibilityChanged += delegate { SyncPlayerControlsHeight(); };
+
+		// ═══════════════════════════════════════════════════════════════════
+		// 视频区高度计算：按预览窗宽度 × 9/16 计算 16:9 视频高度
+		// 最大高度限制为 maxVideoH（220px×DPI），给下方详情栏预留空间
+		// 最小高度保底 130px×DPI，保证视频区可看性
+		// ═══════════════════════════════════════════════════════════════════
+		int previewVideoW = previewPanel.ClientSize.Width - 1;
+		if (previewVideoW < 1) previewVideoW = SX(360) - 1;
+		// 视频区按 16:9 计算，但设置最大高度限制为 170px，给下方详情栏预留更多空间
+		int maxVideoH = SX(220);
+		int previewVideoH = Math.Min((int)Math.Floor((double)previewVideoW * 9.0 / 16.0), maxVideoH);
+		if (previewVideoH < SX(130)) previewVideoH = SX(130);
+		playerFrame.Height = previewVideoH;
+		// 窗口尺寸变化时重算视频区高度（保持 16:9 + 最大/最小高度限制）
+		previewPanel.Resize += delegate
+		{
+			int w = previewPanel.ClientSize.Width - 1;
+			if (w > 0)
+			{
+				int h = Math.Min((int)Math.Floor((double)w * 9.0 / 16.0), maxVideoH);
+				if (h < SX(130)) h = SX(130);
+				playerFrame.Height = h;
+				SyncPlayerControlsHeight();
+			}
+			ApplyPlayerFrameRound();
+		};
+		// "用默认播放器打开"按钮事件：调用 ExternalPlayerHelper 自动选择最佳外部播放器
 		channelPlayer.OpenExternalRequested += delegate
 		{
 			if (!string.IsNullOrWhiteSpace(channelPlayer.CurrentUrl))
@@ -20380,22 +21426,53 @@ public partial class IPTVLiveCheckerMain : Form
 				}
 			}
 		};
-		// 间距面板：预览窗与流媒体信息栏之间的间隔
+		// ═══════════════════════════════════════════════════════════════════
+		// ④ 间距面板（playerGap）：视频区与链接状态栏之间的间隔，8px×DPI
+		// ═══════════════════════════════════════════════════════════════════
 		Panel playerGap = new Panel
 		{
 			Dock = DockStyle.Top,
-			Height = SY(16),
+			Height = SY(8),
 			BackColor = theme.BgAlt
 		};
 		playerGap.Tag = "__gap";
+		// ═══════════════════════════════════════════════════════════════════
+		// ⑤ 当前链接状态面板（linkStatusPanel）
+		// Dock=Top，高度 340px×DPI，展示 12 行实时流媒体信息
+		// 内含：3px 主题色顶条 + 标题 + 状态指示点 + 12 行状态行
+		// 圆角描边面板，每 500ms 由 _linkStatusTimer 刷新数据
+		// ═══════════════════════════════════════════════════════════════════
 		Panel linkStatusPanel = new Panel
 		{
 			Dock = DockStyle.Top,
-			Height = SY(280),
+			Height = SY(270),
 			BackColor = theme.BgAlt,
 			Padding = new Padding(SX(6), SY(4), SX(6), SY(4))
 		};
 		_linkStatusPanel = linkStatusPanel;
+		// ⑤-1 主题色顶条（linkStatusAccent）：3px 高的主题色条，动态主题下随相位微亮
+		Panel linkStatusAccent = new Panel
+		{
+			Dock = DockStyle.Top,
+			Height = 3,
+			BackColor = theme.Primary
+		};
+		linkStatusAccent.Paint += delegate(object s2, PaintEventArgs pe2)
+		{
+			if (!IsDynamicFx())
+			{
+				return;
+			}
+			pe2.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+			double ph = ThemeFx.CurrentPhase;
+			float k = (float)(0.5 + 0.5 * Math.Sin(ph));
+			using (SolidBrush br = new SolidBrush(Color.FromArgb((int)(60 * k), 255, 255, 255)))
+			{
+				pe2.Graphics.FillRectangle(br, 0, 0, linkStatusAccent.Width, linkStatusAccent.Height);
+			}
+		};
+		linkStatusPanel.Controls.Add(linkStatusAccent);
+		// ⑤-2 面板圆角描边：自绘 6px 圆角矩形 + 1px 主题色描边
 		linkStatusPanel.Paint += delegate(object s, PaintEventArgs pe)
 		{
 			pe.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
@@ -20416,6 +21493,7 @@ public partial class IPTVLiveCheckerMain : Form
 				}
 			}
 		};
+		// ⑤-3 标题标签（linkStatusTitle）："当前链接状态 · 实时"，10pt 粗体
 		Label linkStatusTitle = new Label
 		{
 			Text = "当前链接状态 · 实时",
@@ -20425,8 +21503,47 @@ public partial class IPTVLiveCheckerMain : Form
 			Location = At(SX(12), SY(8))
 		};
 		linkStatusPanel.Controls.Add(linkStatusTitle);
+		// ⑤-4 状态指示点（linkStatusDot）：14×14 圆点，直播=绿/已加载=黄/错误=红/空闲=灰
+		// 动态主题下随相位微亮 + 外圈光晕
+		Panel linkStatusDot = new Panel
+		{
+			Size = new Size(SX(14), SY(14)),
+			Location = At(linkStatusTitle.Right + SX(8), SY(8)),
+			BackColor = Color.Transparent
+		};
+		linkStatusDot.Paint += delegate(object s2, PaintEventArgs pe2)
+		{
+			pe2.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+			int d = Math.Min(linkStatusDot.Width, linkStatusDot.Height) - 2;
+			Rectangle rect = new Rectangle(1, 1, d, d);
+			Color baseC = _linkStatusDotColor;
+			int alpha = baseC.A;
+			if (IsDynamicFx())
+			{
+				double ph = ThemeFx.CurrentPhase;
+				float k = (float)(0.5 + 0.5 * Math.Sin(ph));
+				alpha = Math.Min(255, alpha + (int)(50 * k));
+			}
+			Color fill = Color.FromArgb(alpha, baseC.R, baseC.G, baseC.B);
+			using (SolidBrush br = new SolidBrush(fill))
+			{
+				pe2.Graphics.FillEllipse(br, rect);
+			}
+			if (IsDynamicFx())
+			{
+				using Pen pen = new Pen(Color.FromArgb(40, fill.R, fill.G, fill.B), 2f);
+				pe2.Graphics.DrawEllipse(pen, rect);
+			}
+		};
+		_linkStatusDot = linkStatusDot;
+		linkStatusPanel.Controls.Add(linkStatusDot);
+		_linkStatusDotColor = Color.FromArgb(170, 140, 140, 140);
+		linkStatusDot.Invalidate();
+		// ⑤-5 状态行起始 Y 坐标与行高（18px×DPI，紧凑排列以容纳 12 行）
 		int lsy = SY(34);
-		int lsRow = SY(20);
+		int lsRow = SY(18);
+		// ⑤-6 十二行状态信息：每行由 MakeStatusRow 创建，显示"键: 值"格式
+		// 流媒体信息 / 频道名称 / 分辨率 / 归属地 / 编码 / 帧率 / 速率 / 声道 / 采样率 / 已传输 / 倍速 / 时间
 		_statusStreamInfo = MakeStatusRow("流媒体信息: 未播放");
 		_statusName = MakeStatusRow("频道名称: —");
 		_statusResolution = MakeStatusRow("分辨率: —");
@@ -20437,11 +21554,51 @@ public partial class IPTVLiveCheckerMain : Form
 		_statusChannels = MakeStatusRow("声道: —");
 		_statusSampleRate = MakeStatusRow("采样率: —");
 		_statusSent = MakeStatusRow("已传输: —");
-		_statusSpeed = MakeStatusRow("倍速: —");
+		_statusSpeed = MakeStatusRow("链接速度: — · —");
 		_statusTime = MakeStatusRow("时间: —");
+		// ⑤-6b 隐藏顶栏合并状态行「流媒体信息: ● 直播中 · 分辨率 · 码率」：
+		// 该合并信息在详情栏(实时状态/链接速度)与下方状态面板(分辨率/速率)中已有独立展示，属重复显示，
+		// 按需求隐藏。因其为绝对定位逐行排版，隐藏后须将后续 11 行整体上移一行(lsRow)，消除空行错位。
+		_statusStreamInfo.Visible = false;
+		Label[] _shiftRowsUp = new[]
+		{
+			_statusName, _statusResolution, _statusLocation, _statusCodec, _statusFps,
+			_statusBitrate, _statusChannels, _statusSampleRate, _statusSent, _statusSpeed, _statusTime
+		};
+		foreach (Label _row in _shiftRowsUp)
+		{
+			if (_row != null) _row.Top -= lsRow;
+		}
+		// ⑤-6c 按需求隐藏「速率」状态行（流标称码率 _currentBitrate）：
+		// 该值为稳定标称码率，与详情栏「链接速度」实时速率语义重复，隐藏后将其下方 5 行整体上移一行补位，消除空行错位。
+		_statusBitrate.Visible = false;
+		Label[] _shiftRowsUp2 = new[]
+		{
+			_statusChannels, _statusSampleRate, _statusSent, _statusSpeed, _statusTime
+		};
+		foreach (Label _row2 in _shiftRowsUp2)
+		{
+			if (_row2 != null) _row2.Top -= lsRow;
+		}
+		// ⑤-6d 将「频道详情」卡片的「实时状态」「缓冲时长」上移并入本状态面板补缺：
+		// 隐藏 streamInfo/bitrate 两行后本面板底部自然留出空档，新增这两行实时数据恰好补满，
+		// 详情栏仅保留「地址」与「链接速度」（后者与下方「链接速度」状态行同源实时刷新），避免重复显示。
+		// 锚定在 _statusTime 之后逐行排布，与既有 10 行连成紧凑的 12 行实时面板。
+		_statusLiveStatus = MakeStatusRow("实时状态: —");
+		_statusLiveStatus.Top = _statusTime.Top + lsRow;
+		_statusBuffer = MakeStatusRow("缓冲时长: —");
+		_statusBuffer.Top = _statusLiveStatus.Top + lsRow;
+		_statusDropped = MakeStatusRow("丢帧数: —");
+		_statusDropped.Top = _statusBuffer.Top + lsRow;
+		_statusLatency = MakeStatusRow("直播延迟: —");
+		_statusLatency.Top = _statusDropped.Top + lsRow;
+		// ⑤-7 状态刷新定时器（_linkStatusTimer）：每 250ms 刷新状态行数据（原 500ms）
+		// 从播放器获取实时播放状态/码率/时间等，更新 12 行文字 + 状态点颜色 + 占位层显隐
+		// 切台进行中跳过刷新（避免与后台 Stop 死锁），仅更新文字防抖避免闪烁
+		// 250ms 间隔：保证"链接速度"等瞬时值有足够采样频率，体现实时波动感
 		_linkStatusTimer = new System.Windows.Forms.Timer
 		{
-			Interval = 500
+			Interval = 250
 		};
 		_linkStatusTimer.Tick += delegate
 		{
@@ -20468,6 +21625,27 @@ public partial class IPTVLiveCheckerMain : Form
 					}
 					_lastStreamTimeMs = timeMs;
 				}
+				// 占位层随播放状态显隐：直播中隐藏露出视频，空闲显示主题极光
+				_playerIdle?.SetPlaying(flag);
+				// 状态点同步换色：直播=绿 / 已加载=黄 / 错误=红 / 空闲=灰
+				Color newDot;
+				if (num && flag)
+				{
+					newDot = Color.FromArgb(230, theme.SuccessColor.R, theme.SuccessColor.G, theme.SuccessColor.B);
+				}
+				else if (!string.IsNullOrWhiteSpace(channelPlayer.CurrentUrl))
+				{
+					newDot = Color.FromArgb(230, theme.WarnColor.R, theme.WarnColor.G, theme.WarnColor.B);
+				}
+				else
+				{
+					newDot = Color.FromArgb(170, 140, 140, 140);
+				}
+				if (_linkStatusDot != null && _linkStatusDotColor.ToArgb() != newDot.ToArgb())
+				{
+					_linkStatusDotColor = newDot;
+					_linkStatusDot.Invalidate();
+				}
 				string text = "未播放";
 				if (num && flag)
 				{
@@ -20485,70 +21663,569 @@ public partial class IPTVLiveCheckerMain : Form
 				{
 					text = "已加载(未播放)";
 				}
-				_statusStreamInfo.Text = "流媒体信息: " + text;
-				_statusName.Text = "频道名称: " + V(_previewChannelName);
-				_statusResolution.Text = "分辨率: " + V(_currentResolution);
+				// 关键防抖：避免每 500ms 无条件设 Text 触发重绘，与地址栏 hover 放大状态叠加产生闪烁
+				string _sStream = "流媒体信息: " + text;
+				if (_statusStreamInfo.Text != _sStream) _statusStreamInfo.Text = _sStream;
+				string _sName = "频道名称: " + V(_previewChannelName);
+				if (_statusName.Text != _sName) _statusName.Text = _sName;
+				string _sRes = "分辨率: " + V(_currentResolution);
+				if (_statusResolution.Text != _sRes) _statusResolution.Text = _sRes;
 				string text2 = _previewChannelLocation;
 				if (string.IsNullOrWhiteSpace(text2))
 				{
 					text2 = ExtractLocationFallback(channelPlayer.CurrentUrl);
 				}
-				_statusLocation.Text = "归属地: " + V(text2);
-				_statusCodec.Text = "编码: " + V(SimplifyCodecDisplay(_currentCodec));
-				_statusFps.Text = "帧率: " + V(_currentFps);
-				_statusBitrate.Text = "速率: " + V(_currentBitrate);
-				_statusChannels.Text = "声道: " + V(_currentAudioChannels);
-				_statusSampleRate.Text = "采样率: " + V(_currentAudioSampleRate);
-				if (channelPlayer.TryGetPlayerStats(out var readBytes, out var inputBitrate, out var _, out var _))
+				string _sLoc = "归属地: " + V(text2);
+				if (_statusLocation.Text != _sLoc) _statusLocation.Text = _sLoc;
+				string _sCodec = "编码: " + V(SimplifyCodecDisplay(_currentCodec));
+				if (_statusCodec.Text != _sCodec) _statusCodec.Text = _sCodec;
+				string _sFps = "帧率: " + V(_currentFps);
+				if (_statusFps.Text != _sFps) _statusFps.Text = _sFps;
+				string _sBit = "速率: " + V(_currentBitrate);
+				if (_statusBitrate.Text != _sBit) _statusBitrate.Text = _sBit;
+				string _sCh = "声道: " + V(_currentAudioChannels);
+				if (_statusChannels.Text != _sCh) _statusChannels.Text = _sCh;
+				string _sSr = "采样率: " + V(_currentAudioSampleRate);
+				if (_statusSampleRate.Text != _sSr) _statusSampleRate.Text = _sSr;
+				// ── 独立链接速度探针生命周期（Tier A）：加载与播放全程运行，彻底摆脱 VLC 统计归零 ──
+			string _probeUrl = channelPlayer.CurrentUrl;
+			bool _probeShouldRun = !channelPlayer.IsSwitching && !string.IsNullOrWhiteSpace(_probeUrl)
+				&& _linkProbe != null && _linkProbe.IsSupported(_probeUrl)
+			&& !ChannelPlayer.IsMeasuredInjectionEnabledFor(_probeUrl) // B 注入式已用单连接精确计数，无需再开 Tier A 第二个连接（零额外带宽）
+			&& !channelPlayer.IsHlsMeasurementActive; // HLS 已由本地代理/分片探针测量，无需 Tier A 重复拉流
+			// 注：播放期不再停止探针。若仍停止，VLC 稳定播放后内部统计归零、探针又退出，
+			// 会导致“链接速度/已传输”静止（用户反馈问题）。播放期持续探针可保证实时动态显示。
+			if (_probeShouldRun)
+			{
+				if (!_linkProbe.IsRunning || _linkProbe.Url != _probeUrl)
+					_linkProbe.Start(_probeUrl);
+			}
+			else if (_linkProbe != null && _linkProbe.IsRunning)
+			{
+				_linkProbe.Stop();
+			}
+			if (channelPlayer.TryGetPlayerStats(out var readBytes, out var inputBitrate, out var _, out var _))
 				{
-					_statusSent.Text = "已传输: " + FormatBytes(readBytes);
-					_statusSpeed.Text = "倍速: " + ((channelPlayer.TryGetRate(out var rate) && rate > 0f) ? $"{rate:F2}x" : "—");
+					string _sSent = "已传输: " + FormatBytes(readBytes);
+					if (_statusSent.Text != _sSent) _statusSent.Text = _sSent;
+					// 注：_statusSpeed（链接速度）在下方缓冲更新之后统一用实时传输速率 _currentLinkSpeed 显示，
+					// 不再显示静态"倍速"（播放倍速非传输数据）。
+					// _currentBitrate 仅从媒体元数据设置（TryUpdateStreamInfoFromVlc 内），
+					// 不再用 inputBitrate 覆盖，保持"速率"状态行展示流标称码率（稳定值）
+
+					// ── 实时"链接速度"：显示真正随时间波动的瞬时传输速率 ──
+				// 优先采用播放器原生瞬时码率：MPV 用 input-bitrate，VLC 现用 DemuxBitrate（解封装码率），
+				// 二者单位均为 Bytes/s，每个刷新周期随网络抖动，是真正的实时传输数据；
+					// 原生值为 0 或异常（>1Gbps，疑似单位误判）时，退化为 Δbytes/Δtime 采样。
+					long nowMs = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
+					// 换算系数：Bytes/s ×8 = bps（MPV input-bitrate 与 LibVLC InputBitrate 均为 bytes/s）
+				float unitScale = 8f;
+					float nativeBps = (inputBitrate > 0f) ? inputBitrate * unitScale : 0f;
+					// 合理性闸门：瞬间速率超过 1Gbps 视为单位误判，放弃原生值走 Δbytes 兜底
+					if (nativeBps > 1000f * 1000f * 1000f) nativeBps = 0f;
+					if (nativeBps > 0f)
+					{
+						// 原生瞬时码率可用：轻量平滑(0.5)既保留实时波动又抑制单点抖动
+						_smoothedBps = _smoothedBps <= 0f ? nativeBps : _smoothedBps * 0.5f + nativeBps * 0.5f;
+						_currentLinkSpeed = FormatBitrateDual(_smoothedBps);
+						// 同步推进 Δbytes 基准，避免原生值消失瞬间用陈旧基准算出离谱速度
+						_lastReadBytes = readBytes;
+						_lastTickMs = nowMs;
+					}
+					else if (_lastTickMs > 0L && readBytes > _lastReadBytes)
+					{
+						long deltaBytes = readBytes - _lastReadBytes;
+						long deltaMs = nowMs - _lastTickMs;
+						if (deltaMs > 0L)
+						{
+							// bytes/ms × 1000 = bytes/s；× 8 = bits/s (bps)
+							float instBps = (float)deltaBytes / (float)deltaMs * 1000f * 8f;
+							if (_smoothedBps <= 0f)
+								_smoothedBps = instBps; // 首次直接赋值
+							else
+								_smoothedBps = _smoothedBps * (1f - _speedSmoothFactor) + instBps * _speedSmoothFactor;
+							_currentLinkSpeed = FormatBitrateDual(_smoothedBps);
+						}
+						// 只在有真实增量时推进时间戳和字节基准
+						_lastReadBytes = readBytes;
+						_lastTickMs = nowMs;
+					}
+					else if (_lastTickMs == 0L)
+					{
+						// 首次采样：只记录基准，不算速度
+						_lastReadBytes = readBytes;
+						_lastTickMs = nowMs;
+					}
 				}
 				else
 				{
-					_statusSent.Text = "已传输: " + V(_currentSize);
-					_statusSpeed.Text = "倍速: " + V(_currentSpeed);
-				}
-				string text3 = ((!num || timeMs <= 0) ? V(_currentTime) : (FormatClock(timeMs) + ((lengthMs > 0) ? (" / " + FormatClock(lengthMs)) : "")));
-				_statusTime.Text = "时间: " + text3;
+					string _sSent2 = "已传输: " + V(_currentSize);
+					if (_statusSent.Text != _sSent2) _statusSent.Text = _sSent2;
+					// 拿不到统计（切台/未播放）→ 重置采样基准，下次播放重新起步
+					_lastReadBytes = 0L;
+					_lastTickMs = 0L;
+					_smoothedBps = 0f;
+					// 空闲无传输时显示 "—"，不再回退到上一条流的静态码率（避免误导）
+					_currentLinkSpeed = "—";
 			}
+            // ── Tier A：独立探针优先覆盖（根治 VLC 播放期归零）──
+            // 探针从 IO 层直接测量真实收包速率，VLC 内部统计在稳定播放后冻结/归零时仍持续有效。
+            if (_linkProbe != null && _linkProbe.IsRunning && _linkProbe.Url == _probeUrl && _linkProbe.CurrentBps > 0f)
+            {
+                float pBps = _linkProbe.CurrentBps;
+                _smoothedBps = _smoothedBps <= 0f ? pBps : _smoothedBps * (1f - _speedSmoothFactor) + pBps * _speedSmoothFactor;
+                _currentLinkSpeed = FormatBitrateDual(_smoothedBps);
+            }
+            // ── 方案A：HLS 持续分片探针覆盖（Tier A 对 HLS m3u8 无法持续测速，故用 HLS 探针补足）──
+            // HLS 本地代理按需转发会在稳定播放期暂停拉取，导致字节计数冻结；持续探针每 1.5s 刷新
+            // 清单并拉新分片，提供稳定播放期持续有效的测速源，根治链接速度归零。
+            var _hcp = channelPlayer as ChannelPlayer;
+            if (_hcp != null && _hcp.IsHlsProbeRunning && _hcp.HlsProbeBps > 0f)
+            {
+                float hBps = _hcp.HlsProbeBps;
+                _smoothedBps = _smoothedBps <= 0f ? hBps : _smoothedBps * (1f - _speedSmoothFactor) + hBps * _speedSmoothFactor;
+                _currentLinkSpeed = FormatBitrateDual(_smoothedBps);
+            }
+			// 实时缓冲时长（每 250ms 刷新，与链接速度同步更新）
+			// 传入实时传输速率 _smoothedBps(bps)：VLC 模式下 LibVLC 不提供 InputBitrate，
+			// 改用 ReadBytes*8/bps 估算缓冲领先量，确保 VLC 与 MPV 都能实时显示动态缓冲时长。
+			if (channelPlayer != null && channelPlayer.TryGetBufferDuration(out float bufSec, _smoothedBps) && bufSec > 0f)
+				_currentBuffer = bufSec < 10 ? $"{bufSec:F1}s" : $"{bufSec:F0}s";
+			else
+				_currentBuffer = "—";
+			// 实时"链接速度"：统一显示真正随时间波动的瞬时传输速率（_currentLinkSpeed），
+			// VLC/MPV 两模式均有效：VLC 走 ReadBytes Δbytes/Δtime 采样，MPV 用 input-bitrate，
+			// 二者皆实时动态，而非静态播放倍速。
+			string _sLinkSpeed = "链接速度: " + (_currentLinkSpeed.Length > 0 ? _currentLinkSpeed : "—");
+			if (_statusSpeed.Text != _sLinkSpeed) _statusSpeed.Text = _sLinkSpeed;
+		string text3 = ((!num || timeMs <= 0) ? V(_currentTime) : (FormatClock(timeMs) + ((lengthMs > 0) ? (" / " + FormatClock(lengthMs)) : "")));
+		string _sTime = "时间: " + text3;
+		if (_statusTime.Text != _sTime) _statusTime.Text = _sTime;
+		// 实时状态 / 缓冲时长（由「频道详情」卡片上移补缺，与此面板同频实时刷新）
+		string _sLive = "—";
+		if (channelPlayer != null && !string.IsNullOrWhiteSpace(channelPlayer.CurrentUrl))
+		{
+			bool _isP = false; long _tt = 0, _ll = 0;
+			if (channelPlayer.TryGetLiveState(out _isP, out _tt, out _ll) && _isP) _sLive = "直播中";
+			else _sLive = "已加载(未播放)";
+		}
+		string _sLiveStatus = "实时状态: " + _sLive;
+		if (_statusLiveStatus != null && _statusLiveStatus.Text != _sLiveStatus) _statusLiveStatus.Text = _sLiveStatus;
+		string _sBuf = "缓冲时长: " + (_currentBuffer != null && _currentBuffer.Length > 0 ? _currentBuffer : "—");
+		if (_statusBuffer != null && _statusBuffer.Text != _sBuf) _statusBuffer.Text = _sBuf;
+		// 丢帧数 / 直播延迟（参考 YouTube Stats for nerds 补充的诊断指标）
+		string _sDropped = "丢帧数: —";
+		string _sLatency = "直播延迟: —";
+		if (channelPlayer != null && !string.IsNullOrWhiteSpace(channelPlayer.CurrentUrl))
+		{
+			if (channelPlayer.TryGetDroppedFrames(out int _dropFrames, out int _totalFrames) && _dropFrames >= 0)
+				_sDropped = "丢帧数: " + _dropFrames.ToString() + (_totalFrames > 0 ? $" / {_totalFrames}" : "");
+			if (channelPlayer.TryGetLiveLatency(out float _latSec) && _latSec > 0f)
+				_sLatency = "直播延迟: " + (_latSec < 10f ? $"{_latSec:F1}s" : $"{_latSec:F0}s");
+		}
+		if (_statusDropped != null && _statusDropped.Text != _sDropped) _statusDropped.Text = _sDropped;
+		if (_statusLatency != null && _statusLatency.Text != _sLatency) _statusLatency.Text = _sLatency;
+		}
 		};
 		_linkStatusTimer.Start();
-		Panel detailPanel = new Panel
+		// ═══════════════════════════════════════════════════════════════════
+		// ⑥ 频道详情卡片（detailPanel / SpringCard）
+		// 填充预览窗底部剩余空间，可拖拽弹性回弹
+		// 透明背景 + 自绘圆角填充 + 1px 主题色描边
+		// 内含：标题"频道详情" + 分隔线 + 1 行键值对（地址）
+		// ═══════════════════════════════════════════════════════════════════
+		SpringCard detailPanel = new SpringCard
 		{
-			Dock = DockStyle.Fill,
-			BackColor = theme.BgAlt
+			// 改为透明：圆角填充改由下方 Paint 自绘，否则直角底色会露在圆角之外
+			BackColor = Color.Transparent
 		};
-		Panel detailHeader = new Panel
+		_detailPanel = detailPanel;
+		// ── 圆角卡片：自绘圆角矩形填充 + 1px 主题色描边 ──
+		// 与上方「当前链接状态」面板描边风格一致，但本卡片真正裁成圆角，
+		// 四角透出 previewPanel 背景，呈现高档卡片质感。主题切换时由 WalkGlass 触发 Invalidate 重绘。
+		// ⑥-1 卡片自绘：10px 圆角矩形填充(主题背景色) + 1px 主题色描边
+		const int _detailRadius = 10;
+		detailPanel.Paint += delegate(object s, PaintEventArgs pe)
 		{
-			Dock = DockStyle.Top,
-			Height = SY(30),
-			BackColor = theme.Bg
+			pe.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+			Rectangle r = detailPanel.ClientRectangle;
+			r.Inflate(-1, -1);
+			using (var path = GetRoundedPath(r, _detailRadius))
+			{
+				using (var brush = new SolidBrush(theme.BgAlt))
+				{
+					pe.Graphics.FillPath(brush, path);
+				}
+				using (var pen = new Pen(theme.Border, 1))
+				{
+					pe.Graphics.DrawPath(pen, path);
+				}
+			}
 		};
-		Label detailTitle = new Label
+		// ⑥-2 详情卡片布局参数：内边距/键列最小宽/行高/行间距/颜色/字体
+		int _dpadX = SX(10);
+		int _dpadY = SY(4);
+		int _dKeyMinW = SX(72);
+		int _dRowH = SY(24);
+		int _dGap = SY(4);
+		Color _dKeyColor = theme.TextSecondary;
+		Color _dValColor = theme.TextPrimary;
+		Font _dFont = GetFont(SF(8.5f));
+
+		// ⑥-3 标题"频道详情"：10pt 粗体，与上方"当前链接状态"标题风格对齐
+		_detailTitle = new Label
 		{
 			Text = "频道详情",
 			Font = GetFont(SF(10f), FontStyle.Bold),
 			ForeColor = theme.TextPrimary,
 			AutoSize = true,
-			Location = At(SX(12), SY(7))
+			Location = At(_dpadX, _dpadY)
 		};
-		detailHeader.Controls.Add(detailTitle);
-		detailPanel.Controls.Add(detailHeader);
-		int dx = SX(12);
-		int dy = SY(40);
-		int dRow = SY(22);
-		_detailName = MakeDetailRow("名称: ");
-		_detailUrl = MakeDetailRow("地址: ");
-		_detailResolution = MakeDetailRow("分辨率: ");
-		_detailGroup = MakeDetailRow("分组: ");
-		_detailStatus = MakeDetailRow("状态: ");
-		_detailBitrate = MakeDetailRow("码率: ");
-		playerFrame.Controls.Add(channelPlayer);
+		detailPanel.Controls.Add(_detailTitle);
+		// ⑥-4 分隔线（_detailHeader）：1px 主题色横线，分隔标题与内容区
+		_detailHeader = new Panel
+		{
+			Height = 1,
+			BackColor = theme.Border,
+			Location = At(0, _detailTitle.Bottom + SY(3))
+		};
+		detailPanel.Controls.Add(_detailHeader);
+		// 内容区起点：标题底边 + 间距（_dpadY 仅作标题上方留白）
+		int _contentTop = _detailTitle.Bottom + SY(6);
+
+		// ⑥-5 MakeDetailPair：创建键值对行（键标签 + 值标签），返回值标签供外部更新
+		Label MakeDetailPair(string key, int rowIdx)
+		{
+			int _rowY = _contentTop + rowIdx * (_dRowH + _dGap);
+			// 键标签改为 AutoSize + MinimumSize：文本长度不固定（地址/实时状态/缓冲时长），
+			// 固定宽度在自定义字体或高 DPI 下极易被截断；AutoSize 可确保完整显示。
+			Label kLbl = new Label
+			{
+				Text = key,
+				Font = _dFont,
+				ForeColor = _dKeyColor,
+				AutoSize = true,
+				MinimumSize = new Size(_dKeyMinW, _dRowH),
+				Location = At(_dpadX, _rowY),
+				TextAlign = ContentAlignment.MiddleLeft,
+				Padding = new Padding(0, 1, 0, 0)
+			};
+			detailPanel.Controls.Add(kLbl);
+			// 值标签初始 Left 以最小键宽占位；创建完所有行后会统一按最大键宽对齐成列
+			Label vLbl = new Label
+			{
+				Text = "",
+				Font = _dFont,
+				ForeColor = _dValColor,
+				AutoSize = true,
+				Location = At(_dpadX + _dKeyMinW + SX(8), _rowY),
+				TextAlign = ContentAlignment.TopLeft,
+				MaximumSize = new Size(SX(280), 0),
+				Padding = new Padding(0, 1, 0, 0)
+			};
+			detailPanel.Controls.Add(vLbl);
+			_detailKeyLabels?.Add(kLbl);
+			_detailValLabels?.Add(vLbl);
+			return vLbl;
+		}
+
+		_detailKeyLabels = new List<Label>();
+		_detailValLabels = new List<Label>();
+		// ⑥-6 详情数据仅保留「地址」一行；链接速度/实时状态/缓冲时长已并入上方「当前链接状态」面板
+		_detailUrl = MakeDetailPair("地址", 0);
+
+		// ⑥-7 统一键宽：所有值标签左对齐成列，避免短键（如"地址"）导致值标签与长键行不整齐
+		int _dKeyMaxW = _dKeyMinW;
+		foreach (Label k in _detailKeyLabels)
+		{
+			if (k != null && k.Width > _dKeyMaxW) _dKeyMaxW = k.Width;
+		}
+		int _valLeft = _dpadX + _dKeyMaxW + SX(8);
+		foreach (Label k in _detailKeyLabels)
+		{
+			if (k != null)
+			{
+				k.AutoSize = false;
+				k.Width = _dKeyMaxW;
+				k.Height = Math.Max(k.PreferredHeight, _dRowH);
+			}
+		}
+		foreach (Label v in _detailValLabels)
+		{
+			if (v != null) v.Left = _valLeft;
+		}
+
+		// ⑥-8 行重排委托（_reflowDetails）：按"上一行 Bottom + 间距"动态计算各行 Top
+		// 地址行可能因 URL 换行变高，后续行自动下移让位
+		_reflowDetails = delegate
+		{
+			if (_detailKeyLabels == null || _detailValLabels == null) return;
+			if (_detailKeyLabels.Count == 0 || _detailValLabels.Count == 0) return;
+			int _y = _contentTop;
+			for (int i = 0; i < _detailKeyLabels.Count; i++)
+			{
+				Label k = _detailKeyLabels[i];
+				Label v = _detailValLabels[i];
+				if (k == null || v == null) continue;
+				k.Top = _y;
+				v.Top = _y;
+				// 值标签紧跟键标签右侧，统一间距（键宽已统一，所以各值标签左对齐成列）
+				v.Left = k.Right + SX(8);
+				int rowH = Math.Max(k.Height, v.Height);
+				_y += rowH + _dGap;
+			}
+		};
+		// detailHeader removed
+		// detailTitle removed
+		// { removed
+			// Text removed,
+			// Font removed,
+			// Location removed
+		// }; removed
+		// _detailTitle removed
+		// detailHeader.Controls.Add removed
+#if false // REMOVED: old detail panel code (replaced by MakeDetailPair design)
+		int dx_REMOVED = SX(12);
+		// 整体上移 8px 并把行距 22→21（5 行共省 5px），给 hover 让出 13px 安全余量
+		// 避免地址行放大下移时 bitrate 行底边超出 detailPanel 被裁切消失
+		// 注意：现地址行可能因 URL 换行变高（多行），所有 6 行的 Top 改由 _reflowDetails
+		// 按"上一行 Bottom + 4px"动态累加，不再用固定 dy/dRow。
+		int dy_REMOVED = SY(32);
+		int dRow_REMOVED = SY(21);
+		// _detailName REMOVED (old)
+		// 名称行 Top 由 _reflowDetails 动态计算（detailHeader.Bottom + 8），这里先不手动赋值
+		// （MakeDetailRow 内部 dy 累加的 Location.Y 会被 reflow 覆盖）
+		// _detailUrl REMOVED (old)
+		// _detailUrl.Top REMOVED (old)
+		// 关键：地址行必须在创建后立刻改为"按卡片宽自适应 + 高度不限"，避免：
+		//   1) MakeDetailRow 默认 AutoSize=true + MaximumSize=(SX(340), 0) → 46 字符 URL 触发
+		//      自动换行撑高，把下方 4 行挤出 detailPanel 边界被裁切（用户首张截图根因）；
+		//   2) 旧实现 AutoSize=false + 固定 Width=280 + Height=18 → 46 字符超长溢出右边界被
+		//      SpringCard 父容器裁切，视觉上"地址:"后空白（用户第二张截图根因）。
+		// 新实现：AutoSize=true + MaximumSize=(_urlInitW, 0) → Label 按文本宽度自然撑开，
+		// 文本超出 _urlInitW 时自动按宽度换行成 2-3 行，完整显示截断版 URL；
+		// 后续 4 行的 Top 由 ReflowDetails 按"上一行 Bottom+间距"动态计算 → 地址行变高时
+		// 自动让位，不再被遮住（用户第三张截图根因："分辨率""分组"行被地址行遮住消失）。
+		{
+			int _urlInitW = detailPanel.ClientSize.Width - 2 * dx;
+			if (_urlInitW < 40) _urlInitW = SX(340);
+			_detailUrl.AutoSize = true;
+			_detailUrl.MaximumSize = new Size(_urlInitW, 0);
+			// 立即让 PreferredSize 算出真实尺寸（apply to control by AutoSize=true）
+			// 然后锁定为 AutoSize=false + 当前宽高，避免后续 hover/leave 反复触发换行
+			int _curH = _detailUrl.Height;
+			int _curW = _detailUrl.Width;
+			_detailUrl.AutoSize = false;
+			_detailUrl.Width = _curW;
+			_detailUrl.Height = _curH;
+			_detailUrl.TextAlign = ContentAlignment.TopLeft;
+		}
+		// 详情行重排：所有 6 个 detail 行的 Top 按"上一行 Bottom + 间距"动态累加。
+		// 名称行固定在 dy=32；地址行可能因文本换行变高 → 后续 4 行 Top 跟随调整。
+		// 必须在 4 个 _detail* 字段赋值完成之后才能正确触发（字段未赋值时直接 return）。
+		// 名称行 Top 动态跟随 detailHeader（频道详情标题栏）底边 + 8px 间距，
+		// 避免 detailHeader 高度变化时名称与"频道详情"标题贴在一起或重叠
+		// 关键：detailHeader.Dock=Top 的高度依赖 detailPanel.ClientSize.Width（=0 时 Dock 不展开），
+		// 所以 reflow 里用 detailHeader 实际高度（=30）作为 fallback，**不依赖 Dock 是否生效**
+		int detailRowGap = 4;    // 行间距
+		int detailHeaderFixedH = SY(36); // 与 detailHeader.Height=SY(36) 保持一致
+		_reflowDetails = delegate
+		{
+			if (_detailName == null || _detailUrl == null) return;
+			if (_detailStatus == null || _detailBitrate == null) return;
+			int headerBottom;
+			if (_detailHeader != null && _detailHeader.Height > 1)
+			{
+				headerBottom = _detailHeader.Bottom;
+			}
+			else
+			{
+				// detailPanel 还没 layout（detailHeader.Dock=Top 未展开时 Height=0），
+				// 用固定值 30 + 0 (detailPanel.ClientSize.Y) 作为 fallback
+				headerBottom = detailHeaderFixedH;
+			}
+			int detailTopStart = headerBottom + 8; // 名称行 Top
+			int _y = detailTopStart;
+			_detailName.Top = _y; _y = _detailName.Bottom + detailRowGap;
+			_detailUrl.Top = _y; _y = _detailUrl.Bottom + detailRowGap;
+			_detailStatus.Top = _y; _y = _detailStatus.Bottom + detailRowGap;
+			_detailBitrate.Top = _y;
+		};
+		// 信息栏链接：动态主题 + 悬停 → 放大突出（真实放大字体）+ 边缘按主题色发光。
+		// 需求：地址栏 hover 放大时，下方「分辨率/分组/状态/码率」4 行整体下移让位，
+		//       地址栏恢复时，这 4 行随之归位（不能隔断、不能消失）。
+		// 安全做法：
+		//   - 6 行整体上移 8px、行距 22→21，总计腾出 13px 安全余量（顶住 detailPanel 边界裁切）；
+		//   - hover 时把地址行改为 AutoSize=false + 固定放大高度（1.25× 字号 +0.8pt），
+		//     后续行下移量约 5px，远小于余量；
+		//   - leave 时地址行还原 AutoSize、后续 4 行 Top 归位；
+		//   - 同步用 ToolTip 浮窗显示完整 URL。
+		// 关键：baseTop 必须在 MouseEnter 触发时实时缓存（注册时 _detail* 字段为 null）。
+		// 关键修复：原方案缓存 _detailUrlBaseW = Label 默认 Width（≈100），
+		// leave 时强制 Width=100 → 文字被压成多行 → Label 撑高 → 把 bitrate 推出 detailPanel 边界被裁切 → 整块消失。
+		// 新方案：宽度**实时**用 detailPanel.ClientSize.Width - 左右内边距计算，
+		//         高度由 MaximumSize(_, baseH) 限死为单行 = baseH，杜绝撑高。
+		// Font _detailUrlBaseFont REMOVED
+		int _detailUrlBaseTop = _detailUrl.Top;
+		// int _detailUrlBaseH REMOVED
+		// 字号只增 +0.8pt（避免过粗），同时加粗。
+		// hover 时不再硬性固定 1 行大字号（用户截图根因：固定 1 行 + 大字 → 文字溢出卡片被裁切 → "地址:"后无值）。
+		// 改为 AutoSize=true + MaximumSize=(_urlMaxW, 0) → 大字号文本按宽度自动换行展开为多行，
+		// 完整 URL 全部可见；下方 4 行按"展开后实际行高 - baseH"动态下移让位。
+		// Font _detailUrlBigFont REMOVED
+		// hover 监听挂在整个 detailPanel（而非 _detailUrl 单个标签）：避免地址栏因放大后
+		// 宽高变化，鼠标在放大区域内水平移动跨越标签边界触发 MouseLeave 导致"地址信息消失"。
+		// 关键修复：MouseLeave 用 50ms 延迟 Tick 重新检测鼠标是否真的离开卡片（不在子控件上），
+		// 避免鼠标移到子控件时立刻还原放大状态。不依赖 ToolTip 浮窗（浮窗覆盖地址栏会导致
+		// 鼠标离开→还原→浮窗消失→鼠标回到卡片→放大→浮窗再出现 的无限闪烁循环）。
+		// bool _detailUrlHovered REMOVED
+		// detailPanel.MouseEnter REMOVED
+		{
+			_detailUrlHovered = true;
+			ApplyDetailUrlHover(true);
+		};
+		// detailPanel.MouseLeave REMOVED
+		{
+			// 延迟 50ms 重新检测：等 WinForms 把鼠标事件分发到子控件后再判断
+			System.Windows.Forms.Timer _leaveCheck = new System.Windows.Forms.Timer { Interval = 50 };
+			EventHandler _leaveTick = null;
+			_leaveTick = delegate
+			{
+				_leaveCheck.Stop();
+				_leaveCheck.Tick -= _leaveTick;
+				_leaveCheck.Dispose();
+				if (!IsMouseOverDetailPanel(detailPanel))
+				{
+					_detailUrlHovered = false;
+					ApplyDetailUrlHover(false);
+				}
+			};
+			_leaveCheck.Tick += _leaveTick;
+			_leaveCheck.Start();
+		};
+		// detailPanel.MouseMove REMOVED
+		{
+			// 仅用于保持 _detailUrlHovered 状态：鼠标在卡片内移动时不需要额外操作，
+			// 放大状态由 MouseEnter/延迟 MouseLeave 维持。无 ToolTip 浮窗，不触发额外重绘。
+			if (!_detailUrlHovered)
+			{
+				_detailUrlHovered = true;
+				ApplyDetailUrlHover(true);
+			}
+		};
+		// void ApplyDetailUrlHover REMOVED
+		{
+			if (hovering)
+			{
+				// 卡片实际可用宽度（不依赖缓存的 baseW，实时算）
+				int _urlMaxW = detailPanel.ClientSize.Width - 2 * dx;
+				if (_urlMaxW < 40) _urlMaxW = SX(340);
+				// 临时把 Text 切到完整 URL（地址: 是 Label 自带前缀，这里补回完整前缀统一显示）。
+				// 同时换成大字号 + AutoSize=true + MaximumSize=(_urlMaxW, 0)，让文本按宽度换行展开为多行。
+				// 重要：必须先设 Text 才能让 PreferredSize 算出"新字号下的多行高度"。
+				string _fullText = string.IsNullOrEmpty(_detailUrlText) ? "" : ("地址: " + _detailUrlText);
+				_detailUrl.AutoSize = true;
+				_detailUrl.Font = _detailUrlBigFont;
+				_detailUrl.MaximumSize = new Size(_urlMaxW, 0);
+				_detailUrl.Text = _fullText;
+				// 用 PreferredSize 算出"大字号下、按 _urlMaxW 换行后"的真实高度
+				int _bigH = _detailUrl.PreferredSize.Height;
+				if (_bigH < _detailUrlBaseH) _bigH = _detailUrlBaseH;
+				// 把展开后的 Label 固定为这个高度（保留 AutoSize 绘制但不再继续改变 Bounds）
+				_detailUrl.AutoSize = false;
+				_detailUrl.Width = _urlMaxW;
+				_detailUrl.Height = _bigH;
+				_detailUrl.TextAlign = ContentAlignment.TopLeft;
+				_detailUrl.Invalidate();
+				// 后续 4 行 Top 由 _reflowDetails 统一动态计算（地址行变高时自动让位）
+				_reflowDetails?.Invoke();
+			}
+			else
+			{
+				_detailUrl.Font = _detailUrlBaseFont;
+				// 还原为单行：仅恢复布局（AutoSize=false + 固定宽高 = 卡片宽-2dx + baseH 单行），
+				// 不重写 Text（保留 LoadSelectedChannelToPreview 已设的 46 字符截断版）。
+				int _urlNormalW = detailPanel.ClientSize.Width - 2 * dx;
+				if (_urlNormalW < 40) _urlNormalW = SX(340);
+				_detailUrl.AutoSize = false;
+				_detailUrl.MaximumSize = new Size(_urlNormalW, _detailUrlBaseH);
+				_detailUrl.Width = _urlNormalW;
+				_detailUrl.Height = _detailUrlBaseH;
+				_detailUrl.TextAlign = ContentAlignment.MiddleLeft;
+				_detailUrl.Invalidate();
+				// 重新让 _reflowDetails 计算 4 行 Top（地址行已还原为 baseH 单行）
+				_reflowDetails?.Invoke();
+			}
+		}
+		// _detailUrl.Paint REMOVED
+		{
+			Label lbl = (Label)s;
+			bool hov = lbl.ClientRectangle.Contains(lbl.PointToClient(Cursor.Position));
+			if (IsDynamicFx() && hov)
+			{
+				AppTheme atU = AppTheme.ActiveTheme;
+				Color fxU = (atU != null) ? atU.Primary : theme.Primary;
+				Rectangle rU = new Rectangle(0, 0, lbl.Width - 1, lbl.Height - 1);
+				using GraphicsPath pU = RoundedRectPath(rU, 4);
+				for (int i = 4; i >= 1; i--)
+				{
+					using Pen gp = new Pen(Color.FromArgb(22 * i, fxU.R, fxU.G, fxU.B), i * 1.2f);
+					e.Graphics.DrawPath(gp, pU);
+				}
+			}
+		};
+		// 需求：去除「分辨率」「分组」两行，只保留 名称 / 地址 / 状态 / 码率 4 行。
+		// _detailResolution null REMOVED
+		// _detailGroup null REMOVED
+		// _detailStatus MakeDetailRow REMOVED (old)
+		// _detailBitrate MakeDetailRow REMOVED (old)
+		// 4 个 detail 行 Top 全部由 _reflowDetails 动态计算（地址行高变化时自动让位）
+#endif // end REMOVED old detail panel code
+		// ═══════════════════════════════════════════════════════════════════
+		// ⑦ 控件组装：将各组件按 Dock=Top 逆序加入 previewPanel
+		// 加入顺序（先加者在底，后加者在顶）：playerControls → playerFrame →
+		//   playerIdle(叠层) → playerGap → linkStatusPanel → detailPanel
+		// ═══════════════════════════════════════════════════════════════════
+		playerFrame.Controls.Add((Control)channelPlayer);
+		// 控制栏必须先于视频窗加入集合：previewPanel 内多个 Dock.Top 按集合逆序布局，
+		// 后加入者在上。playerControls 先加入 → 逆序后落在 playerFrame 之下，
+		// 即"视频窗正下方、频道详情上方"。
+		previewPanel.Controls.Add(playerControls);
 		previewPanel.Controls.Add(playerFrame);
+		// ⑦-1 未播放占位层（_playerIdle）：叠在视频控件之上，空闲时显示主题极光动画
+		_playerIdle = new PlayerIdleOverlay();
+		playerFrame.Controls.Add(_playerIdle);
+		bool previewImmersive = theme != null && (theme.GlassEnabled || !string.IsNullOrEmpty(theme.AnimationType));
+		_playerIdle.Configure(theme, previewImmersive);
 		previewPanel.Controls.Add(playerGap);
 		previewPanel.Controls.Add(linkStatusPanel);
 		previewPanel.Controls.Add(detailPanel);
+		// 橡皮筋拖拽：以详情标题栏为握把，卡片可在预览窗内小幅信封内自由跟手、
+		// 超出渐进阻尼、松手按指尖速度回弹归位（演示 HTML 稿的速度交接 + 橡皮筋）。
+		// detailPanel.SetGrip removed (no detailHeader in new design)
+		LayoutDetailCard(detailPanel, playerFrame, playerGap, linkStatusPanel, previewPanel);
+		// detailPanel 加入 previewPanel 并布局后，先按键标签实际宽度对齐值标签 Left，
+		// 再同步值标签宽度到可用区域（覆盖 MakeDetailRow 后占位初始宽度），
+		// 最后再重排一次让各行 Top 跟随值标签最新高度。
+		_reflowDetails?.Invoke();
+		SyncDetailValueWidths();
+		if (_detailHeader != null) _detailHeader.Width = detailPanel.ClientSize.Width;
+		_reflowDetails?.Invoke();
+		// ⑨ 预览窗 Resize：重算视频区高度 + 重排详情卡片 + 同步值标签宽度 + 重排行高
+		previewPanel.Resize += delegate
+		{
+			LayoutDetailCard(detailPanel, playerFrame, playerGap, linkStatusPanel, previewPanel);
+			// 先对齐值标签 Left，再按新宽度计算值标签尺寸，最后重排行高
+			_reflowDetails?.Invoke();
+			SyncDetailValueWidths();
+			if (_detailHeader != null) _detailHeader.Width = detailPanel.ClientSize.Width;
+			_reflowDetails?.Invoke();
+		};
+		// ⑩ 预览窗 VisibleChanged：可见时重新布局详情卡片（解决首次显示时坐标未就绪问题）
+		previewPanel.VisibleChanged += delegate
+		{
+			LayoutDetailCard(detailPanel, playerFrame, playerGap, linkStatusPanel, previewPanel);
+		};
 		gridContainerRef.Controls.Add(previewPanel);
 		searchPanelRef = new Panel
 		{
@@ -20561,7 +22238,8 @@ public partial class IPTVLiveCheckerMain : Form
 			Font = GetFont(SF(8.5f)),
 			ForeColor = theme.TextPrimary,
 			Location = At(0, SY(0)),
-			AutoSize = true
+			AutoSize = true,
+			BackColor = Color.Transparent
 		};
 		lblSearch.Height = SY(26);
 		lblSearch.Top = (SY(38) - SY(26)) / 2;
@@ -20629,6 +22307,9 @@ public partial class IPTVLiveCheckerMain : Form
 			ForeColor = theme.TextSecondary,
 			BackColor = theme.Surface
 		};
+		// 开启双缓冲：避免父面板重绘时内部 TextBox 闪烁（与 addrBarHost 等同类控件一致的处理方式）
+		typeof(Control).GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(searchBoxHost, true, null);
+		typeof(Control).GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(txtSearch, true, null);
 		txtSearchBox = txtSearch;
 		searchBoxHost.Controls.Add(txtSearch);
 		cboGroup.HandleCreated += delegate
@@ -20661,8 +22342,14 @@ public partial class IPTVLiveCheckerMain : Form
 			e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 			Rectangle rect = new Rectangle(0, 0, searchBoxHost.Width - 1, searchBoxHost.Height - 1);
 			Color color = (searchFocus ? theme.Primary : theme.Border);
+			AppTheme atSearch = AppTheme.ActiveTheme;
+			bool immersiveSearch = (atSearch != null) && (atSearch.GlassEnabled || !string.IsNullOrEmpty(atSearch.AnimationType));
+			// 沉浸式：底盘用半透明 Surface 让 ThemeFx 动效背景透出；非沉浸式保留实色避免穿底
+			Color fill = immersiveSearch
+				? Color.FromArgb(170, atSearch.Surface.R, atSearch.Surface.G, atSearch.Surface.B)
+				: theme.Surface;
 			using GraphicsPath path = GetRoundedPath(rect, 6);
-			using (SolidBrush brush = new SolidBrush(theme.Surface))
+			using (SolidBrush brush = new SolidBrush(fill))
 			{
 				e.Graphics.FillPath(brush, path);
 			}
@@ -20767,13 +22454,13 @@ public partial class IPTVLiveCheckerMain : Form
 			BackColor = ColorBorder
 		};
 		searchPanelRef.Controls.Add(searchSep);
-		statusBarContainer = new Panel
-		{
-			Dock = DockStyle.Top,
-			Height = SY(32),
+	statusBarContainer = new Panel
+	{
+		Dock = DockStyle.Top,
+		Height = SY(32),
 			BackColor = theme.Bg,
 			Padding = new Padding(SX(12), SY(4), SX(12), SY(4))
-		};
+	};
 		statusBarRef = new DoubleBufferedPanel
 		{
 			Dock = DockStyle.Fill,
@@ -20783,13 +22470,23 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			if (progressBarWidth > 0)
 			{
-				using (SolidBrush brush = new SolidBrush(Color.FromArgb(0, 180, 80)))
+				using (SolidBrush brush = new SolidBrush(theme.SuccessColor))
 				{
 					e.Graphics.FillRectangle(brush, 0, 0, progressBarWidth, statusBarRef.ClientSize.Height);
 				}
 			}
 		};
 		progressBarWidth = 0;
+		_activeProgressPct = 0;
+		// 窗口尺寸变化时按当前进度重算绿色填充宽度（避免最大化/还原时绿色条停在旧宽度）
+		statusBarRef.Resize += delegate
+		{
+			if (_activeProgressPct > 0 && statusBarRef != null && !statusBarRef.IsDisposed && statusBarRef.ClientSize.Width > 0)
+			{
+				progressBarWidth = statusBarRef.ClientSize.Width * _activeProgressPct / 100;
+				statusBarRef.Invalidate();
+			}
+		};
 		lblDetected = new Label
 		{
 			Text = "已检测: 0/0",
@@ -20957,11 +22654,11 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			Text = "停止检测",
 			Location = At(btnStartDetect.Right + SX(8), SY(6)),
-			Size = new Size(SX(64), SY(30)),
+			Size = new Size(SX(80), SY(30)),
 			FlatStyle = FlatStyle.Flat,
 			BackColor = theme.ErrorColor,
 			ForeColor = Color.White,
-			Font = GetFont(SF(8.5f), FontStyle.Bold),
+			Font = GetFont(SF(9f), FontStyle.Bold),
 			Cursor = Cursors.Hand,
 			TextAlign = ContentAlignment.MiddleCenter,
 			Visible = false,
@@ -20971,29 +22668,13 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			btnStopDetect.Invalidate();
 		};
-		btnStopDetect.FlatAppearance.MouseOverBackColor = Color.FromArgb(Math.Min(255, theme.ErrorColor.R + 20), Math.Min(255, theme.ErrorColor.G + 20), Math.Min(255, theme.ErrorColor.B + 20));
 		btnStopDetect.FlatAppearance.BorderSize = 0;
-		btnStopDetect.Click += delegate
-		{
-			if (DarkMessageBox.Show("确定要停止检测吗？已检测的数据将被保留。", "停止检测", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-			{
-				cts?.Cancel();
-				isDetecting = false;
-				isPaused = false;
-				btnStartDetect.Text = "开始检测";
-				btnStartDetect.BackColor = theme.InfoColor;
-				btnStartDetect.ForeColor = Color.White;
-				btnStopDetect.Enabled = false;
-				if (btnScanSource != null)
-				{
-					btnScanSource.Enabled = true;
-				}
-			}
-		};
+		// 「停止检测 / 重新检测」二合一：检测中=停止(红)；停止后存在待检测频道=重新检测(橙)
+		btnStopDetect.Click += BtnCombined_Click;
 		importHost.Controls.Add(btnStopDetect);
 		StyleRoundButton(btnStopDetect, 8, theme.ErrorColor, 0, "error");
 		ay += SY(32) + SY(10);
-		Color exportBtnColor = Color.FromArgb(255, 0, 255);
+		Color exportBtnColor = theme.Primary; // 跟随主题主色（原硬编码品红 255,0,255，会导致 hover 闪品红）
 		btnExport = new Button
 		{
 			Text = "合并导出",
@@ -21287,19 +22968,22 @@ public partial class IPTVLiveCheckerMain : Form
 		dataGridViewContextMenu.ShowImageMargin = true;
 		dataGridViewContextMenu.ShowCheckMargin = false;
 		dataGridViewContextMenu.ShowItemToolTips = false;
-		Image icoPaste = CreateMenuIcon("paste", Color.DodgerBlue);
-		Image icoDetect = CreateMenuIcon("detect", Color.OrangeRed);
-		Image icoSort = CreateMenuIcon("sort", Color.SeaGreen);
-		Image icoPlay = CreateMenuIcon("play", Color.FromArgb(138, 78, 203));
-		Image icoCopy = CreateMenuIcon("copy", Color.DodgerBlue);
-		Image icoCopyAll = CreateMenuIcon("copyAll", Color.SeaGreen);
-		Image icoSelectAll = CreateMenuIcon("selectAll", Color.SteelBlue);
-		Image icoRename = CreateMenuIcon("rename", Color.SaddleBrown);
-		Image icoDelete = CreateMenuIcon("delete", Color.Crimson);
-		Image icoInfo = CreateMenuIcon("info", Color.SteelBlue);
-		Image icoClearInv = CreateMenuIcon("clearInv", Color.Gray);
-		Image icoClearAll = CreateMenuIcon("clearAll", Color.FromArgb(180, 50, 50));
-		Image icoFixUrl = CreateMenuIcon("fix", Color.MediumSeaGreen);
+		// 右键菜单图标底色全部改取主题语义色（原为 DodgerBlue/OrangeRed/Crimson 等硬编码固定色，
+		// 导致无论切换到哪套主题，菜单图标始终是同一组花色 —— 这是"换肤不彻底"的主要观感缺口）。
+		// 仍保留六档语义区分：主色/强调/播放/成功/警告/错误/次级，切换主题时整组同步换肤。
+		Image icoPaste = CreateMenuIcon("paste", theme.Primary);
+		Image icoDetect = CreateMenuIcon("detect", theme.WarnColor);
+		Image icoSort = CreateMenuIcon("sort", theme.Accent);
+		Image icoPlay = CreateMenuIcon("play", theme.PlayBtnBg);
+		Image icoCopy = CreateMenuIcon("copy", theme.Primary);
+		Image icoCopyAll = CreateMenuIcon("copyAll", theme.Accent);
+		Image icoSelectAll = CreateMenuIcon("selectAll", theme.Accent);
+		Image icoRename = CreateMenuIcon("rename", theme.Primary);
+		Image icoDelete = CreateMenuIcon("delete", theme.ErrorColor);
+		Image icoInfo = CreateMenuIcon("info", theme.Accent);
+		Image icoClearInv = CreateMenuIcon("clearInv", theme.TextSecondary);
+		Image icoClearAll = CreateMenuIcon("clearAll", theme.ErrorColor);
+		Image icoFixUrl = CreateMenuIcon("fix", theme.SuccessColor);
 		ToolStripMenuItem pasteItem = new ToolStripMenuItem("从剪贴板粘贴链接", icoPaste, delegate
 		{
 			PasteFromClipboard();
@@ -21339,7 +23023,18 @@ public partial class IPTVLiveCheckerMain : Form
 		ToolStripMenuItem sortMenuItem = new ToolStripMenuItem("排序", icoSort);
 		sortMenuItem.DropDownItems.Add("按名称排序", null, delegate
 		{
-			allChannels.Sort((ChannelInfo a, ChannelInfo b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal));
+			allChannels.Sort(delegate(ChannelInfo a, ChannelInfo b)
+			{
+				string na = (a.Name ?? string.Empty);
+				string nb = (b.Name ?? string.Empty);
+				bool naNum = int.TryParse(na, out int ia);
+				bool nbNum = int.TryParse(nb, out int ib);
+				if (naNum && nbNum)
+				{
+					return ia.CompareTo(ib);
+				}
+				return string.Compare(na, nb, StringComparison.Ordinal);
+			});
 			RefreshGrid();
 		});
 		sortMenuItem.DropDownItems.Add("按延迟排序", null, delegate
@@ -21363,24 +23058,6 @@ public partial class IPTVLiveCheckerMain : Form
 			RefreshGrid();
 		});
 		dataGridViewContextMenu.Items.Add(sortMenuItem);
-		ToolStripMenuItem playMenuItem = new ToolStripMenuItem("播放", icoPlay);
-		playMenuItem.DropDownItems.Add("第三方播放器", null, delegate
-		{
-			if (dgvData.SelectedRows.Count > 0)
-			{
-				string text = dgvData.SelectedRows[0].Cells[1].Value?.ToString();
-				if (!string.IsNullOrWhiteSpace(text))
-				{
-					PlayChannelCustom(text);
-				}
-			}
-		});
-		playMenuItem.DropDownItems.Add(new ToolStripSeparator());
-		playMenuItem.DropDownItems.Add("设置第三方播放器路径...", null, delegate
-		{
-			SetCustomPlayerPath();
-		});
-		dataGridViewContextMenu.Items.Add(playMenuItem);
 		dataGridViewContextMenu.Items.Add(new ToolStripSeparator());
 		ToolStripMenuItem copyItem = new ToolStripMenuItem("复制链接", icoCopy, delegate
 		{
@@ -21405,7 +23082,7 @@ public partial class IPTVLiveCheckerMain : Form
 		{
 			if (dgvData.SelectedRows.Count > 0)
 			{
-				string text = dgvData.SelectedRows[0].Cells[1].Value?.ToString();
+				string text = dgvData.SelectedRows[0].Cells["colUrl"].Value?.ToString();
 				if (!string.IsNullOrWhiteSpace(text))
 				{
 					ShowReplaceUrlDialog(text);
@@ -21499,6 +23176,8 @@ public partial class IPTVLiveCheckerMain : Form
 			try
 			{
 				StopMouseHook();
+				// 释放独立链接速度探针（关闭其后台测速连接，避免进程退出时挂起）
+				_linkProbe?.Dispose();
 			}
 			catch
 			{
@@ -21577,21 +23256,9 @@ public partial class IPTVLiveCheckerMain : Form
 				}
 			}
 		}
-		Label MakeDetailRow(string key)
-		{
-			Label lbl = new Label
-			{
-				Font = GetFont(SF(9f)),
-				ForeColor = theme.TextSecondary,
-				AutoSize = true,
-				Location = At(dx, dy),
-				MaximumSize = new Size(SX(340), 0),
-				TextAlign = ContentAlignment.TopLeft
-			};
-			dy += dRow;
-			detailPanel.Controls.Add(lbl);
-			return lbl;
-		}
+		/// <summary>
+		/// ⑤-6a 创建链接状态行：8pt 标签，AutoSize + 最大宽度 340px×DPI，返回 Label 供外部更新 Text
+		/// </summary>
 		Label MakeStatusRow(string caption)
 		{
 			Label lbl = new Label
@@ -21607,6 +23274,42 @@ public partial class IPTVLiveCheckerMain : Form
 			lsy += lsRow;
 			linkStatusPanel.Controls.Add(lbl);
 			return lbl;
+		}
+		/// <summary>
+		/// ⑧ 计算频道详情卡片的归位矩形：预览窗内视频区+控制栏+间距+状态栏之下的剩余区域。
+		/// 空间不足时强制最小高度 150px×DPI 并向上 clamp，保证地址栏始终可见。
+		/// </summary>
+		void LayoutDetailCard(SpringCard card, Control playerFrame, Control playerGap, Control linkStatusPanel, Control previewPanel)
+		{
+			if (card == null || previewPanel == null)
+			{
+				return;
+			}
+			// 控制栏(playerControls)已移到视频窗正下方、独立 Top 停靠，需计入顶部偏移，
+			// 否则详情卡片会与控制栏重叠。
+			// 向上微调 4px：让详情卡片更贴近「当前链接状态」面板，视觉上更紧凑。
+			int top = playerFrame.Height + (playerControls != null ? playerControls.Height : 0) + (playerGap != null ? playerGap.Height : 0) + linkStatusPanel.Height - SY(4);
+			if (top < 0) top = 0;
+			int w = previewPanel.ClientSize.Width;
+			int h = previewPanel.ClientSize.Height - top;
+			// 关键修复：当预览窗高度不足以容纳视频区+控制栏+状态栏时，剩余高度 h 可能为负或极小，
+			// 导致详情卡片被隐藏、地址栏等信息不可见。此处强制最小高度并 clamp top，
+			// 保证详情卡片至少能显示标题+名称+地址行（即使底部被裁切，地址栏也始终可见）。
+			int minDetailH = SY(150);
+			if (h < minDetailH)
+			{
+				h = minDetailH;
+				// 若空间不足，把卡片顶到视频区下方最近位置（宁可部分裁切底部，也不让地址栏消失）
+				if (top + h > previewPanel.ClientSize.Height)
+				{
+					top = Math.Max(0, previewPanel.ClientSize.Height - h);
+				}
+			}
+			if (w < 1 || h < 1)
+			{
+				return;
+			}
+			card.SetHome(0, top, w, h);
 		}
 		void TryUpdateStreamInfoFromVlc()
 		{
@@ -21647,6 +23350,9 @@ public partial class IPTVLiveCheckerMain : Form
 				{
 					_currentSpeed = $"{rate:F2}x";
 				}
+				// 缓冲时长由此处删除：统一由 _linkStatusTimer 主循环（约 line 21591）用 _smoothedBps 计算。
+				// 此处 TryGetBufferDuration 不传 knownBps，VLC 模式下 InputBitrate=0 导致两条路径均失败，
+				// 会保留 _currentBuffer 旧值（可能为 "—"），与主循环的正确结果冲突。
 			}
 			catch
 			{
@@ -21719,6 +23425,13 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private void IPTVLiveCheckerMain_KeyDown(object sender, KeyEventArgs e)
 	{
+		// Alt+F：打开"文件"菜单（避免与 Ctrl+F 搜索冲突）
+		if (e.Alt && e.KeyCode == Keys.F)
+		{
+			e.Handled = true;
+			btnNavFile?.PerformClick();
+			return;
+		}
 		if (e.Control)
 		{
 			switch (e.KeyCode)
@@ -22385,9 +24098,10 @@ public partial class IPTVLiveCheckerMain : Form
 		}
 		AutoFitButtonWidth(btnTbImport, SX(72));
 		AutoFitButtonWidth(btnStartDetect, SX(72));
-		AutoFitButtonWidth(btnStopDetect, SX(64));
+		AutoFitButtonWidth(btnStopDetect, SX(80));
 		AutoFitButtonWidth(btnExport, SX(80));
 		AutoFitButtonWidth(btnScanSource, SX(80));
+		RefreshCombinedButton();
 		if (importHost == null)
 		{
 			return;
@@ -22442,12 +24156,313 @@ public partial class IPTVLiveCheckerMain : Form
 		return DrawingUtils.RoundedRect(rect, radius);
 	}
 
+	/// <summary>主窗体关闭前的决策入口：
+	/// 如检测仍在进行，弹出三选一：
+	///   • 等待检测完成 → 后台轮询检测结束自动 Close；
+	///   • 取消检测并关闭 → 取消 CTS 后立即进入 Dispose 清理链；
+	///   • 强制关闭 → 不等待任何异步操作，直接走 OnFormClosing→Dispose 的强制清理。
+	/// 如未在检测则直接放行。
+	/// </summary>
+	protected override void OnFormClosing(FormClosingEventArgs e)
+	{
+		// P1：检测中保护 + 三选一确认（仅在"用户主动关闭 / 任务栏右键关闭 / 窗口菜单关闭"时询问）
+		// WindowsShutdown/TaskManagerKill/AppDomain 卸载等场景直接放行，避免系统关不掉进程
+		CloseReason reason = e.CloseReason;
+		bool isUserInitiated =
+			reason == CloseReason.UserClosing ||
+			reason == CloseReason.FormOwnerClosing ||
+			reason == CloseReason.MdiFormClosing ||
+			reason == CloseReason.None;
+
+		if (isUserInitiated && isDetecting && !e.Cancel)
+		{
+			using (var dlg = new Form())
+			{
+				float dpiScale = 1f;
+				try { using (var g = dlg.CreateGraphics()) dpiScale = g.DpiX / 96f; } catch { }
+				int SX(int v) => (int)Math.Round(v * dpiScale);
+				int SY(int v) => (int)Math.Round(v * dpiScale);
+
+				AppTheme t = AppTheme.ActiveTheme;
+				bool dark = DrawingUtils.IsDarkColor(t.Bg);
+
+				dlg.Text = "检测进行中";
+				dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
+				dlg.MaximizeBox = false;
+				dlg.MinimizeBox = false;
+				dlg.ShowInTaskbar = false;
+				dlg.StartPosition = FormStartPosition.CenterParent;
+				dlg.Font = new Font(t.FontFamily ?? "Microsoft YaHei UI", 9f * dpiScale);
+				dlg.ClientSize = new Size(SX(430), SY(220));
+				dlg.BackColor = t.Bg;
+				dlg.ForeColor = t.TextPrimary;
+				try { dlg.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch { }
+
+				Label lblTitle = new Label
+				{
+					Text = "检测仍在进行中",
+					Font = new Font(t.FontFamily ?? "Microsoft YaHei UI", 13f * dpiScale, FontStyle.Bold),
+					ForeColor = t.Primary,
+					Location = new Point(SX(24), SY(20)),
+					AutoSize = true
+				};
+
+				Label lblMsg = new Label
+				{
+					Text = "当前仍有频道检测任务正在执行。\n请选择关闭方式：",
+					Font = new Font(t.FontFamily ?? "Microsoft YaHei UI", 9.5f * dpiScale),
+					ForeColor = t.TextPrimary,
+					Location = new Point(SX(24), SY(56)),
+					Size = new Size(SX(382), SY(56))
+				};
+
+				int bw = SX(118), bh = SY(40), bgap = SX(12);
+				int total = bw * 3 + bgap * 2;
+				int bx = (dlg.ClientSize.Width - total) / 2;
+				int by = dlg.ClientSize.Height - bh - SY(24);
+
+				Button btnWait = new Button
+				{
+					Text = "等待完成",
+					Size = new Size(bw, bh),
+					Location = new Point(bx, by),
+					Font = new Font(t.FontFamily ?? "Microsoft YaHei UI", 10f * dpiScale, FontStyle.Bold),
+					BackColor = t.Primary,
+					ForeColor = DrawingUtils.IsDarkColor(t.Primary) ? Color.White : Color.Black,
+					FlatStyle = FlatStyle.Flat,
+					Cursor = Cursors.Hand
+				};
+				btnWait.FlatAppearance.BorderSize = 0;
+				btnWait.Click += (s, ev) =>
+				{
+					dlg.DialogResult = DialogResult.Retry;
+					dlg.Close();
+				};
+
+				Button btnCancel = new Button
+				{
+					Text = "取消检测并关闭",
+					Size = new Size(bw, bh),
+					Location = new Point(bx + bw + bgap, by),
+					Font = new Font(t.FontFamily ?? "Microsoft YaHei UI", 10f * dpiScale),
+					BackColor = t.Surface,
+					ForeColor = t.TextPrimary,
+					FlatStyle = FlatStyle.Flat,
+					Cursor = Cursors.Hand
+				};
+				btnCancel.FlatAppearance.BorderSize = 0;
+				btnCancel.Click += (s, ev) =>
+				{
+					dlg.DialogResult = DialogResult.OK;
+					dlg.Close();
+				};
+
+				Button btnForce = new Button
+				{
+					Text = "强制关闭",
+					Size = new Size(bw, bh),
+					Location = new Point(bx + (bw + bgap) * 2, by),
+					Font = new Font(t.FontFamily ?? "Microsoft YaHei UI", 10f * dpiScale),
+					BackColor = t.ErrorColor,
+					ForeColor = Color.White,
+					FlatStyle = FlatStyle.Flat,
+					Cursor = Cursors.Hand
+				};
+				btnForce.FlatAppearance.BorderSize = 0;
+				btnForce.Click += (s, ev) =>
+				{
+					dlg.DialogResult = DialogResult.Abort;
+					dlg.Close();
+				};
+
+				dlg.Controls.Add(lblTitle);
+				dlg.Controls.Add(lblMsg);
+				dlg.Controls.Add(btnWait);
+				dlg.Controls.Add(btnCancel);
+				dlg.Controls.Add(btnForce);
+				dlg.AcceptButton = btnWait;
+				dlg.CancelButton = btnCancel;
+
+				DialogResult r = dlg.ShowDialog(this);
+				switch (r)
+				{
+					case DialogResult.Retry: // 等待完成：阻止这次 Close，后台轮询 isDetecting 结束后自动关
+						e.Cancel = true;
+						var poller = new System.Windows.Forms.Timer { Interval = 250 };
+						poller.Tick += (s, ev) =>
+						{
+							if (!IsDisposed && Disposing) { poller.Stop(); poller.Dispose(); return; }
+							if (!isDetecting)
+							{
+								poller.Stop();
+								poller.Dispose();
+								// 再走一次 OnFormClosing，此时 isDetecting=false 直接放行
+								BeginInvoke(new Action(() => Close()));
+							}
+						};
+						poller.Start();
+						return;
+					case DialogResult.OK: // 取消检测：发 CTS 取消信号，让检测链路自行 unwind，随后 Close 正常进入 Dispose
+						try { cts?.Cancel(); } catch { }
+						isDetecting = false;
+						isPaused = false;
+						break;
+					case DialogResult.Abort: // 强制关闭：不加任何等待，直接走 Dispose 的强制清理（见下方）
+						break;
+					default: // 用户点了 X 或 Esc = 取消本次关闭
+						e.Cancel = true;
+						return;
+				}
+			}
+		}
+
+		// 走到这里说明：未在检测 / 或已选"取消检测" / 或选了"强制关闭"。
+		// 进入强制资源释放（保证即使强制关闭也能把播放器/子进程/WebView2 等资源干净回收，不留孤儿进程）
+		try
+		{
+			ForceCleanupBeforeDispose();
+		}
+		catch { }
+
+		base.OnFormClosing(e);
+	}
+
+	/// <summary>P0 强制清理链路：OnFormClosing 放关之后、Dispose 之前同步执行，
+	/// 保证 ①窗口句柄销毁前能停 UI 计时器、②播放器还有 Handle 能收到 Stop。
+	/// 每一步都 try/catch 保证出错不影响整体关闭。
+	/// 顺序与语义：
+	///   1) CTS 发取消信号 → 让正在跑的 Task.Run / ffmpeg 子进程自行退出
+	///   2) 预览播放器 Stop → 立即停媒体播放（音视频不再出声）→ Dispose 释放原生句柄
+	///   3) UI 线程 Timer 全部关/停 → 避免 Dispose 后还在 UI 消息循环里跑 Tick 导致 NRE
+	///   4) Dispose 所有可释放成员（linkProbe/ChannelPlayer/HttpClient 等）
+	///   5) 收尾：GC 回收加速 COM / WebView2 / RCW 释放
+	/// </summary>
+	private bool _forceCleanupRan;
+	private void ForceCleanupBeforeDispose()
+	{
+		if (_forceCleanupRan) return;
+		_forceCleanupRan = true;
+
+		// 1) 取消所有协作式任务（批量检测、ffplay 输出读取、异步初始化等）
+		try { cts?.Cancel(); } catch { }
+		try { _ffplayOutputCts?.Cancel(); } catch { }
+
+		// 2) 预览播放器：Stop → 再 Dispose。
+		//    顺序很重要：Dispose 里会释放 MediaPlayer/LibVLC/MPV 句柄，先 Stop 能让 VLC 正常走 teardown
+		var cp = channelPlayer;
+		if (cp != null)
+		{
+			try { cp.StopAsync(); } catch { }
+			try
+			{
+				// IChannelPlayer 继承了 IDisposable，ChannelPlayer/MpvPlayer 都有完整的原生资源释放链
+				// （WH_MOUSE_LL 钩子 / IMessageFilter / LibVLC / MPV ctx / 内嵌子进程 Kill）
+				cp.Dispose();
+			}
+			catch { }
+			channelPlayer = null;
+		}
+		// 内嵌预览独立窗口的 Process（ffplay/mpv 独立播放的托管进程）
+		try
+		{
+			if (_runningPlayer != null && !_runningPlayer.HasExited)
+			{
+				try { _runningPlayer.CloseMainWindow(); } catch { }
+				if (!_runningPlayer.WaitForExit(500))
+				{
+					try { _runningPlayer.Kill(); } catch { }
+				}
+				_runningPlayer.Dispose();
+			}
+			_runningPlayer = null;
+		}
+		catch { }
+		try
+		{
+			if (previewProcess != null && !previewProcess.HasExited)
+			{
+				try { previewProcess.CloseMainWindow(); } catch { }
+				if (!previewProcess.WaitForExit(500))
+				{
+					try { previewProcess.Kill(); } catch { }
+				}
+				previewProcess.Dispose();
+			}
+			previewProcess = null;
+		}
+		catch { }
+
+		// 3) 停止/释放所有 WinForms.Timer（先 Stop 再 Dispose，避免 Dispose 里仍跑 Tick）
+		try { _previewDebounceTimer?.Stop(); } catch { }
+		try { _previewDebounceTimer?.Dispose(); } catch { }
+		_previewDebounceTimer = null;
+
+		try { _linkStatusTimer?.Stop(); } catch { }
+		try { _linkStatusTimer?.Dispose(); } catch { }
+		_linkStatusTimer = null;
+
+		try { _streamInfoOverlayTimer?.Stop(); } catch { }
+		try { _streamInfoOverlayTimer?.Dispose(); } catch { }
+		_streamInfoOverlayTimer = null;
+
+		try { previewResizeTimer?.Stop(); } catch { }
+		try { previewResizeTimer?.Dispose(); } catch { }
+		previewResizeTimer = null;
+
+		// 关闭信息叠层窗口（若是单独 Form 的话），避免被其它控件引用不释放
+		try
+		{
+			if (_streamInfoOverlayForm != null && !_streamInfoOverlayForm.IsDisposed)
+			{
+				_streamInfoOverlayForm.Close();
+				_streamInfoOverlayForm.Dispose();
+				_streamInfoOverlayForm = null;
+			}
+		}
+		catch { }
+
+		// 4) Dispose 可托管资源
+		try { _linkProbe?.Dispose(); } catch { }
+		_linkProbe = null;
+
+		try { cts?.Dispose(); } catch { }
+		cts = null;
+		try { _ffplayOutputCts?.Dispose(); } catch { }
+		_ffplayOutputCts = null;
+
+		try { httpClient?.Dispose(); } catch { }
+		httpClient = null;
+
+		// 释放"独立打开的播放器窗口 Process"（用户点了用默认播放器打开的外部进程不归我们关）
+		// 释放空闲占位层引用
+		try { _playerIdle?.Dispose(); } catch { }
+		_playerIdle = null;
+
+		// 5) GC 收尾：给 WebView2 / COM RCW / 临时 Graphics 对象最后的释放机会
+		//    不强制 GC.WaitForPendingFinalizers 一直等，给个很短的时间窗即可
+		try
+		{
+			GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: false, compacting: true);
+			GC.WaitForPendingFinalizers();
+		}
+		catch { }
+	}
+
 	protected override void Dispose(bool disposing)
 	{
-		if (disposing && components != null)
+		if (disposing)
 		{
-			components.Dispose();
+			// 兜底：如 OnFormClosing 未执行（例：MDI 容器直接 Dispose、设计器 Dispose），
+			// 依然在此处跑一次 ForceCleanupBeforeDispose。_forceCleanupRan 防止重复跑。
+			ForceCleanupBeforeDispose();
+
+			if (components != null)
+			{
+				components.Dispose();
+			}
 		}
+		// 非 disposing 路径：托管对象已 Finalize，只处理 base；
+		// 但由于上面 ForceCleanup 已在 OnFormClosing 执行过，一般这里不会再有残留原生资源
 		base.Dispose(disposing);
 	}
 

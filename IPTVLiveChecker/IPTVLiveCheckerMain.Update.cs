@@ -117,7 +117,7 @@ public partial class IPTVLiveCheckerMain
 			int y = SY(20);
 			Label lblTitle = new Label
 			{
-				Text = "\ud83d\udee1 免责声明",
+				Text = "⚠ 免责声明",
 				Font = GetFont(SF(14f), FontStyle.Bold),
 				Location = At(0, y),
 				Size = new Size(ctx.Body.Width, SY(40)),
@@ -143,9 +143,9 @@ public partial class IPTVLiveCheckerMain
 			Panel dividerTop = new Panel
 			{
 				Location = At(padX, y),
-				Size = new Size(contentW, SY(3)),
-				BackColor = Color.Transparent
+				Size = new Size(contentW, SY(3))
 			};
+			ThemeFx.EnableTransparent(dividerTop);
 			dividerTop.Paint += delegate(object s, PaintEventArgs pe)
 			{
 				using LinearGradientBrush linearGradientBrush = new LinearGradientBrush(new Rectangle(0, 0, dividerTop.Width, dividerTop.Height), bgColor, accentColor, LinearGradientMode.Horizontal);
@@ -346,18 +346,20 @@ public partial class IPTVLiveCheckerMain
 					}
 					else
 					{
-						lblHint.Text = "⏳ 阅读时间已满足，请继续滚动至底部";
+						// ⏳(U+23F3) 默认 emoji 呈现=彩色位图字形，不随主题变色；
+						// 换成几何字形 ◷(U+25F7)，文本呈现、单色渲染，跟随 lblHint.ForeColor。
+						lblHint.Text = "◷ 阅读时间已满足，请继续滚动至底部";
 						lblHint.ForeColor = warningColor;
 					}
 					UpdateAgreeState();
 				}
 				else if (hasScrolledToBottom)
 				{
-					lblHint.Text = $"⏳ 阅读倒计时 {countdownSeconds} 秒 · 请稍候";
+					lblHint.Text = $"◷ 阅读倒计时 {countdownSeconds} 秒 · 请稍候";
 				}
 				else
 				{
-					lblHint.Text = $"⏳ 阅读倒计时 {countdownSeconds} 秒 · 请滚动至底部";
+					lblHint.Text = $"◷ 阅读倒计时 {countdownSeconds} 秒 · 请滚动至底部";
 				}
 			};
 			txtDisclaimer.VScroll += delegate
@@ -375,7 +377,7 @@ public partial class IPTVLiveCheckerMain
 					{
 						timerStarted = true;
 						countdownTimer.Start();
-						lblHint.Text = $"⏳ 阅读倒计时 {countdownSeconds} 秒 · 请滚动至底部";
+						lblHint.Text = $"◷ 阅读倒计时 {countdownSeconds} 秒 · 请滚动至底部";
 						lblHint.ForeColor = warningColor;
 					}
 					if (lpsi.nPos + (int)lpsi.nPage >= lpsi.nMax - 2 && !hasScrolledToBottom)
@@ -384,7 +386,7 @@ public partial class IPTVLiveCheckerMain
 						UpdateAgreeState();
 						if (timerStarted && countdownSeconds > 0)
 						{
-							lblHint.Text = $"⏳ 阅读倒计时 {countdownSeconds} 秒 · 请稍候";
+							lblHint.Text = $"◷ 阅读倒计时 {countdownSeconds} 秒 · 请稍候";
 						}
 						else if (countdownSeconds <= 0)
 						{

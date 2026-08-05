@@ -1,6 +1,10 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.IO.Pipes;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace IPTVLiveChecker;
@@ -66,6 +70,15 @@ internal class EmbeddedExternalPlayerHost : Panel
 	private bool _active;
 	private bool _failed;
 
+	// MPV 控制用：通过 --input-ipc-server 命名管道转发音量/暂停/进度等指令
+	private string _mpvPipeName;
+	private NamedPipeClientStream _pipe;
+	private StreamWriter _pipeWriter;
+	private StreamReader _pipeReader;
+	private readonly object _pipeLock = new object();
+	private bool _pipeReady;
+	private int _reqId = 1;
+
 	/// <summary>嵌入失败时触发（reason 为原因），调用方通常降级为独立窗口打开。</summary>
 	public event EventHandler<string> EmbedFailed;
 
@@ -116,6 +129,7 @@ internal class EmbeddedExternalPlayerHost : Panel
 		_process = null;
 		_embeddedHwnd = IntPtr.Zero;
 		_mpvMode = false;
+		DisposePipe();
 		if (_statusLabel != null) _statusLabel.Visible = false;
 	}
 
@@ -141,8 +155,9 @@ internal class EmbeddedExternalPlayerHost : Panel
 		};
 		if (_mpvMode)
 		{
-			// MPV 原生嵌入：直接把本面板句柄交给它绘制
-			psi.Arguments = $"--wid={Handle.ToInt64()} --no-border --no-osd-bar \"{url}\"";
+			// MPV 原生嵌入：直接把本面板句柄交给它绘制；并开 IPC 命名管道转发音量/进度控制
+			_mpvPipeName = "iptv_mpv_" + Guid.NewGuid().ToString("N").Substring(0, 12);
+			psi.Arguments = $"--wid={Handle.ToInt64()} --no-border --no-osd-bar --input-ipc-server=\\\\.\\pipe\\\\{_mpvPipeName} \"{url}\"";
 		}
 		else if (player.Type == ExternalPlayerHelper.PlayerType.PotPlayer)
 		{
@@ -180,7 +195,7 @@ internal class EmbeddedExternalPlayerHost : Panel
 	{
 		if (!_active || _failed) return;
 		_pollCount++;
-		// MPV 通过 --wid 直接绘制到本面板，无需挂靠；只要进程还活着即视为成功
+		// MPV 通过 --wid 直接绘制到本面板，无需挂靠；进程存活后尝试连接 IPC 管道以便转发控制
 		if (_mpvMode)
 		{
 			if (_process != null && _process.HasExited)
@@ -188,9 +203,21 @@ internal class EmbeddedExternalPlayerHost : Panel
 				RaiseFailed("MPV 进程异常退出，无法内嵌播放");
 				return;
 			}
+			if (!_pipeReady && !TryConnectPipe())
+			{
+				// 最多约 6 秒仍未连上 IPC：嵌入仍可用，但控制不可用
+				if (_pollCount > 40)
+				{
+					PlayerLogger.Write("EMBED", "MPV 内嵌成功，但 IPC 未连接（控制不可用）");
+					_statusLabel.Visible = false;
+					_pollTimer.Stop();
+				}
+				return;
+			}
+			_pipeReady = true;
 			_statusLabel.Visible = false;
 			_pollTimer.Stop();
-			PlayerLogger.Write("EMBED", "MPV 内嵌成功（--wid 直接绘制）");
+			PlayerLogger.Write("EMBED", "MPV 内嵌成功（--wid 绘制 + IPC 控制）");
 			return;
 		}
 		IntPtr hwnd = FindPlayerWindow();
@@ -261,6 +288,146 @@ internal class EmbeddedExternalPlayerHost : Panel
 		catch
 		{
 		}
+	}
+
+	// ---- MPV IPC 控制转发（仅 MPV 模式可用） ----
+
+	/// <summary>MPV 引擎是否既内嵌成功又已连上 IPC，可接收控制指令。</summary>
+	public bool IsMpvControllable => _mpvMode && _pipeReady;
+
+	private void DisposePipe()
+	{
+		_pipeReady = false;
+		try { _pipeWriter?.Dispose(); } catch { }
+		try { _pipeReader?.Dispose(); } catch { }
+		try { _pipe?.Dispose(); } catch { }
+		_pipe = null;
+		_pipeWriter = null;
+		_pipeReader = null;
+		_mpvPipeName = null;
+	}
+
+	private bool TryConnectPipe()
+	{
+		if (_pipe != null) return _pipe.IsConnected;
+		if (string.IsNullOrEmpty(_mpvPipeName)) return false;
+		NamedPipeClientStream p = null;
+		try
+		{
+			p = new NamedPipeClientStream(".", _mpvPipeName, PipeDirection.InOut);
+			p.Connect(1000);
+			p.ReadTimeout = 800;
+			_pipe = p;
+			_pipeWriter = new StreamWriter(_pipe) { AutoFlush = true };
+			_pipeReader = new StreamReader(_pipe);
+			return true;
+		}
+		catch
+		{
+			try { p?.Dispose(); } catch { }
+			return false;
+		}
+	}
+
+	private void IpcSend(string json)
+	{
+		lock (_pipeLock)
+		{
+			try { _pipeWriter?.WriteLine(json); } catch { }
+		}
+	}
+
+	private string IpcQuery(string json)
+	{
+		lock (_pipeLock)
+		{
+			if (_pipe == null || !_pipe.IsConnected || _pipeWriter == null || _pipeReader == null) return null;
+			try
+			{
+				_pipeWriter.WriteLine(json);
+				return _pipeReader.ReadLine();
+			}
+			catch
+			{
+				return null;
+			}
+		}
+	}
+
+	private int NextReqId() => Interlocked.Increment(ref _reqId);
+
+	public void MpvSetVolume(int volume)
+	{
+		volume = Math.Max(0, Math.Min(100, volume));
+		if (!IsMpvControllable) return;
+		IpcSend("{\"command\":[\"set_property\",\"volume\"," + volume.ToString(CultureInfo.InvariantCulture) + "]}");
+	}
+
+	public void MpvSetMuted(bool muted)
+	{
+		if (!IsMpvControllable) return;
+		IpcSend("{\"command\":[\"set_property\",\"mute\"," + (muted ? "true" : "false") + "]}");
+	}
+
+	public void MpvSetPaused(bool paused)
+	{
+		if (!IsMpvControllable) return;
+		IpcSend("{\"command\":[\"set_property\",\"pause\"," + (paused ? "true" : "false") + "]}");
+	}
+
+	public void MpvSeek(double seconds)
+	{
+		if (!IsMpvControllable) return;
+		IpcSend("{\"command\":[\"seek\"," + seconds.ToString("0.###", CultureInfo.InvariantCulture) + ",\"absolute\"]}");
+	}
+
+	public double? MpvGetTimePos()
+	{
+		if (!IsMpvControllable) return null;
+		return ParseDoubleData(IpcQuery("{\"command\":[\"get_property\",\"time-pos\"],\"request_id\":" + NextReqId() + "}"));
+	}
+
+	public double? MpvGetDuration()
+	{
+		if (!IsMpvControllable) return null;
+		return ParseDoubleData(IpcQuery("{\"command\":[\"get_property\",\"duration\"],\"request_id\":" + NextReqId() + "}"));
+	}
+
+	public bool? MpvIsPaused()
+	{
+		if (!IsMpvControllable) return null;
+		return ParseBoolData(IpcQuery("{\"command\":[\"get_property\",\"pause\"],\"request_id\":" + NextReqId() + "}"));
+	}
+
+	private static double? ParseDoubleData(string json)
+	{
+		if (string.IsNullOrEmpty(json)) return null;
+		int idx = json.IndexOf("\"data\"", StringComparison.Ordinal);
+		if (idx < 0) return null;
+		int colon = json.IndexOf(':', idx);
+		if (colon < 0) return null;
+		int start = colon + 1;
+		while (start < json.Length && char.IsWhiteSpace(json[start])) start++;
+		if (start >= json.Length || json[start] == 'n') return null; // null
+		int end = start;
+		while (end < json.Length && json[end] != ',' && json[end] != '}') end++;
+		string num = json.Substring(start, end - start).Trim();
+		return double.TryParse(num, NumberStyles.Any, CultureInfo.InvariantCulture, out double v) ? v : (double?)null;
+	}
+
+	private static bool? ParseBoolData(string json)
+	{
+		if (string.IsNullOrEmpty(json)) return null;
+		int idx = json.IndexOf("\"data\"", StringComparison.Ordinal);
+		if (idx < 0) return null;
+		int colon = json.IndexOf(':', idx);
+		if (colon < 0) return null;
+		int start = colon + 1;
+		while (start < json.Length && char.IsWhiteSpace(json[start])) start++;
+		if (start >= json.Length) return null;
+		if (json[start] == 't') return true;
+		if (json[start] == 'f') return false;
+		return null;
 	}
 
 	private void RaiseFailed(string reason)

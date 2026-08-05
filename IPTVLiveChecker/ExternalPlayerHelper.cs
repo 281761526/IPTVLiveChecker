@@ -16,7 +16,6 @@ internal static class ExternalPlayerHelper
 		VLC,
 		MPV,
 		FFplay,
-		Custom,
 		SystemDefault
 	}
 
@@ -25,18 +24,6 @@ internal static class ExternalPlayerHelper
 		public PlayerType Type;
 		public string Path;
 		public string DisplayName;
-	}
-
-	private static string _customPlayerPath = "";
-
-	public static void SetCustomPlayer(string path)
-	{
-		_customPlayerPath = path ?? "";
-	}
-
-	public static string GetCustomPlayer()
-	{
-		return _customPlayerPath;
 	}
 
 	public static PlayerInfo FindBestPlayer()
@@ -64,16 +51,6 @@ internal static class ExternalPlayerHelper
 
 		PlayerInfo ffplay = FindFFplay();
 		if (ffplay != null) list.Add(ffplay);
-
-		if (!string.IsNullOrWhiteSpace(_customPlayerPath) && File.Exists(_customPlayerPath))
-		{
-			list.Add(new PlayerInfo
-			{
-				Type = PlayerType.Custom,
-				Path = _customPlayerPath,
-				DisplayName = "自定义: " + Path.GetFileName(_customPlayerPath)
-			});
-		}
 
 		return list;
 	}

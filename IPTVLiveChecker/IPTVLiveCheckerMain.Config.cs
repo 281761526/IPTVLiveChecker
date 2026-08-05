@@ -30,7 +30,6 @@ public partial class IPTVLiveCheckerMain
 		sb.AppendLine($"TimeoutSeconds={timeoutSeconds}");
 		sb.AppendLine($"AutoClearInvalid={autoClearInvalid}");
 		sb.AppendLine($"PersistList={persistList}");
-		sb.AppendLine("CustomPlayerPath=" + customPlayerPath);
 		sb.AppendLine($"WatchSearchWindow={watchSearchWindow}");
 		sb.AppendLine($"ShowSearchButton={showSearchButton}");
 		sb.AppendLine("ThemePreference=" + themePreference);
@@ -40,6 +39,7 @@ public partial class IPTVLiveCheckerMain
 		sb.AppendLine($"DisclaimerAgreed={disclaimerAgreed}");
 		sb.AppendLine($"SkipDisclaimerPrompt={skipDisclaimerPrompt}");
 		sb.AppendLine($"AutoSwitchExternal={autoSwitchExternalPlayer}");
+		sb.AppendLine($"SkipDeleteConfirm={skipDeleteConfirm}");
 		File.WriteAllText(configPath, sb.ToString(), Encoding.UTF8);
 	}
 
@@ -151,12 +151,9 @@ public partial class IPTVLiveCheckerMain
 					bool.TryParse(value, out autoClearInvalid);
 					break;
 				case "PersistList":
-					bool.TryParse(value, out persistList);
-					break;
-				case "CustomPlayerPath":
-					customPlayerPath = value;
-					break;
-				case "WatchSearchWindow":
+				bool.TryParse(value, out persistList);
+				break;
+			case "WatchSearchWindow":
 					bool.TryParse(value, out watchSearchWindow);
 					break;
 				case "ShowSearchButton":
@@ -184,9 +181,18 @@ public partial class IPTVLiveCheckerMain
 					bool.TryParse(value, out skipDisclaimerPrompt);
 					break;
 				case "AutoSwitchExternal":
-					bool.TryParse(value, out autoSwitchExternalPlayer);
-					break;
+				bool.TryParse(value, out autoSwitchExternalPlayer);
+				break;
+			case "SkipDeleteConfirm":
+				bool.TryParse(value, out skipDeleteConfirm);
+				break;
 				}
+			}
+			// 翻新默认主题：如果用户从未自定义（还是旧默认），自动迁移到新的 iOS 浅色主题；
+			// 若用户已手动选择其他主题，则尊重其选择保持不变。
+			if (themePreference == "青瓷薄荷")
+			{
+				themePreference = AppConstants.DefaultThemeName;
 			}
 			ChannelPlayer.EnableAutoSwitchExternal = autoSwitchExternalPlayer;
 		}

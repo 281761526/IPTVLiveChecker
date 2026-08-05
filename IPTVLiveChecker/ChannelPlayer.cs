@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,7 +13,7 @@ using LibVLCSharp.WinForms;
 
 namespace IPTVLiveChecker;
 
-public class ChannelPlayer : UserControl, IMessageFilter
+public class ChannelPlayer : UserControl, IMessageFilter, IChannelPlayer
 {
 	private enum PlayerIcon { Play, Pause, Volume, Muted, Fullscreen }
 
@@ -87,9 +88,9 @@ public class ChannelPlayer : UserControl, IMessageFilter
 
 	private Button _btnMute;
 
-	private TrackBar _volumeSlider;
+	private ThemedSlider _volumeSlider;
 
-	private TrackBar _progressBar;
+	private ThemedSlider _progressBar;
 
 	private Button _btnFullscreen;
 
@@ -134,6 +135,10 @@ public class ChannelPlayer : UserControl, IMessageFilter
 
 	public bool IsSwitching => _switchingCount > 0;
 
+	/// <summary>当前是否处于播放中（由 Playing/Stopped/Paused 事件维护的线程安全镜像，
+	/// 供主窗体判断是否停止竞争型测速探针）。</summary>
+	public bool IsPlaying => _lastKnownPlaying;
+
 	// 等待“停播完成(Stopped)”信号，确保停播与播放串行，避免 WinForms 下 VLC 视频输出(HWND)
 	// 拆除与播放争用导致 UI 卡死的经典问题。
 	private TaskCompletionSource<bool> _stopTcs;
@@ -141,12 +146,24 @@ public class ChannelPlayer : UserControl, IMessageFilter
 	private Media _currentMedia;
 
 	private AppTheme _currentTheme;
+	// 缓冲动画叠加层（主题色旋转环），仅播放加载/缓冲时显示
+	private Panel _spinnerPanel;
+	private System.Windows.Forms.Timer _spinnerTimer;
+	private int _spinnerAngle;
 
 	// 外部播放器内嵌宿主（VLC 播不了某链接时自动切换进来）
 	private EmbeddedExternalPlayerHost _embedHost;
 
 	// 是否已切换到外部播放器内嵌模式（避免同一链接重复触发）
 	private bool _switchedToExternal;
+
+	// 预览窗引擎：默认 VLC，可手动切到内嵌 MPV（库形态，P/Invoke libmpv-2.dll，无需 mpv.exe）
+	private enum PreviewEngine { VLC, MPV }
+	private PreviewEngine _engine = PreviewEngine.VLC;
+	private DarkComboBox _engineCombo;
+
+	// MPV 库形态播放器（无 exe）：手动选 MPV 引擎时托管并复用，dll 缺失时自带 fallback 提示
+	private MpvPlayer _mpv;
 
 	// 当前链接是否已被 VLC 成功渲染过（用于区分“正在缓冲”与“真播不了”）
 	private bool _hasPlayedSuccessfully;
@@ -216,6 +233,23 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			}
 		});
 		PlayerLogger.Write("PLAYER", "构造函数完成，所有初始化钩子已绑定");
+		// 视频宿主占满整个控件（控制栏已移到播放窗外侧下方，不再占用控件高度）。
+		// 全屏时 _videoView/_mpv 的 Parent 已切换为全屏窗，这里跳过布局约束。
+		base.Layout += (s, e) =>
+		{
+			if (base.IsDisposed) return;
+			int barH = 0;
+			int w = base.ClientSize.Width;
+			int h = Math.Max(0, base.ClientSize.Height - barH);
+			if (_videoView != null && _videoView.Parent == this)
+			{
+				_videoView.SetBounds(0, 0, w, h);
+			}
+			if (_mpv != null && _mpv.Parent == this)
+			{
+				_mpv.SetBounds(0, 0, w, h);
+			}
+		};
 		// 外部播放器内嵌宿主：默认隐藏，VLC 失败时切上来
 		_embedHost = new EmbeddedExternalPlayerHost
 		{
@@ -225,6 +259,60 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		};
 		_embedHost.EmbedFailed += OnEmbedFailed;
 		base.Controls.Add(_embedHost);
+		// MPV 库形态播放器：默认隐藏，手动切到 MPV 引擎时显示并托管
+		_mpv = new MpvPlayer
+		{
+			Dock = DockStyle.Fill,
+			Visible = false,
+			BackColor = System.Drawing.Color.Black
+		};
+		// MPV 模式双击视频窗切换全屏（与 VLC 模式双击最大化行为一致），而非暂停/播放
+		_mpv.HostDoubleClick += (s, e) => ToggleFullscreen();
+		base.Controls.Add(_mpv);
+		// 宿主 handle 创建后预热 mpv 上下文，使首次切到 MPV 引擎时无需同步初始化，避免切换卡顿
+		_mpv.HandleCreated += (s, e) => _mpv.BeginInvoke((MethodInvoker)delegate { _mpv.Prewarm(); });
+		// 缓冲动画叠加层：播放加载/缓冲时显示主题色旋转环（跟随主题换肤，尊重 ReduceMotion）
+		_spinnerPanel = new Panel
+		{
+			Dock = DockStyle.Fill,
+			BackColor = Color.FromArgb(18, 18, 22),
+			Visible = false
+		};
+		_spinnerPanel.Paint += (s, e) =>
+		{
+			Panel p = (Panel)s;
+			int cx = p.ClientSize.Width / 2;
+			int cy = p.ClientSize.Height / 2;
+			int r = (int)(22f * _dpiScale);
+			Color c = (_currentTheme != null) ? _currentTheme.Primary : Color.White;
+			e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+			using (Pen pen = new Pen(c, (int)Math.Max(3f, 3f * _dpiScale)))
+			{
+				pen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+				pen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+				e.Graphics.DrawArc(pen, cx - r, cy - r, r * 2, r * 2, _spinnerAngle, 300);
+			}
+			using (SolidBrush brush = new SolidBrush(Color.FromArgb(200, c.R, c.G, c.B)))
+			using (Font font = new Font("Segoe UI", 9f * _dpiScale))
+			{
+				StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Near };
+				e.Graphics.DrawString("缓冲中…", font, brush, cx, cy + r + (int)(10f * _dpiScale), sf);
+			}
+		};
+		base.Controls.Add(_spinnerPanel);
+		_spinnerTimer = new System.Windows.Forms.Timer { Interval = 16 };
+		_spinnerTimer.Tick += (s, e) =>
+		{
+			_spinnerAngle = (_spinnerAngle + 9) % 360;
+			bool playing = _lastKnownPlaying || (_mpv != null && _mpv.IsPlaying);
+			bool aborted = (!IsAvailable || _switchedToExternal || (_fallbackPanel != null && _fallbackPanel.Visible));
+			if (playing || aborted)
+			{
+				HideBuffering();
+				return;
+			}
+			if (_spinnerPanel.Visible) _spinnerPanel.Invalidate();
+		};
 		_failTimer = new System.Windows.Forms.Timer { Interval = 10000 };
 		_failTimer.Tick += FailTimer_Tick;
 		Application.AddMessageFilter(this);
@@ -295,7 +383,7 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		this.Dock = System.Windows.Forms.DockStyle.Fill;
 		this._videoView = new LibVLCSharp.WinForms.VideoView
 		{
-			Dock = System.Windows.Forms.DockStyle.Fill,
+			Dock = System.Windows.Forms.DockStyle.None,
 			BackColor = System.Drawing.Color.Black
 		};
 		this._videoView.HandleCreated += delegate
@@ -363,12 +451,17 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		};
 		this.BuildControlBar();
 		base.Controls.Add(this._videoView);
-		base.Controls.Add(this._controlBar);
 		base.Controls.Add(this._fallbackPanel);
 	}
 
 	/// <summary>底部控制栏高度（含 DPI 缩放），供外部按 16:9 精确计算播放器容器高度。</summary>
 	public int ControlBarHeight => (_controlBar != null) ? _controlBar.Height : ((int)(52f * _dpiScale));
+
+	/// <summary>底部控制栏面板（移到播放窗外侧下方承载）。</summary>
+	public Panel ControlBar => _controlBar;
+
+	/// <summary>控制栏显隐状态变化通知，供主窗体同步外部容器高度。</summary>
+	public event EventHandler ControlBarVisibilityChanged;
 
 	/// <summary>重新布局 fallback 面板中的 label（顶部）和 button（剩余区域居中）。</summary>
 	private void LayoutFallbackContent()
@@ -427,12 +520,39 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		int y = (barH - btnSize) / 2;
 		_controlBar = new Panel
 		{
-			Dock = DockStyle.Bottom,
+			Dock = DockStyle.None,
 			Height = barH,
 			BackColor = Color.FromArgb(18, 18, 22),
 			Visible = false
 		};
-		_btnPlayPause = MakeIconButton(PlayerIcon.Play, btnSize, pad, y);
+		// 控制栏不再放在播放器内部(会占用视频高度/被圆角窗裁切)，改由主窗体承载到播放窗外侧下方。
+		_controlBar.VisibleChanged += (s, e) => ControlBarVisibilityChanged?.Invoke(this, EventArgs.Empty);
+		// 引擎下拉框：使用 DarkComboBox（已自绘圆角、无边框、主题色），避免系统 ComboBox 漏白。
+		Color barBack = _currentTheme != null ? _currentTheme.Surface : Color.FromArgb(18, 18, 22);
+		Color btnForeFallback = _currentTheme != null ? _currentTheme.TextPrimary : Color.FromArgb(220, 220, 225);
+		Color btnBackFallback = _currentTheme != null ? _currentTheme.BgAlt : Color.FromArgb(40, 40, 48);
+		Color accentFallback = _currentTheme != null ? _currentTheme.Primary : Color.FromArgb(0, 122, 255);
+		Color borderFallback = _currentTheme != null ? _currentTheme.Border : Color.FromArgb(68, 68, 78);
+
+		_controlBar.BackColor = barBack;
+
+		_engineCombo = new DarkComboBox
+		{
+			Width = (int)(92f * _dpiScale),
+			Height = btnSize,
+			Location = new Point(pad, y),
+			Font = new Font("Segoe UI", 9f * _dpiScale),
+			BackColor = btnBackFallback,
+			ForeColor = btnForeFallback,
+			BorderColor = borderFallback,
+			FocusBorderColor = accentFallback,
+			CornerRadius = (int)(6f * _dpiScale)
+		};
+		_engineCombo.Items.Add("VLC");
+		_engineCombo.Items.Add("MPV");
+		_engineCombo.SelectedIndex = 0;
+		_engineCombo.SelectedIndexChanged += delegate { OnEngineComboChanged(); };
+		_btnPlayPause = MakeIconButton(PlayerIcon.Play, btnSize, _engineCombo.Right + pad, y);
 		_btnPlayPause.Click += delegate
 		{
 			TogglePlayPause();
@@ -442,16 +562,18 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		{
 			ToggleMute();
 		};
-		_volumeSlider = new TrackBar
+		_volumeSlider = new ThemedSlider
 		{
 			Minimum = 0,
 			Maximum = 100,
 			Value = 100,
 			Width = (int)(70f * _dpiScale),
-			Height = (int)(24f * _dpiScale),
-			TickStyle = TickStyle.None,
-			BackColor = Color.FromArgb(18, 18, 22),
-			ForeColor = Color.FromArgb(0, 122, 255)
+			Height = btnSize,
+			TrackColor = DrawingUtils.IsDarkColor(barBack) ? Color.FromArgb(70, 70, 80) : Color.FromArgb(210, 210, 215),
+			FillColor = accentFallback,
+			ThumbColor = DrawingUtils.IsDarkColor(barBack) ? Color.White : Color.FromArgb(60, 60, 70),
+			ThumbSize = (int)(14f * _dpiScale),
+			TrackHeight = (int)(5f * _dpiScale)
 		};
 		_volumeSlider.Location = new Point(_btnMute.Right + pad, y + (int)(3f * _dpiScale));
 		_volumeSlider.ValueChanged += delegate
@@ -461,16 +583,18 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		int progX = _volumeSlider.Right + pad;
 		int fsW = btnSize;
 		int progW = Math.Max((int)(60f * _dpiScale), _controlBar.Width - progX - pad - fsW - pad - pad);
-		_progressBar = new TrackBar
+		_progressBar = new ThemedSlider
 		{
 			Minimum = 0,
 			Maximum = 1000,
 			Value = 0,
 			Width = progW,
-			Height = (int)(24f * _dpiScale),
-			TickStyle = TickStyle.None,
-			BackColor = Color.FromArgb(18, 18, 22),
-			ForeColor = Color.FromArgb(0, 122, 255)
+			Height = btnSize,
+			TrackColor = DrawingUtils.IsDarkColor(barBack) ? Color.FromArgb(70, 70, 80) : Color.FromArgb(210, 210, 215),
+			FillColor = accentFallback,
+			ThumbColor = DrawingUtils.IsDarkColor(barBack) ? Color.White : Color.FromArgb(60, 60, 70),
+			ThumbSize = (int)(14f * _dpiScale),
+			TrackHeight = (int)(5f * _dpiScale)
 		};
 		_progressBar.Location = new Point(progX, y + (int)(3f * _dpiScale));
 		_progressBar.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
@@ -490,6 +614,7 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			Text = "",
 			Visible = false
 		};
+		_controlBar.Controls.Add(_engineCombo);
 		_controlBar.Controls.Add(_btnPlayPause);
 		_controlBar.Controls.Add(_btnMute);
 		_controlBar.Controls.Add(_volumeSlider);
@@ -499,6 +624,11 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		_controlBar.Layout += delegate
 		{
 			_btnFullscreen.Location = new Point(_controlBar.Width - _btnFullscreen.Width - pad, y);
+			// 控制栏宽度变化(如承载到外部后 Dock.Fill)时，按实际宽度重算进度条宽度，避免初始基于 0 宽度算错
+			int progX2 = _volumeSlider.Right + pad;
+			int fsW2 = btnSize;
+			int progW2 = Math.Max((int)(60f * _dpiScale), _controlBar.Width - progX2 - pad - fsW2 - pad - pad);
+			if (_progressBar != null) _progressBar.Width = progW2;
 		};
 		_progressTimer = new System.Windows.Forms.Timer
 		{
@@ -546,7 +676,18 @@ public class ChannelPlayer : UserControl, IMessageFilter
 
 	private void OnProgressBarValueChanged(object sender, EventArgs e)
 	{
-		if (_isUpdatingProgress || _mediaPlayer == null)
+		if (_isUpdatingProgress) return;
+		if (_engine == PreviewEngine.MPV)
+		{
+			double? dur = _mpv?.GetDuration();
+			if (dur.HasValue && dur.Value > 0 && _progressBar != null)
+			{
+				double sec = dur.Value * _progressBar.Value / 1000.0;
+				_mpv?.Seek(sec);
+			}
+			return;
+		}
+		if (_mediaPlayer == null)
 		{
 			return;
 		}
@@ -567,6 +708,39 @@ public class ChannelPlayer : UserControl, IMessageFilter
 
 	private void UpdateProgress()
 	{
+		if (_engine == PreviewEngine.MPV)
+		{
+			if (_mpv == null || _progressBar == null) return;
+			double? pos = _mpv.GetTimePos();
+			double? dur = _mpv.GetDuration();
+			if (pos.HasValue)
+			{
+				int val;
+				if (dur.HasValue && dur.Value > 0)
+				{
+					val = (int)(pos.Value * 1000.0 / dur.Value);
+				}
+				else
+				{
+					long cycle = 120000L;
+					val = (int)((((long)pos.Value % cycle) + cycle) % cycle * 1000L / cycle);
+				}
+				val = Math.Max(0, Math.Min(1000, val));
+				_isUpdatingProgress = true;
+				if (_progressBar.Value != val) _progressBar.Value = val;
+				_isUpdatingProgress = false;
+				bool? paused = _mpv.IsPaused;
+				_lastKnownPlaying = !(paused ?? false);
+				UpdatePlayPauseIcon();
+				if (_statusLabel != null)
+				{
+					_statusLabel.Text = FormatMpvTime(pos.Value)
+						+ (dur.HasValue && dur.Value > 0 ? " / " + FormatMpvTime(dur.Value) : "");
+					_statusLabel.Visible = true;
+				}
+			}
+			return;
+		}
 		if (_mediaPlayer == null || _progressBar == null)
 		{
 			return;
@@ -597,6 +771,17 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		catch
 		{
 		}
+	}
+
+	private static string FormatMpvTime(double seconds)
+	{
+		if (double.IsNaN(seconds) || double.IsInfinity(seconds) || seconds < 0) seconds = 0;
+		int s = (int)seconds;
+		int h = s / 3600;
+		s %= 3600;
+		int m = s / 60;
+		s %= 60;
+		return h > 0 ? $"{h}:{m:D2}:{s:D2}" : $"{m}:{s:D2}";
 	}
 
 	private Button MakeIconButton(PlayerIcon icon, int size, int x, int y)
@@ -934,14 +1119,43 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		}
 	}
 
+	private void ShowBuffering()
+	{
+		if (_spinnerPanel == null) return;
+		if (base.InvokeRequired) { base.BeginInvoke((Action)ShowBuffering); return; }
+		_spinnerAngle = 0;
+		_spinnerPanel.BringToFront();
+		_spinnerPanel.Visible = true;
+		if (!_spinnerTimer.Enabled) _spinnerTimer.Start();
+	}
+	private void HideBuffering()
+	{
+		if (_spinnerPanel == null) return;
+		if (base.InvokeRequired) { base.BeginInvoke((Action)HideBuffering); return; }
+		_spinnerPanel.Visible = false;
+		if (_spinnerTimer.Enabled) _spinnerTimer.Stop();
+	}
+
 	public void LoadChannel(string url, string name)
 	{
 		_currentUrl = url;
 		_currentName = name ?? string.Empty;
+		// 手动选择 MPV 引擎时，直接走内嵌 MPV（保留当前 VLC 预览窗结构，仅替换渲染源），跳过 VLC 流程
+		if (_engine == PreviewEngine.MPV)
+		{
+			EmbedMpvEngine(url, _currentName);
+			return;
+		}
 		// 切换频道时，若之前已切到外部播放器内嵌，先退回 VLC 模式（新链接可能 VLC 能播）
 		if (_switchedToExternal)
 		{
 			ResetToVlcMode();
+		}
+		// 切台前若处于全屏：先把视频交还内嵌预览窗，再让后台线程操作内嵌 HWND 切台，
+		// 避免后台 Stop/Play 直接操作全屏顶层窗的 HWND 导致视频输出拆除等待卡死（预览窗切换频道卡死的根因）。
+		if (_isFullscreen)
+		{
+			ExitFullscreen();
 		}
 		PlayerLogger.Write("LOAD", $"LoadChannel 进入 | name={name} | url={url} | IsAvailable={IsAvailable} | libVLC_ready={_libVLC != null} | VideoView.Handle={_videoView?.Handle ?? IntPtr.Zero}");
 		// 如果 VideoView handle 已创建但还没初始化 VLC，这里先同步初始化，避免竞态
@@ -1017,6 +1231,7 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		}
 		// 标记切台进行中：禁止 UI 线程在切换期间访问 libvlc，避免死锁卡死
 		Interlocked.Increment(ref _switchingCount);
+		ShowBuffering();
 		Task.Run(() => LoadChannelCore(token, uri, name ?? string.Empty));
 	}
 
@@ -1094,11 +1309,60 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			{
 				return;
 			}
-			// 直播流无需预解析：ParseNetwork 会同步阻塞线程池最长 5 秒，
-			// 快速换台时大量此类阻塞会耗尽线程池并让 VLC 输入堆积 → 软件卡死。
-			Media media = new Media(_libVLC, uri);
+		// 直播流无需预解析：ParseNetwork 会同步阻塞线程池最长 5 秒，
+		// 快速换台时大量此类阻塞会耗尽线程池并让 VLC 输入堆积 → 软件卡死。
+		// 通过 :no-parse 选项禁用输入预解析，消除该同步阻塞（播放时切换频道卡死的根因）。
+		Media media;
+		MeasuredMediaInput localInput = null;
+		string hlsProxyUrl = null;
+		bool useInjection = UseMeasuredStreamProbe
+			&& (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
+			&& !IsHlsUri(uri);
+		bool isHls = IsHlsUri(uri);
+		if (useInjection)
+		{
+			// Tier B 真正形态：零额外带宽注入式精确模式。
+			// 不再另开连接丢弃下载，而是把上游【同一个】连接注入 VLC 输入，
+			// VLC 消费多少字节就由 MeasuredMediaInput 精确计数多少（单连接、零额外带宽）。
+			localInput = new MeasuredMediaInput(uri);
+			media = new Media(_libVLC, localInput, new[] { ":no-parse" });
+		}
+		else if (isHls && UseHlsCountingProxy)
+		{
+			// HLS 优先方案：本地计数代理。VLC 改连本机代理 URL，代理改写 m3u8 分片 URL 并回源计数，
+			// VLC 的消费路径就是测量路径，零额外带宽。代理启动失败则回退原始 URL + 分片探针兜底。
+			StopHlsProxy();
+			var proxy = new HlsCountingProxy(uri.AbsoluteUri);
+			hlsProxyUrl = proxy.Start();
+			if (!string.IsNullOrWhiteSpace(hlsProxyUrl))
+			{
+                _hlsProxy = proxy;
+                media = new Media(_libVLC, hlsProxyUrl);
+                media.AddOption(":no-parse");
+                // 方案A：本地代理按需转发导致字节计数在稳定播放期脉冲冻结，
+                // 额外启动【持续型】HLS 分片探针作为持续测速源，根治链接速度归零。
+                StartHlsProbeContinuous(uri.AbsoluteUri);
+			}
+			else
+			{
+				proxy.Dispose();
+				media = new Media(_libVLC, uri);
+				media.AddOption(":no-parse");
+				if (UseHlsProbeFallback)
+					StartHlsProbe(uri.AbsoluteUri);
+			}
+		}
+		else
+		{
+			media = new Media(_libVLC, uri);
+			media.AddOption(":no-parse");
+			if (isHls && UseHlsProbeFallback && string.IsNullOrWhiteSpace(hlsProxyUrl))
+				StartHlsProbe(uri.AbsoluteUri);
+		}
 			if (base.IsDisposed || token != _loadToken)
 			{
+				try { localInput?.Dispose(); }
+				catch { }
 				try
 				{
 					media.Dispose();
@@ -1112,6 +1376,8 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			{
 				if (base.IsDisposed || token != _loadToken)
 				{
+					try { localInput?.Dispose(); }
+					catch { }
 					try
 					{
 						media.Dispose();
@@ -1122,7 +1388,10 @@ public class ChannelPlayer : UserControl, IMessageFilter
 					return;
 				}
 				_currentMedia = media;
+				_measuredInput = localInput;
 				_hasPlayedSuccessfully = false;
+				// 新频道开始加载：清空上一流的采样基线，避免 readBytes/_lastLiveRate 跨流污染导致首帧误判或归零
+				ResetStatSampler();
 				PlayerLogger.Write("CORE", $"调用 _mediaPlayer.Play(media) | name={name}");
 				_mediaPlayer.Play(media);
 				PlayerLogger.Write("CORE", "Play() 调用完成");
@@ -1171,6 +1440,9 @@ public class ChannelPlayer : UserControl, IMessageFilter
 
 	public void Stop()
 	{
+		ResetStatSampler();
+		StopMeasuredInput();
+		StopHlsResources();
 		Interlocked.Increment(ref _loadToken);
 		// 在后台线程停止，避免 UI 线程直接调用 Stop 与视频输出拆除死锁卡死
 		Task.Run(delegate
@@ -1212,6 +1484,7 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		});
 		StopFailTimer();
 		_embedHost?.Stop();
+		_mpv?.Stop();
 	}
 
 	public void StopAsync()
@@ -1220,6 +1493,9 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		{
 			return;
 		}
+		ResetStatSampler();
+		StopMeasuredInput();
+		StopHlsResources();
 		Interlocked.Increment(ref _loadToken);
 		Task.Run(delegate
 		{
@@ -1260,6 +1536,7 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		});
 		StopFailTimer();
 		_embedHost?.Stop();
+		_mpv?.Stop();
 	}
 
 	// ===== 自动切换外部播放器（内嵌）相关 =====
@@ -1358,6 +1635,96 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		});
 	}
 
+	private void OnEngineComboChanged()
+	{
+		bool toMpv = _engineCombo != null && _engineCombo.SelectedIndex == 1;
+		_engine = toMpv ? PreviewEngine.MPV : PreviewEngine.VLC;
+		if (toMpv)
+		{
+			EmbedMpvEngine(_currentUrl, _currentName);
+		}
+		else
+		{
+			RevertToVlcEngine();
+		}
+	}
+
+	/// <summary>手动切到内嵌 MPV 引擎（库形态，P/Invoke libmpv-2.dll，无需 mpv.exe）：
+	/// 隐藏 VLC 渲染与专属控件，托管并复用 MpvPlayer。dll 缺失时 MpvPlayer 自带 fallback 提示。</summary>
+	private void EmbedMpvEngine(string url, string name)
+	{
+		ApplyEngineChrome();
+		try { _mediaPlayer?.Stop(); } catch { }
+		StopFailTimer();
+		if (_videoView != null) _videoView.Visible = false;
+		if (_fallbackPanel != null) _fallbackPanel.Visible = false;
+		if (_embedHost != null) { _embedHost.Visible = false; }
+		if (_controlBar != null) _controlBar.Visible = true;
+		_mpv.Visible = true;
+		_mpv.BringToFront();
+		_mpv.SetControlBarVisible(false); // 托管模式下由 ChannelPlayer 控制栏统一控制
+		if (_controlBar != null) _controlBar.BringToFront(); // 确保控制栏盖在 MpvPlayer 之上
+		PlayerLogger.Write("ENGINE", $"切换到内嵌 MPV 引擎(库形态) | url={url}");
+		// 进度条/音量/播放暂停等控制统一转发到 MpvPlayer（见各控制分支中的 _engine 判断）
+		ShowBuffering();
+		if (!string.IsNullOrWhiteSpace(url))
+		{
+			_mpv.LoadChannel(url, name);
+			_lastKnownPlaying = true;
+			UpdatePlayPauseIcon();
+			if (_progressBar != null) _progressBar.Value = 0;
+			StartProgressTimer();
+		}
+	}
+
+	private void RevertToVlcEngine()
+	{
+		StopProgressTimer();
+		if (_mpv != null && _mpv.Visible)
+		{
+			_mpv.Stop();
+			_mpv.Visible = false;
+		}
+		if (_embedHost != null && _embedHost.Visible)
+		{
+			_embedHost.Stop();
+			_embedHost.Visible = false;
+		}
+		_switchedToExternal = false;
+		if (_videoView != null) _videoView.Visible = true;
+		if (_controlBar != null) _controlBar.Visible = true;
+		ApplyEngineChrome();
+		if (!string.IsNullOrWhiteSpace(_currentUrl))
+		{
+			// 重新走正常 VLC 加载（此时 _engine 已为 VLC）
+			LoadChannel(_currentUrl, _currentName);
+		}
+	}
+
+	/// <summary>MPV 模式下隐藏 VLC 专属控件，仅保留引擎下拉，避免误控隐藏的 VLC。</summary>
+	private void ApplyEngineChrome()
+	{
+		bool mpv = _engine == PreviewEngine.MPV;
+		// MPV 模式下所有控制按钮均保留（mpv 已支持全屏切换）
+		if (_btnPlayPause != null) _btnPlayPause.Visible = true;
+		if (_btnMute != null) _btnMute.Visible = true;
+		if (_volumeSlider != null) _volumeSlider.Visible = true;
+		if (_progressBar != null) _progressBar.Visible = true;
+		if (_btnFullscreen != null) _btnFullscreen.Visible = true;
+		if (_engineCombo != null) _engineCombo.Visible = true;
+		if (_statusLabel != null)
+		{
+			_statusLabel.Visible = mpv;
+			if (mpv)
+			{
+				_statusLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+				_statusLabel.AutoSize = true;
+				int rightX = Math.Max(4, _controlBar.Width - 4 - (int)(130f * _dpiScale));
+				_statusLabel.Location = new Point(rightX, 8);
+			}
+		}
+	}
+
 	private void ResetToVlcMode()
 	{
 		if (_embedHost != null && _embedHost.Visible)
@@ -1385,6 +1752,17 @@ public class ChannelPlayer : UserControl, IMessageFilter
 
 	private void TogglePlayPause()
 	{
+		if (_engine == PreviewEngine.MPV)
+		{
+			if (_mpv != null && _mpv.Visible)
+			{
+				bool paused = _mpv.IsPaused;
+				_mpv.SetPaused(!paused);
+				_lastKnownPlaying = !paused;
+				UpdatePlayPauseIcon();
+			}
+			return;
+		}
 		if (!IsAvailable || _mediaPlayer == null)
 		{
 			return;
@@ -1410,6 +1788,13 @@ public class ChannelPlayer : UserControl, IMessageFilter
 
 	private void ToggleMute()
 	{
+		if (_engine == PreviewEngine.MPV)
+		{
+			_isMuted = !_isMuted;
+			_mpv?.SetMute(_isMuted);
+			UpdateMuteIcon();
+			return;
+		}
 		if (!IsAvailable || _mediaPlayer == null)
 		{
 			return;
@@ -1468,28 +1853,80 @@ public class ChannelPlayer : UserControl, IMessageFilter
 
 	private void EnterFullscreen()
 	{
-		DiagLog($"EnterFullscreen start isFs={_isFullscreen} vv={_videoView != null} avail={IsAvailable}");
-		if (_isFullscreen || _videoView == null)
+		DiagLog($"EnterFullscreen start isFs={_isFullscreen} vv={_videoView != null} avail={IsAvailable} engine={_engine}");
+		if (_isFullscreen)
+		{
+			return;
+		}
+		// MPV 引擎：把 MpvPlayer 控件整体移入全屏窗（wid 嵌入的 _host 随控件父化到新窗口，mpv 自动跟随渲染）
+		if (_engine == PreviewEngine.MPV)
+		{
+			if (_mpv == null || _mpv.IsDisposed)
+			{
+				return;
+			}
+			try
+			{
+				_isFullscreen = true;
+				_fullscreenForm = new Form
+				{
+					FormBorderStyle = FormBorderStyle.None,
+					WindowState = FormWindowState.Maximized,
+					BackColor = Color.Black,
+					KeyPreview = true,
+					TopMost = true,
+					ShowInTaskbar = false
+				};
+				Form ownerForm = this.FindForm();
+				if (ownerForm != null)
+				{
+					_fullscreenForm.Owner = ownerForm;
+				}
+				_fullscreenForm.Controls.Add(_mpv);
+				_mpv.Dock = DockStyle.Fill;
+				_mpv.SetFullscreenMode(true);
+				_mpv.SetControlBarVisible(true);
+				HookFullscreenForm();
+				AddFullscreenInfoBar();
+				_lastVideoClickTime = DateTime.MinValue;
+				_fullscreenForm.Show();
+				AttachVideoViewHook();
+			}
+			catch (Exception ex)
+			{
+				DiagLog("EnterFullscreen(MPV) FAILED: " + ex);
+				_isFullscreen = false;
+				try
+				{
+					if (_fullscreenForm != null && !_fullscreenForm.IsDisposed)
+					{
+						_fullscreenForm.Close();
+					}
+				}
+				catch
+				{
+				}
+				_fullscreenForm = null;
+				RestoreVideoView();
+			}
+			return;
+		}
+		if (_videoView == null)
 		{
 			return;
 		}
 		try
 		{
 			_isFullscreen = true;
-			// 正规窗口（带标题栏与“×”关闭按钮），双击进入最大化全屏；点 × 或按 Esc 关闭时恢复内嵌预览窗
+			// 无边框沉浸式全屏，浮动信息栏显示频道名称，ESC 退出
 			_fullscreenForm = new Form
 			{
-				FormBorderStyle = FormBorderStyle.Sizable,
-				ControlBox = true,
-				MaximizeBox = true,
-				MinimizeBox = false,
-				ShowIcon = false,
+				FormBorderStyle = FormBorderStyle.None,
 				WindowState = FormWindowState.Maximized,
 				BackColor = Color.Black,
 				KeyPreview = true,
-				// 让独立播放器窗口置顶，避免被主窗口遮挡
 				TopMost = true,
-				Text = "IPTV 播放器"
+				ShowInTaskbar = false
 			};
 			Form ownerForm = this.FindForm();
 			if (ownerForm != null)
@@ -1498,31 +1935,8 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			}
 			_fullscreenForm.Controls.Add(_videoView);
 			_videoView.Dock = DockStyle.Fill;
-			_fullscreenForm.Click += delegate
-			{
-				HandleVideoClick(Cursor.Position, fromMessageFilter: false);
-			};
-			_fullscreenForm.MouseDown += delegate(object s, MouseEventArgs e)
-			{
-				if (e.Button == MouseButtons.Left)
-				{
-					HandleVideoClick(Cursor.Position, fromMessageFilter: false);
-				}
-			};
-			_fullscreenForm.KeyDown += delegate(object s, KeyEventArgs e)
-			{
-				if (e.KeyCode == Keys.Escape)
-				{
-					ExitFullscreen();
-					e.Handled = true;
-				}
-			};
-			_fullscreenForm.FormClosed += delegate
-			{
-				// 关闭（点 × 或 Esc）时无条件把视频交还内嵌预览窗；RestoreVideoView 内部会判断 Parent 避免重复
-				_isFullscreen = false;
-				RestoreVideoView();
-			};
+			HookFullscreenForm();
+			AddFullscreenInfoBar();
 			_lastVideoClickTime = DateTime.MinValue;
 			_fullscreenForm.Show();
 			// 父容器切换后重新挂接消息钩子（HWND 可能重建）
@@ -1535,11 +1949,11 @@ public class ChannelPlayer : UserControl, IMessageFilter
 					_videoView.MediaPlayer = _mediaPlayer;
 				}
 				catch
-			{
+				{
+				}
 			}
 		}
-	}
-	catch (Exception ex)
+		catch (Exception ex)
 		{
 			DiagLog("EnterFullscreen FAILED: " + ex);
 			_isFullscreen = false;
@@ -1556,6 +1970,124 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			_fullscreenForm = null;
 			RestoreVideoView();
 		}
+	}
+
+	private void HookFullscreenForm()
+	{
+		if (_fullscreenForm == null)
+		{
+			return;
+		}
+		_fullscreenForm.Click += delegate
+		{
+			HandleVideoClick(Cursor.Position, fromMessageFilter: false);
+		};
+		_fullscreenForm.MouseDown += delegate(object s, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				HandleVideoClick(Cursor.Position, fromMessageFilter: false);
+			}
+		};
+		_fullscreenForm.KeyDown += delegate(object s, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Escape)
+			{
+				ExitFullscreen();
+				e.Handled = true;
+			}
+		};
+		_fullscreenForm.FormClosed += delegate
+		{
+			// 关闭（点 × 或 Esc）时无条件把视频交还内嵌预览窗；RestoreVideoView 内部会判断 Parent 避免重复
+			_isFullscreen = false;
+			RestoreVideoView();
+		};
+	}
+
+	/// <summary>
+	/// 为无边框全屏窗口添加浮动信息栏：显示频道名称，鼠标静止 3 秒后自动淡出隐藏。
+	/// </summary>
+	private void AddFullscreenInfoBar()
+	{
+		if (_fullscreenForm == null) return;
+
+		Color themeText = _currentTheme != null ? _currentTheme.TextPrimary : Color.White;
+		Color themeBg = _currentTheme != null ? _currentTheme.Bg : Color.Black;
+		string chName = string.IsNullOrWhiteSpace(_currentName) ? "IPTV 播放器" : _currentName;
+
+		var infoBar = new Panel
+		{
+			Dock = DockStyle.Top,
+			Height = 44,
+			BackColor = Color.FromArgb(180, themeBg.R, themeBg.G, themeBg.B)
+		};
+		var lbl = new Label
+		{
+			Text = "  " + chName,
+			Font = new Font("Microsoft YaHei UI", 11f, FontStyle.Bold),
+			ForeColor = themeText,
+			Dock = DockStyle.Fill,
+			TextAlign = ContentAlignment.MiddleLeft
+		};
+		var hintLbl = new Label
+		{
+			Text = "ESC 退出全屏",
+			Font = new Font("Microsoft YaHei UI", 8f),
+			ForeColor = Color.FromArgb(160, themeText),
+			Dock = DockStyle.Right,
+			Width = 100,
+			TextAlign = ContentAlignment.MiddleRight
+		};
+		infoBar.Controls.Add(lbl);
+		infoBar.Controls.Add(hintLbl);
+		_fullscreenForm.Controls.Add(infoBar);
+		infoBar.BringToFront();
+
+		// 鼠标静止 3 秒后淡出隐藏
+		var hideTimer = new System.Windows.Forms.Timer { Interval = 3000 };
+		hideTimer.Tick += delegate
+		{
+			hideTimer.Stop();
+			var fadeTimer = new System.Windows.Forms.Timer { Interval = 30 };
+			fadeTimer.Tick += delegate
+			{
+				int a = infoBar.BackColor.A - 25;
+				if (a <= 0)
+				{
+					fadeTimer.Stop();
+					fadeTimer.Dispose();
+					infoBar.Visible = false;
+				}
+				else
+				{
+					infoBar.BackColor = Color.FromArgb(a, themeBg.R, themeBg.G, themeBg.B);
+					lbl.ForeColor = Color.FromArgb(Math.Min(255, a + 40), themeText);
+					hintLbl.ForeColor = Color.FromArgb(Math.Min(255, a), themeText.R * 2 / 3, themeText.G * 2 / 3, themeText.B * 2 / 3);
+				}
+			};
+			fadeTimer.Start();
+		};
+		hideTimer.Start();
+
+		// 鼠标移动时重新显示并重置计时
+		EventHandler showBar = delegate
+		{
+			if (!infoBar.Visible)
+			{
+				infoBar.Visible = true;
+				infoBar.BackColor = Color.FromArgb(180, themeBg.R, themeBg.G, themeBg.B);
+				lbl.ForeColor = themeText;
+			}
+			hideTimer.Stop();
+			hideTimer.Start();
+		};
+		_fullscreenForm.MouseMove += (s, e) => showBar(null, EventArgs.Empty);
+		_fullscreenForm.FormClosed += delegate
+		{
+			hideTimer.Stop();
+			hideTimer.Dispose();
+		};
 	}
 
 	private void ExitFullscreen()
@@ -1584,10 +2116,24 @@ public class ChannelPlayer : UserControl, IMessageFilter
 	{
 		try
 		{
+			// MPV 引擎：把 MpvPlayer 控件从全屏窗交还内嵌预览窗（wid 嵌入的 _host 随父化回到原窗口，mpv 自动跟随）
+			if (_engine == PreviewEngine.MPV && _mpv != null && _mpv.Parent != this)
+			{
+				base.Controls.Add(_mpv);
+				_mpv.Dock = DockStyle.Fill;
+				_mpv.SetFullscreenMode(false);
+				_mpv.SetControlBarVisible(false);
+				if (_controlBar != null)
+				{
+					_controlBar.BringToFront();
+				}
+				AttachVideoViewHook();
+				return;
+			}
 			if (_videoView != null && _videoView.Parent != this)
 			{
 				base.Controls.Add(_videoView);
-				_videoView.Dock = DockStyle.Fill;
+				_videoView.Dock = DockStyle.None;
 				_videoView.SendToBack();
 				if (_controlBar != null)
 				{
@@ -1636,6 +2182,12 @@ public class ChannelPlayer : UserControl, IMessageFilter
 	public void SetVolume(int volume)
 	{
 		volume = Math.Max(0, Math.Min(100, volume));
+		if (_engine == PreviewEngine.MPV)
+		{
+			_mpv?.SetVolume(volume);
+			if (_volumeSlider != null) _volumeSlider.Value = volume;
+			return;
+		}
 		if (_mediaPlayer != null)
 		{
 			try
@@ -1657,6 +2209,11 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		isPlaying = false;
 		timeMs = 0L;
 		lengthMs = 0L;
+		// MPV 托管引擎：转发到 MpvPlayer 获取播放状态（含直播中判定、进度时间）
+		if (_engine == PreviewEngine.MPV)
+		{
+			return _mpv != null && _mpv.TryGetLiveState(out isPlaying, out timeMs, out lengthMs);
+		}
 		if (!IsAvailable || _mediaPlayer == null)
 		{
 			return false;
@@ -1687,6 +2244,10 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		bitrate = "";
 		audioChannels = "";
 		audioSampleRate = "";
+		if (_engine == PreviewEngine.MPV)
+		{
+			return _mpv != null && _mpv.TryGetStreamInfo(out codec, out resolution, out fps, out bitrate, out audioChannels, out audioSampleRate);
+		}
 		if (!IsAvailable || _mediaPlayer == null)
 		{
 			return false;
@@ -1796,12 +2357,194 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		}
 	}
 
+	// VLC 实时速率采样器基线（ReadBytes 增量采样 + 上一帧速度沿用兜底用）
+	private long _lastStatReadBytes;
+	private long _lastStatTickMs;
+	private float _lastLiveRate;
+
+	/// <summary>Tier B 精确模式开关：开启后改用 MeasuredMediaInput 注入式精确计数——
+	/// 把上游单个连接直接注入 VLC 输入，VLC 消费多少字节就由 MeasuredStream 精确计数多少，
+	/// 不另开连接、不丢弃下载，真正零额外带宽。仅对直接流（.ts/.flv 等，非 HLS）启用，
+	/// HLS 因 VLC 需自行分片回源故回退常规路径。
+	/// 【默认开启】以消除直链播放期 Tier A 独立探针抢带宽导致的卡顿；个别需要原生 HTTP 鉴权/重定向/Range 的源
+	/// 若注入失败，可置回 false（届时主窗体 Tier A 探针会在播放期按下 IsPlaying 闸门停止，仍不抢带宽）。</summary>
+	public static bool UseMeasuredStreamProbe = true;
+	// 注入式精确模式的输入源（由 LoadChannelCore 创建、Stop 时释放）
+	private MeasuredMediaInput _measuredInput;
+
+	/// <summary>HLS 本地计数代理开关：零额外带宽优先方案，但为达成零额外带宽必须【劫持 VLC 的播放 URL】
+	/// 让 VLC 通过本机代理回源。代理回源使用自有 HttpWebRequest，不透明（不携带 VLC 原有鉴权/自定义头/Cookie、
+	/// 不支持 #EXT-X-BYTERANGE 多段复用、无 keep-alive），对防盗链/byte-range/特殊协议源会回源失败或数据错位 →
+	/// 直接导致 VLC “无法播放预览”。【默认关闭】以优先保证播放功能；HLS 链接速度改由 HlsLinkProbe 独立分片探针
+	/// 兜底（额外带宽但完全不侵入播放路径，探针失败也不影响播放）。确需零额外带宽时再手动置 true 并针对源调试。</summary>
+	public static bool UseHlsCountingProxy = false;
+	/// <summary>HLS 智能分片探针开关：兜底方案。代理不可用时独立解析 m3u8 并顺序下载分片计数，
+	/// 会额外拉一条流，因此优先级低于代理。默认 true 作为可靠兜底。</summary>
+	public static bool UseHlsProbeFallback = true;
+	/// <summary>HLS 分片探针暖机时长(ms)：播放开始后的这段时间内探针持续拉分片以测出有代表性的链接速度，
+	/// 超时后自动停止第二条拉流连接，把带宽全部让给播放，避免 1080p 等高码率源因探针抢带宽而卡顿。</summary>
+	private const int HlsProbeWarmupMs = 6000;
+	private HlsCountingProxy _hlsProxy;
+	private HlsLinkProbe _hlsProbe;
+	// HLS 探针自动停表（暖机结束后释放带宽，见 ScheduleHlsProbeAutoStop）
+	private System.Threading.Timer _hlsProbeAutoStop;
+
+	/// <summary>判断是否为 HLS（.m3u8/.m3u）直播清单。HLS 下 VLC 需自行分片回源，
+	/// 单连接注入无法覆盖分片字节，故 B 模式跳过、回退常规路径。</summary>
+		public static bool IsHlsUri(Uri uri)
+		{
+			if (uri == null) return false;
+			string s = uri.AbsoluteUri;
+			return IsHlsUrl(s);
+		}
+
+		/// <summary>判断某 URL 是否为 HLS 清单（字符串版，供主窗体/静态方法使用）。</summary>
+		public static bool IsHlsUrl(string url)
+		{
+			if (string.IsNullOrWhiteSpace(url)) return false;
+			return url.EndsWith(".m3u8", StringComparison.OrdinalIgnoreCase)
+				|| url.EndsWith(".m3u", StringComparison.OrdinalIgnoreCase)
+				|| url.IndexOf(".m3u8?", StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+
+		/// <summary>判断某 URL 当前是否走 B 注入式精确模式（单连接、零额外带宽）。
+		/// 供主窗体决定是否跳过 Tier A 独立探针——B 已用单连接精确计数，无需再开第二个连接。</summary>
+		public static bool IsMeasuredInjectionEnabledFor(string url)
+		{
+			if (!UseMeasuredStreamProbe || string.IsNullOrWhiteSpace(url)) return false;
+			if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+				&& !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) return false;
+			// HLS 下 VLC 需自行分片回源，单连接注入无法覆盖分片字节，回退常规路径（此时由 HLS 代理/探针测量）
+			if (IsHlsUrl(url)) return false;
+			return true;
+		}
+
+		/// <summary>判断某 URL 当前是否走 HLS 本地计数代理（零额外带宽）。
+		/// 供主窗体决定是否跳过 Tier A 独立探针——代理已随 VLC 消费路径计数，无需再开第二个连接。</summary>
+		public static bool IsHlsProxyActiveFor(string url)
+		{
+			if (!UseHlsCountingProxy || string.IsNullOrWhiteSpace(url)) return false;
+			if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+				&& !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) return false;
+			return IsHlsUrl(url);
+		}
+
+		/// <summary>当前频道是否已有 HLS 测量在运行（本地代理或分片探针）。
+		/// 主窗体据此停止 Tier A 独立探针，避免对同一条 HLS 流重复建立额外连接。</summary>
+		public bool IsHlsMeasurementActive => _hlsProxy != null || _hlsProbe != null;
+		/// <summary>HLS 分片探针当前平滑速率（字节/s），稳定播放期持续有效。未运行则为 0。</summary>
+		public float HlsProbeBps => _hlsProbe != null ? _hlsProbe.CurrentBps : 0f;
+		/// <summary>HLS 分片探针是否在运行（持续测速源可用）。</summary>
+		public bool IsHlsProbeRunning => _hlsProbe != null && _hlsProbe.IsRunning;
+
+
+	/// <summary>停止并释放 Tier B 注入式输入（须在 Media 释放之后调用）。</summary>
+	private void StopMeasuredInput()
+	{
+		var mi = _measuredInput;
+		_measuredInput = null;
+		if (mi != null)
+		{
+			try { mi.Dispose(); }
+			catch { }
+		}
+	}
+
+	private void StartHlsProbe(string m3u8Url)
+	{
+		StopHlsProbe();
+		if (!UseHlsProbeFallback || string.IsNullOrWhiteSpace(m3u8Url)) return;
+		try
+		{
+			_hlsProbe = new HlsLinkProbe();
+			_hlsProbe.Start(m3u8Url);
+			// 暖机后自动停探针：播放稳定后停掉第二条拉流连接，把带宽全留给播放，
+			// 避免 1080p 等高码率源因探针抢带宽导致卡顿（零带宽测速仅直链注入式可用）。
+			ScheduleHlsProbeAutoStop();
+		}
+		catch { _hlsProbe = null; }
+	}
+
+	/// <summary>启动一次性计时器：HlsProbeWarmupMs 后自动停止 HLS 分片探针，
+	/// 释放被探针占用的第二条连接带宽，根治高码率源播放卡顿。换台/停止/重载会先 Dispose 旧计时器。</summary>
+	private void ScheduleHlsProbeAutoStop()
+	{
+		try { _hlsProbeAutoStop?.Dispose(); }
+		catch { }
+		_hlsProbeAutoStop = new System.Threading.Timer(delegate
+		{
+			// 已在播放期：停掉竞争探针，释放带宽
+			StopHlsProbe();
+		}, null, HlsProbeWarmupMs, System.Threading.Timeout.Infinite);
+	}
+
+	private void StopHlsProbe()
+	{
+		try { _hlsProbeAutoStop?.Dispose(); }
+		catch { }
+		_hlsProbeAutoStop = null;
+		var p = _hlsProbe;
+		_hlsProbe = null;
+		if (p != null)
+		{
+			try { p.Dispose(); }
+			catch { }
+		}
+	}
+
+			/// <summary>启动持续型 HLS 分片探针（不自动停）：作为稳定播放期持续测速源，
+		/// 对抗 VLC 内部统计归零与本地代理按需转发导致的字节计数脉冲冻结。
+		/// 代价是与播放器各占一条拉流连接（双拉流），IPTV 中低码率直播下带宽影响可忽略。</summary>
+		private void StartHlsProbeContinuous(string m3u8Url)
+		{
+			StopHlsProbe();
+			if (string.IsNullOrWhiteSpace(m3u8Url)) return;
+			try
+			{
+				_hlsProbe = new HlsLinkProbe();
+				_hlsProbe.Start(m3u8Url);
+				// 注意：不调度 ScheduleHlsProbeAutoStop —— 持续运行以保证稳定播放期链接速度不归零
+			}
+			catch { _hlsProbe = null; }
+		}
+
+		private void StopHlsProxy()
+	{
+		var px = _hlsProxy;
+		_hlsProxy = null;
+		if (px != null)
+		{
+			try { px.Dispose(); }
+			catch { }
+		}
+	}
+
+	private void StopHlsResources()
+	{
+		StopHlsProxy();
+		StopHlsProbe();
+	}
+
+
+	/// <summary>重置 VLC 实时速率采样基线。必须在停止播放 / 开始新频道加载时调用，
+	/// 否则新流会继承上一条流的 readBytes 基准与 _lastLiveRate，导致首帧误判或短暂归零。</summary>
+	private void ResetStatSampler()
+	{
+		_lastStatReadBytes = 0L;
+		_lastStatTickMs = 0L;
+		_lastLiveRate = 0f;
+	}
+
 	public bool TryGetPlayerStats(out long readBytes, out float inputBitrate, out int decodedFrames, out int displayedFrames)
 	{
 		readBytes = 0L;
 		inputBitrate = 0f;
 		decodedFrames = 0;
 		displayedFrames = 0;
+		if (_engine == PreviewEngine.MPV)
+		{
+			return _mpv != null && _mpv.TryGetPlayerStats(out readBytes, out inputBitrate, out decodedFrames, out displayedFrames);
+		}
 		if (!IsAvailable || _mediaPlayer == null)
 		{
 			return false;
@@ -1820,7 +2563,40 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			}
 			MediaStats stats = media.Statistics;
 			readBytes = stats.ReadBytes;
-			inputBitrate = stats.InputBitrate;
+			// Tier B 真正形态：零额外带宽注入式精确计数，覆盖 LibVLC 的 ReadBytes，
+			// VLC 实际消费的字节由 MeasuredMediaInput 精确统计，稳定播放后亦持续增长。
+			if (UseMeasuredStreamProbe && _measuredInput != null)
+				readBytes = _measuredInput.TotalBytesRead;
+			// HLS 方案：本地计数代理 / 智能分片探针均走 IO 层真实字节，覆盖 LibVLC 对 HLS 统计不全的问题。
+			else if (_hlsProxy != null)
+				readBytes = _hlsProxy.TotalBytesRead;
+			else if (_hlsProbe != null)
+				readBytes = _hlsProbe.TotalBytesRead;
+			// LibVLC 实时"链接速度"（字节/s）：
+			// 1) 主信号 readBytes 增量采样（io 累计接收字节，加载与播放全程持续增长时最准）；
+			// 2) 辅助 DemuxBitrate（加载缓冲期 LibVLC 填充良好，动态明显）；
+			// 3) 二者皆 0（LibVLC 在稳定播放后常冻结/归零统计）→ 沿用上一帧实测速度，
+			//    避免突变为 0 误导（稳态传输速率本应基本恒定）。
+			float liveRate = 0f;
+			long nowMs = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
+			if (_lastStatTickMs > 0L && readBytes > _lastStatReadBytes)
+			{
+				long dM = nowMs - _lastStatTickMs;
+				if (dM > 0L)
+				{
+					float inst = (float)(readBytes - _lastStatReadBytes) / (float)dM * 1000f; // bytes/s
+					if (inst > 0f) liveRate = inst;
+				}
+			}
+			_lastStatReadBytes = readBytes;
+			_lastStatTickMs = nowMs;
+			if (liveRate == 0f && stats.DemuxBitrate > 0f)
+				liveRate = stats.DemuxBitrate; // 加载期 demux 吞吐，动态
+			// 播放期统计冻结/归零时，沿用上一帧速度（稳态速度本应基本恒定）
+			if (liveRate == 0f && _lastLiveRate > 0f)
+				liveRate = _lastLiveRate;
+			_lastLiveRate = liveRate;
+			inputBitrate = liveRate; // 字节/s
 			decodedFrames = stats.DecodedVideo;
 			displayedFrames = stats.DisplayedPictures;
 			return true;
@@ -1829,6 +2605,130 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		{
 			return false;
 		}
+	}
+
+	public bool TryGetBufferDuration(out float seconds, float knownBps = 0f)
+	{
+		seconds = 0f;
+		if (_engine == PreviewEngine.MPV)
+		{
+			return _mpv != null && _mpv.TryGetBufferDuration(out seconds);
+		}
+		// VLC (LibVLCSharp) 的 MediaStats 不直接提供缓冲时长。
+		// 优先方案：用已知实时传输比特率 knownBps(bps) 估算——累计读取字节 ReadBytes 按速率
+		// 折算的可播放总秒数减去已播放秒数，即为缓冲领先量（等同 MPV 的 demuxer-cache-duration）。
+		// 该法依赖 StatusDisplayTick 实时算出的 _smoothedBps，故在直播下稳定可用。
+		if (!IsAvailable || _mediaPlayer == null || _switchingCount > 0)
+		{
+			return false;
+		}
+		try
+		{
+			Media media = _mediaPlayer.Media;
+			if (media == null) return false;
+			MediaStats stats = media.Statistics;
+
+			// 累计已读取字节：HLS 下 LibVLC 的 ReadBytes 不可靠，改用本地代理/分片探针的真实下载字节
+			long totalRead = stats.ReadBytes;
+			if (_hlsProxy != null) totalRead = _hlsProxy.TotalBytesRead;
+			else if (_hlsProbe != null) totalRead = _hlsProbe.TotalBytesRead;
+
+			// 读前瞻缓冲 = 已读取但尚未解封装的字节（网络读取领先于 demux，差值即缓冲领先量），
+			// 与播放位置/直播时间轴无关，对直播流也能稳定给出正缓冲时长
+			// （旧方案用 Time 减法：直播下 totalPlayableSec≈playedSec → 恒为 0 → 一直显示 “—”）。
+			long demuxed = stats.DemuxReadBytes;
+			long bufferedBytes = totalRead - demuxed;
+			if (bufferedBytes < 0L) bufferedBytes = 0L;
+
+			// 速率：优先已知实时速率 knownBps(bps)，其次 DemuxBitrate/InputBitrate(字节/s→×8)
+			double rateBps = 0.0;
+			if (knownBps > 0f) rateBps = knownBps;
+			else if (stats.DemuxBitrate > 0f) rateBps = stats.DemuxBitrate * 8.0;
+			else if (stats.InputBitrate > 0f) rateBps = stats.InputBitrate * 8.0;
+
+			if (rateBps > 0.0 && bufferedBytes > 0L)
+			{
+				double bufSec = (bufferedBytes * 8.0) / rateBps; // bytes*8 / bps = 秒
+				seconds = (float)bufSec;
+				if (seconds < 0f) seconds = 0f;
+				if (seconds > 300f) seconds = 300f;
+				return seconds > 0f;
+			}
+
+			// 兜底：已知实时速率存在时，用「累计可播放总秒数 − 已播放秒数」估算（点播/非直播更贴切）
+			if (knownBps > 0f && totalRead > 0L)
+			{
+				double totalPlayableSec = (totalRead * 8.0) / (double)knownBps;
+				double playedSec = (_mediaPlayer.Time > 0 ? _mediaPlayer.Time / 1000.0 : 0);
+				seconds = (float)(totalPlayableSec - playedSec);
+				if (seconds < 0f) seconds = 0f;
+				if (seconds > 300f) seconds = 300f;
+				return seconds > 0f;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	/// <summary>
+	/// 丢帧数：解码但未正常显示的帧数。VLC 用 DecodedVideo − DisplayedPictures 估算；
+	/// MPV 用 frame-drop-count + decoder-frame-drop-count。参考 YouTube Stats for nerds。
+	/// </summary>
+	public bool TryGetDroppedFrames(out int droppedFrames, out int totalFrames)
+	{
+		droppedFrames = 0;
+		totalFrames = 0;
+		if (!IsAvailable || _switchingCount > 0)
+		{
+			return false;
+		}
+		try
+		{
+			if (_mpv != null)
+			{
+				return _mpv.TryGetDroppedFrames(out droppedFrames, out totalFrames);
+			}
+			if (_mediaPlayer != null && _mediaPlayer.Media != null)
+			{
+				MediaStats stats = _mediaPlayer.Media.Statistics;
+				int decoded = stats.DecodedVideo;
+				int displayed = stats.DisplayedPictures;
+				droppedFrames = Math.Max(0, decoded - displayed);
+				totalFrames = decoded;
+				return true;
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	/// <summary>
+	/// 直播延迟（你看到的画面相对直播现场的落后秒数）。MPV 用 demuxer-cache-duration；
+	/// VLC 下精确端到端延迟不可得，以缓冲领先量（TryGetBufferDuration 同义）近似，对直播流二者高度相关。
+	/// </summary>
+	public bool TryGetLiveLatency(out float seconds)
+	{
+		seconds = 0f;
+		if (!IsAvailable || _switchingCount > 0)
+		{
+			return false;
+		}
+		try
+		{
+			if (_mpv != null)
+			{
+				return _mpv.TryGetLiveLatency(out seconds);
+			}
+			return TryGetBufferDuration(out seconds, _lastLiveRate);
+		}
+		catch
+		{
+		}
+		return false;
 	}
 
 	private string TryGetCodecName(MediaTrack track, Media media)
@@ -1899,15 +2799,22 @@ public class ChannelPlayer : UserControl, IMessageFilter
 			_controlBar.BackColor = theme.Surface;
 		}
 		// TrackBar 背景/前景（强调）：theme.Surface / theme.Primary（替代 0,122,255）
+		bool barIsDark = DrawingUtils.IsDarkColor(theme.Surface);
+		Color sliderTrack = barIsDark ? Color.FromArgb(70, 70, 80) : Color.FromArgb(210, 210, 215);
+		Color sliderThumb = barIsDark ? Color.White : Color.FromArgb(60, 60, 70);
 		if (_volumeSlider != null)
 		{
-			_volumeSlider.BackColor = theme.Surface;
-			_volumeSlider.ForeColor = theme.Primary;
+			_volumeSlider.TrackColor = sliderTrack;
+			_volumeSlider.FillColor = theme.Primary;
+			_volumeSlider.ThumbColor = sliderThumb;
+			_volumeSlider.Invalidate();
 		}
 		if (_progressBar != null)
 		{
-			_progressBar.BackColor = theme.Surface;
-			_progressBar.ForeColor = theme.Primary;
+			_progressBar.TrackColor = sliderTrack;
+			_progressBar.FillColor = theme.Primary;
+			_progressBar.ThumbColor = sliderThumb;
+			_progressBar.Invalidate();
 		}
 		// 备用面板背景：theme.BgAlt（替代 24,24,28）
 		if (_fallbackPanel != null)
@@ -1929,6 +2836,19 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		if (_statusLabel != null)
 		{
 			_statusLabel.ForeColor = theme.TextSecondary;
+		}
+		// 引擎下拉框：圆角、无边框、主题色适配，消除系统 ComboBox 漏白
+		if (_engineCombo != null)
+		{
+			_engineCombo.BackColor = theme.Surface;
+			_engineCombo.ForeColor = theme.TextPrimary;
+			_engineCombo.BorderColor = theme.Border;
+			_engineCombo.FocusBorderColor = theme.Primary;
+			_engineCombo.ItemBackColor = theme.Surface;
+			_engineCombo.ItemSelectedBackColor = theme.Primary;
+			_engineCombo.ItemHoverBackColor = barIsDark
+				? Color.FromArgb(Math.Min(255, theme.Surface.R + 18), Math.Min(255, theme.Surface.G + 18), Math.Min(255, theme.Surface.B + 22))
+				: Color.FromArgb(Math.Max(0, theme.Surface.R - 12), Math.Max(0, theme.Surface.G - 12), Math.Max(0, theme.Surface.B - 12));
 		}
 		// 图标按钮文字/背景：theme.TextPrimary / theme.BgAlt（替代 220,220,225 / 40,40,48）
 		Color btnFore = theme.TextPrimary;
@@ -2031,10 +2951,11 @@ public class ChannelPlayer : UserControl, IMessageFilter
 							DateTime now = DateTime.Now;
 							int dctime = SystemInformation.DoubleClickTime;
 							Size dcsize = SystemInformation.DoubleClickSize;
+							Point lastPos = player._lastLeftDownPos;
 							bool isDouble = player._lastLeftDownTime != DateTime.MinValue
 								&& (now - player._lastLeftDownTime).TotalMilliseconds <= dctime
-								&& Math.Abs(screenPos.X - player._lastLeftDownPos.X) <= dcsize.Width
-								&& Math.Abs(screenPos.Y - player._lastLeftDownPos.Y) <= dcsize.Height;
+								&& Math.Abs(screenPos.X - lastPos.X) <= dcsize.Width
+								&& Math.Abs(screenPos.Y - lastPos.Y) <= dcsize.Height;
 							DiagLog($"[LLHook] down pos=({screenPos.X},{screenPos.Y}) isDouble={isDouble} sinceLast={(int)(now - player._lastLeftDownTime).TotalMilliseconds}ms fs={player._isFullscreen}");
 							if (isDouble)
 							{
@@ -2064,12 +2985,23 @@ public class ChannelPlayer : UserControl, IMessageFilter
 		{
 			Application.RemoveMessageFilter(this);
 			DetachVideoViewHook();
+			// 显式释放内嵌外部播放器宿主（虽已加入 Controls 会随父控件递归释放，这里兜底确保外部进程/管道/定时器被回收）
+			_embedHost?.Dispose();
+			_embedHost = null;
 			if (_progressTimer != null)
 			{
 				_progressTimer.Stop();
 				_progressTimer.Dispose();
 				_progressTimer = null;
 			}
+			if (_spinnerTimer != null)
+			{
+				_spinnerTimer.Stop();
+				_spinnerTimer.Dispose();
+				_spinnerTimer = null;
+			}
+			_spinnerPanel?.Dispose();
+			_spinnerPanel = null;
 			if (_fullscreenForm != null && !_fullscreenForm.IsDisposed)
 			{
 				try
@@ -2080,6 +3012,14 @@ public class ChannelPlayer : UserControl, IMessageFilter
 				{
 				}
 				_fullscreenForm = null;
+			}
+			// 关闭时先停止 HLS 持续探针：上一轮引入的持续型探针若不停止会永久后台拉流（线程+Socket 泄漏）
+			try
+			{
+				StopHlsProbe();
+			}
+			catch
+			{
 			}
 			try
 			{
