@@ -4,55 +4,55 @@ namespace IPTVLiveChecker;
 
 internal class LayoutConfig
 {
-	public int Width;
+	public int Width = 0;
 
-	public int Height;
+	public int Height = 0;
 
-	public int MinWidth;
+	public int MinWidth = 0;
 
-	public int MinHeight;
+	public int MinHeight = 0;
 
-	public int Padding;
+	public int Padding = 0;
 
-	public int Margin;
+	public int Margin = 0;
 
-	public int Gap;
+	public int Gap = 0;
 
-	public int Left;
+	public int Left = 0;
 
-	public int Top;
+	public int Top = 0;
 
-	public int Right;
+	public int Right = 0;
 
-	public int Bottom;
+	public int Bottom = 0;
 
-	public int IconSize;
+	public int IconSize = 0;
 
-	public int IconGap;
+	public int IconGap = 0;
 
-	public int TitleHeight;
+	public int TitleHeight = 0;
 
-	public int TitleGap;
+	public int TitleGap = 0;
 
-	public int BtnHeight;
+	public int BtnHeight = 0;
 
-	public int BtnWidth;
+	public int BtnWidth = 0;
 
-	public int BtnGap;
+	public int BtnGap = 0;
 
-	public int LabelWidth;
+	public int LabelWidth = 0;
 
-	public int LabelGap;
+	public int LabelGap = 0;
 
-	public int InputHeight;
+	public int InputHeight = 0;
 
-	public int CornerRadius;
+	public int CornerRadius = 0;
 
-	public int RowHeight;
+	public int RowHeight = 0;
 
-	public int HeaderHeight;
+	public int HeaderHeight = 0;
 
-	public int DividerWidth;
+	public int DividerWidth = 0;
 
 	public void Initialize(LayoutDefaults defaults)
 	{

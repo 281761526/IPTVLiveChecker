@@ -9344,7 +9344,10 @@ public partial class IPTVLiveCheckerMain : Form
 		}
 		darkVScrollBar.Visible = true;
 		darkVScrollBar.Minimum = 0;
-		darkVScrollBar.Maximum = rowCount - visibleRows;
+		// WinForms ScrollBar 语义：用户拖动 Thumb 能达到的最大 Value = Maximum - LargeChange + 1
+		// 设 Maximum = rowCount - 1，则拖到底时 Value = (rowCount-1) - visibleRows + 1 = rowCount - visibleRows，
+		// 此时从该索引开始显示 visibleRows 条，末行正好完整显示（避免最后一行/多行被截断）。
+		darkVScrollBar.Maximum = rowCount - 1;
 		darkVScrollBar.LargeChange = visibleRows;
 		darkVScrollBar.SmallChange = 1;
 		int idx = dgvData.FirstDisplayedScrollingRowIndex;
@@ -19816,7 +19819,7 @@ public partial class IPTVLiveCheckerMain : Form
 		bottomBarRef = new Panel
 		{
 			Dock = DockStyle.Bottom,
-			Height = 32,
+			Height = SY(32),
 			BackColor = theme.Bg
 		};
 		bottomBarRef.MouseDown += delegate(object s, MouseEventArgs e)

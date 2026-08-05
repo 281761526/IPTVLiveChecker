@@ -71,17 +71,47 @@ public class NeonPalette
 		}
 		else if (dark)
 		{
+			// 暗色底座保持固定的中性深色（不与任何主题冲突的深蓝灰），
+			// 霓虹强调色从主题的 Primary/Accent 派生，确保每个暗色主题有独特色彩语言
 			p.FormBg = Color.FromArgb(10, 10, 18);
 			p.PanelBg = Color.FromArgb(13, 13, 24);
 			p.TitleBg = Color.FromArgb(16, 16, 28);
-			p.Neon = Color.FromArgb(0, 255, 224);
-			p.Neon2 = Color.FromArgb(255, 0, 200);
-			p.Label = Color.FromArgb(95, 217, 200);
-			p.Muted = Color.FromArgb(74, 107, 102);
-			p.InputText = Color.FromArgb(200, 255, 245);
-			p.GhostText = Color.FromArgb(154, 255, 233);
-			p.Glow = Color.FromArgb(0, 255, 224);
-			p.PrimaryText = Color.FromArgb(6, 18, 26);
+
+			// 从 theme.Primary 派生霓虹色，不足亮度时提升至可见阈值
+			Color tp = theme.Primary;
+			double pLum = (tp.R * 0.299 + tp.G * 0.587 + tp.B * 0.114) / 255.0;
+			p.Neon = pLum > 0.45
+				? tp
+				: Color.FromArgb(
+					Math.Min(255, tp.R + (int)((255 - tp.R) * 0.45)),
+					Math.Min(255, tp.G + (int)((255 - tp.G) * 0.45)),
+					Math.Min(255, tp.B + (int)((255 - tp.B) * 0.45)));
+
+			// 从 theme.Accent 派生第二霓虹色（用于渐变终点）
+			Color ta = theme.Accent;
+			double aLum = (ta.R * 0.299 + ta.G * 0.587 + ta.B * 0.114) / 255.0;
+			p.Neon2 = aLum > 0.40
+				? ta
+				: Color.FromArgb(
+					Math.Min(255, ta.R + (int)((255 - ta.R) * 0.40)),
+					Math.Min(255, ta.G + (int)((255 - ta.G) * 0.40)),
+					Math.Min(255, ta.B + (int)((255 - ta.B) * 0.40)));
+
+			p.Label = Color.FromArgb(
+				Math.Min(255, (int)(p.Neon.R * 0.55 + 110)),
+				Math.Min(255, (int)(p.Neon.G * 0.55 + 110)),
+				Math.Min(255, (int)(p.Neon.B * 0.55 + 110)));
+			p.Muted = Color.FromArgb(74, 85 + p.Neon.R / 10, 85 + p.Neon.G / 10);
+			p.InputText = Color.FromArgb(
+				Math.Min(255, 185 + p.Neon.R / 4),
+				Math.Min(255, 185 + p.Neon.G / 4),
+				Math.Min(255, 185 + p.Neon.B / 4));
+			p.GhostText = Color.FromArgb(
+				Math.Min(255, 140 + p.Neon.R / 3),
+				Math.Min(255, 140 + p.Neon.G / 3),
+				Math.Min(255, 140 + p.Neon.B / 3));
+			p.Glow = p.Neon;
+			p.PrimaryText = Color.FromArgb(6, 10 + tp.R / 12, 14 + tp.B / 12);
 			p.Border = NeonHelper.WithAlpha(p.Neon, 90);
 			p.FocusBorder = p.Neon;
 		}
@@ -344,6 +374,19 @@ public class NeonButton : Button
 
 	private bool _hover;
 
+	// 弹簧物理：按下缩放回弹（damping 1.0 / response 0.4）+ 悬停微抬 + 松手速度交接
+	private readonly Spring1D _press = new Spring1D(1.0, 0.4, 1.0);
+	private readonly Spring1D _lift = new Spring1D(0.0, 0.4, 1.0);
+	private readonly System.Windows.Forms.Timer _springTimer = new System.Windows.Forms.Timer { Interval = 16 };
+
+	private void StartSpring()
+	{
+		if (!_springTimer.Enabled)
+		{
+			_springTimer.Start();
+		}
+	}
+
 	public NeonButton()
 	{
 		FlatStyle = FlatStyle.Flat;
@@ -356,14 +399,66 @@ public class NeonButton : Button
 		MouseEnter += delegate
 		{
 			_hover = true;
+			if (!AnimationSettings.ReduceMotion)
+			{
+				_lift.Target = -2.0;
+				StartSpring();
+			}
 			Invalidate();
 		};
 		MouseLeave += delegate
 		{
 			_hover = false;
+			if (!AnimationSettings.ReduceMotion)
+			{
+				_lift.Target = 0.0;
+				StartSpring();
+			}
+			Invalidate();
+		};
+		MouseDown += delegate
+		{
+			if (AnimationSettings.ReduceMotion)
+			{
+				Invalidate();
+				return;
+			}
+			_press.Target = 0.94;
+			StartSpring();
+		};
+		MouseUp += delegate
+		{
+			if (AnimationSettings.ReduceMotion)
+			{
+				_press.SnapTo(1.0);
+				Invalidate();
+				return;
+			}
+			// 松手：目标回 1.0，当前速度被保留 → 速度交接，自然回弹
+			_press.Target = 1.0;
+			StartSpring();
+		};
+		_springTimer.Tick += delegate
+		{
+			bool a = _press.Step(0.016);
+			bool b = _lift.Step(0.016);
+			if (!a && !b)
+			{
+				_springTimer.Stop();
+			}
 			Invalidate();
 		};
 		UpdateRegion();
+	}
+
+	protected override void Dispose(bool disposing)
+	{
+		if (disposing)
+		{
+			_springTimer.Stop();
+			_springTimer.Dispose();
+		}
+		base.Dispose(disposing);
 	}
 
 	protected override void OnResize(EventArgs e)
@@ -389,6 +484,15 @@ public class NeonButton : Button
 		base.OnPaint(e);
 		Graphics g = e.Graphics;
 		g.SmoothingMode = SmoothingMode.AntiAlias;
+		// 弹簧变换：先整体上抬（悬停），再以中心为锚点缩放（按下）
+		float s = (float)_press.Value;
+		float ly = (float)_lift.Value;
+		g.TranslateTransform(0f, ly);
+		float cx = Width / 2f;
+		float cy = Height / 2f;
+		g.TranslateTransform(cx, cy);
+		g.ScaleTransform(s, s);
+		g.TranslateTransform(-cx, -cy);
 		Rectangle r = new Rectangle(1, 1, Width - 3, Height - 3);
 		using (GraphicsPath path = NeonHelper.RoundedRectPath(r, Radius))
 		{
@@ -421,8 +525,12 @@ public class NeonButton : Button
 				}
 			}
 		}
-			TextRenderer.DrawText(g, Text, Font, ClientRectangle, TextColorX,
-				TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+		// 用 DrawString（而非 TextRenderer）以尊重上面的弹簧变换
+		using (StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center })
+		using (Brush tb = new SolidBrush(TextColorX))
+		{
+			g.DrawString(Text, Font, tb, ClientRectangle, sf);
+		}
 	}
 }
 
@@ -433,6 +541,42 @@ public class NeonButton : Button
 /// </summary>
 public static class NeonChrome
 {
+	private const int GWL_EXSTYLE = -20;
+	private const int WS_EX_COMPOSITED = 0x02000000;
+
+	[System.Runtime.InteropServices.DllImport("user32.dll", EntryPoint = "GetWindowLong")]
+	private static extern int GetWindowLong32(IntPtr hWnd, int nIndex);
+
+	[System.Runtime.InteropServices.DllImport("user32.dll", EntryPoint = "SetWindowLong")]
+	private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
+
+	/// <summary>
+	/// 为对话框启用 WS_EX_COMPOSITED：让整棵子控件树由 DWM 离屏合成后一次性呈现，
+	/// 彻底消除多层自绘面板叠加时的逐控件刷新闪烁与拖动残影。
+	/// 仅用于无视频子窗口的对话框——主窗体内嵌 VLC/MPV 的渲染 HWND，全局合成会拖累视频，故不启用。
+	/// </summary>
+	public static void EnableComposited(Form form)
+	{
+		if (form == null) return;
+		void Apply()
+		{
+			try
+			{
+				if (!form.IsHandleCreated || form.IsDisposed) return;
+				int ex = GetWindowLong32(form.Handle, GWL_EXSTYLE);
+				if ((ex & WS_EX_COMPOSITED) == 0)
+				{
+					SetWindowLong32(form.Handle, GWL_EXSTYLE, ex | WS_EX_COMPOSITED);
+				}
+			}
+			catch
+			{
+			}
+		}
+		if (form.IsHandleCreated) Apply();
+		else form.HandleCreated += (s, e) => Apply();
+	}
+
 	public sealed class Context
 	{
 		public Panel Body;
@@ -490,6 +634,16 @@ public static class NeonChrome
 	{
 		form.FormBorderStyle = FormBorderStyle.None;
 		form.ShowInTaskbar = false;
+		// 统一为所有经 NeonChrome 承载的对话框开启离屏合成 + 双缓冲，切换主题与拖动均无闪烁/残影
+		EnableComposited(form);
+		try
+		{
+			typeof(Control).GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+				?.SetValue(form, true, null);
+		}
+		catch
+		{
+		}
 		int S(int v) => (int)Math.Round(v * dpiScale);
 		int W = form.ClientSize.Width;
 		int H = form.ClientSize.Height;
@@ -561,67 +715,68 @@ public static class NeonChrome
 			{
 				g.FillPath(b, path);
 			}
-			using (Pen pen = new Pen(NeonHelper.WithAlpha(p.Neon, 60), 1f))
+			using (Pen pen = new Pen(NeonHelper.WithAlpha(p.Border, 120), 1f))
 			{
 				g.DrawLine(pen, 0, r.Height - 1, r.Width, r.Height - 1);
 			}
 		};
 		form.Controls.Add(titlePanel);
 		float fs = 10f * dpiScale;
-		Label lblDot1 = new Label
-		{
-			Text = "●",
-			Font = new Font("Microsoft YaHei", 7f * dpiScale),
-			ForeColor = Color.FromArgb(255, 95, 87),
-			Location = new Point(S(14), S(9)),
-			BackColor = pal.TitleBg,
-			AutoSize = true
-		};
-		Label lblDot2 = new Label
-		{
-			Text = "●",
-			Font = new Font("Microsoft YaHei", 7f * dpiScale),
-			ForeColor = Color.FromArgb(254, 188, 46),
-			Location = new Point(S(30), S(9)),
-			BackColor = pal.TitleBg,
-			AutoSize = true
-		};
-		Label lblDot3 = new Label
-		{
-			Text = "●",
-			Font = new Font("Microsoft YaHei", 7f * dpiScale),
-			ForeColor = Color.FromArgb(40, 200, 64),
-			Location = new Point(S(46), S(9)),
-			BackColor = pal.TitleBg,
-			AutoSize = true
-		};
 		Label lblHead = new Label
 		{
 			Text = title,
 			Font = new Font("Microsoft YaHei", fs, FontStyle.Bold),
 			ForeColor = pal.GhostText,
-			Location = new Point(S(64), S(8)),
+			Location = new Point(S(16), S(8)),
 			BackColor = pal.TitleBg,
 			AutoSize = true
 		};
+		bool closeHover = false;
+		// 关闭按钮"✕"尺寸与边距：统一由 closeSize / closePad 常量控制，避免硬编码散落
+		int closeSize = S(24);
+		int closePad = S(6); // 距 titlePanel 右边缘的距离
 		Label lblX = new Label
 		{
 			Text = "✕",
 			Font = new Font("Microsoft YaHei", fs),
 			ForeColor = pal.GhostText,
-			Location = new Point(pw - S(26), S(8)),
-			BackColor = pal.TitleBg,
-			AutoSize = true,
-			Cursor = Cursors.Hand
+			// 距 titlePanel 右边缘 closePad，垂直居中（th - closeSize）/ 2
+			Location = new Point(pw - closeSize - closePad, (th - closeSize) / 2),
+			Size = new Size(closeSize, closeSize),
+			BackColor = Color.Transparent,
+			TextAlign = ContentAlignment.MiddleCenter,
+			Cursor = Cursors.Hand,
+			// Anchor=Top|Right 保证 titlePanel 大小变化时贴右（配合下面的 Resize 双保险）
+			Anchor = AnchorStyles.Top | AnchorStyles.Right
 		};
-		titlePanel.Controls.Add(lblDot1);
-		titlePanel.Controls.Add(lblDot2);
-		titlePanel.Controls.Add(lblDot3);
+		lblX.Paint += (s, e) =>
+		{
+			Graphics g = e.Graphics;
+			g.SmoothingMode = SmoothingMode.AntiAlias;
+			Rectangle r = lblX.ClientRectangle;
+			if (closeHover)
+			{
+				using (Brush b = new SolidBrush(Color.FromArgb(255, 59, 48)))
+				{
+					g.FillEllipse(b, 0, 0, r.Width - 1, r.Height - 1);
+				}
+			}
+		};
 		titlePanel.Controls.Add(lblHead);
 		titlePanel.Controls.Add(lblX);
 		// 闭包通过 ctx.Palette 读取，UpdatePalette 后立即生效
-		lblX.MouseEnter += (s, e) => lblX.ForeColor = ctx.Palette.Neon;
-		lblX.MouseLeave += (s, e) => lblX.ForeColor = ctx.Palette.GhostText;
+		lblX.MouseEnter += (s, e) =>
+		{
+			closeHover = true;
+			lblX.ForeColor = Color.White;
+			lblX.Invalidate();
+		};
+		lblX.MouseLeave += (s, e) =>
+		{
+			closeHover = false;
+			lblX.ForeColor = ctx.Palette.GhostText;
+			lblX.Invalidate();
+		};
 		lblX.Click += (s, e) =>
 		{
 			form.DialogResult = DialogResult.Cancel;
@@ -651,6 +806,27 @@ public static class NeonChrome
 		lblHead.MouseDown += down;
 		lblHead.MouseMove += move;
 		lblHead.MouseUp += up;
+		// titlePanel 大小变化时（窗口拉伸）重算自身圆角 Region 与关闭按钮位置
+		// （Anchor=Top|Right 在 Panel 内通常有效，但自绘 Region 变更后可能导致锚点偏移，
+		//  显式 Resize 处理作为双保险，确保 100% 贴右对齐）
+		titlePanel.Resize += (s, e) =>
+		{
+			int tpw = titlePanel.ClientSize.Width;
+			int tph = titlePanel.ClientSize.Height;
+			// 重算 titlePanel 圆角 Region（保证大小时圆角不撕裂）
+			int d = cr * 2;
+			GraphicsPath tp = new GraphicsPath();
+			tp.AddArc(0, 0, d, d, 180f, 90f);
+			tp.AddArc(tpw - d, 0, d, d, 270f, 90f);
+			tp.AddLine(tpw, cr, tpw, tph);
+			tp.AddLine(tpw, tph, 0, tph);
+			tp.AddLine(0, tph, 0, cr);
+			tp.CloseFigure();
+			titlePanel.Region?.Dispose();
+			titlePanel.Region = new Region(tp);
+			// 关闭按钮位置重算：保持距右边缘 closePad、垂直居中
+			lblX.Location = new Point(tpw - closeSize - closePad, (tph - closeSize) / 2);
+		};
 		Panel body = new Panel
 		{
 			Location = new Point(px, py + th),
@@ -663,11 +839,14 @@ public static class NeonChrome
 		{
 			body.Location = new Point(px, py + th);
 			body.Size = new Size(form.ClientSize.Width - 2 * m, form.ClientSize.Height - 2 * m - th);
+			// titlePanel 同步调整：大小变化会触发上面的 titlePanel.Resize 重算圆角 Region 与关闭按钮
+			titlePanel.Location = new Point(px, py);
+			titlePanel.Size = new Size(form.ClientSize.Width - 2 * m, th);
 			form.Region = new Region(NeonHelper.RoundedRectPath(new Rectangle(0, 0, form.ClientSize.Width, form.ClientSize.Height), cr));
 			form.Invalidate();
 		};
 		// 用构造函数注入控件引用，供 UpdatePalette 使用
-		var titleLabels = new[] { lblDot1, lblDot2, lblDot3, lblHead, lblX };
+		var titleLabels = new[] { lblHead, lblX };
 		ctx.Body = body;
 		ctx.Title = titlePanel;
 		ctx.SetControls(titlePanel, body, titleLabels, lblX);

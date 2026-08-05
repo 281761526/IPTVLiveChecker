@@ -11,38 +11,7 @@ namespace IPTVLiveChecker;
 
 public class AppTheme
 {
-	// ===== 高对比度护眼主题（柔和低眩光背景 + 强可读性文字） =====
-
-	public static AppTheme WarmCream = new AppTheme
-	{
-		Name = "暖玉米白",
-		Primary = Color.FromArgb(184, 134, 48),
-		PrimaryDark = Color.FromArgb(160, 116, 40),
-		Accent = Color.FromArgb(196, 72, 96),
-		Bg = Color.FromArgb(245, 238, 215),
-		BgAlt = Color.FromArgb(238, 229, 203),
-		Surface = Color.FromArgb(232, 222, 195),
-		Border = Color.FromArgb(206, 194, 165),
-		TextPrimary = Color.FromArgb(40, 36, 30),
-		TextSecondary = Color.FromArgb(102, 94, 80),
-		HeaderBg = Color.FromArgb(236, 226, 200),
-		SelectRow = Color.FromArgb(222, 211, 183),
-		SelectRowText = Color.FromArgb(40, 36, 30),
-		StatusBarBg = Color.FromArgb(226, 215, 188),
-
-		TipBg = Color.FromArgb(232, 222, 195),
-		PlayBtnBg = Color.FromArgb(60, 160, 90),
-		PlayBtnText = Color.White,
-		CopyBtnBg = Color.FromArgb(60, 130, 195),
-		CopyBtnText = Color.White,
-		StatusTagBg = Color.FromArgb(228, 218, 192),
-		StatusTagBorder = Color.FromArgb(60, 140, 80),
-		LinkTextColor = Color.FromArgb(40, 90, 150),
-		SuccessColor = Color.FromArgb(50, 150, 80),
-		ErrorColor = Color.FromArgb(200, 60, 60),
-		WarnColor = Color.FromArgb(200, 140, 40),
-		InfoColor = Color.FromArgb(50, 120, 195)
-	};
+	// ===== 内置主题注册表（精简为 2 个基调：浅色青瓷薄荷 + 深色深空墨蓝；其余动效主题由外部 themes/*.json 提供） =====
 
 	public static AppTheme MintCeladon = new AppTheme
 	{
@@ -75,68 +44,6 @@ public class AppTheme
 		InfoColor = Color.FromArgb(55, 120, 195)
 	};
 
-	public static AppTheme MistyBlue = new AppTheme
-	{
-		Name = "淡雾蓝",
-		Primary = Color.FromArgb(45, 115, 175),
-		PrimaryDark = Color.FromArgb(38, 98, 150),
-		Accent = Color.FromArgb(180, 72, 160),
-		Bg = Color.FromArgb(223, 232, 244),
-		BgAlt = Color.FromArgb(212, 223, 238),
-		Surface = Color.FromArgb(205, 217, 234),
-		Border = Color.FromArgb(178, 193, 214),
-		TextPrimary = Color.FromArgb(28, 42, 60),
-		TextSecondary = Color.FromArgb(88, 104, 124),
-		HeaderBg = Color.FromArgb(214, 225, 240),
-		SelectRow = Color.FromArgb(196, 209, 228),
-		SelectRowText = Color.FromArgb(28, 42, 60),
-		StatusBarBg = Color.FromArgb(206, 218, 236),
-
-		TipBg = Color.FromArgb(205, 217, 234),
-		PlayBtnBg = Color.FromArgb(45, 150, 100),
-		PlayBtnText = Color.White,
-		CopyBtnBg = Color.FromArgb(45, 125, 190),
-		CopyBtnText = Color.White,
-		StatusTagBg = Color.FromArgb(200, 213, 232),
-		StatusTagBorder = Color.FromArgb(45, 140, 95),
-		LinkTextColor = Color.FromArgb(35, 90, 160),
-		SuccessColor = Color.FromArgb(40, 150, 95),
-		ErrorColor = Color.FromArgb(200, 65, 65),
-		WarnColor = Color.FromArgb(200, 145, 45),
-		InfoColor = Color.FromArgb(45, 115, 180)
-	};
-
-	public static AppTheme SoftRose = new AppTheme
-	{
-		Name = "藕粉柔光",
-		Primary = Color.FromArgb(186, 96, 124),
-		PrimaryDark = Color.FromArgb(162, 80, 108),
-		Accent = Color.FromArgb(200, 110, 60),
-		Bg = Color.FromArgb(246, 228, 230),
-		BgAlt = Color.FromArgb(239, 219, 222),
-		Surface = Color.FromArgb(233, 212, 215),
-		Border = Color.FromArgb(208, 184, 188),
-		TextPrimary = Color.FromArgb(54, 36, 42),
-		TextSecondary = Color.FromArgb(116, 96, 102),
-		HeaderBg = Color.FromArgb(240, 221, 224),
-		SelectRow = Color.FromArgb(226, 204, 208),
-		SelectRowText = Color.FromArgb(54, 36, 42),
-		StatusBarBg = Color.FromArgb(232, 211, 214),
-
-		TipBg = Color.FromArgb(233, 212, 215),
-		PlayBtnBg = Color.FromArgb(60, 155, 100),
-		PlayBtnText = Color.White,
-		CopyBtnBg = Color.FromArgb(60, 130, 195),
-		CopyBtnText = Color.White,
-		StatusTagBg = Color.FromArgb(230, 208, 212),
-		StatusTagBorder = Color.FromArgb(60, 140, 85),
-		LinkTextColor = Color.FromArgb(120, 70, 120),
-		SuccessColor = Color.FromArgb(50, 150, 85),
-		ErrorColor = Color.FromArgb(200, 65, 65),
-		WarnColor = Color.FromArgb(200, 140, 50),
-		InfoColor = Color.FromArgb(60, 125, 190)
-	};
-
 	public static AppTheme DeepInk = new AppTheme
 	{
 		Name = "深空墨蓝",
@@ -166,37 +73,6 @@ public class AppTheme
 		ErrorColor = Color.FromArgb(240, 100, 100),
 		WarnColor = Color.FromArgb(240, 180, 60),
 		InfoColor = Color.FromArgb(90, 175, 240)
-	};
-
-	public static AppTheme ForestNight = new AppTheme
-	{
-		Name = "墨绿夜",
-		Primary = Color.FromArgb(95, 185, 145),
-		PrimaryDark = Color.FromArgb(78, 160, 122),
-		Accent = Color.FromArgb(232, 150, 175),
-		Bg = Color.FromArgb(24, 39, 33),
-		BgAlt = Color.FromArgb(32, 50, 42),
-		Surface = Color.FromArgb(38, 58, 49),
-		Border = Color.FromArgb(58, 82, 70),
-		TextPrimary = Color.FromArgb(226, 240, 230),
-		TextSecondary = Color.FromArgb(167, 190, 178),
-		HeaderBg = Color.FromArgb(32, 50, 42),
-		SelectRow = Color.FromArgb(52, 76, 64),
-		SelectRowText = Color.FromArgb(226, 240, 230),
-		StatusBarBg = Color.FromArgb(32, 50, 42),
-
-		TipBg = Color.FromArgb(32, 50, 42),
-		PlayBtnBg = Color.FromArgb(55, 175, 120),
-		PlayBtnText = Color.White,
-		CopyBtnBg = Color.FromArgb(60, 140, 200),
-		CopyBtnText = Color.White,
-		StatusTagBg = Color.FromArgb(40, 60, 51),
-		StatusTagBorder = Color.FromArgb(55, 175, 120),
-		LinkTextColor = Color.FromArgb(150, 210, 180),
-		SuccessColor = Color.FromArgb(70, 195, 135),
-		ErrorColor = Color.FromArgb(240, 105, 105),
-		WarnColor = Color.FromArgb(240, 185, 65),
-		InfoColor = Color.FromArgb(90, 180, 235)
 	};
 
 	public static AppTheme Light => MintCeladon;
@@ -320,6 +196,24 @@ public class AppTheme
 		return Dark;
 	}
 
+	// ===== "跟随系统" 解析 =====
+	// 选择"跟随系统"时，按系统明暗自动回退到内置 Light/Dark 主题（外部主题已移除）。
+	/// <summary>
+	/// 解析"跟随系统"时应生效的主题：按系统明暗回退内置 Light/Dark。
+	/// </summary>
+	public static AppTheme ResolveFollowSystem(string defaultLightName)
+	{
+		return GetAutoTheme();
+	}
+
+	// 当前实际生效的主题（由 ApplyTheme 写入），供静态样式方法（如 StyleRoundButton）在无法访问实例字段时读取。
+	private static AppTheme _activeTheme;
+	public static AppTheme ActiveTheme
+	{
+		get => _activeTheme ??= GetAutoTheme();
+		set => _activeTheme = value;
+	}
+
 	public AppTheme Clone()
 	{
 		return new AppTheme
@@ -399,7 +293,7 @@ public class AppTheme
 	// ===== 内置主题注册表（数据驱动，消除菜单与 switch 中的硬编码重复）=====
 	private static readonly AppTheme[] _builtinThemes = new AppTheme[]
 	{
-		WarmCream, MintCeladon, MistyBlue, SoftRose, DeepInk, ForestNight
+		MintCeladon, DeepInk
 	};
 
 	/// <summary>内置主题只读列表（不含"跟随系统"）。</summary>
@@ -407,10 +301,12 @@ public class AppTheme
 
 	private static readonly HashSet<string> BuiltinThemeNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 	{
-		"暖玉米白", "青瓷薄荷", "淡雾蓝", "藕粉柔光", "深空墨蓝", "墨绿夜", "跟随系统"
+		"青瓷薄荷", "深空墨蓝", "跟随系统"
 	};
 
-	// ===== 外部主题库（JSON 文件，运行时从 exe 同级 themes/ 目录加载；缺失则回退内置主题）=====
+	// ===== 外部主题库（已移除）=====
+	// 外部主题（JSON / 嵌入 DLL / 派生 DLL）已全部删除，仅保留内置主题。
+	// 保留空字典与接口，避免调用方改动；ExternalThemes 恒为空。
 	private static readonly Dictionary<string, AppTheme> _externalThemes = new Dictionary<string, AppTheme>(StringComparer.OrdinalIgnoreCase);
 	private static bool _externalThemesLoaded;
 
@@ -421,81 +317,13 @@ public class AppTheme
 		return _externalThemesLoaded;
 	}
 
+	/// <summary>
+	/// 加载外部主题（已移除）。保留为 no-op 以维持调用点兼容；ExternalThemes 始终为空。
+	/// </summary>
 	public static void LoadExternalThemes()
 	{
 		_externalThemes.Clear();
 		_externalThemesLoaded = true;
-		try
-		{
-			string baseDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? AppDomain.CurrentDomain.BaseDirectory;
-			string dir = Path.Combine(baseDir, "themes");
-			if (!Directory.Exists(dir))
-			{
-				return;
-			}
-			foreach (string file in Directory.GetFiles(dir, "*.json", SearchOption.TopDirectoryOnly))
-			{
-				try
-				{
-					AppTheme t = ParseThemeJson(File.ReadAllText(file));
-					if (t != null && !string.IsNullOrWhiteSpace(t.Name) && !BuiltinThemeNames.Contains(t.Name.Trim()) && !_externalThemes.ContainsKey(t.Name.Trim()))
-					{
-						_externalThemes[t.Name.Trim()] = t;
-					}
-				}
-				catch
-				{
-				}
-			}
-			// 同时加载 DLL 主题（继承 AppTheme 的派生类，支持复杂逻辑）
-			LoadThemeDlls(baseDir, dir);
-		}
-		catch
-		{
-		}
-	}
-
-	/// <summary>
-	/// 从 themes/*.dll 加载外部主题：扫描程序集中所有继承 AppTheme 的非抽象类型，
-	/// 实例化并调用 Initialize()。与 JSON 主题并存，同名时先到先得。
-	/// </summary>
-	private static void LoadThemeDlls(string baseDir, string themesDir)
-	{
-		if (!Directory.Exists(themesDir))
-		{
-			return;
-		}
-		foreach (string dll in Directory.GetFiles(themesDir, "*.dll", SearchOption.TopDirectoryOnly))
-		{
-			try
-			{
-				Assembly asm = Assembly.LoadFrom(dll);
-				foreach (Type t in asm.GetTypes())
-				{
-					if (t.IsAbstract || !typeof(AppTheme).IsAssignableFrom(t))
-					{
-						continue;
-					}
-					try
-					{
-						AppTheme theme = (AppTheme)Activator.CreateInstance(t);
-						theme.Initialize();
-						if (theme != null && !string.IsNullOrWhiteSpace(theme.Name)
-							&& !BuiltinThemeNames.Contains(theme.Name.Trim())
-							&& !_externalThemes.ContainsKey(theme.Name.Trim()))
-						{
-							_externalThemes[theme.Name.Trim()] = theme;
-						}
-					}
-					catch
-					{
-					}
-				}
-			}
-			catch
-			{
-			}
-		}
 	}
 
 	private static AppTheme ParseThemeJson(string json)

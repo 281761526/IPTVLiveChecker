@@ -18,6 +18,9 @@ public static class DarkMessageBox
 
 	public static Func<Icon> IconProvider { get; set; }
 
+	/// <summary>全局字体工厂（入参为已乘 DPI 的字号）。由主窗体注入，使消息框字体与主界面完全一致。</summary>
+	public static Func<float, Font> FontProvider { get; set; }
+
 	public static float DpiScale { get; set; } = 1f;
 
 	public static bool IsDarkColor(Color color)
@@ -28,6 +31,43 @@ public static class DarkMessageBox
 	public static GraphicsPath CreateRoundedRectPath(Rectangle rect, int radius)
 	{
 		return DrawingUtils.RoundedRect(rect, radius);
+	}
+
+	/// <summary>
+	/// 按主题语义色矢量绘制消息框图标（圆底 + ASCII 字形），替代 SystemIcons 固定彩色位图。
+	/// 字形只用 ! × ? i 四个 ASCII 字符，任何字体下都是单色渲染、必定跟随画刷色，不存在彩色 emoji 回退。
+	/// </summary>
+	private static Bitmap CreateThemedIcon(int size, Color color, string glyph)
+	{
+		Bitmap bmp = new Bitmap(size, size);
+		using (Graphics g = Graphics.FromImage(bmp))
+		{
+			g.SmoothingMode = SmoothingMode.AntiAlias;
+			g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+			Rectangle circle = new Rectangle(1, 1, size - 3, size - 3);
+			using (SolidBrush fill = new SolidBrush(color))
+			{
+				g.FillEllipse(fill, circle);
+			}
+			bool onDark = DrawingUtils.IsDarkColor(color);
+			// 描一圈同向低透明轮廓，浅色主题下圆底也不会与窗口底色糊在一起
+			using (Pen ring = new Pen(Color.FromArgb(56, onDark ? Color.White : Color.Black), 1f))
+			{
+				g.DrawEllipse(ring, circle);
+			}
+			Color glyphColor = (onDark ? Color.White : Color.FromArgb(28, 28, 30));
+			using (Font f = new Font("Segoe UI", (float)size * 0.54f, FontStyle.Bold, GraphicsUnit.Pixel))
+			using (SolidBrush gb = new SolidBrush(glyphColor))
+			using (StringFormat sf = new StringFormat
+			{
+				Alignment = StringAlignment.Center,
+				LineAlignment = StringAlignment.Center
+			})
+			{
+				g.DrawString(glyph, f, gb, new RectangleF(1f, 0f, size - 3, size - 2), sf);
+			}
+		}
+		return bmp;
 	}
 
 	[DllImport("dwmapi.dll")]
@@ -69,6 +109,11 @@ public static class DarkMessageBox
 		Color btnHoverColor;
 		Color btnBorderColor;
 		Color btnFg;
+		Color btnAccentFg;
+		// 图标语义色：用于矢量绘制消息框图标，替代 Windows 系统固定彩色图标
+		Color iconWarn;
+		Color iconError;
+		Color iconInfo;
 		if (t != null)
 		{
 			isDark = IsDarkColor(t.Bg);
@@ -80,6 +125,10 @@ public static class DarkMessageBox
 			btnHoverColor = t.SelectRow;
 			btnBorderColor = t.Border;
 			btnFg = t.TextPrimary;
+			iconWarn = t.WarnColor;
+			iconError = t.ErrorColor;
+			iconInfo = t.Primary;
+			btnAccentFg = ((t.PlayBtnText.A > 0) ? t.PlayBtnText : Color.White);
 		}
 		else
 		{
@@ -92,9 +141,24 @@ public static class DarkMessageBox
 			btnHoverColor = (isDark ? Color.FromArgb(80, 80, 100) : Color.FromArgb(220, 220, 230));
 			btnBorderColor = (isDark ? Color.FromArgb(90, 90, 110) : Color.FromArgb(200, 200, 205));
 			btnFg = (isDark ? Color.White : Color.FromArgb(50, 50, 50));
+			iconWarn = Color.FromArgb(245, 158, 11);
+			iconError = Color.FromArgb(239, 68, 68);
+			iconInfo = Color.FromArgb(66, 133, 244);
+			btnAccentFg = Color.White;
 		}
-		Font msgFont = new Font("Microsoft YaHei UI", 10.5f);
+		// 字体跟随全局字体设置（主题/DPI 一并适配），FontProvider 缺省时回落雅黑
+		Font msgFont;
+		try
+		{
+			msgFont = FontProvider?.Invoke(10.5f * DpiScale) ?? new Font("Microsoft YaHei UI", 10.5f * DpiScale);
+		}
+		catch
+		{
+			msgFont = new Font("Microsoft YaHei UI", 10.5f * DpiScale);
+		}
 		using Form dlg = new Form();
+		// 离屏合成：消息框内含多层自绘按钮/图标，开启后切换主题与移动窗口均无闪烁残影
+		NeonChrome.EnableComposited(dlg);
 		dlg.Text = caption;
 		dlg.StartPosition = FormStartPosition.Manual;
 		dlg.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -105,6 +169,8 @@ public static class DarkMessageBox
 		dlg.Font = msgFont;
 		dlg.ShowInTaskbar = false;
 		dlg.TopMost = true;
+		// 初始透明，由 Shown 事件做淡入（避免无动画时的闪现）
+		dlg.Opacity = 0;
 		try
 		{
 			Icon appIcon = IconProvider?.Invoke();
@@ -155,25 +221,38 @@ public static class DarkMessageBox
 			BackColor = bgColor,
 			SizeMode = PictureBoxSizeMode.AutoSize
 		};
+		// 图标：原为 SystemIcons.Information/Warning/Error/Question（Windows 系统固定彩色位图，
+		// 切换主题时纹丝不动，是消息框唯一不换肤的元素）。改为按主题语义色矢量绘制，随主题即时换肤。
+		Color iconColor;
+		string iconGlyph;
 		switch (icon)
 		{
-		case MessageBoxIcon.Asterisk:
-			picIcon.Image = SystemIcons.Information.ToBitmap();
-			break;
 		case MessageBoxIcon.Exclamation:
-			picIcon.Image = SystemIcons.Warning.ToBitmap();
+			iconColor = iconWarn;
+			iconGlyph = "!";
 			break;
 		case MessageBoxIcon.Hand:
-			picIcon.Image = SystemIcons.Error.ToBitmap();
+			iconColor = iconError;
+			iconGlyph = "×";
 			break;
 		case MessageBoxIcon.Question:
-			picIcon.Image = SystemIcons.Question.ToBitmap();
+			iconColor = accentColor;
+			iconGlyph = "?";
 			break;
 		default:
-			picIcon.Image = SystemIcons.Information.ToBitmap();
+			iconColor = iconInfo;
+			iconGlyph = "i";
 			break;
 		}
+		picIcon.Image = CreateThemedIcon(iconSize, iconColor, iconGlyph);
 		dlg.Controls.Add(picIcon);
+		// PictureBox.Dispose 不会释放 Image，这里显式回收，避免每弹一次消息框泄漏一张位图
+		dlg.FormClosed += delegate
+		{
+			Image oldImg = picIcon.Image;
+			picIcon.Image = null;
+			oldImg?.Dispose();
+		};
 		switch (buttons)
 		{
 		case MessageBoxButtons.OK:
@@ -185,7 +264,7 @@ public static class DarkMessageBox
 			button5.Location = new Point(btnX, btnY);
 			button5.Size = new Size(btnW, btnH);
 			button5.BackColor = accentColor;
-			button5.ForeColor = Color.White;
+			button5.ForeColor = btnAccentFg;
 			button5.FlatStyle = FlatStyle.Flat;
 			button5.FlatAppearance.BorderSize = 0;
 			button5.Font = msgFont;
@@ -214,7 +293,7 @@ public static class DarkMessageBox
 			button3.Location = new Point(btnStartX2, btnY);
 			button3.Size = new Size(btnW, btnH);
 			button3.BackColor = accentColor;
-			button3.ForeColor = Color.White;
+			button3.ForeColor = btnAccentFg;
 			button3.FlatStyle = FlatStyle.Flat;
 			button3.FlatAppearance.BorderSize = 0;
 			button3.Font = msgFont;
@@ -267,7 +346,7 @@ public static class DarkMessageBox
 			button.Location = new Point(btnStartX, btnY);
 			button.Size = new Size(btnW, btnH);
 			button.BackColor = accentColor;
-			button.ForeColor = Color.White;
+			button.ForeColor = btnAccentFg;
 			button.FlatStyle = FlatStyle.Flat;
 			button.FlatAppearance.BorderSize = 0;
 			button.Font = msgFont;
@@ -356,6 +435,45 @@ public static class DarkMessageBox
 			centerY = screen.Y + screen.Height - winTotalH;
 		}
 		dlg.Location = new Point(centerX, centerY);
+		// 入场动效：淡入 + 轻微上移（ease-out），尊重 ReduceMotion 无障碍设置
+		dlg.Shown += (s, e) =>
+		{
+			try
+			{
+				if (AnimationSettings.ReduceMotion)
+				{
+					dlg.Opacity = 1;
+					return;
+				}
+			}
+			catch
+			{
+				dlg.Opacity = 1;
+				return;
+			}
+			Point target = dlg.Location;
+			dlg.Location = new Point(target.X, target.Y + 10);
+			dlg.Opacity = 0;
+			int steps = 11;
+			int cur = 0;
+			System.Windows.Forms.Timer fadeTimer = new System.Windows.Forms.Timer { Interval = 16 };
+			fadeTimer.Tick += (s2, e2) =>
+			{
+				cur++;
+				double k = cur / (double)steps;
+				double ease = 1 - (1 - k) * (1 - k);
+				dlg.Opacity = ease;
+				dlg.Location = new Point(target.X, target.Y + (int)(10 * (1 - ease)));
+				if (cur >= steps)
+				{
+					dlg.Opacity = 1;
+					dlg.Location = target;
+					fadeTimer.Stop();
+					fadeTimer.Dispose();
+				}
+			};
+			fadeTimer.Start();
+		};
 		if (owner != null)
 		{
 			return dlg.ShowDialog(owner);
