@@ -1840,6 +1840,7 @@ public partial class IPTVLiveCheckerMain : Form
 				break;
 			}
 		}
+		}
 		finally
 		{
 			allChannels = backup;
