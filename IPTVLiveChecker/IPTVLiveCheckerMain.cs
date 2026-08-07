@@ -1201,6 +1201,16 @@ public partial class IPTVLiveCheckerMain : Form
 		Panel MakeFilterChip(string text, bool initial, Action<bool> onToggle)
 		{
 			bool state = initial;
+			var font = GetFont(SF(9f));
+
+			// 精确测量文本宽度（Label.AutoSize 在加入容器前不会同步更新 Width）
+			Size textSize;
+			using (var g = _filterBar.CreateGraphics())
+			{
+				textSize = TextRenderer.MeasureText(g, text, font);
+			}
+			int labelW = textSize.Width + 2;
+			int labelH = textSize.Height + 2;
 
 			var cc = new Panel
 			{
@@ -1212,17 +1222,18 @@ public partial class IPTVLiveCheckerMain : Form
 			var lbl = new Label
 			{
 				Text = text,
-				Font = GetFont(SF(9f)),
-				AutoSize = true,
+				Font = font,
+				AutoSize = false,
+				Size = new Size(labelW, labelH),
 				TextAlign = ContentAlignment.MiddleLeft,
 				ForeColor = state ? theme.TextPrimary : Color.FromArgb(210, theme.TextPrimary)
 			};
-			lbl.Location = new Point(ccSize + SX(4), (SY(30) - lbl.Height) / 2);
+			lbl.Location = new Point(ccSize + SX(4), (SY(30) - labelH) / 2);
 
 			var host = new Panel
 			{
 				Location = new Point(x, yMid),
-				Size = new Size(ccSize + SX(4) + lbl.Width + SX(4), SY(30)),
+				Size = new Size(ccSize + SX(4) + labelW + SX(4), SY(30)),
 				Cursor = Cursors.Hand
 			};
 
