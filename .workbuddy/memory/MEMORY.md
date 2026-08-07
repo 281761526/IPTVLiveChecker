@@ -16,7 +16,7 @@
 - 筛选逻辑：`PassesBottomFilter(ch)` 三维判断（某维全不勾选=该维不过滤）；`GetFilteredChannels()` 收集结果
 - 生效点：`RefreshGrid()` 网格应用筛选（在原 group/search 基础上叠加）；`BtnExport_Click` 用 try/finally 临时把 `allChannels` 切换为筛选结果再调用各 Export 方法（export 方法都是 `new List<ChannelInfo>(allChannels)` 拷贝读取）
 - 默认"全不勾选 = 不过滤，显示/导出全部"
-- 布局挂载（2026-08-08 二次修正）：`bottomContainer` **直接挂到 `outerWrap` 同级**（不是 mainArea 的子控件！）。挂载顺序：`outerWrap.Controls.Add(mainArea)` → `Add(bottomContainer)` → `CreateBottomBar()` → `Add(bottomBarRef)` → `Add(titleBarPanel)`。原因：mainArea 在沉浸主题下 `Padding = new Padding(16,8,16,8)`，底部 8px 留白会让 bottom-docked bottomContainer 悬空 8px；移到 outerWrap 同级后筛选栏紧贴外层底边。
+- 布局挂载：`bottomContainer` 挂在 **`mainArea` 内**（不是 outerWrap 同级）。挂载顺序：`mainArea.Controls.Add(bottomContainer)`（位于 gridContainerRef 之后、statusBarContainer 之前）。注意：mainArea 沉浸主题下 `Padding = new Padding(16,8,16,8)` 的底部 8px 留白会让 bottom-docked bottomContainer 在视觉上离窗口底边差一小截（用户于 2026-08-08 要求撤销"移到 outerWrap 同级"的改动，故维持此状态）。
 - 内部叠放：`bottomContainer`(Dock.Bottom,SY(32)+SY(34)) 内含 `statusBarContainer`(Dock.Top, SY32) + `_filterBar`(Dock.Bottom, SY34)。高度 SY38→SY34（芯片 SY30→SY26）以与状态栏视觉一致。
 - 注意：WinForms 多控件同边 docking 顺序易出歧义，用嵌套固定高度容器可彻底消除。
 
