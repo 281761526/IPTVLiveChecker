@@ -22831,7 +22831,6 @@ public partial class IPTVLiveCheckerMain : Form
 			Height = SY(32) + SY(34),
 			BackColor = theme.Bg
 		};
-		mainArea.Controls.Add(bottomContainer);
 		bottomContainer.Controls.Add(statusBarContainer);
 		CreateFilterBar(bottomContainer);
 		toolbarRef = new Panel
@@ -23249,6 +23248,7 @@ public partial class IPTVLiveCheckerMain : Form
 		};
 		outerWrap.Controls.Add(mainArea);
 		CreateBottomBar();
+		outerWrap.Controls.Add(bottomContainer);
 		outerWrap.Controls.Add(bottomBarRef);
 		outerWrap.Controls.Add(titleBarPanel);
 		dataGridViewContextMenu = new ContextMenuStrip();
