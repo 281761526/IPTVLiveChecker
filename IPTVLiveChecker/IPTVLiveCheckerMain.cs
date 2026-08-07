@@ -1142,6 +1142,15 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private List<ChannelInfo> allChannels = new List<ChannelInfo>();
 
+	// 底部筛选栏：状态 / 延时 / 分辨率 多维筛选条件（默认全不勾选 = 不过滤，显示全部）
+	private Panel _filterBar;
+	private bool _filterStatusAvail = false;
+	private bool _filterStatusUnavail = false;
+	private bool _filterLatencyLow = false;
+	private bool _filterLatencyHigh = false;
+	private bool[] _filterRes = { false, false, false, false, false };
+	private Label _lblFilterCount;
+
 	private AppTheme theme = AppTheme.GetAutoTheme();
 	private bool _subscribedFxPhase;
     private IContainer components = null;
@@ -1169,6 +1178,255 @@ public partial class IPTVLiveCheckerMain : Form
 		RefreshGrid();
 		UpdateEmptyState();
 	}
+	private void CreateFilterBar()
+	{
+		_filterBar = new Panel
+		{
+			Dock = DockStyle.Bottom,
+			Height = SY(38),
+			BackColor = theme.StatusBarBg,
+			Padding = new Padding(SX(8), SY(4), SX(8), SY(4))
+		};
+		_filterBar.Paint += (s, e) =>
+		{
+			using var pen = new Pen(theme.Border);
+			e.Graphics.DrawLine(pen, 0, 0, _filterBar.Width, 0);
+		};
+
+		int x = SX(12);
+		int barH = SY(38);
+		int yMid = (barH - SY(30)) / 2;
+		int ccSize = 14;
+
+		Panel MakeFilterChip(string text, bool initial, Action<bool> onToggle)
+		{
+			bool state = initial;
+
+			var cc = new Panel
+			{
+				Size = new Size(ccSize, ccSize),
+				Location = new Point(0, (SY(30) - ccSize) / 2),
+				Tag = state
+			};
+
+			var lbl = new Label
+			{
+				Text = text,
+				Font = GetFont(SF(9f)),
+				AutoSize = true,
+				TextAlign = ContentAlignment.MiddleLeft,
+				ForeColor = state ? theme.TextPrimary : Color.FromArgb(210, theme.TextPrimary)
+			};
+			lbl.Location = new Point(ccSize + SX(4), (SY(30) - lbl.Height) / 2);
+
+			var host = new Panel
+			{
+				Location = new Point(x, yMid),
+				Size = new Size(ccSize + SX(4) + lbl.Width + SX(4), SY(30)),
+				Cursor = Cursors.Hand
+			};
+
+			cc.Paint += (s, e) =>
+			{
+				bool ck = (bool)((Panel)s).Tag;
+				int pad = 1;
+				e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+				Color c = ck ? theme.Primary : theme.Border;
+				using var pen = new Pen(c, 1.8f);
+				e.Graphics.DrawEllipse(pen, pad, pad, ccSize - pad * 2 - 1, ccSize - pad * 2 - 1);
+				if (ck)
+				{
+					using var brush = new SolidBrush(theme.Primary);
+					e.Graphics.FillEllipse(brush, pad, pad, ccSize - pad * 2 - 1, ccSize - pad * 2 - 1);
+					using var wpen = new Pen(Color.White, 1.8f);
+					e.Graphics.DrawLine(wpen, 3, 6, 5, 8);
+					e.Graphics.DrawLine(wpen, 5, 8, 10, 3);
+				}
+			};
+
+			EventHandler toggle = (s, e) =>
+			{
+				state = !state;
+				onToggle(state);
+				cc.Tag = state;
+				cc.Invalidate();
+				lbl.ForeColor = state ? theme.TextPrimary : Color.FromArgb(210, theme.TextPrimary);
+				ApplyFilters();
+			};
+			host.Click += toggle;
+			cc.Click += toggle;
+			lbl.Click += toggle;
+
+			host.Controls.Add(cc);
+			host.Controls.Add(lbl);
+			x += host.Width + SX(2);
+			return host;
+		}
+
+		// ---- 状态 ----
+		var lblStatus = new Label
+		{
+			Text = "状态",
+			Font = GetFont(SF(8f), FontStyle.Bold),
+			ForeColor = theme.TextPrimary,
+			Location = new Point(x, yMid),
+			AutoSize = true,
+			TextAlign = ContentAlignment.MiddleCenter
+		};
+		_filterBar.Controls.Add(lblStatus);
+		x += lblStatus.Width + SX(4);
+
+		_filterBar.Controls.Add(MakeFilterChip("可用", _filterStatusAvail, v => _filterStatusAvail = v));
+		_filterBar.Controls.Add(MakeFilterChip("不可用", _filterStatusUnavail, v => _filterStatusUnavail = v));
+
+		// 分隔线
+		var sep1 = new Panel
+		{
+			Size = new Size(1, SY(18)),
+			Location = new Point(x + SX(8), yMid + SY(6)),
+			BackColor = theme.Border
+		};
+		_filterBar.Controls.Add(sep1);
+		x += SX(18);
+
+		// ---- 延时 ----
+		var lblLatency = new Label
+		{
+			Text = "延时",
+			Font = GetFont(SF(8f), FontStyle.Bold),
+			ForeColor = theme.TextPrimary,
+			Location = new Point(x, yMid),
+			AutoSize = true,
+			TextAlign = ContentAlignment.MiddleCenter
+		};
+		_filterBar.Controls.Add(lblLatency);
+		x += lblLatency.Width + SX(4);
+
+		_filterBar.Controls.Add(MakeFilterChip("低延时≤300ms", _filterLatencyLow, v => _filterLatencyLow = v));
+		_filterBar.Controls.Add(MakeFilterChip("高延时>300ms", _filterLatencyHigh, v => _filterLatencyHigh = v));
+
+		// 分隔线
+		var sep2 = new Panel
+		{
+			Size = new Size(1, SY(18)),
+			Location = new Point(x + SX(8), yMid + SY(6)),
+			BackColor = theme.Border
+		};
+		_filterBar.Controls.Add(sep2);
+		x += SX(18);
+
+		// ---- 分辨率 ----
+		var lblRes = new Label
+		{
+			Text = "分辨率",
+			Font = GetFont(SF(8f), FontStyle.Bold),
+			ForeColor = theme.TextPrimary,
+			Location = new Point(x, yMid),
+			AutoSize = true,
+			TextAlign = ContentAlignment.MiddleCenter
+		};
+		_filterBar.Controls.Add(lblRes);
+		x += lblRes.Width + SX(4);
+
+		string[] resLabels = { "4K(3840×2160)", "2K(2560×1440)", "1080P(1920×1080)", "720P(1280×720)", "标清≤576P" };
+		for (int i = 0; i < 5; i++)
+		{
+			int idx = i;
+			_filterBar.Controls.Add(MakeFilterChip(resLabels[i], _filterRes[idx], v => _filterRes[idx] = v));
+		}
+
+		// ---- 筛选计数（右对齐，自适应宽度） ----
+		_lblFilterCount = new Label
+		{
+			Font = GetFont(SF(9f)),
+			ForeColor = theme.TextPrimary,
+			AutoSize = true,
+			TextAlign = ContentAlignment.MiddleLeft
+		};
+		_filterBar.Controls.Add(_lblFilterCount);
+
+		_filterBar.Resize += (s, e) =>
+		{
+			if (_lblFilterCount != null && !_lblFilterCount.IsDisposed)
+				_lblFilterCount.Location = new Point(_filterBar.ClientSize.Width - _lblFilterCount.Width - SX(12), yMid);
+		};
+
+		mainArea.Controls.Add(_filterBar);
+		ApplyFilters();
+	}
+
+	private void ApplyFilters()
+	{
+		RefreshGrid();
+		if (_lblFilterCount != null && !_lblFilterCount.IsDisposed && dgvData != null && !dgvData.IsDisposed)
+		{
+			int filtered = dgvData.Rows.Count;
+			int total = allChannels.Count;
+			_lblFilterCount.Text = string.Format("筛选 {0} / {1} 个", filtered, total);
+		}
+	}
+
+	// 底部筛选栏：判断单个频道是否通过 状态 / 延时 / 分辨率 三维筛选。
+	// 某个维度内没有任何选项被勾选时，该维度不施加约束（显示全部）。
+	private bool PassesBottomFilter(ChannelInfo ch)
+	{
+		if (_filterStatusAvail || _filterStatusUnavail)
+		{
+			bool ok = (_filterStatusAvail && ch.Status == "可用") || (_filterStatusUnavail && ch.Status == "不可用");
+			if (!ok) return false;
+		}
+		if (_filterLatencyLow || _filterLatencyHigh)
+		{
+			int ms = ParseSpeedMs(ch.Speed);
+			// 低延时：可解析且 ≤300ms；高延时：超时/不可解析(ms<0) 或 >300ms
+			bool ok = (_filterLatencyLow && ms >= 0 && ms <= 300) || (_filterLatencyHigh && (ms < 0 || ms > 300));
+			if (!ok) return false;
+		}
+		if (_filterRes.Any(r => r))
+		{
+			int cat = ResolveResolutionCategory(ch.Resolution);
+			if (cat < 0 || !_filterRes[cat]) return false;
+		}
+		return true;
+	}
+
+	private List<ChannelInfo> GetFilteredChannels()
+	{
+		List<ChannelInfo> list = new List<ChannelInfo>();
+		foreach (ChannelInfo ch in allChannels)
+		{
+			if (PassesBottomFilter(ch)) list.Add(ch);
+		}
+		return list;
+	}
+
+	private static int ParseSpeedMs(string speed)
+	{
+		if (string.IsNullOrWhiteSpace(speed)) return -1;
+		var m = System.Text.RegularExpressions.Regex.Match(speed, @"\d+");
+		if (m.Success && int.TryParse(m.Value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int v))
+			return v;
+		return -1;
+	}
+
+	// 返回分辨率类别索引：0=4K,1=2K,2=1080P,3=720P,4=标清(≤576P)；无法识别返回 -1
+	private static int ResolveResolutionCategory(string res)
+	{
+		if (string.IsNullOrWhiteSpace(res) || res == "直播") return -1;
+		string[] parts = res.Split('x');
+		if (parts.Length != 2) return -1;
+		if (!int.TryParse(parts[0], System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int w)
+			|| !int.TryParse(parts[1], System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int h))
+			return -1;
+		int maxDim = Math.Max(w, h);
+		if (maxDim >= 3840) return 0;
+		if (maxDim >= 2560) return 1;
+		if (maxDim >= 1920) return 2;
+		if (maxDim >= 1280) return 3;
+		if (maxDim <= 576) return 4;
+		return -1;
+	}
+
 
 	private void RefreshGrid()
 	{
@@ -1184,7 +1442,7 @@ public partial class IPTVLiveCheckerMain : Form
 				string chGroup = (string.IsNullOrWhiteSpace(ch.Group) ? "未分组" : ch.Group);
 				bool num = selectedGroup == "全部" || chGroup == selectedGroup;
 				bool matchSearch = string.IsNullOrWhiteSpace(searchText) || ch.Name.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 || MatchPinyinAbbreviation(ch.Name, searchText);
-				if (num && matchSearch)
+				if (num && matchSearch && PassesBottomFilter(ch))
 				{
 					filteredChannels.Add(ch);
 				}
@@ -1541,11 +1799,16 @@ public partial class IPTVLiveCheckerMain : Form
 
 	private void BtnExport_Click(object sender, EventArgs e)
 	{
-		if (allChannels.Count == 0)
+		List<ChannelInfo> filtered = GetFilteredChannels();
+		if (filtered.Count == 0)
 		{
-			DarkMessageBox.Show("没有数据可导出", "提示", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+			DarkMessageBox.Show("当前筛选条件下没有可导出的频道", "提示", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			return;
 		}
+		var backup = allChannels;
+		allChannels = filtered;
+		try
+		{
 		using SaveFileDialog sfd = new SaveFileDialog();
 		sfd.Filter = "m3u文件(标准)|*.m3u|m3u文件(按名称分组)|*.m3u|txt文件(标准)|*.txt|txt文件(合并频道)|*.txt|m3u文件(合并+台标)|*.m3u|txt文件(合并+台标)|*.txt";
 		sfd.Title = "选择导出格式";
@@ -1576,6 +1839,10 @@ public partial class IPTVLiveCheckerMain : Form
 				ExportToTxtMergeUrl(sfd.FileName);
 				break;
 			}
+		}
+		finally
+		{
+			allChannels = backup;
 		}
 	}
 
@@ -22544,6 +22811,7 @@ public partial class IPTVLiveCheckerMain : Form
 		statusBarContainer.Controls.Add(statusBarRef);
 		LayoutStatusBar(statusBarRef);
 		mainArea.Controls.Add(gridContainerRef);
+		CreateFilterBar();
 		mainArea.Controls.Add(statusBarContainer);
 		toolbarRef = new Panel
 		{
