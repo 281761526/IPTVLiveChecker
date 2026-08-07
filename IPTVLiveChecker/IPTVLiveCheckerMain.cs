@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using System;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -1178,12 +1178,12 @@ public partial class IPTVLiveCheckerMain : Form
 		RefreshGrid();
 		UpdateEmptyState();
 	}
-	private void CreateFilterBar()
+	private void CreateFilterBar(Panel bottomContainer)
 	{
 		_filterBar = new Panel
 		{
 			Dock = DockStyle.Bottom,
-			Height = SY(38),
+			Height = SY(34),
 			BackColor = theme.StatusBarBg,
 			Padding = new Padding(SX(8), SY(4), SX(8), SY(4))
 		};
@@ -1194,8 +1194,8 @@ public partial class IPTVLiveCheckerMain : Form
 		};
 
 		int x = SX(12);
-		int barH = SY(38);
-		int yMid = (barH - SY(30)) / 2;
+		int barH = SY(34);
+		int yMid = (barH - SY(26)) / 2;
 		int ccSize = 14;
 
 		Panel MakeFilterChip(string text, bool initial, Action<bool> onToggle)
@@ -1215,7 +1215,7 @@ public partial class IPTVLiveCheckerMain : Form
 			var cc = new Panel
 			{
 				Size = new Size(ccSize, ccSize),
-				Location = new Point(0, (SY(30) - ccSize) / 2),
+				Location = new Point(0, (SY(26) - ccSize) / 2),
 				Tag = state
 			};
 
@@ -1228,12 +1228,12 @@ public partial class IPTVLiveCheckerMain : Form
 				TextAlign = ContentAlignment.MiddleLeft,
 				ForeColor = state ? theme.TextPrimary : Color.FromArgb(210, theme.TextPrimary)
 			};
-			lbl.Location = new Point(ccSize + SX(4), (SY(30) - labelH) / 2);
+			lbl.Location = new Point(ccSize + SX(4), (SY(26) - labelH) / 2);
 
 			var host = new Panel
 			{
 				Location = new Point(x, yMid),
-				Size = new Size(ccSize + SX(4) + labelW + SX(4), SY(30)),
+				Size = new Size(ccSize + SX(4) + labelW + SX(4), SY(26)),
 				Cursor = Cursors.Hand
 			};
 
@@ -1362,7 +1362,7 @@ public partial class IPTVLiveCheckerMain : Form
 				_lblFilterCount.Location = new Point(_filterBar.ClientSize.Width - _lblFilterCount.Width - SX(12), yMid);
 		};
 
-		mainArea.Controls.Add(_filterBar);
+		bottomContainer.Controls.Add(_filterBar);
 		ApplyFilters();
 	}
 
@@ -22823,8 +22823,17 @@ public partial class IPTVLiveCheckerMain : Form
 		statusBarContainer.Controls.Add(statusBarRef);
 		LayoutStatusBar(statusBarRef);
 		mainArea.Controls.Add(gridContainerRef);
-		CreateFilterBar();
-		mainArea.Controls.Add(statusBarContainer);
+
+		// 底部容器：状态栏在上、筛选栏在下，整体停靠底部（筛选栏位于最底部）
+		var bottomContainer = new Panel
+		{
+			Dock = DockStyle.Bottom,
+			Height = SY(32) + SY(34),
+			BackColor = theme.Bg
+		};
+		mainArea.Controls.Add(bottomContainer);
+		bottomContainer.Controls.Add(statusBarContainer);
+		CreateFilterBar(bottomContainer);
 		toolbarRef = new Panel
 		{
 			Dock = DockStyle.Top,
